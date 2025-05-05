@@ -82,28 +82,29 @@ def main():
         os.makedirs(ko_target_dir, exist_ok=True)
 
         # 최상위 디렉토리의 마크다운 파일만 가져오기
-        for file in os.listdir(work_dir):
-            if file.endswith(".md"):
-                source_path = os.path.join(work_dir, file)
+        files = [file for file in os.listdir(work_dir) if file.endswith(".md")]
+        files.sort()  # 파일 이름을 알파벳 순서로 정렬
+        for file in files:
+            source_path = os.path.join(work_dir, file)
 
-                # en 디렉토리에 파일 복사
-                en_target_path = os.path.join(en_target_dir, file)
-                shutil.copy2(source_path, en_target_path)
-                print(f"파일 복사: {file} -> {en_target_dir}")
+            # en 디렉토리에 파일 복사
+            en_target_path = os.path.join(en_target_dir, file)
+            shutil.copy2(source_path, en_target_path)
+            print(f"파일 복사: {file} -> {en_target_dir}")
 
-                # 파일 내용 읽기
-                with open(source_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
+            # 파일 내용 읽기
+            with open(source_path, 'r', encoding='utf-8') as f:
+                content = f.read()
 
-                # OpenAI로 번역
-                print(f"번역 중: {file}")
-                translated_content = translate_with_openai(content)
+            # OpenAI로 번역
+            print(f"번역 중: {file}")
+            translated_content = translate_with_openai(content)
 
-                # ko 디렉토리에 번역된 파일 저장
-                ko_target_path = os.path.join(ko_target_dir, file)
-                with open(ko_target_path, 'w', encoding='utf-8') as f:
-                    f.write(translated_content)
-                print(f"번역 완료: {file} -> {ko_target_dir}")
+            # ko 디렉토리에 번역된 파일 저장
+            ko_target_path = os.path.join(ko_target_dir, file)
+            with open(ko_target_path, 'w', encoding='utf-8') as f:
+                f.write(translated_content)
+            print(f"번역 완료: {file} -> {ko_target_dir}")
 
         print(f"{branch} 처리 완료")
 
