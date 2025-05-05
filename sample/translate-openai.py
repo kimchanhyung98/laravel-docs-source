@@ -4,13 +4,19 @@ import openai
 import dotenv
 
 def main():
+    import argparse
+
+    # 명령줄 인수 파싱
+    parser = argparse.ArgumentParser(description="Translate a Markdown file using OpenAI.")
+    parser.add_argument("input_file", nargs="?", default="logging.md", help="Path to the input Markdown file.")
+    parser.add_argument("output_file", nargs="?", default="logging-openai.md", help="Path to the output Markdown file.")
+    args = parser.parse_args()
+
+    input_file = args.input_file
+    output_file = args.output_file
+
     # .env 파일 로드
     dotenv.load_dotenv()
-
-    # 파일 경로 설정
-    input_file = "logging.md"
-    output_file = "logging-openai.md"
-
     # OpenAI API 키 가져오기
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
