@@ -3,12 +3,23 @@ import os
 import deepl
 import dotenv
 
+import argparse
+
 def main():
+    # 명령줄 인자 파싱
+    parser = argparse.ArgumentParser(description="Translate a file using DeepL API.")
+    parser.add_argument(
+        "-i", "--input-file",
+        default="logging.md",
+        help="Path to the input file (default: logging.md)"
+    )
+    args = parser.parse_args()
+
     # .env 파일 로드
     dotenv.load_dotenv()
 
     # 파일 경로 설정
-    input_file = "logging.md"
+    input_file = args.input_file
     output_file = f"{os.path.splitext(input_file)[0]}-deepl.md"
 
     # DeepL API 키 가져오기
