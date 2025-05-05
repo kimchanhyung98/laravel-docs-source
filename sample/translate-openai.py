@@ -23,7 +23,6 @@ def main():
 
     # OpenAI 번역
     openai.api_key = api_key
-    client = openai.OpenAI()
 
     # 시스템 프롬프트 설정
     system_prompt = f"""당신은 전문 번역가입니다. EN에서 ko로 마크다운 문서를 번역해주세요.
