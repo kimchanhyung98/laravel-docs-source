@@ -134,8 +134,7 @@ def main():
     dotenv.load_dotenv()
 
     repo_url = "https://github.com/laravel/docs.git"
-    branches = ["master"]
-    # branches = ["master", "12.x", "11.x", "10.x", "9.x", "8.x"]
+    branches = ["master", "12.x", "11.x", "10.x", "9.x", "8.x"]
 
     # 작업 디렉토리 설정
     work_dir = os.path.join(os.getcwd(), "laravel-docs-temp")
