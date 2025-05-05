@@ -2,10 +2,82 @@
 import os
 import shutil
 import subprocess
+import time
+from functools import wraps
 
 import dotenv
 import openai
 from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
+
+
+def retry(max_attempts=3, delay=1, backoff=2, exceptions=(Exception,)):
+    """예외 발생 시 함수를 재시도하는 데코레이터
+
+    Args:
+        max_attempts: 최대 시도 횟수
+        delay: 초기 대기 시간(초)
+        backoff: 대기 시간 증가 요소(다음 시도에서는 delay * backoff)
+        exceptions: 재시도할 예외 클래스 튜플
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            attempt = 0
+            current_delay = delay
+
+            while attempt < max_attempts:
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    attempt += 1
+                    if attempt >= max_attempts:
+                        print(f"최대 시도 횟수({max_attempts})를 초과했습니다. 마지막 오류: {e}")
+                        raise
+
+                    print(f"오류 발생: {e}. {current_delay}초 후 재시도 ({attempt}/{max_attempts})...")
+                    time.sleep(current_delay)
+                    current_delay *= backoff  # 대기 시간 증가
+
+            return None  # 이 코드는 실행되지 않지만 형식적으로 필요
+
+        return wrapper
+
+    return decorator
+
+
+def timeout(seconds=420):
+    """함수 실행 시 타임아웃을 적용하는 데코레이터
+
+    Args:
+        seconds: 타임아웃 시간(초)
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            import signal
+
+            def handler(signum, frame):
+                raise TimeoutError(f"함수 실행이 {seconds}초를 초과했습니다.")
+
+            # 타임아웃 설정
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(seconds)
+
+            try:
+                result = func(*args, **kwargs)
+                signal.alarm(0)  # 타이머 재설정
+                return result
+            except TimeoutError as e:
+                print(f"타임아웃: {e}")
+                raise
+            finally:
+                signal.alarm(0)  # 타이머 재설정
+
+        return wrapper
+
+    return decorator
 
 
 def run_command(command, cwd=None):
@@ -20,6 +92,8 @@ def run_command(command, cwd=None):
     return result.stdout.strip()
 
 
+@retry(max_attempts=3, delay=5, backoff=2, exceptions=(Exception,))
+@timeout(seconds=300)  # 5분 타임아웃
 def translate_with_openai(content):
     """OpenAI API를 사용하여 마크다운 콘텐츠를 영어에서 한국어로 번역합니다."""
     # OpenAI API 키 가져오기
