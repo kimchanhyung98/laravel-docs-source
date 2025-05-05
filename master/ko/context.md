@@ -1,26 +1,26 @@
 # Context
 
-- [Introduction](#introduction)
-    - [How it Works](#how-it-works)
-- [Capturing Context](#capturing-context)
-    - [Stacks](#stacks)
-- [Retrieving Context](#retrieving-context)
-    - [Determining Item Existence](#determining-item-existence)
-- [Removing Context](#removing-context)
-- [Hidden Context](#hidden-context)
-- [Events](#events)
-    - [Dehydrating](#dehydrating)
-    - [Hydrated](#hydrated)
+- [소개](#introduction)
+    - [작동 방식](#how-it-works)
+- [컨텍스트 캡처](#capturing-context)
+    - [스택](#stacks)
+- [컨텍스트 조회](#retrieving-context)
+    - [항목 존재 여부 확인](#determining-item-existence)
+- [컨텍스트 제거](#removing-context)
+- [숨겨진 컨텍스트](#hidden-context)
+- [이벤트](#events)
+    - [탈수(Dehydrating)](#dehydrating)
+    - [수화(Hydrated)](#hydrated)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel's "context" capabilities enable you to capture, retrieve, and share information throughout requests, jobs, and commands executing within your application. This captured information is also included in logs written by your application, giving you deeper insight into the surrounding code execution history that occurred before a log entry was written and allowing you to trace execution flows throughout a distributed system.
+Laravel의 "컨텍스트(context)" 기능을 사용하면 애플리케이션 내에서 실행되는 요청, 작업(jobs), 명령(command) 전반에 걸쳐 정보를 캡처, 조회 및 공유할 수 있습니다. 캡처된 정보는 애플리케이션이 기록한 로그에도 자동으로 포함되어, 로그가 작성되기 전에 발생한 코드 실행 이력을 더 깊이 파악하고 분산 시스템 전반의 실행 흐름을 쉽게 추적할 수 있게 해줍니다.
 
 <a name="how-it-works"></a>
-### How it Works
+### 작동 방식
 
-The best way to understand Laravel's context capabilities is to see it in action using  the built-in logging features. To get started, you may [add information to the context](#capturing-context) using the `Context` facade. In this example, we will use a [middleware](/docs/{{version}}/middleware) to add the request URL and a unique trace ID to the context on every incoming request:
+Laravel의 컨텍스트 기능을 이해하는 가장 좋은 방법은 내장된 로깅 기능과 함께 실제 사용 예시를 보는 것입니다. 먼저, `Context` 파사드를 사용해 [컨텍스트에 정보를 추가](#capturing-context)할 수 있습니다. 아래 예시에서는 [미들웨어](/docs/{{version}}/middleware)를 이용해 모든 들어오는 요청마다 요청 URL과 고유한 트레이스 ID를 컨텍스트에 추가합니다:
 
 ```php
 <?php
@@ -48,30 +48,30 @@ class AddContext
 }
 ```
 
-Information added to the context is automatically appended as metadata to any [log entries](/docs/{{version}}/logging) that are written throughout the request. Appending context as metadata allows information passed to individual log entries to be differentiated from the information shared via `Context`. For example, imagine we write the following log entry:
+컨텍스트에 추가된 정보는 요청 전체에서 작성되는 [로그 항목](/docs/{{version}}/logging)에 메타데이터로 자동으로 붙어서 기록됩니다. 컨텍스트 정보를 메타데이터로 추가하면, 개별 로그 항목에 전달된 정보와 `Context`를 통해 공유된 정보를 구분할 수 있습니다. 예를 들어, 다음과 같이 로그를 작성했다고 가정해봅시다:
 
 ```php
 Log::info('User authenticated.', ['auth_id' => Auth::id()]);
 ```
 
-The written log will contain the `auth_id` passed to the log entry, but it will also contain the context's `url` and `trace_id` as metadata:
+기록된 로그는 로그 항목에 전달된 `auth_id`뿐만 아니라 컨텍스트의 `url`과 `trace_id`도 메타데이터로 포함합니다:
 
 ```text
 User authenticated. {"auth_id":27} {"url":"https://example.com/login","trace_id":"e04e1a11-e75c-4db3-b5b5-cfef4ef56697"}
 ```
 
-Information added to the context is also made available to jobs dispatched to the queue. For example, imagine we dispatch a `ProcessPodcast` job to the queue after adding some information to the context:
+컨텍스트에 추가된 정보는 큐에 디스패치된 작업(job)에서도 사용할 수 있습니다. 예를 들어, 컨텍스트에 정보를 추가한 뒤에 `ProcessPodcast` 작업을 큐에 디스패치한다고 가정합시다:
 
 ```php
-// In our middleware...
+// 미들웨어 내에서...
 Context::add('url', $request->url());
 Context::add('trace_id', Str::uuid()->toString());
 
-// In our controller...
+// 컨트롤러 내에서...
 ProcessPodcast::dispatch($podcast);
 ```
 
-When the job is dispatched, any information currently stored in the context is captured and shared with the job. The captured information is then hydrated back into the current context while the job is executing. So, if our job's handle method was to write to the log:
+작업이 디스패치될 때, 현재 컨텍스트에 저장된 정보가 캡처되어 작업과 함께 공유됩니다. 그리고 해당 작업이 실행되는 동안 캡처된 정보가 현재 컨텍스트에 다시 수화(hydrate)됩니다. 따라서 작업의 handle 메서드에서 로그를 기록하면:
 
 ```php
 class ProcessPodcast implements ShouldQueue
@@ -94,18 +94,18 @@ class ProcessPodcast implements ShouldQueue
 }
 ```
 
-The resulting log entry would contain the information that was added to the context during the request that originally dispatched the job:
+작성된 로그 항목에는 작업을 디스패치한 요청 중에 컨텍스트에 추가된 정보가 함께 들어갑니다:
 
 ```text
 Processing podcast. {"podcast_id":95} {"url":"https://example.com/login","trace_id":"e04e1a11-e75c-4db3-b5b5-cfef4ef56697"}
 ```
 
-Although we have focused on the built-in logging related features of Laravel's context, the following documentation will illustrate how context allows you to share information across the HTTP request / queued job boundary and even how to add [hidden context data](#hidden-context) that is not written with log entries.
+여기서는 주로 Laravel의 내장 로깅 관련 컨텍스트 기능에 초점을 맞추었지만, 이 문서의 다음 부분에서는 컨텍스트가 HTTP 요청과 큐 작업 간 경계를 넘어 정보를 어떻게 공유할 수 있는지, 그리고 로그 항목과 함께 기록되지 않는 [숨겨진 컨텍스트 데이터](#hidden-context)는 어떻게 추가할 수 있는지 등도 설명합니다.
 
 <a name="capturing-context"></a>
-## Capturing Context
+## 컨텍스트 캡처
 
-You may store information in the current context using the `Context` facade's `add` method:
+`Context` 파사드의 `add` 메서드를 사용하여 현재 컨텍스트에 정보를 저장할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -113,7 +113,7 @@ use Illuminate\Support\Facades\Context;
 Context::add('key', 'value');
 ```
 
-To add multiple items at once, you may pass an associative array to the `add` method:
+여러 항목을 한 번에 추가하고 싶다면, 연관 배열을 `add` 메서드에 전달하면 됩니다:
 
 ```php
 Context::add([
@@ -122,7 +122,7 @@ Context::add([
 ]);
 ```
 
-The `add` method will override any existing value that shares the same key. If you only wish to add information to the context if the key does not already exist, you may use the `addIf` method:
+`add` 메서드는 동일한 키가 이미 존재한다면 기존 값을 덮어씁니다. 만약 해당 키가 존재하지 않을 때만 정보를 추가하고 싶다면, `addIf` 메서드를 사용할 수 있습니다:
 
 ```php
 Context::add('key', 'first');
@@ -136,7 +136,7 @@ Context::get('key');
 // "first"
 ```
 
-Context also provides convenient methods for incrementing or decrementing a given key. Both of these methods accept at least one argument: the key to track. A second argument may be provided to specify the amount by which the key should be incremented or decremented:
+컨텍스트에는 특정 키에 대한 값을 증가(increment) 또는 감소(decrement)시키는 편리한 메서드도 제공됩니다. 두 메서드 모두 첫 번째 인수로 추적하려는 키를 받고, 두 번째 인수로 증가/감소시킬 양을 지정할 수 있습니다:
 
 ```php
 Context::increment('records_added');
@@ -147,9 +147,9 @@ Context::decrement('records_added', 5);
 ```
 
 <a name="conditional-context"></a>
-#### Conditional Context
+#### 조건부 컨텍스트
 
-The `when` method may be used to add data to the context based on a given condition. The first closure provided to the `when` method will be invoked if the given condition evaluates to `true`, while the second closure will be invoked if the condition evaluates to `false`:
+`when` 메서드는 특정 조건에 따라 컨텍스트에 데이터를 추가할 수 있게 해줍니다. 첫 번째 클로저는 조건이 `true`이면 실행되고, 두 번째 클로저는 조건이 `false`이면 실행됩니다:
 
 ```php
 use Illuminate\Support\Facades\Auth;
@@ -163,9 +163,9 @@ Context::when(
 ```
 
 <a name="scoped-context"></a>
-#### Scoped Context
+#### 스코프 컨텍스트
 
-The `scope` method provides a way to temporarily modify the context during the execution of a given callback and restore the context to its original state when the callback finishes executing. Additionally, you can pass extra data that should be merged into the context (as the second and third arguments) while the closure executes.
+`scope` 메서드는 지정된 콜백 실행 중에만 임시로 컨텍스트를 수정하고, 콜백 실행이 끝나면 컨텍스트를 원래 상태로 복원할 수 있습니다. 또한 콜백 실행 중에 컨텍스트에 병합할 추가 데이터(두 번째, 세 번째 인수)를 전달할 수도 있습니다.
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -197,12 +197,12 @@ Context::allHidden();
 ```
 
 > [!WARNING]
-> If an object within the context is modified inside the scoped closure, that mutation will be reflected outside of the scope.
+> 스코프 클로저 내에서 컨텍스트에 있는 객체를 수정하면, 해당 변경 사항이 스코프 외부에도 반영됩니다.
 
 <a name="stacks"></a>
-### Stacks
+### 스택
 
-Context offers the ability to create "stacks", which are lists of data stored in the order that they were added. You can add information to a stack by invoking the `push` method:
+컨텍스트는 "스택"을 생성할 수 있습니다. 스택은 추가된 순서대로 데이터를 저장하는 리스트입니다. `push` 메서드를 사용하여 스택에 정보를 추가할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -219,7 +219,7 @@ Context::get('breadcrumbs');
 // ]
 ```
 
-Stacks can be useful to capture historical information about a request, such as events that are happening throughout your application. For example, you could create an event listener to push to a stack every time a query is executed, capturing the query SQL and duration as a tuple:
+스택은 요청에 대한 히스토리 정보(예: 애플리케이션 전체에서 발생하는 이벤트 등)를 캡처하는 데 유용합니다. 예를 들어, 쿼리가 실행될 때마다 스택에 push하는 이벤트 리스너를 만들어, 쿼리 SQL과 실행 시간을 튜플로 저장할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -230,7 +230,7 @@ DB::listen(function ($event) {
 });
 ```
 
-You may determine if a value is in a stack using the `stackContains` and `hiddenStackContains` methods:
+`stackContains` 및 `hiddenStackContains` 메서드를 사용하여 스택에 값이 포함되어 있는지 확인할 수 있습니다:
 
 ```php
 if (Context::stackContains('breadcrumbs', 'first_value')) {
@@ -242,7 +242,7 @@ if (Context::hiddenStackContains('secrets', 'first_value')) {
 }
 ```
 
-The `stackContains` and `hiddenStackContains` methods also accept a closure as their second argument, allowing more control over the value comparison operation:
+`stackContains`와 `hiddenStackContains` 메서드는 두 번째 인수로 클로저를 받을 수도 있어, 값 비교 동작을 더 세밀하게 제어할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -254,9 +254,9 @@ return Context::stackContains('breadcrumbs', function ($value) {
 ```
 
 <a name="retrieving-context"></a>
-## Retrieving Context
+## 컨텍스트 조회
 
-You may retrieve information from the context using the `Context` facade's `get` method:
+컨텍스트에서 정보를 조회하려면 `Context` 파사드의 `get` 메서드를 사용할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -264,19 +264,19 @@ use Illuminate\Support\Facades\Context;
 $value = Context::get('key');
 ```
 
-The `only` method may be used to retrieve a subset of the information in the context:
+`only` 메서드를 사용하면 컨텍스트에 있는 정보 중 일부만 선택적으로 조회할 수 있습니다:
 
 ```php
 $data = Context::only(['first_key', 'second_key']);
 ```
 
-The `pull` method may be used to retrieve information from the context and immediately remove it from the context:
+`pull` 메서드는 컨텍스트에서 정보를 조회한 후 즉시 해당 값을 컨텍스트에서 제거합니다:
 
 ```php
 $value = Context::pull('key');
 ```
 
-If context data is stored in a [stack](#stacks), you may pop items from the stack using the `pop` method:
+컨텍스트 데이터가 [스택](#stacks)에 저장되어 있다면, `pop` 메서드로 스택에서 항목을 꺼낼 수 있습니다:
 
 ```php
 Context::push('breadcrumbs', 'first_value', 'second_value');
@@ -288,16 +288,16 @@ Context::get('breadcrumbs');
 // ['first_value']
 ```
 
-If you would like to retrieve all of the information stored in the context, you may invoke the `all` method:
+저장된 모든 컨텍스트 정보를 조회하려면 `all` 메서드를 호출하면 됩니다:
 
 ```php
 $data = Context::all();
 ```
 
 <a name="determining-item-existence"></a>
-### Determining Item Existence
+### 항목 존재 여부 확인
 
-You may use the `has` and `missing` methods to determine if the context has any value stored for the given key:
+지정된 키에 대해 컨텍스트에 값이 저장되어 있는지 확인하려면 `has`와 `missing` 메서드를 사용할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -311,7 +311,7 @@ if (Context::missing('key')) {
 }
 ```
 
-The `has` method will return `true` regardless of the value stored. So, for example, a key with a `null` value will be considered present:
+`has` 메서드는 저장된 값이 어떤 값이더라도(심지어 `null`이어도) `true`를 반환합니다. 예를 들면:
 
 ```php
 Context::add('key', null);
@@ -321,9 +321,9 @@ Context::has('key');
 ```
 
 <a name="removing-context"></a>
-## Removing Context
+## 컨텍스트 제거
 
-The `forget` method may be used to remove a key and its value from the current context:
+`forget` 메서드는 현재 컨텍스트에서 키와 그 값을 제거할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -337,16 +337,16 @@ Context::all();
 // ['second_key' => 2]
 ```
 
-You may forget several keys at once by providing an array to the `forget` method:
+여러 키를 한 번에 지우려면, 배열을 `forget` 메서드에 전달하면 됩니다:
 
 ```php
 Context::forget(['first_key', 'second_key']);
 ```
 
 <a name="hidden-context"></a>
-## Hidden Context
+## 숨겨진 컨텍스트
 
-Context offers the ability to store "hidden" data. This hidden information is not appended to logs, and is not accessible via the data retrieval methods documented above. Context provides a different set of methods to interact with hidden context information:
+컨텍스트는 "숨겨진" 데이터를 저장할 수 있는 기능을 제공합니다. 숨겨진 정보는 로그에 포함되지 않으며, 위에서 설명한 일반 데이터 조회 메서드로 접근할 수 없습니다. 숨겨진 컨텍스트 정보를 다루기 위한 별도의 메서드 집합이 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -360,7 +360,7 @@ Context::get('key');
 // null
 ```
 
-The "hidden" methods mirror the functionality of the non-hidden methods documented above:
+"숨김" 메서드는 앞서 설명한 비숨김용 메서드들과 동일한 기능을 제공합니다:
 
 ```php
 Context::addHidden(/* ... */);
@@ -376,18 +376,18 @@ Context::forgetHidden(/* ... */);
 ```
 
 <a name="events"></a>
-## Events
+## 이벤트
 
-Context dispatches two events that allow you to hook into the hydration and dehydration process of the context.
+컨텍스트는 수화(hydration) 및 탈수(dehydration) 과정에서 후킹(중간 개입)할 수 있도록 두 가지 이벤트를 디스패치합니다.
 
-To illustrate how these events may be used, imagine that in a middleware of your application you set the `app.locale` configuration value based on the incoming HTTP request's `Accept-Language` header. Context's events allow you to capture this value during the request and restore it on the queue, ensuring notifications sent on the queue have the correct `app.locale` value. We can use context's events and [hidden](#hidden-context) data to achieve this, which the following documentation will illustrate.
+이러한 이벤트의 사용 예시로, 미들웨어에서 들어오는 HTTP 요청의 `Accept-Language` 헤더값을 바탕으로 `app.locale` 설정 값을 지정하는 경우를 들 수 있습니다. 컨텍스트 이벤트를 사용하면 요청 중에 해당 값을 캡처하고, 큐 작업에서도 값을 복원할 수 있어, 큐에서 전송되는 알림 등에서도 올바른 `app.locale` 값이 반영되게 할 수 있습니다. 이는 컨텍스트 이벤트와 [숨겨진](#hidden-context) 데이터를 활용해 구현할 수 있으며, 아래에 구체적인 방법이 나와 있습니다.
 
 <a name="dehydrating"></a>
-### Dehydrating
+### 탈수(Dehydrating)
 
-Whenever a job is dispatched to the queue the data in the context is "dehydrated" and captured alongside the job's payload. The `Context::dehydrating` method allows you to register a closure that will be invoked during the dehydration process. Within this closure, you may make changes to the data that will be shared with the queued job.
+작업이 큐에 디스패치될 때마다 컨텍스트에 저장된 데이터는 "탈수(dehydrate)"되어 작업 페이로드와 함께 저장됩니다. `Context::dehydrating` 메서드를 통해 탈수 과정에서 실행할 클로저를 등록할 수 있습니다. 이 클로저 안에서는 큐 작업과 공유할 데이터를 변경할 수도 있습니다.
 
-Typically, you should register `dehydrating` callbacks within the `boot` method of your application's `AppServiceProvider` class:
+보통 `dehydrating` 콜백은 애플리케이션의 `AppServiceProvider` 클래스 내 `boot` 메서드에 등록하는 것이 일반적입니다:
 
 ```php
 use Illuminate\Log\Context\Repository;
@@ -406,14 +406,14 @@ public function boot(): void
 ```
 
 > [!NOTE]
-> You should not use the `Context` facade within the `dehydrating` callback, as that will change the context of the current process. Ensure you only make changes to the repository passed to the callback.
+> `dehydrating` 콜백 내에서는 `Context` 파사드를 사용하지 마세요. 그렇게 하면 현재 프로세스의 컨텍스트가 바뀌게 됩니다. 콜백에 전달된 repository만 수정하도록 하세요.
 
 <a name="hydrated"></a>
-### Hydrated
+### 수화(Hydrated)
 
-Whenever a queued job begins executing on the queue, any context that was shared with the job will be "hydrated" back into the current context. The `Context::hydrated` method allows you to register a closure that will be invoked during the hydration process.
+큐 작업이 실행될 때, 큐 작업과 함께 공유된 컨텍스트 정보는 현재 컨텍스트에 "수화(hydrate)"되어 복원됩니다. `Context::hydrated` 메서드를 이용하면 수화 과정 동안 실행할 클로저를 등록할 수 있습니다.
 
-Typically, you should register `hydrated` callbacks within the `boot` method of your application's `AppServiceProvider` class:
+보통 `hydrated` 콜백도 애플리케이션의 `AppServiceProvider` 클래스 내 `boot` 메서드에서 등록합니다:
 
 ```php
 use Illuminate\Log\Context\Repository;
@@ -434,4 +434,4 @@ public function boot(): void
 ```
 
 > [!NOTE]
-> You should not use the `Context` facade within the `hydrated` callback and instead ensure you only make changes to the repository passed to the callback.
+> `hydrated` 콜백 내에서는 `Context` 파사드를 사용하지 말고, 콜백에 전달된 repository만 수정하세요.

@@ -1,177 +1,177 @@
-# Directory Structure
+# 디렉터리 구조
 
-- [Introduction](#introduction)
-- [The Root Directory](#the-root-directory)
-    - [The `app` Directory](#the-root-app-directory)
-    - [The `bootstrap` Directory](#the-bootstrap-directory)
-    - [The `config` Directory](#the-config-directory)
-    - [The `database` Directory](#the-database-directory)
-    - [The `public` Directory](#the-public-directory)
-    - [The `resources` Directory](#the-resources-directory)
-    - [The `routes` Directory](#the-routes-directory)
-    - [The `storage` Directory](#the-storage-directory)
-    - [The `tests` Directory](#the-tests-directory)
-    - [The `vendor` Directory](#the-vendor-directory)
-- [The App Directory](#the-app-directory)
-    - [The `Broadcasting` Directory](#the-broadcasting-directory)
-    - [The `Console` Directory](#the-console-directory)
-    - [The `Events` Directory](#the-events-directory)
-    - [The `Exceptions` Directory](#the-exceptions-directory)
-    - [The `Http` Directory](#the-http-directory)
-    - [The `Jobs` Directory](#the-jobs-directory)
-    - [The `Listeners` Directory](#the-listeners-directory)
-    - [The `Mail` Directory](#the-mail-directory)
-    - [The `Models` Directory](#the-models-directory)
-    - [The `Notifications` Directory](#the-notifications-directory)
-    - [The `Policies` Directory](#the-policies-directory)
-    - [The `Providers` Directory](#the-providers-directory)
-    - [The `Rules` Directory](#the-rules-directory)
+- [소개](#introduction)
+- [루트 디렉터리](#the-root-directory)
+    - [`app` 디렉터리](#the-root-app-directory)
+    - [`bootstrap` 디렉터리](#the-bootstrap-directory)
+    - [`config` 디렉터리](#the-config-directory)
+    - [`database` 디렉터리](#the-database-directory)
+    - [`public` 디렉터리](#the-public-directory)
+    - [`resources` 디렉터리](#the-resources-directory)
+    - [`routes` 디렉터리](#the-routes-directory)
+    - [`storage` 디렉터리](#the-storage-directory)
+    - [`tests` 디렉터리](#the-tests-directory)
+    - [`vendor` 디렉터리](#the-vendor-directory)
+- [App 디렉터리](#the-app-directory)
+    - [`Broadcasting` 디렉터리](#the-broadcasting-directory)
+    - [`Console` 디렉터리](#the-console-directory)
+    - [`Events` 디렉터리](#the-events-directory)
+    - [`Exceptions` 디렉터리](#the-exceptions-directory)
+    - [`Http` 디렉터리](#the-http-directory)
+    - [`Jobs` 디렉터리](#the-jobs-directory)
+    - [`Listeners` 디렉터리](#the-listeners-directory)
+    - [`Mail` 디렉터리](#the-mail-directory)
+    - [`Models` 디렉터리](#the-models-directory)
+    - [`Notifications` 디렉터리](#the-notifications-directory)
+    - [`Policies` 디렉터리](#the-policies-directory)
+    - [`Providers` 디렉터리](#the-providers-directory)
+    - [`Rules` 디렉터리](#the-rules-directory)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-The default Laravel application structure is intended to provide a great starting point for both large and small applications. But you are free to organize your application however you like. Laravel imposes almost no restrictions on where any given class is located - as long as Composer can autoload the class.
+기본적으로 제공되는 Laravel 애플리케이션 구조는 대규모와 소규모 애플리케이션 모두에 훌륭한 출발점을 제공합니다. 하지만 애플리케이션 구조는 자유롭게 조직할 수 있습니다. Laravel은 클래스가 반드시 특정 위치에 있어야 한다는 제약을 두지 않습니다. Composer가 클래스를 오토로딩할 수만 있다면 어디든 둘 수 있습니다.
 
 <a name="the-root-directory"></a>
-## The Root Directory
+## 루트 디렉터리
 
 <a name="the-root-app-directory"></a>
-### The App Directory
+### App 디렉터리
 
-The `app` directory contains the core code of your application. We'll explore this directory in more detail soon; however, almost all of the classes in your application will be in this directory.
+`app` 디렉터리는 애플리케이션의 핵심 코드를 포함합니다. 곧 이 디렉터리를 더 자세히 알아보겠지만, 애플리케이션의 거의 모든 클래스는 이 디렉터리에 위치합니다.
 
 <a name="the-bootstrap-directory"></a>
-### The Bootstrap Directory
+### Bootstrap 디렉터리
 
-The `bootstrap` directory contains the `app.php` file which bootstraps the framework. This directory also houses a `cache` directory which contains framework generated files for performance optimization such as the route and services cache files.
+`bootstrap` 디렉터리에는 프레임워크를 부트스트랩하는 `app.php` 파일이 있습니다. 또한 이 디렉터리에는 프레임워크가 생성한 파일(예: 라우트 캐시, 서비스 캐시 파일 등)을 위한 `cache` 디렉터리도 포함되어 있습니다. 이 파일들은 성능 최적화를 위해 사용됩니다.
 
 <a name="the-config-directory"></a>
-### The Config Directory
+### Config 디렉터리
 
-The `config` directory, as the name implies, contains all of your application's configuration files. It's a great idea to read through all of these files and familiarize yourself with all of the options available to you.
+이름에서 알 수 있듯이, `config` 디렉터리에는 애플리케이션의 모든 설정 파일이 들어있습니다. 이 파일들을 읽고 사용 가능한 옵션들을 숙지하는 것이 좋습니다.
 
 <a name="the-database-directory"></a>
-### The Database Directory
+### Database 디렉터리
 
-The `database` directory contains your database migrations, model factories, and seeds. If you wish, you may also use this directory to hold an SQLite database.
+`database` 디렉터리에는 데이터베이스 마이그레이션, 모델 팩토리, 시더가 포함되어 있습니다. 원한다면 SQLite 데이터베이스 파일도 이 디렉터리에 둘 수 있습니다.
 
 <a name="the-public-directory"></a>
-### The Public Directory
+### Public 디렉터리
 
-The `public` directory contains the `index.php` file, which is the entry point for all requests entering your application and configures autoloading. This directory also houses your assets such as images, JavaScript, and CSS.
+`public` 디렉터리에는 모든 요청이 진입하며 오토로딩을 설정하는 진입점 파일인 `index.php`가 있습니다. 또한 이미지, JavaScript, CSS와 같은 자산 파일들도 이 디렉터리에 위치합니다.
 
 <a name="the-resources-directory"></a>
-### The Resources Directory
+### Resources 디렉터리
 
-The `resources` directory contains your [views](/docs/{{version}}/views) as well as your raw, un-compiled assets such as CSS or JavaScript.
+`resources` 디렉터리에는 [뷰](/docs/{{version}}/views)와 CSS 또는 JavaScript와 같은 원시(컴파일되지 않은) 자산들이 포함되어 있습니다.
 
 <a name="the-routes-directory"></a>
-### The Routes Directory
+### Routes 디렉터리
 
-The `routes` directory contains all of the route definitions for your application. By default, two route files are included with Laravel: `web.php` and `console.php`.
+`routes` 디렉터리에는 애플리케이션의 모든 라우트 정의가 들어있습니다. 기본적으로 Laravel에는 `web.php`와 `console.php` 두 개의 라우트 파일이 포함되어 있습니다.
 
-The `web.php` file contains routes that Laravel places in the `web` middleware group, which provides session state, CSRF protection, and cookie encryption. If your application does not offer a stateless, RESTful API then all your routes will most likely be defined in the `web.php` file.
+`web.php` 파일에는 Laravel이 `web` 미들웨어 그룹에 포함시키는 라우트가 정의되며, 세션 상태, CSRF 보호, 쿠키 암호화 등이 제공됩니다. 만약 애플리케이션이 stateless한 RESTful API가 아니라면 대부분의 라우트는 `web.php`에 정의됩니다.
 
-The `console.php` file is where you may define all of your closure based console commands. Each closure is bound to a command instance allowing a simple approach to interacting with each command's IO methods. Even though this file does not define HTTP routes, it defines console based entry points (routes) into your application. You may also [schedule](/docs/{{version}}/scheduling) tasks in the `console.php` file.
+`console.php` 파일에는 클로저 기반의 콘솔 커맨드를 정의할 수 있습니다. 각 클로저는 커맨드 인스턴스에 바인딩되어 있어, 각 커맨드의 IO 메서드와 쉽게 상호작용할 수 있습니다. 이 파일은 HTTP 라우트를 정의하진 않지만, 콘솔 진입점(라우트)을 정의합니다. `console.php` 파일에서는 [작업 스케줄링](/docs/{{version}}/scheduling)도 할 수 있습니다.
 
-Optionally, you may install additional route files for API routes (`api.php`) and broadcasting channels (`channels.php`), via the `install:api` and `install:broadcasting` Artisan commands.
+또한 Artisan의 `install:api`, `install:broadcasting` 명령을 통해 API 라우트(`api.php`), 브로드캐스팅 채널(`channels.php`)용 추가 라우트 파일을 설치할 수 있습니다.
 
-The `api.php` file contains routes that are intended to be stateless, so requests entering the application through these routes are intended to be authenticated [via tokens](/docs/{{version}}/sanctum) and will not have access to session state.
+`api.php` 파일에는 stateless 요청을 위한 라우트가 포함되며, 이 경로를 통해 들어오는 요청은 [토큰을 통한 인증](/docs/{{version}}/sanctum)이 필요하고 세션 상태에는 접근할 수 없습니다.
 
-The `channels.php` file is where you may register all of the [event broadcasting](/docs/{{version}}/broadcasting) channels that your application supports.
+`channels.php` 파일은 애플리케이션에서 지원하는 [이벤트 브로드캐스팅](/docs/{{version}}/broadcasting) 채널을 등록하는 곳입니다.
 
 <a name="the-storage-directory"></a>
-### The Storage Directory
+### Storage 디렉터리
 
-The `storage` directory contains your logs, compiled Blade templates, file based sessions, file caches, and other files generated by the framework. This directory is segregated into `app`, `framework`, and `logs` directories. The `app` directory may be used to store any files generated by your application. The `framework` directory is used to store framework generated files and caches. Finally, the `logs` directory contains your application's log files.
+`storage` 디렉터리에는 로그, 컴파일된 Blade 템플릿, 파일 기반 세션, 파일 캐시, 프레임워크에서 생성된 기타 파일이 포함되어 있습니다. 이 디렉터리는 `app`, `framework`, `logs`로 분리됩니다. `app` 디렉터리는 애플리케이션에서 생성한 파일을 저장하는 데 사용할 수 있습니다. `framework` 디렉터리는 프레임워크가 생성하는 파일과 캐시를 저장합니다. 마지막으로 `logs` 디렉터리에는 애플리케이션의 로그 파일이 위치합니다.
 
-The `storage/app/public` directory may be used to store user-generated files, such as profile avatars, that should be publicly accessible. You should create a symbolic link at `public/storage` which points to this directory. You may create the link using the `php artisan storage:link` Artisan command.
+`storage/app/public` 디렉터리는 프로필 아바타와 같이 사용자가 생성한 파일을 공개적으로 제공해야 할 때 사용할 수 있습니다. 이 디렉터리에 연결되는 심볼릭 링크를 `public/storage`에 만들어야 합니다. 이 링크는 `php artisan storage:link` Artisan 명령으로 생성할 수 있습니다.
 
 <a name="the-tests-directory"></a>
-### The Tests Directory
+### Tests 디렉터리
 
-The `tests` directory contains your automated tests. Example [Pest](https://pestphp.com) or [PHPUnit](https://phpunit.de/) unit tests and feature tests are provided out of the box. Each test class should be suffixed with the word `Test`. You may run your tests using the `/vendor/bin/pest` or `/vendor/bin/phpunit` commands. Or, if you would like a more detailed and beautiful representation of your test results, you may run your tests using the `php artisan test` Artisan command.
+`tests` 디렉터리에는 자동화된 테스트가 들어있습니다. 기본으로 [Pest](https://pestphp.com) 또는 [PHPUnit](https://phpunit.de/) 단위 테스트와 기능 테스트가 제공됩니다. 각 테스트 클래스의 이름은 `Test`로 끝나야 합니다. `/vendor/bin/pest` 또는 `/vendor/bin/phpunit` 명령어로 테스트를 실행할 수 있습니다. 더 상세하고 아름다운 결과를 원할 경우 `php artisan test` 명령을 사용할 수도 있습니다.
 
 <a name="the-vendor-directory"></a>
-### The Vendor Directory
+### Vendor 디렉터리
 
-The `vendor` directory contains your [Composer](https://getcomposer.org) dependencies.
+`vendor` 디렉터리에는 [Composer](https://getcomposer.org) 의존성이 저장됩니다.
 
 <a name="the-app-directory"></a>
-## The App Directory
+## App 디렉터리
 
-The majority of your application is housed in the `app` directory. By default, this directory is namespaced under `App` and is autoloaded by Composer using the [PSR-4 autoloading standard](https://www.php-fig.org/psr/psr-4/).
+애플리케이션의 주요 부분은 `app` 디렉터리에 있습니다. 기본적으로 이 디렉터리는 `App` 네임스페이스를 사용하며, [PSR-4 오토로딩 표준](https://www.php-fig.org/psr/psr-4/)에 따라 Composer로 오토로딩됩니다.
 
-By default, the `app` directory contains the `Http`, `Models`, and `Providers` directories. However, over time, a variety of other directories will be generated inside the app directory as you use the make Artisan commands to generate classes. For example, the `app/Console` directory will not exist until you execute the `make:command` Artisan command to generate a command class.
+기본적으로 `app` 디렉터리에는 `Http`, `Models`, `Providers` 디렉터리가 포함되어 있습니다. 그러나 시간이 지나면서 Artisan의 make 명령을 사용해 클래스를 생성할 때 다양한 하위 디렉터리가 추가됩니다. 예를 들어, `make:command` 명령을 실행하기 전까진 `app/Console` 디렉터리가 존재하지 않습니다.
 
-Both the `Console` and `Http` directories are further explained in their respective sections below, but think of the `Console` and `Http` directories as providing an API into the core of your application. The HTTP protocol and CLI are both mechanisms to interact with your application, but do not actually contain application logic. In other words, they are two ways of issuing commands to your application. The `Console` directory contains all of your Artisan commands, while the `Http` directory contains your controllers, middleware, and requests.
+`Console`과 `Http` 디렉터리는 아래 별도의 섹션에서 더 자세히 설명하지만, 두 디렉터리는 코어 애플리케이션에 접근할 수 있는 API를 제공한다고 생각하면 됩니다. HTTP 프로토콜과 CLI는 모두 애플리케이션과 상호작용하는 수단일 뿐, 실제 비즈니스 로직이 포함되어 있는 것은 아닙니다. 즉, 두 가지 방식 모두 애플리케이션에 명령을 전달하는 수단입니다. `Console` 디렉터리에는 모든 Artisan 명령이, `Http` 디렉터리에는 컨트롤러, 미들웨어, 요청 객체가 위치합니다.
 
 > [!NOTE]
-> Many of the classes in the `app` directory can be generated by Artisan via commands. To review the available commands, run the `php artisan list make` command in your terminal.
+> `app` 디렉터리의 많은 클래스들은 Artisan 명령으로 생성할 수 있습니다. 사용 가능한 명령 목록을 확인하려면 터미널에서 `php artisan list make` 명령을 실행하세요.
 
 <a name="the-broadcasting-directory"></a>
-### The Broadcasting Directory
+### Broadcasting 디렉터리
 
-The `Broadcasting` directory contains all of the broadcast channel classes for your application. These classes are generated using the `make:channel` command. This directory does not exist by default, but will be created for you when you create your first channel. To learn more about channels, check out the documentation on [event broadcasting](/docs/{{version}}/broadcasting).
+`Broadcasting` 디렉터리에는 모든 브로드캐스팅 채널 클래스가 포함됩니다. 이 클래스들은 `make:channel` 명령으로 생성합니다. 이 디렉터리는 기본적으로 존재하지 않지만 첫 채널을 생성할 때 만들어집니다. 채널에 대해 더 알아보려면 [이벤트 브로드캐스팅](/docs/{{version}}/broadcasting) 문서를 참고하세요.
 
 <a name="the-console-directory"></a>
-### The Console Directory
+### Console 디렉터리
 
-The `Console` directory contains all of the custom Artisan commands for your application. These commands may be generated using the `make:command` command.
+`Console` 디렉터리에는 애플리케이션의 사용자 정의 Artisan 명령이 포함됩니다. 이 명령들은 `make:command` 명령으로 생성할 수 있습니다.
 
 <a name="the-events-directory"></a>
-### The Events Directory
+### Events 디렉터리
 
-This directory does not exist by default, but will be created for you by the `event:generate` and `make:event` Artisan commands. The `Events` directory houses [event classes](/docs/{{version}}/events). Events may be used to alert other parts of your application that a given action has occurred, providing a great deal of flexibility and decoupling.
+이 디렉터리는 기본적으로 존재하지 않지만, `event:generate` 또는 `make:event` Artisan 명령어로 생성할 수 있습니다. `Events` 디렉터리에는 [이벤트 클래스](/docs/{{version}}/events)가 보관됩니다. 이벤트는 특정 동작이 발생했을 때 애플리케이션의 다른 부분에 알리는 용도로 유용하며, 높은 유연성과 분리를 제공합니다.
 
 <a name="the-exceptions-directory"></a>
-### The Exceptions Directory
+### Exceptions 디렉터리
 
-The `Exceptions` directory contains all of the custom exceptions for your application. These exceptions may be generated using the `make:exception` command.
+`Exceptions` 디렉터리에는 애플리케이션의 사용자 정의 예외 클래스가 포함됩니다. 이 예외들은 `make:exception` 명령으로 생성할 수 있습니다.
 
 <a name="the-http-directory"></a>
-### The Http Directory
+### Http 디렉터리
 
-The `Http` directory contains your controllers, middleware, and form requests. Almost all of the logic to handle requests entering your application will be placed in this directory.
+`Http` 디렉터리에는 컨트롤러, 미들웨어, 폼 요청 객체가 포함됩니다. 외부에서 들어오는 요청을 처리하는 로직의 대부분이 이 디렉터리에 위치하게 됩니다.
 
 <a name="the-jobs-directory"></a>
-### The Jobs Directory
+### Jobs 디렉터리
 
-This directory does not exist by default, but will be created for you if you execute the `make:job` Artisan command. The `Jobs` directory houses the [queueable jobs](/docs/{{version}}/queues) for your application. Jobs may be queued by your application or run synchronously within the current request lifecycle. Jobs that run synchronously during the current request are sometimes referred to as "commands" since they are an implementation of the [command pattern](https://en.wikipedia.org/wiki/Command_pattern).
+이 디렉터리는 기본적으로 존재하지 않지만, `make:job` Artisan 명령을 실행하면 생성됩니다. `Jobs` 디렉터리에는 애플리케이션의 [큐 처리 가능한 작업](/docs/{{version}}/queues)이 포함됩니다. 작업(Job)은 큐에 저장되거나 현재 요청 라이프사이클 내에서 동기적으로 실행될 수 있습니다. 동기적으로 실행되는 작업은 [커맨드 패턴](https://en.wikipedia.org/wiki/Command_pattern)의 구현이기 때문에 "커맨드"라 부르기도 합니다.
 
 <a name="the-listeners-directory"></a>
-### The Listeners Directory
+### Listeners 디렉터리
 
-This directory does not exist by default, but will be created for you if you execute the `event:generate` or `make:listener` Artisan commands. The `Listeners` directory contains the classes that handle your [events](/docs/{{version}}/events). Event listeners receive an event instance and perform logic in response to the event being fired. For example, a `UserRegistered` event might be handled by a `SendWelcomeEmail` listener.
+이 디렉터리는 기본적으로 존재하지 않지만, `event:generate` 또는 `make:listener` Artisan 명령을 실행하면 생성됩니다. `Listeners` 디렉터리에는 [이벤트](/docs/{{version}}/events)를 처리하는 클래스들이 담깁니다. 이벤트 리스너는 이벤트 인스턴스를 받아 이벤트 발생 시 로직을 실행합니다. 예를 들어, `UserRegistered` 이벤트는 `SendWelcomeEmail` 리스너에 의해 처리될 수 있습니다.
 
 <a name="the-mail-directory"></a>
-### The Mail Directory
+### Mail 디렉터리
 
-This directory does not exist by default, but will be created for you if you execute the `make:mail` Artisan command. The `Mail` directory contains all of your [classes that represent emails](/docs/{{version}}/mail) sent by your application. Mail objects allow you to encapsulate all of the logic of building an email in a single, simple class that may be sent using the `Mail::send` method.
+이 디렉터리는 기본적으로 존재하지 않지만, `make:mail` Artisan 명령을 실행하면 생성됩니다. `Mail` 디렉터리에는 애플리케이션에서 전송하는 [메일을 표현하는 클래스](/docs/{{version}}/mail)가 들어있습니다. 메일 객체는 이메일 생성 로직을 하나의 간단한 클래스로 캡슐화할 수 있으며, `Mail::send` 메서드로 전송할 수 있습니다.
 
 <a name="the-models-directory"></a>
-### The Models Directory
+### Models 디렉터리
 
-The `Models` directory contains all of your [Eloquent model classes](/docs/{{version}}/eloquent). The Eloquent ORM included with Laravel provides a beautiful, simple ActiveRecord implementation for working with your database. Each database table has a corresponding "Model" which is used to interact with that table. Models allow you to query for data in your tables, as well as insert new records into the table.
+`Models` 디렉터리에는 모든 [Eloquent 모델 클래스](/docs/{{version}}/eloquent)가 들어 있습니다. Laravel의 Eloquent ORM은 데이터베이스와 상호작용할 수 있는 쉽고 아름다운 액티브레코드 구현을 제공합니다. 각 데이터베이스 테이블은 대응하는 "모델"이 있으며, 이를 통해 테이블의 데이터를 조회하거나 새로운 레코드를 삽입할 수 있습니다.
 
 <a name="the-notifications-directory"></a>
-### The Notifications Directory
+### Notifications 디렉터리
 
-This directory does not exist by default, but will be created for you if you execute the `make:notification` Artisan command. The `Notifications` directory contains all of the "transactional" [notifications](/docs/{{version}}/notifications) that are sent by your application, such as simple notifications about events that happen within your application. Laravel's notification feature abstracts sending notifications over a variety of drivers such as email, Slack, SMS, or stored in a database.
+이 디렉터리는 기본적으로 존재하지 않지만, `make:notification` Artisan 명령을 실행하면 생성됩니다. `Notifications` 디렉터리에는 애플리케이션에서 전송되는 ["트랜잭션 알림"](/docs/{{version}}/notifications)이 들어있습니다. 예를 들어 애플리케이션 내 이벤트 발생 시의 간단한 알림 등을 이곳에서 관리합니다. Laravel의 알림 기능은 이메일, Slack, SMS, 데이터베이스 저장 등 다양한 드라이버로의 전송을 추상화합니다.
 
 <a name="the-policies-directory"></a>
-### The Policies Directory
+### Policies 디렉터리
 
-This directory does not exist by default, but will be created for you if you execute the `make:policy` Artisan command. The `Policies` directory contains the [authorization policy classes](/docs/{{version}}/authorization) for your application. Policies are used to determine if a user can perform a given action against a resource.
+이 디렉터리는 기본적으로 존재하지 않지만, `make:policy` Artisan 명령을 실행하면 생성됩니다. `Policies` 디렉터리에는 애플리케이션의 [권한 정책 클래스](/docs/{{version}}/authorization)가 들어 있습니다. 정책은 사용자가 리소스에 대해 특정 작업을 수행할 수 있는지 여부를 결정하는 데 사용됩니다.
 
 <a name="the-providers-directory"></a>
-### The Providers Directory
+### Providers 디렉터리
 
-The `Providers` directory contains all of the [service providers](/docs/{{version}}/providers) for your application. Service providers bootstrap your application by binding services in the service container, registering events, or performing any other tasks to prepare your application for incoming requests.
+`Providers` 디렉터리에는 [서비스 프로바이더](/docs/{{version}}/providers)가 모두 포함되어 있습니다. 서비스 프로바이더는 서비스 컨테이너에 서비스를 바인딩하거나, 이벤트를 등록하거나, 요청을 받기 위한 기타 준비 작업 등 애플리케이션을 부트스트랩합니다.
 
-In a fresh Laravel application, this directory will already contain the `AppServiceProvider`. You are free to add your own providers to this directory as needed.
+새로운 Laravel 애플리케이션에는 이미 `AppServiceProvider`가 들어 있습니다. 필요에 따라 이 디렉터리에 자유롭게 프로바이더를 추가할 수 있습니다.
 
 <a name="the-rules-directory"></a>
-### The Rules Directory
+### Rules 디렉터리
 
-This directory does not exist by default, but will be created for you if you execute the `make:rule` Artisan command. The `Rules` directory contains the custom validation rule objects for your application. Rules are used to encapsulate complicated validation logic in a simple object. For more information, check out the [validation documentation](/docs/{{version}}/validation).
+이 디렉터리는 기본적으로 존재하지 않지만, `make:rule` Artisan 명령을 실행하면 생성됩니다. `Rules` 디렉터리에는 애플리케이션의 사용자 정의 유효성 검사 규칙 객체가 포함됩니다. 규칙 객체는 복잡한 유효성 검사 로직을 간단한 객체로 캡슐화합니다. 자세한 내용은 [유효성 검사 문서](/docs/{{version}}/validation)를 참고하세요.

@@ -1,75 +1,75 @@
 # Laravel Pennant
 
-- [Introduction](#introduction)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Defining Features](#defining-features)
-    - [Class Based Features](#class-based-features)
-- [Checking Features](#checking-features)
-    - [Conditional Execution](#conditional-execution)
-    - [The `HasFeatures` Trait](#the-has-features-trait)
-    - [Blade Directive](#blade-directive)
-    - [Middleware](#middleware)
-    - [Intercepting Feature Checks](#intercepting-feature-checks)
-    - [In-Memory Cache](#in-memory-cache)
-- [Scope](#scope)
-    - [Specifying the Scope](#specifying-the-scope)
-    - [Default Scope](#default-scope)
-    - [Nullable Scope](#nullable-scope)
-    - [Identifying Scope](#identifying-scope)
-    - [Serializing Scope](#serializing-scope)
-- [Rich Feature Values](#rich-feature-values)
-- [Retrieving Multiple Features](#retrieving-multiple-features)
-- [Eager Loading](#eager-loading)
-- [Updating Values](#updating-values)
-    - [Bulk Updates](#bulk-updates)
-    - [Purging Features](#purging-features)
-- [Testing](#testing)
-- [Adding Custom Pennant Drivers](#adding-custom-pennant-drivers)
-    - [Implementing the Driver](#implementing-the-driver)
-    - [Registering the Driver](#registering-the-driver)
-    - [Defining Features Externally](#defining-features-externally)
-- [Events](#events)
+- [소개](#introduction)
+- [설치](#installation)
+- [구성](#configuration)
+- [기능 정의하기](#defining-features)
+    - [클래스 기반 기능](#class-based-features)
+- [기능 확인하기](#checking-features)
+    - [조건부 실행](#conditional-execution)
+    - [`HasFeatures` 트레이트](#the-has-features-trait)
+    - [Blade 디렉티브](#blade-directive)
+    - [미들웨어](#middleware)
+    - [기능 확인 가로채기](#intercepting-feature-checks)
+    - [메모리 내 캐시](#in-memory-cache)
+- [스코프](#scope)
+    - [스코프 지정하기](#specifying-the-scope)
+    - [기본 스코프](#default-scope)
+    - [Nullable 스코프](#nullable-scope)
+    - [스코프 식별하기](#identifying-scope)
+    - [스코프 직렬화](#serializing-scope)
+- [리치 값 기능](#rich-feature-values)
+- [여러 기능 가져오기](#retrieving-multiple-features)
+- [즉시 로딩(Eager Loading)](#eager-loading)
+- [값 업데이트](#updating-values)
+    - [일괄 업데이트](#bulk-updates)
+    - [기능 삭제(Purging)](#purging-features)
+- [테스트](#testing)
+- [커스텀 Pennant 드라이버 추가](#adding-custom-pennant-drivers)
+    - [드라이버 구현](#implementing-the-driver)
+    - [드라이버 등록](#registering-the-driver)
+    - [외부에서 기능 정의](#defining-features-externally)
+- [이벤트](#events)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-[Laravel Pennant](https://github.com/laravel/pennant) is a simple and light-weight feature flag package - without the cruft. Feature flags enable you to incrementally roll out new application features with confidence, A/B test new interface designs, complement a trunk-based development strategy, and much more.
+[Laravel Pennant](https://github.com/laravel/pennant)은 불필요한 요소 없이 간단하고 가벼운 피처 플래그 패키지입니다. 피처 플래그는 새로운 애플리케이션 기능을 점진적으로 배포할 수 있게 해주며, 인터페이스 A/B 테스트, trunk 기반 개발 전략 보완 등 다양한 용도로 사용할 수 있습니다.
 
 <a name="installation"></a>
-## Installation
+## 설치
 
-First, install Pennant into your project using the Composer package manager:
+먼저, Composer 패키지 관리자를 사용하여 프로젝트에 Pennant를 설치하세요:
 
 ```shell
 composer require laravel/pennant
 ```
 
-Next, you should publish the Pennant configuration and migration files using the `vendor:publish` Artisan command:
+다음으로, `vendor:publish` Artisan 명령어를 사용하여 Pennant의 구성 및 마이그레이션 파일을 퍼블리시합니다:
 
 ```shell
 php artisan vendor:publish --provider="Laravel\Pennant\PennantServiceProvider"
 ```
 
-Finally, you should run your application's database migrations. This will create a `features` table that Pennant uses to power its `database` driver:
+마지막으로, 애플리케이션의 데이터베이스 마이그레이션을 실행하세요. Pennant에서 사용하는 `features` 테이블이 생성됩니다:
 
 ```shell
 php artisan migrate
 ```
 
 <a name="configuration"></a>
-## Configuration
+## 구성
 
-After publishing Pennant's assets, its configuration file will be located at `config/pennant.php`. This configuration file allows you to specify the default storage mechanism that will be used by Pennant to store resolved feature flag values.
+Pennant의 에셋을 퍼블리시한 후, 구성 파일은 `config/pennant.php`에 위치합니다. 이 구성 파일에서는 Pennant가 기능 플래그 값(Feature Flag Value)을 저장할 때 사용할 기본 저장 방식을 지정할 수 있습니다.
 
-Pennant includes support for storing resolved feature flag values in an in-memory array via the `array` driver. Or, Pennant can store resolved feature flag values persistently in a relational database via the `database` driver, which is the default storage mechanism used by Pennant.
+Pennant는 `array` 드라이버를 통해 메모리 내 배열에 기능 플래그 값을 저장하는 것을 지원합니다. 또는 `database` 드라이버를 통해 관계형 데이터베이스에 영구적으로 기능 플래그 값을 저장할 수도 있으며, 이것이 Pennant의 기본 저장 방식입니다.
 
 <a name="defining-features"></a>
-## Defining Features
+## 기능 정의하기
 
-To define a feature, you may use the `define` method offered by the `Feature` facade. You will need to provide a name for the feature, as well as a closure that will be invoked to resolve the feature's initial value.
+기능(Feature)을 정의하려면, `Feature` 파사드에서 제공하는 `define` 메서드를 사용할 수 있습니다. 기능의 이름과 해당 기능의 초기 값을 해석할 때 실행할 클로저를 제공해야 합니다.
 
-Typically, features are defined in a service provider using the `Feature` facade. The closure will receive the "scope" for the feature check. Most commonly, the scope is the currently authenticated user. In this example, we will define a feature for incrementally rolling out a new API to our application's users:
+일반적으로 기능은 서비스 프로바이더에서 `Feature` 파사드를 사용하여 정의합니다. 이 클로저는 기능 검사할 때 사용할 "스코프"를 받게 됩니다. 대부분의 경우 스코프는 현재 인증된 사용자입니다. 예를 들어, 애플리케이션 사용자에게 새로운 API를 점진적으로 배포할 기능을 다음과 같이 정의할 수 있습니다:
 
 ```php
 <?php
@@ -84,7 +84,7 @@ use Laravel\Pennant\Feature;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
+     * 애플리케이션 서비스를 부트스트랩합니다.
      */
     public function boot(): void
     {
@@ -97,28 +97,28 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-As you can see, we have the following rules for our feature:
+위 예시에서 기능에 대한 다음과 같은 규칙을 볼 수 있습니다:
 
-- All internal team members should be using the new API.
-- Any high traffic customers should not be using the new API.
-- Otherwise, the feature should be randomly assigned to users with a 1 in 100 chance of being active.
+- 모든 내부 팀 멤버는 새로운 API를 사용합니다.
+- 트래픽이 많은 고객은 새로운 API를 사용하지 않습니다.
+- 이외에는, 1/100 확률로 무작위로 기능이 활성화됩니다.
 
-The first time the `new-api` feature is checked for a given user, the result of the closure will be stored by the storage driver. The next time the feature is checked against the same user, the value will be retrieved from storage and the closure will not be invoked.
+특정 사용자에 대해 `new-api` 기능이 처음 확인될 때, 클로저의 결과가 저장소 드라이버에 저장됩니다. 같은 사용자에 대해 다음번에 기능이 확인될 때에는 저장소에서 값을 가져오며, 클로저는 호출되지 않습니다.
 
-For convenience, if a feature definition only returns a lottery, you may omit the closure completely:
+편의를 위해, 기능 정의가 단순히 Lottery만 반환할 경우 클로저를 생략할 수 있습니다:
 
     Feature::define('site-redesign', Lottery::odds(1, 1000));
 
 <a name="class-based-features"></a>
-### Class Based Features
+### 클래스 기반 기능
 
-Pennant also allows you to define class based features. Unlike closure based feature definitions, there is no need to register a class based feature in a service provider. To create a class based feature, you may invoke the `pennant:feature` Artisan command. By default the feature class will be placed in your application's `app/Features` directory:
+Pennant는 클래스 기반의 기능도 정의할 수 있습니다. 클로저 기반 기능과 달리, 클래스 기반 기능은 서비스 프로바이더에 등록할 필요가 없습니다. `pennant:feature` Artisan 명령어로 클래스 기반 기능을 생성합니다. 기본적으로 기능 클래스는 `app/Features` 디렉터리에 생성됩니다:
 
 ```shell
 php artisan pennant:feature NewApi
 ```
 
-When writing a feature class, you only need to define a `resolve` method, which will be invoked to resolve the feature's initial value for a given scope. Again, the scope will typically be the currently authenticated user:
+기능 클래스에서는 `resolve` 메서드 하나만 정의하면 됩니다. 이 메서드는 주어진 스코프에 대해 기능의 초기 값을 반환합니다. 역시 스코프는 보통 현재 인증된 사용자입니다.
 
 ```php
 <?php
@@ -131,7 +131,7 @@ use Illuminate\Support\Lottery;
 class NewApi
 {
     /**
-     * Resolve the feature's initial value.
+     * 기능의 초기 값을 반환합니다.
      */
     public function resolve(User $user): mixed
     {
@@ -144,7 +144,7 @@ class NewApi
 }
 ```
 
-If you would like to manually resolve an instance of a class based feature, you may invoke the `instance` method on the `Feature` facade:
+클래스 기반 기능 인스턴스를 수동으로 해석하고 싶다면, `Feature` 파사드의 `instance` 메서드를 사용하면 됩니다:
 
 ```php
 use Illuminate\Support\Facades\Feature;
@@ -153,11 +153,11 @@ $instance = Feature::instance(NewApi::class);
 ```
 
 > [!NOTE]
-> Feature classes are resolved via the [container](/docs/{{version}}/container), so you may inject dependencies into the feature class's constructor when needed.
+> 기능 클래스는 [컨테이너](/docs/{{version}}/container)로 해석되기 때문에, 필요하면 생성자에 의존성을 주입할 수 있습니다.
 
-#### Customizing the Stored Feature Name
+#### 저장되는 기능 이름 커스터마이징
 
-By default, Pennant will store the feature class's fully qualified class name. If you would like to decouple the stored feature name from the application's internal structure, you may specify a `$name` property on the feature class. The value of this property will be stored in place of the class name:
+기본적으로 Pennant는 기능 클래스의 전체 클래스명을 저장합니다. 저장되는 기능 이름을 애플리케이션의 내부 구조와 분리하고 싶다면, 클래스에 `$name` 프로퍼티를 지정할 수 있습니다. 이 값이 클래스명 대신 저장됩니다.
 
 ```php
 <?php
@@ -167,7 +167,7 @@ namespace App\Features;
 class NewApi
 {
     /**
-     * The stored name of the feature.
+     * 저장될 기능 이름
      *
      * @var string
      */
@@ -178,9 +178,9 @@ class NewApi
 ```
 
 <a name="checking-features"></a>
-## Checking Features
+## 기능 확인하기
 
-To determine if a feature is active, you may use the `active` method on the `Feature` facade. By default, features are checked against the currently authenticated user:
+기능이 활성화되어 있는지 확인하려면 `Feature` 파사드의 `active` 메서드를 사용할 수 있습니다. 기본적으로 기능은 현재 인증된 사용자에 대해 확인됩니다.
 
 ```php
 <?php
@@ -194,7 +194,7 @@ use Laravel\Pennant\Feature;
 class PodcastController
 {
     /**
-     * Display a listing of the resource.
+     * 리소스 목록 표시
      */
     public function index(Request $request): Response
     {
@@ -207,7 +207,7 @@ class PodcastController
 }
 ```
 
-Although features are checked against the currently authenticated user by default, you may easily check the feature against another user or [scope](#scope). To accomplish this, use the `for` method offered by the `Feature` facade:
+기본 스코프는 현재 인증된 사용자지만, 다른 사용자 또는 [다른 스코프](#scope)로도 확인할 수 있습니다. 이때는 `Feature` 파사드의 `for` 메서드를 사용하세요:
 
 ```php
 return Feature::for($user)->active('new-api')
@@ -215,32 +215,32 @@ return Feature::for($user)->active('new-api')
     : $this->resolveLegacyApiResponse($request);
 ```
 
-Pennant also offers some additional convenience methods that may prove useful when determining if a feature is active or not:
+Pennant는 다음과 같은 추가적인 편의 메서드도 제공합니다:
 
 ```php
-// Determine if all of the given features are active...
+// 모든 기능이 활성화되어 있는지 확인
 Feature::allAreActive(['new-api', 'site-redesign']);
 
-// Determine if any of the given features are active...
+// 일부 기능이 활성화되어 있는지 확인
 Feature::someAreActive(['new-api', 'site-redesign']);
 
-// Determine if a feature is inactive...
+// 비활성화 확인
 Feature::inactive('new-api');
 
-// Determine if all of the given features are inactive...
+// 모든 기능이 비활성화인지 확인
 Feature::allAreInactive(['new-api', 'site-redesign']);
 
-// Determine if any of the given features are inactive...
+// 일부 기능이 비활성화인지 확인
 Feature::someAreInactive(['new-api', 'site-redesign']);
 ```
 
 > [!NOTE]
-> When using Pennant outside of an HTTP context, such as in an Artisan command or a queued job, you should typically [explicitly specify the feature's scope](#specifying-the-scope). Alternatively, you may define a [default scope](#default-scope) that accounts for both authenticated HTTP contexts and unauthenticated contexts.
+> Artisan 명령어나 큐 작업 등 HTTP 컨텍스트 외에서 Pennant를 사용할 때는 [스코프를 명확하게 지정](#specifying-the-scope)해야 합니다. 또는 인증된 HTTP 컨텍스트와 인증되지 않은 컨텍스트를 모두 고려할 수 있도록 [기본 스코프를 정의](#default-scope)할 수 있습니다.
 
 <a name="checking-class-based-features"></a>
-#### Checking Class Based Features
+#### 클래스 기반 기능 확인
 
-For class based features, you should provide the class name when checking the feature:
+클래스 기반 기능의 경우, 확인할 때 클래스명을 전달해야 합니다:
 
 ```php
 <?php
@@ -255,7 +255,7 @@ use Laravel\Pennant\Feature;
 class PodcastController
 {
     /**
-     * Display a listing of the resource.
+     * 리소스 목록 표시
      */
     public function index(Request $request): Response
     {
@@ -269,9 +269,9 @@ class PodcastController
 ```
 
 <a name="conditional-execution"></a>
-### Conditional Execution
+### 조건부 실행
 
-The `when` method may be used to fluently execute a given closure if a feature is active. Additionally, a second closure may be provided and will be executed if the feature is inactive:
+`when` 메서드를 사용하면 기능이 활성화되어 있을 때 특정 클로저를 실행할 수 있습니다. 두 번째 클로저를 제공하여, 기능이 비활성화된 경우에 실행되도록 할 수 있습니다:
 
 ```php
 <?php
@@ -286,7 +286,7 @@ use Laravel\Pennant\Feature;
 class PodcastController
 {
     /**
-     * Display a listing of the resource.
+     * 리소스 목록 표시
      */
     public function index(Request $request): Response
     {
@@ -300,7 +300,7 @@ class PodcastController
 }
 ```
 
-The `unless` method serves as the inverse of the `when` method, executing the first closure if the feature is inactive:
+`unless` 메서드는 `when`의 반대로, 기능이 비활성화된 경우 첫 번째 클로저를 실행합니다:
 
 ```php
 return Feature::unless(NewApi::class,
@@ -310,9 +310,9 @@ return Feature::unless(NewApi::class,
 ```
 
 <a name="the-has-features-trait"></a>
-### The `HasFeatures` Trait
+### `HasFeatures` 트레이트
 
-Pennant's `HasFeatures` trait may be added to your application's `User` model (or any other model that has features) to provide a fluent, convenient way to check features directly from the model:
+Pennant의 `HasFeatures` 트레이트를 User 모델(또는 기능을 보유한 다른 모델)에 추가하면, 모델에서 직접 유연하게 기능 확인을 할 수 있습니다:
 
 ```php
 <?php
@@ -330,7 +330,7 @@ class User extends Authenticatable
 }
 ```
 
-Once the trait has been added to your model, you may easily check features by invoking the `features` method:
+트레이트를 모델에 추가하면, `features` 메서드를 통해 손쉽게 기능을 확인할 수 있습니다:
 
 ```php
 if ($user->features()->active('new-api')) {
@@ -338,14 +338,14 @@ if ($user->features()->active('new-api')) {
 }
 ```
 
-Of course, the `features` method provides access to many other convenient methods for interacting with features:
+`features` 메서드를 통해 다양한 편의 메서드에도 접근할 수 있습니다:
 
 ```php
-// Values...
+// 값 확인
 $value = $user->features()->value('purchase-button')
 $values = $user->features()->values(['new-api', 'purchase-button']);
 
-// State...
+// 상태 확인
 $user->features()->active('new-api');
 $user->features()->allAreActive(['new-api', 'server-api']);
 $user->features()->someAreActive(['new-api', 'server-api']);
@@ -354,7 +354,7 @@ $user->features()->inactive('new-api');
 $user->features()->allAreInactive(['new-api', 'server-api']);
 $user->features()->someAreInactive(['new-api', 'server-api']);
 
-// Conditional execution...
+// 조건부 실행
 $user->features()->when('new-api',
     fn () => /* ... */,
     fn () => /* ... */,
@@ -367,26 +367,26 @@ $user->features()->unless('new-api',
 ```
 
 <a name="blade-directive"></a>
-### Blade Directive
+### Blade 디렉티브
 
-To make checking features in Blade a seamless experience, Pennant offers the `@feature` and `@featureany` directive:
+Blade에서 기능 확인을 더욱 편리하게 하기 위해, Pennant는 `@feature` 및 `@featureany` 디렉티브를 제공합니다:
 
 ```blade
 @feature('site-redesign')
-    <!-- 'site-redesign' is active -->
+    <!-- 'site-redesign' 기능이 활성화됨 -->
 @else
-    <!-- 'site-redesign' is inactive -->
+    <!-- 'site-redesign' 기능이 비활성화됨 -->
 @endfeature
 
 @featureany(['site-redesign', 'beta'])
-    <!-- 'site-redesign' or `beta` is active -->
+    <!-- 'site-redesign' 또는 'beta'가 활성화됨 -->
 @endfeatureany
 ```
 
 <a name="middleware"></a>
-### Middleware
+### 미들웨어
 
-Pennant also includes a [middleware](/docs/{{version}}/middleware) that may be used to verify the currently authenticated user has access to a feature before a route is even invoked. You may assign the middleware to a route and specify the features that are required to access the route. If any of the specified features are inactive for the currently authenticated user, a `400 Bad Request` HTTP response will be returned by the route. Multiple features may be passed to the static `using` method.
+Pennant는 경로가 호출되기 전에 현재 인증된 사용자가 기능에 접근 권한이 있는지 확인하는 [미들웨어](/docs/{{version}}/middleware)도 제공합니다. 라우트에 미들웨어를 할당하고, 접근에 필요한 기능을 지정할 수 있습니다. 지정한 기능 중 하나라도 비활성화되어 있으면 400 Bad Request가 반환됩니다. 여러 기능은 static `using` 메서드에 전달할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Route;
@@ -398,9 +398,9 @@ Route::get('/api/servers', function () {
 ```
 
 <a name="customizing-the-response"></a>
-#### Customizing the Response
+#### 응답 커스터마이징
 
-If you would like to customize the response that is returned by the middleware when one of the listed features is inactive, you may use the `whenInactive` method provided by the `EnsureFeaturesAreActive` middleware. Typically, this method should be invoked within the `boot` method of one of your application's service providers:
+비활성화된 기능이 있을 때 미들웨어가 반환하는 응답을 커스터마이징하려면 `EnsureFeaturesAreActive` 미들웨어의 `whenInactive` 메서드를 사용하세요. 일반적으로 이 메서드는 애플리케이션의 서비스 프로바이더의 `boot` 메서드 내에서 호출됩니다:
 
 ```php
 use Illuminate\Http\Request;
@@ -408,7 +408,7 @@ use Illuminate\Http\Response;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
 /**
- * Bootstrap any application services.
+ * 애플리케이션 서비스 초기화
  */
 public function boot(): void
 {
@@ -423,11 +423,11 @@ public function boot(): void
 ```
 
 <a name="intercepting-feature-checks"></a>
-### Intercepting Feature Checks
+### 기능 확인 가로채기
 
-Sometimes it can be useful to perform some in-memory checks before retrieving the stored value of a given feature. Imagine you are developing a new API behind a feature flag and want the ability to disable the new API without losing any of the resolved feature values in storage. If you notice a bug in the new API, you could easily disable it for everyone except internal team members, fix the bug, and then re-enable the new API for the users that previously had access to the feature.
+일부 상황에서는 기능의 저장된 값을 가져오기 전에 인메모리에서 별도의 체크를 하고 싶을 수 있습니다. 예를 들어, 기능 플래그로 새로운 API를 개발 중이고, 저장된 모든 값을 잃지 않고도 해당 API를 비활성화하고 싶을 때 유용합니다. 버그가 발생하면 내부 팀에게만 기능을 남겨두고, 수정 후 다시 재개할 수도 있습니다.
 
-You can achieve this with a [class-based feature's](#class-based-features) `before` method. When present, the `before` method is always run in-memory before retrieving the value from storage. If a non-`null` value is returned from the method, it will be used in place of the feature's stored value for the duration of the request:
+이때는 [클래스 기반 기능의](#class-based-features) `before` 메서드를 사용할 수 있습니다. 해당 메서드가 있으면 요청 중 해당 기능의 값을 메모리에서 먼저 확인합니다. 반환값이 `null`이 아니면, 저장된 값 대신 이 값을 이번 요청에서 사용합니다:
 
 ```php
 <?php
@@ -441,7 +441,7 @@ use Illuminate\Support\Lottery;
 class NewApi
 {
     /**
-     * Run an always-in-memory check before the stored value is retrieved.
+     * 저장된 값을 가져오기 전 항상 메모리에서 먼저 체크
      */
     public function before(User $user): mixed
     {
@@ -451,7 +451,7 @@ class NewApi
     }
 
     /**
-     * Resolve the feature's initial value.
+     * 기능의 초기 값 반환
      */
     public function resolve(User $user): mixed
     {
@@ -464,7 +464,7 @@ class NewApi
 }
 ```
 
-You could also use this feature to schedule the global rollout of a feature that was previously behind a feature flag:
+이 기능을 활용하여 전역적으로 기능을 롤아웃하는 스케줄을 구성할 수도 있습니다:
 
 ```php
 <?php
@@ -477,7 +477,7 @@ use Illuminate\Support\Facades\Config;
 class NewApi
 {
     /**
-     * Run an always-in-memory check before the stored value is retrieved.
+     * 저장된 값을 가져오기 전 항상 메모리에서 먼저 체크
      */
     public function before(User $user): mixed
     {
@@ -495,23 +495,23 @@ class NewApi
 ```
 
 <a name="in-memory-cache"></a>
-### In-Memory Cache
+### 메모리 내 캐시
 
-When checking a feature, Pennant will create an in-memory cache of the result. If you are using the `database` driver, this means that re-checking the same feature flag within a single request will not trigger additional database queries. This also ensures that the feature has a consistent result for the duration of the request.
+Pennant는 기능을 확인할 때 결과를 메모리에 캐시합니다. `database` 드라이버를 사용할 때는 같은 요청 내에서 같은 기능 플래그를 다시 확인해도 추가적인 데이터베이스 쿼리가 발생하지 않습니다. 즉, 요청 동안 일관된 결과를 보장합니다.
 
-If you need to manually flush the in-memory cache, you may use the `flushCache` method offered by the `Feature` facade:
+인메모리 캐시를 수동으로 비우고 싶다면 `Feature` 파사드의 `flushCache` 메서드를 사용하세요:
 
 ```php
 Feature::flushCache();
 ```
 
 <a name="scope"></a>
-## Scope
+## 스코프
 
 <a name="specifying-the-scope"></a>
-### Specifying the Scope
+### 스코프 지정하기
 
-As discussed, features are typically checked against the currently authenticated user. However, this may not always suit your needs. Therefore, it is possible to specify the scope you would like to check a given feature against via the `Feature` facade's `for` method:
+앞서 설명했듯이, 기능은 주로 현재 인증된 사용자에 대해 확인됩니다. 그러나 항상 이 방식이 적합한 것은 아닐 수 있습니다. `Feature` 파사드의 `for` 메서드를 사용하여 원하는 스코프에 대해 기능을 확인할 수 있습니다:
 
 ```php
 return Feature::for($user)->active('new-api')
@@ -519,7 +519,7 @@ return Feature::for($user)->active('new-api')
     : $this->resolveLegacyApiResponse($request);
 ```
 
-Of course, feature scopes are not limited to "users". Imagine you have built a new billing experience that you are rolling out to entire teams rather than individual users. Perhaps you would like the oldest teams to have a slower rollout than the newer teams. Your feature resolution closure might look something like the following:
+스코프는 반드시 사용자일 필요는 없습니다. 예를 들어, 새로운 결제 화면을 개별 사용자 대신 팀 전체에 단계적으로 배포하려는 경우 팀을 스코프로 사용할 수 있습니다:
 
 ```php
 use App\Models\Team;
@@ -540,7 +540,7 @@ Feature::define('billing-v2', function (Team $team) {
 });
 ```
 
-You will notice that the closure we have defined is not expecting a `User`, but is instead expecting a `Team` model. To determine if this feature is active for a user's team, you should pass the team to the `for` method offered by the `Feature` facade:
+위 클로저는 `User`가 아니라 `Team` 모델을 받습니다. 특정 사용자의 팀에 대해 기능이 활성화되어 있는지 확인하려면 해당 팀을 `for` 메서드에 전달하세요:
 
 ```php
 if (Feature::for($user->team)->active('billing-v2')) {
@@ -551,9 +551,9 @@ if (Feature::for($user->team)->active('billing-v2')) {
 ```
 
 <a name="default-scope"></a>
-### Default Scope
+### 기본 스코프
 
-It is also possible to customize the default scope Pennant uses to check features. For example, maybe all of your features are checked against the currently authenticated user's team instead of the user. Instead of having to call `Feature::for($user->team)` every time you check a feature, you may instead specify the team as the default scope. Typically, this should be done in one of your application's service providers:
+Pennant가 기능을 확인할 때 사용할 기본 스코프도 커스터마이징할 수 있습니다. 예를 들어, 모든 기능을 현재 인증된 사용자의 팀 기준으로 확인하려면, 매번 `Feature::for($user->team)`를 호출하는 대신 기본 스코프로 팀을 지정할 수 있습니다. 보통 이 작업은 서비스 프로바이더의 `boot` 메서드에서 수행합니다:
 
 ```php
 <?php
@@ -567,7 +567,7 @@ use Laravel\Pennant\Feature;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
+     * 애플리케이션 서비스 부트스트랩
      */
     public function boot(): void
     {
@@ -578,33 +578,32 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-If no scope is explicitly provided via the `for` method, the feature check will now use the currently authenticated user's team as the default scope:
+이제 `for` 메서드로 스코프를 명시적으로 제공하지 않아도 기본적으로 현재 인증된 사용자의 팀이 사용됩니다:
 
 ```php
 Feature::active('billing-v2');
 
-// Is now equivalent to...
+// 다음과 동등하게 동작합니다.
 
 Feature::for($user->team)->active('billing-v2');
 ```
 
 <a name="nullable-scope"></a>
-### Nullable Scope
+### Nullable 스코프
 
-If the scope you provide when checking a feature is `null` and the feature's definition does not support `null` via a nullable type or by including `null` in a union type, Pennant will automatically return `false` as the feature's result value.
+기능을 확인할 때 전달한 스코프가 `null`이고, 기능의 정의가 `null` 타입을 지원하지 않는 경우 Pennant는 자동으로 해당 기능의 결과를 `false`로 반환합니다.
 
-So, if the scope you are passing to a feature is potentially `null` and you want the feature's value resolver to be invoked, you should account for that in your feature's definition. A `null` scope may occur if you check a feature within an Artisan command, queued job, or unauthenticated route. Since there is usually not an authenticated user in these contexts, the default scope will be `null`.
+따라서, 스코프가 `null`일 가능성이 있고 기능 값 해석기가 호출되길 원한다면, 기능 정의 시 이를 고려해야 합니다. Artisan 명령어나 큐 작업, 인증되지 않은 라우트 등에서는 기본 스코프가 `null`이 될 수 있습니다.
 
-If you do not always [explicitly specify your feature scope](#specifying-the-scope) then you should ensure the scope's type is "nullable" and handle the `null` scope value within your feature definition logic:
+항상 [명시적으로 스코프를 지정](#specifying-the-scope)하지 않는 경우, 스코프의 타입이 null 가능하도록(Nullable) 정의하고 `null` 스코프 값을 처리해야 합니다:
 
 ```php
 use App\Models\User;
 use Illuminate\Support\Lottery;
 use Laravel\Pennant\Feature;
 
-Feature::define('new-api', fn (User $user) => match (true) {// [tl! remove]
-Feature::define('new-api', fn (User|null $user) => match (true) {// [tl! add]
-    $user === null => true,// [tl! add]
+Feature::define('new-api', fn (User|null $user) => match (true) {
+    $user === null => true,
     $user->isInternalTeamMember() => true,
     $user->isHighTrafficCustomer() => false,
     default => Lottery::odds(1 / 100),
@@ -612,13 +611,13 @@ Feature::define('new-api', fn (User|null $user) => match (true) {// [tl! add]
 ```
 
 <a name="identifying-scope"></a>
-### Identifying Scope
+### 스코프 식별하기
 
-Pennant's built-in `array` and `database` storage drivers know how to properly store scope identifiers for all PHP data types as well as Eloquent models. However, if your application utilizes a third-party Pennant driver, that driver may not know how to properly store an identifier for an Eloquent model or other custom types in your application.
+Pennant의 기본 제공 `array`와 `database` 드라이버는 모든 PHP 데이터 타입과 Eloquent 모델에 대해 스코프 식별자를 올바르게 저장할 수 있습니다. 하지만, 서드파티 Pennant 드라이버를 사용할 경우 Eloquent 모델이나 커스텀 타입의 식별자를 올바르게 저장하지 못할 수도 있습니다.
 
-In light of this, Pennant allows you to format scope values for storage by implementing the `FeatureScopeable` contract on the objects in your application that are used as Pennant scopes.
+이를 위해, 애플리케이션에서 Pennant 스코프로 사용되는 객체에 `FeatureScopeable` 계약을 구현하면 스코프 값을 저장용 포맷으로 지정할 수 있습니다.
 
-For example, imagine you are using two different feature drivers in a single application: the built-in `database` driver and a third-party "Flag Rocket" driver. The "Flag Rocket" driver does not know how to properly store an Eloquent model. Instead, it requires a `FlagRocketUser` instance. By implementing the `toFeatureIdentifier` defined by the `FeatureScopeable` contract, we can customize the storable scope value provided to each driver used by our application:
+예를 들어, 하나의 애플리케이션에서 내장 `database` 드라이버와 서드파티 "Flag Rocket" 드라이버를 모두 사용할 때 "Flag Rocket" 드라이버는 Eloquent 모델을 인식하지 못하고 대신 `FlagRocketUser` 인스턴스를 요구한다고 가정합시다. `FeatureScopeable`의 `toFeatureIdentifier` 메서드를 구현하면 각 드라이버별 저장 방식에 맞게 값을 커스터마이징할 수 있습니다:
 
 ```php
 <?php
@@ -632,7 +631,7 @@ use Laravel\Pennant\Contracts\FeatureScopeable;
 class User extends Model implements FeatureScopeable
 {
     /**
-     * Cast the object to a feature scope identifier for the given driver.
+     * 드라이버 별로 피처 스코프 식별자로 변환
      */
     public function toFeatureIdentifier(string $driver): mixed
     {
@@ -645,11 +644,11 @@ class User extends Model implements FeatureScopeable
 ```
 
 <a name="serializing-scope"></a>
-### Serializing Scope
+### 스코프 직렬화
 
-By default, Pennant will use a fully qualified class name when storing a feature associated with an Eloquent model. If you are already using an [Eloquent morph map](/docs/{{version}}/eloquent-relationships#custom-polymorphic-types), you may choose to have Pennant also use the morph map to decouple the stored feature from your application structure.
+기본적으로 Pennant는 Eloquent 모델과 연결된 기능을 저장할 때 전체 클래스명을 사용합니다. 이미 [Eloquent morph 매핑](/docs/{{version}}/eloquent-relationships#custom-polymorphic-types)를 사용중이라면, Pennant도 morph 매핑을 활용하여 저장되는 기능과 애플리케이션 구조를 분리할 수 있습니다.
 
-To achieve this, after defining your Eloquent morph map in a service provider, you may invoke the `Feature` facade's `useMorphMap` method:
+서비스 프로바이더에서 morph 매핑을 정의한 후, `Feature` 파사드의 `useMorphMap` 메서드를 호출하세요:
 
 ```php
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -664,11 +663,11 @@ Feature::useMorphMap();
 ```
 
 <a name="rich-feature-values"></a>
-## Rich Feature Values
+## 리치 값 기능
 
-Until now, we have primarily shown features as being in a binary state, meaning they are either "active" or "inactive", but Pennant also allows you to store rich values as well.
+지금까지는 기능이 "활성" 또는 "비활성"인 2진 상태로만 동작한다고 가정했지만, Pennant는 더 풍부한 값을 저장할 수도 있습니다.
 
-For example, imagine you are testing three new colors for the "Buy now" button of your application. Instead of returning `true` or `false` from the feature definition, you may instead return a string:
+예를 들어, "Buy now" 버튼의 새로운 색상 3가지를 테스트하고 싶을 때 true나 false 대신 문자열을 반환할 수 있습니다:
 
 ```php
 use Illuminate\Support\Arr;
@@ -681,28 +680,28 @@ Feature::define('purchase-button', fn (User $user) => Arr::random([
 ]));
 ```
 
-You may retrieve the value of the `purchase-button` feature using the `value` method:
+`value` 메서드를 사용하여 `purchase-button` 기능의 값을 가져올 수 있습니다:
 
 ```php
 $color = Feature::value('purchase-button');
 ```
 
-Pennant's included Blade directive also makes it easy to conditionally render content based on the current value of the feature:
+Pennant Blade 디렉티브를 사용하면 현재 기능 값에 따라 콘텐츠를 조건부로 랜더링하기도 쉽습니다:
 
 ```blade
 @feature('purchase-button', 'blue-sapphire')
-    <!-- 'blue-sapphire' is active -->
+    <!-- 'blue-sapphire'가 활성화됨 -->
 @elsefeature('purchase-button', 'seafoam-green')
-    <!-- 'seafoam-green' is active -->
+    <!-- 'seafoam-green'이 활성화됨 -->
 @elsefeature('purchase-button', 'tart-orange')
-    <!-- 'tart-orange' is active -->
+    <!-- 'tart-orange'가 활성화됨 -->
 @endfeature
 ```
 
 > [!NOTE]
-> When using rich values, it is important to know that a feature is considered "active" when it has any value other than `false`.
+> 리치 값 사용 시, 기능 값이 `false`가 아니기만 하면 "활성"으로 간주합니다.
 
-When calling the [conditional `when`](#conditional-execution) method, the feature's rich value will be provided to the first closure:
+[조건부 `when`](#conditional-execution) 메서드를 호출할 때 기능의 리치 값이 첫 번째 클로저에 전달됩니다:
 
 ```php
 Feature::when('purchase-button',
@@ -711,7 +710,7 @@ Feature::when('purchase-button',
 );
 ```
 
-Likewise, when calling the conditional `unless` method, the feature's rich value will be provided to the optional second closure:
+마찬가지로, 조건부 `unless` 메서드를 사용할 때는 선택적 두 번째 클로저에 기능의 리치 값이 전달됩니다:
 
 ```php
 Feature::unless('purchase-button',
@@ -721,9 +720,9 @@ Feature::unless('purchase-button',
 ```
 
 <a name="retrieving-multiple-features"></a>
-## Retrieving Multiple Features
+## 여러 기능 가져오기
 
-The `values` method allows the retrieval of multiple features for a given scope:
+`values` 메서드를 사용하면 특정 스코프에 대해 여러 개의 기능을 한 번에 가져올 수 있습니다:
 
 ```php
 Feature::values(['billing-v2', 'purchase-button']);
@@ -734,7 +733,7 @@ Feature::values(['billing-v2', 'purchase-button']);
 // ]
 ```
 
-Or, you may use the `all` method to retrieve the values of all defined features for a given scope:
+또는, `all` 메서드를 사용하여 특정 스코프에 대해 정의된 모든 기능의 값을 가져올 수도 있습니다:
 
 ```php
 Feature::all();
@@ -746,9 +745,9 @@ Feature::all();
 // ]
 ```
 
-However, class based features are dynamically registered and are not known by Pennant until they are explicitly checked. This means your application's class based features may not appear in the results returned by the `all` method if they have not already been checked during the current request.
+하지만, 클래스 기반 기능은 동적으로 등록되므로 명시적으로 확인되기 전까지는 Pennant에서 인식할 수 없습니다. 즉, 요청 중 한번도 확인되지 않은 클래스 기반 기능은 `all` 결과에 포함되지 않을 수 있습니다.
 
-If you would like to ensure that feature classes are always included when using the `all` method, you may use Pennant's feature discovery capabilities. To get started, invoke the `discover` method in one of your application's service providers:
+항상 `all` 메서드에서 기능 클래스가 포함되길 원한다면 Pennant의 기능 자동 탐색 기능을 사용할 수 있습니다. `discover` 메서드를 서비스 프로바이더에서 호출하세요:
 
 ```php
 <?php
@@ -761,7 +760,7 @@ use Laravel\Pennant\Feature;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
+     * 부트스트랩
      */
     public function boot(): void
     {
@@ -772,7 +771,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-The `discover` method will register all of the feature classes in your application's `app/Features` directory. The `all` method will now include these classes in its results, regardless of whether they have been checked during the current request:
+`discover`는 `app/Features` 디렉터리에 있는 모든 기능 클래스를 등록합니다. 이제 `all` 메서드는 이 클래스들을 요청 중에 확인 여부와 관계없이 결과에 포함시킵니다:
 
 ```php
 Feature::all();
@@ -786,11 +785,11 @@ Feature::all();
 ```
 
 <a name="eager-loading"></a>
-## Eager Loading
+## 즉시 로딩(Eager Loading)
 
-Although Pennant keeps an in-memory cache of all resolved features for a single request, it is still possible to encounter performance issues. To alleviate this, Pennant offers the ability to eager load feature values.
+Pennant는 한 요청 내에서 확인된 모든 기능을 메모리에 캐시하지만, 성능 문제가 발생할 수 있습니다. 이를 완화하기 위해 기능 값을 미리(즉시) 로딩할 수 있습니다.
 
-To illustrate this, imagine that we are checking if a feature is active within a loop:
+예를 들어, 다음과 같이 루프에서 기능을 확인하는 상황을 생각해봅시다:
 
 ```php
 use Laravel\Pennant\Feature;
@@ -802,7 +801,7 @@ foreach ($users as $user) {
 }
 ```
 
-Assuming we are using the database driver, this code will execute a database query for every user in the loop - executing potentially hundreds of queries. However, using Pennant's `load` method, we can remove this potential performance bottleneck by eager loading the feature values for a collection of users or scopes:
+데이터베이스 드라이버를 사용하는 경우, 이 코드는 루프 내 사용자마다 한 번씩 쿼리를 실행하므로 비효율적일 수 있습니다. Pennant의 `load` 메서드를 사용하면 미리 값을 로딩해 이러한 병목을 해결할 수 있습니다:
 
 ```php
 Feature::for($users)->load(['notifications-beta']);
@@ -814,7 +813,7 @@ foreach ($users as $user) {
 }
 ```
 
-To load feature values only when they have not already been loaded, you may use the `loadMissing` method:
+이미 로딩되지 않은 경우에만 값을 로딩하려면 `loadMissing` 메서드를 사용하세요:
 
 ```php
 Feature::for($users)->loadMissing([
@@ -824,47 +823,47 @@ Feature::for($users)->loadMissing([
 ]);
 ```
 
-You may load all defined features using the `loadAll` method:
+모든 정의된 기능을 로딩하려면 `loadAll` 메서드를 사용하세요:
 
 ```php
 Feature::for($users)->loadAll();
 ```
 
 <a name="updating-values"></a>
-## Updating Values
+## 값 업데이트
 
-When a feature's value is resolved for the first time, the underlying driver will store the result in storage. This is often necessary to ensure a consistent experience for your users across requests. However, at times, you may want to manually update the feature's stored value.
+기능의 값이 처음 결정될 때, 드라이버는 결과를 저장합니다. 이는 사용자가 여러 번 요청을 보내더라도 일관된 경험을 제공하기 위함입니다. 그러나 경우에 따라 저장된 값을 수동으로 업데이트해야 할 수도 있습니다.
 
-To accomplish this, you may use the `activate` and `deactivate` methods to toggle a feature "on" or "off":
+이럴 때는 `activate`와 `deactivate` 메서드로 기능을 켜거나(활성화), 끌(비활성화) 수 있습니다:
 
 ```php
 use Laravel\Pennant\Feature;
 
-// Activate the feature for the default scope...
+// 기본 스코프에서 기능 활성화
 Feature::activate('new-api');
 
-// Deactivate the feature for the given scope...
+// 특정 스코프에서 비활성화
 Feature::for($user->team)->deactivate('billing-v2');
 ```
 
-It is also possible to manually set a rich value for a feature by providing a second argument to the `activate` method:
+기능에 리치 값을 저장하려면 `activate`의 두 번째 인자로 값을 넘기면 됩니다:
 
 ```php
 Feature::activate('purchase-button', 'seafoam-green');
 ```
 
-To instruct Pennant to forget the stored value for a feature, you may use the `forget` method. When the feature is checked again, Pennant will resolve the feature's value from its feature definition:
+기능의 저장된 값을 잊게 하고 싶다면 `forget` 메서드를 사용하세요. 이후 다시 기능이 확인될 때 기능 정의에서 값을 새로 해석합니다:
 
 ```php
 Feature::forget('purchase-button');
 ```
 
 <a name="bulk-updates"></a>
-### Bulk Updates
+### 일괄 업데이트
 
-To update stored feature values in bulk, you may use the `activateForEveryone` and `deactivateForEveryone` methods.
+여러 사용자의 기능 값을 한 번에 대량으로 업데이트하려면 `activateForEveryone`과 `deactivateForEveryone` 메서드를 사용하세요.
 
-For example, imagine you are now confident in the `new-api` feature's stability and have landed on the best `'purchase-button'` color for your checkout flow - you can update the stored value for all users accordingly:
+예를 들어, 이제 `new-api` 기능의 안정성을 확신하고 구매 버튼 색상도 결정했다면 모든 사용자에 대해 값을 일괄적으로 바꿀 수 있습니다:
 
 ```php
 use Laravel\Pennant\Feature;
@@ -874,37 +873,37 @@ Feature::activateForEveryone('new-api');
 Feature::activateForEveryone('purchase-button', 'seafoam-green');
 ```
 
-Alternatively, you may deactivate the feature for all users:
+반대로 모든 사용자에 대해 기능을 비활성화할 수도 있습니다:
 
 ```php
 Feature::deactivateForEveryone('new-api');
 ```
 
 > [!NOTE]
-> This will only update the resolved feature values that have been stored by Pennant's storage driver. You will also need to update the feature definition in your application.
+> 이 메서드는 Pennant 저장 드라이버에 저장된 값만 업데이트합니다. 애플리케이션의 기능 정의 자체도 함께 업데이트해야 합니다.
 
 <a name="purging-features"></a>
-### Purging Features
+### 기능 삭제(Purging)
 
-Sometimes, it can be useful to purge an entire feature from storage. This is typically necessary if you have removed the feature from your application or you have made adjustments to the feature's definition that you would like to rollout to all users.
+때로는 기능 전체를 저장소에서 완전히 삭제하는 것이 필요할 수 있습니다. 예를 들어, 기능을 애플리케이션에서 제거했거나, 기능 정의를 전면적으로 변경해 모든 사용자에게 새로 적용하고 싶을 때 유용합니다.
 
-You may remove all stored values for a feature using the `purge` method:
+`purge` 메서드를 사용해 기능의 모든 저장 값을 삭제할 수 있습니다:
 
 ```php
-// Purging a single feature...
+// 단일 기능 삭제
 Feature::purge('new-api');
 
-// Purging multiple features...
+// 여러 기능 삭제
 Feature::purge(['new-api', 'purchase-button']);
 ```
 
-If you would like to purge _all_ features from storage, you may invoke the `purge` method without any arguments:
+모든 기능을 저장소에서 삭제하려면 인자 없이 `purge`를 호출하세요:
 
 ```php
 Feature::purge();
 ```
 
-As it can be useful to purge features as part of your application's deployment pipeline, Pennant includes a `pennant:purge` Artisan command which will purge the provided features from storage:
+애플리케이션 배포 파이프라인에서 purge 작업을 자동화하면 좋기 때문에, Pennant는 기능을 저장소에서 삭제하는 `pennant:purge` Artisan 명령어도 제공합니다:
 
 ```shell
 php artisan pennant:purge new-api
@@ -912,22 +911,22 @@ php artisan pennant:purge new-api
 php artisan pennant:purge new-api purchase-button
 ```
 
-It is also possible to purge all features _except_ those in a given feature list. For example, imagine you wanted to purge all features but keep the values for the "new-api" and "purchase-button" features in storage. To accomplish this, you can pass those feature names to the `--except` option:
+특정 기능 목록에 포함된 기능만 남기고 나머지 모든 기능을 삭제할 수도 있습니다:
 
 ```shell
 php artisan pennant:purge --except=new-api --except=purchase-button
 ```
 
-For convenience, the `pennant:purge` command also supports an `--except-registered` flag. This flag indicates that all features except those explicitly registered in a service provider should be purged:
+`pennant:purge` 명령어는 `--except-registered` 플래그도 지원합니다. 이 플래그를 사용하면 서비스 프로바이더에서 명시적으로 등록된 기능을 제외하고 모두 삭제할 수 있습니다:
 
 ```shell
 php artisan pennant:purge --except-registered
 ```
 
 <a name="testing"></a>
-## Testing
+## 테스트
 
-When testing code that interacts with feature flags, the easiest way to control the feature flag's returned value in your tests is to simply re-define the feature. For example, imagine you have the following feature defined in one of your application's service provider:
+기능 플래그와 상호작용하는 코드를 테스트할 때, 테스트 내에서 기능의 반환값을 제어하는 가장 쉬운 방법은 기능을 재정의하는 것입니다. 예를 들어, 아래와 같은 기능이 서비스 프로바이더에 정의되어 있다고 가정합시다:
 
 ```php
 use Illuminate\Support\Arr;
@@ -940,7 +939,7 @@ Feature::define('purchase-button', fn () => Arr::random([
 ]));
 ```
 
-To modify the feature's returned value in your tests, you may re-define the feature at the beginning of the test. The following test will always pass, even though the `Arr::random()` implementation is still present in the service provider:
+테스트의 시작 부분에서 기능을 재정의하면 언제나 원하는 값을 반환하게 할 수 있습니다:
 
 ```php tab=Pest
 use Laravel\Pennant\Feature;
@@ -963,7 +962,7 @@ public function test_it_can_control_feature_values()
 }
 ```
 
-The same approach may be used for class based features:
+클래스 기반 기능도 같은 방식으로 테스트할 수 있습니다:
 
 ```php tab=Pest
 use Laravel\Pennant\Feature;
@@ -987,12 +986,12 @@ public function test_it_can_control_feature_values()
 }
 ```
 
-If your feature is returning a `Lottery` instance, there are a handful of useful [testing helpers available](/docs/{{version}}/helpers#testing-lotteries).
+기능이 `Lottery` 인스턴스를 반환하는 경우, [테스트 헬퍼](/docs/{{version}}/helpers#testing-lotteries)를 활용할 수 있습니다.
 
 <a name="store-configuration"></a>
-#### Store Configuration
+#### 저장소(store) 구성
 
-You may configure the store that Pennant will use during testing by defining the `PENNANT_STORE` environment variable in your application's `phpunit.xml` file:
+Pennant가 테스트 중 사용할 저장소를 지정하려면, 애플리케이션의 `phpunit.xml` 파일에 `PENNANT_STORE` 환경 변수를 정의하세요:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1006,12 +1005,12 @@ You may configure the store that Pennant will use during testing by defining the
 ```
 
 <a name="adding-custom-pennant-drivers"></a>
-## Adding Custom Pennant Drivers
+## 커스텀 Pennant 드라이버 추가
 
 <a name="implementing-the-driver"></a>
-#### Implementing the Driver
+#### 드라이버 구현
 
-If none of Pennant's existing storage drivers fit your application's needs, you may write your own storage driver. Your custom driver should implement the `Laravel\Pennant\Contracts\Driver` interface:
+Pennant의 기본 드라이버가 요구사항에 맞지 않는다면, 직접 저장소 드라이버를 구현할 수 있습니다. 커스텀 드라이버는 `Laravel\Pennant\Contracts\Driver` 인터페이스를 구현해야 합니다:
 
 ```php
 <?php
@@ -1033,15 +1032,15 @@ class RedisFeatureDriver implements Driver
 }
 ```
 
-Now, we just need to implement each of these methods using a Redis connection. For an example of how to implement each of these methods, take a look at the `Laravel\Pennant\Drivers\DatabaseDriver` in the [Pennant source code](https://github.com/laravel/pennant/blob/1.x/src/Drivers/DatabaseDriver.php)
+이제 Redis 커넥션을 사용하여 각 메서드를 구현하면 됩니다. 구현 예시는 [Pennant 소스 코드](https://github.com/laravel/pennant/blob/1.x/src/Drivers/DatabaseDriver.php)의 `DatabaseDriver`를 참고하세요.
 
 > [!NOTE]
-> Laravel does not ship with a directory to contain your extensions. You are free to place them anywhere you like. In this example, we have created an `Extensions` directory to house the `RedisFeatureDriver`.
+> Laravel에는 확장 기능을 위한 디렉토리 구조가 기본으로 제공되지 않으므로, 원하는 곳에 생성하면 됩니다. 예시에서는 `Extensions` 디렉터리에 `RedisFeatureDriver`를 위치시켰습니다.
 
 <a name="registering-the-driver"></a>
-#### Registering the Driver
+#### 드라이버 등록
 
-Once your driver has been implemented, you are ready to register it with Laravel. To add additional drivers to Pennant, you may use the `extend` method provided by the `Feature` facade. You should call the `extend` method from the `boot` method of one of your application's [service provider](/docs/{{version}}/providers):
+드라이버 구현이 끝났다면, 이제 Laravel에 등록할 차례입니다. 추가 드라이버를 등록하려면 `Feature` 파사드의 `extend` 메서드를 사용하십시오. 이 메서드는 애플리케이션의 [서비스 프로바이더](/docs/{{version}}/providers) `boot` 메서드에서 호출하세요:
 
 ```php
 <?php
@@ -1056,7 +1055,7 @@ use Laravel\Pennant\Feature;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * 서비스 등록
      */
     public function register(): void
     {
@@ -1064,7 +1063,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * 서비스 부트스트랩
      */
     public function boot(): void
     {
@@ -1075,7 +1074,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-Once the driver has been registered, you may use the `redis` driver in your application's `config/pennant.php` configuration file:
+이제 `config/pennant.php`에서 `redis` 드라이버를 사용할 수 있습니다:
 
 ```php
 'stores' => [
@@ -1091,9 +1090,9 @@ Once the driver has been registered, you may use the `redis` driver in your appl
 ```
 
 <a name="defining-features-externally"></a>
-### Defining Features Externally
+### 외부에서 기능 정의
 
-If your driver is a wrapper around a third-party feature flag platform, you will likely define features on the platform rather than using Pennant's `Feature::define` method. If that is the case, your custom driver should also implement the `Laravel\Pennant\Contracts\DefinesFeaturesExternally` interface:
+드라이버가 서드파티 피처 플래그 플랫폼을 감싸는 경우, Pennant의 `Feature::define` 대신 플랫폼에서 기능을 정의하게 될 것입니다. 이 경우, 커스텀 드라이버에 `Laravel\Pennant\Contracts\DefinesFeaturesExternally` 인터페이스도 구현하세요:
 
 ```php
 <?php
@@ -1106,7 +1105,7 @@ use Laravel\Pennant\Contracts\DefinesFeaturesExternally;
 class FeatureFlagServiceDriver implements Driver, DefinesFeaturesExternally
 {
     /**
-     * Get the features defined for the given scope.
+     * 해당 스코프에 대해 정의된 기능 목록 반환
      */
     public function definedFeaturesForScope(mixed $scope): array {}
 
@@ -1114,24 +1113,24 @@ class FeatureFlagServiceDriver implements Driver, DefinesFeaturesExternally
 }
 ```
 
-The `definedFeaturesForScope` method should return a list of feature names defined for the provided scope.
+`definedFeaturesForScope` 메서드는 제공된 스코프에 대해 정의된 기능 이름의 목록을 반환해야 합니다.
 
 <a name="events"></a>
-## Events
+## 이벤트
 
-Pennant dispatches a variety of events that can be useful when tracking feature flags throughout your application.
+Pennant는 애플리케이션에서 피처 플래그를 추적할 때 유용한 다양한 이벤트를 발생시킵니다.
 
 ### `Laravel\Pennant\Events\FeatureRetrieved`
 
-This event is dispatched whenever a [feature is checked](#checking-features). This event may be useful for creating and tracking metrics against a feature flag's usage throughout your application.
+이 이벤트는 [기능이 확인될 때](#checking-features)마다 발생합니다. 애플리케이션 내에서 피처 플래그 사용량을 추적하거나 메트릭을 생성할 때 유용합니다.
 
 ### `Laravel\Pennant\Events\FeatureResolved`
 
-This event is dispatched the first time a feature's value is resolved for a specific scope.
+이 이벤트는 특정 스코프에 대해 기능의 값이 처음 해석될 때 발생합니다.
 
 ### `Laravel\Pennant\Events\UnknownFeatureResolved`
 
-This event is dispatched the first time an unknown feature is resolved for a specific scope. Listening to this event may be useful if you have intended to remove a feature flag but have accidentally left stray references to it throughout your application:
+이 이벤트는 특정 스코프에 대해 알려지지 않은 기능이 최초로 해석될 때 발생합니다. 기능 플래그를 제거했지만 여기저기에 참조가 남아있는 경우 이를 추적하는 데 유용합니다:
 
 ```php
 <?php
@@ -1146,7 +1145,7 @@ use Laravel\Pennant\Events\UnknownFeatureResolved;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
+     * 부트스트랩
      */
     public function boot(): void
     {
@@ -1159,20 +1158,20 @@ class AppServiceProvider extends ServiceProvider
 
 ### `Laravel\Pennant\Events\DynamicallyRegisteringFeatureClass`
 
-This event is dispatched when a [class based feature](#class-based-features) is dynamically checked for the first time during a request.
+이 이벤트는 [클래스 기반 기능](#class-based-features)이 요청 중 처음 동적으로 확인될 때 발생합니다.
 
 ### `Laravel\Pennant\Events\UnexpectedNullScopeEncountered`
 
-This event is dispatched when a `null` scope is passed to a feature definition that [doesn't support null](#nullable-scope).
+이 이벤트는 [null을 지원하지 않는](#nullable-scope) 기능 정의에 `null` 스코프가 전달될 때 발생합니다.
 
-This situation is handled gracefully and the feature will return `false`. However, if you would like to opt out of this feature's default graceful behavior, you may register a listener for this event in the `boot` method of your application's `AppServiceProvider`:
+이런 상황은 문제없이 처리되어 기능은 `false`를 반환합니다. 그러나 기본 graceful 처리 대신 예외 처리 방식으로 동작하고 싶다면, `AppServiceProvider`의 `boot` 메서드에서 다음과 같이 리스너를 등록할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Log;
 use Laravel\Pennant\Events\UnexpectedNullScopeEncountered;
 
 /**
- * Bootstrap any application services.
+ * 부트스트랩
  */
 public function boot(): void
 {
@@ -1182,20 +1181,20 @@ public function boot(): void
 
 ### `Laravel\Pennant\Events\FeatureUpdated`
 
-This event is dispatched when updating a feature for a scope, usually by calling `activate` or `deactivate`.
+이 이벤트는 스코프에 대해 기능이 업데이트될 때(주로 `activate` 또는 `deactivate` 호출 시) 발생합니다.
 
 ### `Laravel\Pennant\Events\FeatureUpdatedForAllScopes`
 
-This event is dispatched when updating a feature for all scopes, usually by calling `activateForEveryone` or `deactivateForEveryone`.
+이 이벤트는 모든 스코프에 대해 기능이 업데이트될 때(주로 `activateForEveryone` 또는 `deactivateForEveryone` 호출 시) 발생합니다.
 
 ### `Laravel\Pennant\Events\FeatureDeleted`
 
-This event is dispatched when deleting a feature for a scope, usually by calling `forget`.
+이 이벤트는 스코프에 대해 기능이 삭제될 때(주로 `forget` 호출 시) 발생합니다.
 
 ### `Laravel\Pennant\Events\FeaturesPurged`
 
-This event is dispatched when purging specific features.
+이 이벤트는 특정 기능을 저장소에서 삭제할 때 발생합니다.
 
 ### `Laravel\Pennant\Events\AllFeaturesPurged`
 
-This event is dispatched when purging all features.
+이 이벤트는 모든 기능을 저장소에서 삭제할 때 발생합니다.

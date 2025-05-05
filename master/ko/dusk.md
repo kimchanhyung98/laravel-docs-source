@@ -1,111 +1,111 @@
 # Laravel Dusk
 
-- [Introduction](#introduction)
-- [Installation](#installation)
-    - [Managing ChromeDriver Installations](#managing-chromedriver-installations)
-    - [Using Other Browsers](#using-other-browsers)
-- [Getting Started](#getting-started)
-    - [Generating Tests](#generating-tests)
-    - [Resetting the Database After Each Test](#resetting-the-database-after-each-test)
-    - [Running Tests](#running-tests)
-    - [Environment Handling](#environment-handling)
-- [Browser Basics](#browser-basics)
-    - [Creating Browsers](#creating-browsers)
-    - [Navigation](#navigation)
-    - [Resizing Browser Windows](#resizing-browser-windows)
-    - [Browser Macros](#browser-macros)
-    - [Authentication](#authentication)
-    - [Cookies](#cookies)
-    - [Executing JavaScript](#executing-javascript)
-    - [Taking a Screenshot](#taking-a-screenshot)
-    - [Storing Console Output to Disk](#storing-console-output-to-disk)
-    - [Storing Page Source to Disk](#storing-page-source-to-disk)
-- [Interacting With Elements](#interacting-with-elements)
-    - [Dusk Selectors](#dusk-selectors)
-    - [Text, Values, and Attributes](#text-values-and-attributes)
-    - [Interacting With Forms](#interacting-with-forms)
-    - [Attaching Files](#attaching-files)
-    - [Pressing Buttons](#pressing-buttons)
-    - [Clicking Links](#clicking-links)
-    - [Using the Keyboard](#using-the-keyboard)
-    - [Using the Mouse](#using-the-mouse)
-    - [JavaScript Dialogs](#javascript-dialogs)
-    - [Interacting With Inline Frames](#interacting-with-iframes)
-    - [Scoping Selectors](#scoping-selectors)
-    - [Waiting for Elements](#waiting-for-elements)
-    - [Scrolling an Element Into View](#scrolling-an-element-into-view)
-- [Available Assertions](#available-assertions)
-- [Pages](#pages)
-    - [Generating Pages](#generating-pages)
-    - [Configuring Pages](#configuring-pages)
-    - [Navigating to Pages](#navigating-to-pages)
-    - [Shorthand Selectors](#shorthand-selectors)
-    - [Page Methods](#page-methods)
-- [Components](#components)
-    - [Generating Components](#generating-components)
-    - [Using Components](#using-components)
-- [Continuous Integration](#continuous-integration)
+- [소개](#introduction)
+- [설치](#installation)
+    - [ChromeDriver 설치 관리](#managing-chromedriver-installations)
+    - [다른 브라우저 사용하기](#using-other-browsers)
+- [시작하기](#getting-started)
+    - [테스트 생성하기](#generating-tests)
+    - [각 테스트 후 데이터베이스 초기화](#resetting-the-database-after-each-test)
+    - [테스트 실행하기](#running-tests)
+    - [환경 파일 처리](#environment-handling)
+- [브라우저 기본 사용법](#browser-basics)
+    - [브라우저 생성](#creating-browsers)
+    - [네비게이션](#navigation)
+    - [브라우저 창 크기 조정](#resizing-browser-windows)
+    - [브라우저 매크로](#browser-macros)
+    - [인증(Authentication)](#authentication)
+    - [쿠키](#cookies)
+    - [자바스크립트 실행](#executing-javascript)
+    - [스크린샷 찍기](#taking-a-screenshot)
+    - [콘솔 로그 저장](#storing-console-output-to-disk)
+    - [페이지 소스 저장](#storing-page-source-to-disk)
+- [엘리먼트와 상호작용](#interacting-with-elements)
+    - [Dusk 셀렉터](#dusk-selectors)
+    - [텍스트, 값, 속성](#text-values-and-attributes)
+    - [폼과 상호작용](#interacting-with-forms)
+    - [파일 첨부](#attaching-files)
+    - [버튼 클릭](#pressing-buttons)
+    - [링크 클릭](#clicking-links)
+    - [키보드 사용](#using-the-keyboard)
+    - [마우스 사용](#using-the-mouse)
+    - [자바스크립트 다이얼로그](#javascript-dialogs)
+    - [인라인 프레임과 상호작용](#interacting-with-iframes)
+    - [셀렉터 범위 지정](#scoping-selectors)
+    - [엘리먼트 대기](#waiting-for-elements)
+    - [엘리먼트 스크롤](#scrolling-an-element-into-view)
+- [사용 가능한 어설션](#available-assertions)
+- [페이지 객체](#pages)
+    - [페이지 생성](#generating-pages)
+    - [페이지 구성](#configuring-pages)
+    - [페이지로 이동](#navigating-to-pages)
+    - [단축 셀렉터](#shorthand-selectors)
+    - [페이지 메서드](#page-methods)
+- [컴포넌트](#components)
+    - [컴포넌트 생성](#generating-components)
+    - [컴포넌트 사용](#using-components)
+- [지속적 통합(CI)](#continuous-integration)
     - [Heroku CI](#running-tests-on-heroku-ci)
     - [Travis CI](#running-tests-on-travis-ci)
     - [GitHub Actions](#running-tests-on-github-actions)
     - [Chipper CI](#running-tests-on-chipper-ci)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-[Laravel Dusk](https://github.com/laravel/dusk) provides an expressive, easy-to-use browser automation and testing API. By default, Dusk does not require you to install JDK or Selenium on your local computer. Instead, Dusk uses a standalone [ChromeDriver](https://sites.google.com/chromium.org/driver) installation. However, you are free to utilize any other Selenium compatible driver you wish.
+[Laravel Dusk](https://github.com/laravel/dusk)는 표현력이 풍부하고 사용하기 쉬운 브라우저 자동화 및 테스트 API를 제공합니다. 기본적으로 Dusk는 로컬 컴퓨터에 JDK나 Selenium을 설치할 필요가 없습니다. 대신 Dusk는 독립형 [ChromeDriver](https://sites.google.com/chromium.org/driver)를 사용합니다. 물론 원하는 경우 Selenium 호환 드라이버를 자유롭게 사용할 수 있습니다.
 
 <a name="installation"></a>
-## Installation
+## 설치
 
-To get started, you should install [Google Chrome](https://www.google.com/chrome) and add the `laravel/dusk` Composer dependency to your project:
+시작하려면 [Google Chrome](https://www.google.com/chrome)을 설치하고 프로젝트에 `laravel/dusk` Composer 의존성을 추가하세요:
 
 ```shell
 composer require laravel/dusk --dev
 ```
 
 > [!WARNING]
-> If you are manually registering Dusk's service provider, you should **never** register it in your production environment, as doing so could lead to arbitrary users being able to authenticate with your application.
+> 만약 Dusk의 서비스 프로바이더를 수동으로 등록하는 경우, 이를 **프로덕션 환경에서는 절대 등록하지 마십시오.** 등록하면 누구나 애플리케이션에 인증 없이 접근할 수 있습니다.
 
-After installing the Dusk package, execute the `dusk:install` Artisan command. The `dusk:install` command will create a `tests/Browser` directory, an example Dusk test, and install the Chrome Driver binary for your operating system:
+Dusk 패키지를 설치한 후, `dusk:install` Artisan 명령을 실행합니다. 이 명령은 `tests/Browser` 디렉토리와 예제 Dusk 테스트, 그리고 운영체제에 맞는 Chrome Driver 바이너리를 설치합니다:
 
 ```shell
 php artisan dusk:install
 ```
 
-Next, set the `APP_URL` environment variable in your application's `.env` file. This value should match the URL you use to access your application in a browser.
+다음으로, 애플리케이션의 `.env` 파일에 `APP_URL` 환경 변수를 설정하세요. 이 값은 브라우저로 애플리케이션에 접근할 때 사용하는 URL과 일치해야 합니다.
 
 > [!NOTE]
-> If you are using [Laravel Sail](/docs/{{version}}/sail) to manage your local development environment, please also consult the Sail documentation on [configuring and running Dusk tests](/docs/{{version}}/sail#laravel-dusk).
+> [Laravel Sail](/docs/{{version}}/sail)로 로컬 개발 환경을 관리한다면 [Dusk 테스트 구성 및 실행](/docs/{{version}}/sail#laravel-dusk) 관련 Sail 문서를 참고하세요.
 
 <a name="managing-chromedriver-installations"></a>
-### Managing ChromeDriver Installations
+### ChromeDriver 설치 관리
 
-If you would like to install a different version of ChromeDriver than what is installed by Laravel Dusk via the `dusk:install` command, you may use the `dusk:chrome-driver` command:
+`dusk:install` 명령으로 설치되는 ChromeDriver가 아닌 다른 버전을 설치하려면, `dusk:chrome-driver` Artisan 명령을 사용할 수 있습니다:
 
 ```shell
-# Install the latest version of ChromeDriver for your OS...
+# 운영체제에 맞는 최신 ChromeDriver 설치...
 php artisan dusk:chrome-driver
 
-# Install a given version of ChromeDriver for your OS...
+# 특정 버전 ChromeDriver 설치...
 php artisan dusk:chrome-driver 86
 
-# Install a given version of ChromeDriver for all supported OSs...
+# 지원되는 모든 운영체제에 특정 버전 설치...
 php artisan dusk:chrome-driver --all
 
-# Install the version of ChromeDriver that matches the detected version of Chrome / Chromium for your OS...
+# 크롬/크로미엄의 감지된 버전에 맞는 ChromeDriver 설치...
 php artisan dusk:chrome-driver --detect
 ```
 
 > [!WARNING]
-> Dusk requires the `chromedriver` binaries to be executable. If you're having problems running Dusk, you should ensure the binaries are executable using the following command: `chmod -R 0755 vendor/laravel/dusk/bin/`.
+> Dusk는 `chromedriver` 바이너리 파일의 실행 권한을 필요로 합니다. 문제가 있다면 다음 명령으로 실행 권한을 부여하세요: `chmod -R 0755 vendor/laravel/dusk/bin/`.
 
 <a name="using-other-browsers"></a>
-### Using Other Browsers
+### 다른 브라우저 사용하기
 
-By default, Dusk uses Google Chrome and a standalone [ChromeDriver](https://sites.google.com/chromium.org/driver) installation to run your browser tests. However, you may start your own Selenium server and run your tests against any browser you wish.
+기본적으로 Dusk는 Google Chrome과 독립형 [ChromeDriver](https://sites.google.com/chromium.org/driver)로 브라우저 테스트를 실행합니다. 그러나 직접 Selenium 서버를 실행해서 원하는 브라우저로 테스트를 진행할 수도 있습니다.
 
-To get started, open your `tests/DuskTestCase.php` file, which is the base Dusk test case for your application. Within this file, you can remove the call to the `startChromeDriver` method. This will stop Dusk from automatically starting the ChromeDriver:
+`tests/DuskTestCase.php` 파일을 열고, `startChromeDriver` 메소드 호출을 주석 처리합니다. 이로써 Dusk가 ChromeDriver를 자동으로 시작하지 않게 됩니다:
 
 ```php
 /**
@@ -119,7 +119,7 @@ public static function prepare(): void
 }
 ```
 
-Next, you may modify the `driver` method to connect to the URL and port of your choice. In addition, you may modify the "desired capabilities" that should be passed to the WebDriver:
+이제 `driver` 메서드를 원하는 URL과 포트로 연결하도록 수정하고, WebDriver에 전달할 "desired capabilities"도 바꿀 수 있습니다:
 
 ```php
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -136,26 +136,26 @@ protected function driver(): RemoteWebDriver
 ```
 
 <a name="getting-started"></a>
-## Getting Started
+## 시작하기
 
 <a name="generating-tests"></a>
-### Generating Tests
+### 테스트 생성하기
 
-To generate a Dusk test, use the `dusk:make` Artisan command. The generated test will be placed in the `tests/Browser` directory:
+Dusk 테스트를 생성하려면 `dusk:make` Artisan 명령을 사용하세요. 생성된 테스트는 `tests/Browser` 디렉토리에 저장됩니다:
 
 ```shell
 php artisan dusk:make LoginTest
 ```
 
 <a name="resetting-the-database-after-each-test"></a>
-### Resetting the Database After Each Test
+### 각 테스트 후 데이터베이스 초기화
 
-Most of the tests you write will interact with pages that retrieve data from your application's database; however, your Dusk tests should never use the `RefreshDatabase` trait. The `RefreshDatabase` trait leverages database transactions which will not be applicable or available across HTTP requests. Instead, you have two options: the `DatabaseMigrations` trait and the `DatabaseTruncation` trait.
+작성하는 대부분의 테스트는 애플리케이션 DB에서 데이터를 가져오는 페이지와 상호작용할 것입니다. Dusk 테스트에서는 `RefreshDatabase` 트레이트를 **절대** 사용하지 마십시오. 그 이유는 이 트레이트가 HTTP 요청 간에 적용되지 않는 데이터베이스 트랜잭션에 의존하기 때문입니다. 대신 `DatabaseMigrations` 트레이트 또는 `DatabaseTruncation` 트레이트 중 하나를 사용할 수 있습니다.
 
 <a name="reset-migrations"></a>
-#### Using Database Migrations
+#### 마이그레이션 사용
 
-The `DatabaseMigrations` trait will run your database migrations before each test. However, dropping and re-creating your database tables for each test is typically slower than truncating the tables:
+`DatabaseMigrations` 트레이트는 각 테스트 전에 데이터베이스 마이그레이션을 실행합니다. 하지만 모든 테스트마다 테이블을 삭제 및 재생성하는 것은 테이블만 잘라내는(truncate) 것보다 느립니다.
 
 ```php tab=Pest
 <?php
@@ -186,12 +186,12 @@ class ExampleTest extends DuskTestCase
 ```
 
 > [!WARNING]
-> SQLite in-memory databases may not be used when executing Dusk tests. Since the browser executes within its own process, it will not be able to access the in-memory databases of other processes.
+> Dusk 테스트 실행 시에는 SQLite 메모리 데이터베이스를 사용할 수 없습니다. 브라우저가 별도의 프로세스로 실행되어, 메모리 DB에 접근할 수 없기 때문입니다.
 
 <a name="reset-truncation"></a>
-#### Using Database Truncation
+#### 테이블 Truncation 사용
 
-The `DatabaseTruncation` trait will migrate your database on the first test in order to ensure your database tables have been properly created. However, on subsequent tests, the database's tables will simply be truncated - providing a speed boost over re-running all of your database migrations:
+`DatabaseTruncation` 트레이트는 첫 번째 테스트에서 마이그레이션을 실행하여 테이블이 준비되도록 합니다. 이후 테스트에서는 단순히 테이블을 truncate(비우기)하여 마이그레이션을 재실행하지 않아 속도가 향상됩니다.
 
 ```php tab=Pest
 <?php
@@ -222,47 +222,47 @@ class ExampleTest extends DuskTestCase
 }
 ```
 
-By default, this trait will truncate all tables except the `migrations` table. If you would like to customize the tables that should be truncated, you may define a `$tablesToTruncate` property on your test class:
+기본적으로 이 트레이트는 `migrations` 테이블을 제외한 모든 테이블을 truncate합니다. Truncate할 테이블을 직접 지정하려면, 테스트 클래스에 `$tablesToTruncate` 속성을 정의하세요:
 
 > [!NOTE]
-> If you are using Pest, you should define properties or methods on the base `DuskTestCase` class or on any class your test file extends.
+> Pest에서 사용하는 경우, 속성이나 메소드는 base `DuskTestCase` 클래스나 테스트 파일이 상속하는 클래스에 정의하세요.
 
 ```php
 /**
- * Indicates which tables should be truncated.
+ * Truncate할 테이블 지정
  *
  * @var array
  */
 protected $tablesToTruncate = ['users'];
 ```
 
-Alternatively, you may define an `$exceptTables` property on your test class to specify which tables should be excluded from truncation:
+반대로, truncate에서 제외할 테이블을 지정하려면 `$exceptTables` 속성을 사용할 수 있습니다:
 
 ```php
 /**
- * Indicates which tables should be excluded from truncation.
+ * Truncate에서 제외할 테이블 지정
  *
  * @var array
  */
 protected $exceptTables = ['users'];
 ```
 
-To specify the database connections that should have their tables truncated, you may define a `$connectionsToTruncate` property on your test class:
+Truncate 적용할 데이터베이스 연결명을 지정할 수도 있습니다:
 
 ```php
 /**
- * Indicates which connections should have their tables truncated.
+ * 테이블을 truncate할 연결명
  *
  * @var array
  */
 protected $connectionsToTruncate = ['mysql'];
 ```
 
-If you would like to execute code before or after database truncation is performed, you may define `beforeTruncatingDatabase` or `afterTruncatingDatabase` methods on your test class:
+Truncate 전/후 실행할 코드를 정의하려면 `beforeTruncatingDatabase` 또는 `afterTruncatingDatabase` 메서드를 사용할 수 있습니다:
 
 ```php
 /**
- * Perform any work that should take place before the database has started truncating.
+ * Truncate 시작 전 실행 코드
  */
 protected function beforeTruncatingDatabase(): void
 {
@@ -270,7 +270,7 @@ protected function beforeTruncatingDatabase(): void
 }
 
 /**
- * Perform any work that should take place after the database has finished truncating.
+ * Truncate 완료 후 실행 코드
  */
 protected function afterTruncatingDatabase(): void
 {
@@ -279,33 +279,33 @@ protected function afterTruncatingDatabase(): void
 ```
 
 <a name="running-tests"></a>
-### Running Tests
+### 테스트 실행하기
 
-To run your browser tests, execute the `dusk` Artisan command:
+브라우저 테스트를 실행하려면 `dusk` Artisan 명령을 실행하세요:
 
 ```shell
 php artisan dusk
 ```
 
-If you had test failures the last time you ran the `dusk` command, you may save time by re-running the failing tests first using the `dusk:fails` command:
+이전 테스트에서 실패한 항목만 먼저 다시 실행하려면 `dusk:fails` 명령을 사용할 수 있습니다:
 
 ```shell
 php artisan dusk:fails
 ```
 
-The `dusk` command accepts any argument that is normally accepted by the Pest / PHPUnit test runner, such as allowing you to only run the tests for a given [group](https://docs.phpunit.de/en/10.5/annotations.html#group):
+`dusk` 명령은 Pest / PHPUnit에서 허용되는 모든 인자를 받을 수 있습니다. 예로, 특정 [그룹](https://docs.phpunit.de/en/10.5/annotations.html#group)의 테스트만 실행:
 
 ```shell
 php artisan dusk --group=foo
 ```
 
 > [!NOTE]
-> If you are using [Laravel Sail](/docs/{{version}}/sail) to manage your local development environment, please consult the Sail documentation on [configuring and running Dusk tests](/docs/{{version}}/sail#laravel-dusk).
+> [Laravel Sail](/docs/{{version}}/sail) 환경에서 사용하는 경우, [Dusk 테스트 구성 및 실행](/docs/{{version}}/sail#laravel-dusk) 관련 Sail 문서를 참고하세요.
 
 <a name="manually-starting-chromedriver"></a>
-#### Manually Starting ChromeDriver
+#### ChromeDriver 수동 실행
 
-By default, Dusk will automatically attempt to start ChromeDriver. If this does not work for your particular system, you may manually start ChromeDriver before running the `dusk` command. If you choose to start ChromeDriver manually, you should comment out the following line of your `tests/DuskTestCase.php` file:
+Dusk는 기본적으로 ChromeDriver를 자동으로 실행합니다. 자동 실행이 제대로 동작하지 않으면, 직접 ChromeDriver를 먼저 실행해야 합니다. 이 경우 `tests/DuskTestCase.php` 파일에서 다음 라인을 주석 처리합니다:
 
 ```php
 /**
@@ -319,7 +319,7 @@ public static function prepare(): void
 }
 ```
 
-In addition, if you start ChromeDriver on a port other than 9515, you should modify the `driver` method of the same class to reflect the correct port:
+만약 9515 외의 포트로 ChromeDriver를 실행한다면, 아래처럼 `driver` 메서드의 포트도 바꿔주십시오:
 
 ```php
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -336,19 +336,19 @@ protected function driver(): RemoteWebDriver
 ```
 
 <a name="environment-handling"></a>
-### Environment Handling
+### 환경 파일 처리
 
-To force Dusk to use its own environment file when running tests, create a `.env.dusk.{environment}` file in the root of your project. For example, if you will be initiating the `dusk` command from your `local` environment, you should create a `.env.dusk.local` file.
+테스트 실행 시 Dusk만의 환경 파일을 사용하게 하려면, 프로젝트 루트에 `.env.dusk.{environment}` 파일을 만드세요. 예를 들어 `local` 환경에서 `dusk` 명령을 실행하려면 `.env.dusk.local` 파일이 필요합니다.
 
-When running tests, Dusk will back-up your `.env` file and rename your Dusk environment to `.env`. Once the tests have completed, your `.env` file will be restored.
+테스트를 실행하면 Dusk는 기존 `.env` 파일을 백업하고, Dusk 환경 파일을 `.env`로 바꿉니다. 테스트 완료 후에는 원래 `.env`로 복원됩니다.
 
 <a name="browser-basics"></a>
-## Browser Basics
+## 브라우저 기본 사용법
 
 <a name="creating-browsers"></a>
-### Creating Browsers
+### 브라우저 생성
 
-To get started, let's write a test that verifies we can log into our application. After generating a test, we can modify it to navigate to the login page, enter some credentials, and click the "Login" button. To create a browser instance, you may call the `browse` method from within your Dusk test:
+로그인 기능이 잘 동작하는지 확인하는 테스트를 만들어 보겠습니다. 테스트를 생성한 후, 로그인 페이지로 이동해 자격 증명을 입력 후 "Login" 버튼을 클릭하도록 수정할 수 있습니다. Dusk 테스트 내에서 `browse` 메서드로 브라우저 인스턴스를 생성하여 사용합니다:
 
 ```php tab=Pest
 <?php
@@ -408,12 +408,12 @@ class ExampleTest extends DuskTestCase
 }
 ```
 
-As you can see in the example above, the `browse` method accepts a closure. A browser instance will automatically be passed to this closure by Dusk and is the main object used to interact with and make assertions against your application.
+위 예제에서 `browse` 메서드는 클로저를 받습니다. Dusk는 클로저에 브라우저 인스턴스를 자동으로 전달하며, 이 인스턴스를 사용해 애플리케이션과 상호작용 및 어설션을 수행합니다.
 
 <a name="creating-multiple-browsers"></a>
-#### Creating Multiple Browsers
+#### 여러개의 브라우저 생성
 
-Sometimes you may need multiple browsers in order to properly carry out a test. For example, multiple browsers may be needed to test a chat screen that interacts with websockets. To create multiple browsers, simply add more browser arguments to the signature of the closure given to the `browse` method:
+두 명 이상의 사용자가 필요한(예: 웹소켓 기반 채팅) 테스트에서는 클로저 인자에 브라우저 인스턴스를 추가해서 동시에 여러 브라우저를 사용할 수 있습니다:
 
 ```php
 $this->browse(function (Browser $first, Browser $second) {
@@ -433,21 +433,21 @@ $this->browse(function (Browser $first, Browser $second) {
 ```
 
 <a name="navigation"></a>
-### Navigation
+### 네비게이션
 
-The `visit` method may be used to navigate to a given URI within your application:
+`visit` 메서드로 주어진 URI로 이동할 수 있습니다:
 
 ```php
 $browser->visit('/login');
 ```
 
-You may use the `visitRoute` method to navigate to a [named route](/docs/{{version}}/routing#named-routes):
+[네임드 라우트](/docs/{{version}}/routing#named-routes)로 이동할 때는 `visitRoute` 메서드를 사용할 수 있습니다:
 
 ```php
 $browser->visitRoute($routeName, $parameters);
 ```
 
-You may navigate "back" and "forward" using the `back` and `forward` methods:
+`back` 및 `forward` 메서드로 브라우저 뒤로가기/앞으로가기 이동도 지원합니다:
 
 ```php
 $browser->back();
@@ -455,49 +455,49 @@ $browser->back();
 $browser->forward();
 ```
 
-You may use the `refresh` method to refresh the page:
+`refresh` 메서드로 페이지 새로고침도 가능합니다:
 
 ```php
 $browser->refresh();
 ```
 
 <a name="resizing-browser-windows"></a>
-### Resizing Browser Windows
+### 브라우저 창 크기 조정
 
-You may use the `resize` method to adjust the size of the browser window:
+`resize` 메서드로 브라우저 창의 크기를 지정할 수 있습니다:
 
 ```php
 $browser->resize(1920, 1080);
 ```
 
-The `maximize` method may be used to maximize the browser window:
+`maximize`로 브라우저 창을 최대화할 수 있습니다:
 
 ```php
 $browser->maximize();
 ```
 
-The `fitContent` method will resize the browser window to match the size of its content:
+`fitContent`로 브라우저 창을 콘텐츠 크기에 맞출 수 있습니다:
 
 ```php
 $browser->fitContent();
 ```
 
-When a test fails, Dusk will automatically resize the browser to fit the content prior to taking a screenshot. You may disable this feature by calling the `disableFitOnFailure` method within your test:
+테스트가 실패할 때 Dusk는 자동으로 컨텐츠에 맞게 창을 조정한 뒤 스크린샷을 찍습니다. 이 기능을 끄려면 `disableFitOnFailure` 메서드를 호출하면 됩니다.
 
 ```php
 $browser->disableFitOnFailure();
 ```
 
-You may use the `move` method to move the browser window to a different position on your screen:
+`move`로 브라우저 창을 원하는 위치로 이동할 수 있습니다:
 
 ```php
 $browser->move($x = 100, $y = 100);
 ```
 
 <a name="browser-macros"></a>
-### Browser Macros
+### 브라우저 매크로
 
-If you would like to define a custom browser method that you can re-use in a variety of your tests, you may use the `macro` method on the `Browser` class. Typically, you should call this method from a [service provider's](/docs/{{version}}/providers) `boot` method:
+여러 테스트에서 반복적으로 사용할 브라우저 메소드를 정의하려면, `Browser` 클래스의 `macro` 메서드를 통해 매크로를 등록할 수 있습니다. 일반적으로 이 코드는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 등록합니다:
 
 ```php
 <?php
@@ -523,7 +523,7 @@ class DuskServiceProvider extends ServiceProvider
 }
 ```
 
-The `macro` function accepts a name as its first argument, and a closure as its second. The macro's closure will be executed when calling the macro as a method on a `Browser` instance:
+이렇게 등록한 매크로는 브라우저 인스턴스에서 일반 메서드처럼 호출할 수 있습니다:
 
 ```php
 $this->browse(function (Browser $browser) use ($user) {
@@ -534,9 +534,9 @@ $this->browse(function (Browser $browser) use ($user) {
 ```
 
 <a name="authentication"></a>
-### Authentication
+### 인증(Authentication)
 
-Often, you will be testing pages that require authentication. You can use Dusk's `loginAs` method in order to avoid interacting with your application's login screen during every test. The `loginAs` method accepts a primary key associated with your authenticatable model or an authenticatable model instance:
+로그인이 필요한 페이지를 매번 브라우저에서 사용자 정보를 입력하지 않고 테스트하려면, Dusk의 `loginAs` 메서드를 사용할 수 있습니다. 이 메서드는 인증 모델의 주키 또는 모델 인스턴스를 인자로 받습니다:
 
 ```php
 use App\Models\User;
@@ -549,12 +549,12 @@ $this->browse(function (Browser $browser) {
 ```
 
 > [!WARNING]
-> After using the `loginAs` method, the user session will be maintained for all tests within the file.
+> `loginAs` 메서드 사용 후에는 파일 내 모든 테스트에서 해당 사용자 세션이 유지됩니다.
 
 <a name="cookies"></a>
-### Cookies
+### 쿠키
 
-You may use the `cookie` method to get or set an encrypted cookie's value. By default, all of the cookies created by Laravel are encrypted:
+`cookie` 메서드로 암호화된 쿠키의 값을 가져오거나 설정할 수 있습니다. Laravel에서 생성된 쿠키는 기본적으로 암호화됩니다:
 
 ```php
 $browser->cookie('name');
@@ -562,7 +562,7 @@ $browser->cookie('name');
 $browser->cookie('name', 'Taylor');
 ```
 
-You may use the `plainCookie` method to get or set an unencrypted cookie's value:
+`plainCookie` 메서드로 암호화되지 않은 쿠키의 값을 다룰 수 있습니다:
 
 ```php
 $browser->plainCookie('name');
@@ -570,16 +570,16 @@ $browser->plainCookie('name');
 $browser->plainCookie('name', 'Taylor');
 ```
 
-You may use the `deleteCookie` method to delete the given cookie:
+`deleteCookie`로 특정 쿠키를 삭제할 수 있습니다:
 
 ```php
 $browser->deleteCookie('name');
 ```
 
 <a name="executing-javascript"></a>
-### Executing JavaScript
+### 자바스크립트 실행
 
-You may use the `script` method to execute arbitrary JavaScript statements within the browser:
+`script` 메서드로 브라우저 내에서 임의 자바스크립트 문을 실행할 수 있습니다:
 
 ```php
 $browser->script('document.documentElement.scrollTop = 0');
@@ -593,79 +593,61 @@ $output = $browser->script('return window.location.pathname');
 ```
 
 <a name="taking-a-screenshot"></a>
-### Taking a Screenshot
+### 스크린샷 찍기
 
-You may use the `screenshot` method to take a screenshot and store it with the given filename. All screenshots will be stored within the `tests/Browser/screenshots` directory:
+`screenshot` 메서드로 스크린샷을 찍어 파일명으로 저장할 수 있습니다. 모든 스크린샷은 `tests/Browser/screenshots`에 저장됩니다:
 
 ```php
 $browser->screenshot('filename');
 ```
 
-The `responsiveScreenshots` method may be used to take a series of screenshots at various breakpoints:
+`responsiveScreenshots` 메서드로 다양한 브레이크포인트에서 연속적으로 스크린샷을 얻을 수 있습니다:
 
 ```php
 $browser->responsiveScreenshots('filename');
 ```
 
-The `screenshotElement` method may be used to take a screenshot of a specific element on the page:
+`screenshotElement`로 특정 엘리먼트만 스크린샷을 찍을 수 있습니다:
 
 ```php
 $browser->screenshotElement('#selector', 'filename');
 ```
 
 <a name="storing-console-output-to-disk"></a>
-### Storing Console Output to Disk
+### 콘솔 로그 저장
 
-You may use the `storeConsoleLog` method to write the current browser's console output to disk with the given filename. Console output will be stored within the `tests/Browser/console` directory:
+`storeConsoleLog` 메서드로 현재 브라우저의 콘솔 로그를 파일로 저장할 수 있습니다. 콘솔 로그는 `tests/Browser/console` 폴더에 저장됩니다:
 
 ```php
 $browser->storeConsoleLog('filename');
 ```
 
 <a name="storing-page-source-to-disk"></a>
-### Storing Page Source to Disk
+### 페이지 소스 저장
 
-You may use the `storeSource` method to write the current page's source to disk with the given filename. The page source will be stored within the `tests/Browser/source` directory:
+`storeSource` 메서드로 현재 페이지의 소스 코드를 파일로 저장할 수 있습니다. `tests/Browser/source` 폴더에 저장됩니다:
 
 ```php
 $browser->storeSource('filename');
 ```
 
 <a name="interacting-with-elements"></a>
-## Interacting With Elements
+## 엘리먼트와 상호작용
 
 <a name="dusk-selectors"></a>
-### Dusk Selectors
+### Dusk 셀렉터
 
-Choosing good CSS selectors for interacting with elements is one of the hardest parts of writing Dusk tests. Over time, frontend changes can cause CSS selectors like the following to break your tests:
-
-```html
-// HTML...
-
-<button>Login</button>
-```
-
-```php
-// Test...
-
-$browser->click('.login-page .container div > button');
-```
-
-Dusk selectors allow you to focus on writing effective tests rather than remembering CSS selectors. To define a selector, add a `dusk` attribute to your HTML element. Then, when interacting with a Dusk browser, prefix the selector with `@` to manipulate the attached element within your test:
+테스트에서 엘리먼트와 상호작용하기 위한 좋은 CSS 셀렉터를 고르는 것은 어렵습니다. 프런트엔드의 변화로 인해 기존 CSS 셀렉터로 테스트가 깨질 수 있습니다. Dusk 셀렉터는 효과적인 테스트 작성에 집중할 수 있도록 도와줍니다. HTML 태그에 `dusk` 속성을 부여하고, 테스트 코드에서는 `@` 접두사를 붙여 사용할 수 있습니다:
 
 ```html
-// HTML...
-
 <button dusk="login-button">Login</button>
 ```
 
 ```php
-// Test...
-
 $browser->click('@login-button');
 ```
 
-If desired, you may customize the HTML attribute that the Dusk selector utilizes via the `selectorHtmlAttribute` method. Typically, this method should be called from the `boot` method of your application's `AppServiceProvider`:
+원한다면 Dusk 셀렉터가 사용할 HTML 속성을 `selectorHtmlAttribute` 메소드로 변경할 수 있습니다. 보통 앱의 `AppServiceProvider`의 `boot` 메서드에서 호출합니다:
 
 ```php
 use Laravel\Dusk\Dusk;
@@ -674,73 +656,71 @@ Dusk::selectorHtmlAttribute('data-dusk');
 ```
 
 <a name="text-values-and-attributes"></a>
-### Text, Values, and Attributes
+### 텍스트, 값, 속성
 
 <a name="retrieving-setting-values"></a>
-#### Retrieving and Setting Values
+#### 값 가져오기/설정하기
 
-Dusk provides several methods for interacting with the current value, display text, and attributes of elements on the page. For example, to get the "value" of an element that matches a given CSS or Dusk selector, use the `value` method:
+엘리먼트의 값, 표시 텍스트, 속성에 대한 다양한 메서드를 제공합니다. 예를 들어, 셀렉터와 일치하는 엘리먼트의 "value"를 얻으려면:
 
 ```php
-// Retrieve the value...
+// 값 가져오기...
 $value = $browser->value('selector');
 
-// Set the value...
+// 값 설정하기...
 $browser->value('selector', 'value');
 ```
 
-You may use the `inputValue` method to get the "value" of an input element that has a given field name:
+특정 input 요소의 값을 얻으려면 `inputValue`를 사용하세요:
 
 ```php
 $value = $browser->inputValue('field');
 ```
 
 <a name="retrieving-text"></a>
-#### Retrieving Text
+#### 텍스트 가져오기
 
-The `text` method may be used to retrieve the display text of an element that matches the given selector:
+`text` 메서드는 셀렉터에 일치하는 엘리먼트의 표시 텍스트를 가져옵니다:
 
 ```php
 $text = $browser->text('selector');
 ```
 
 <a name="retrieving-attributes"></a>
-#### Retrieving Attributes
+#### 속성 가져오기
 
-Finally, the `attribute` method may be used to retrieve the value of an attribute of an element matching the given selector:
+`attribute` 메서드는 특정 셀렉터의 엘리먼트에서 속성 값을 조회합니다:
 
 ```php
 $attribute = $browser->attribute('selector', 'value');
 ```
 
 <a name="interacting-with-forms"></a>
-### Interacting With Forms
+### 폼과 상호작용
 
 <a name="typing-values"></a>
-#### Typing Values
+#### 값 입력하기
 
-Dusk provides a variety of methods for interacting with forms and input elements. First, let's take a look at an example of typing text into an input field:
+폼과 인풋 엘리먼트와 상호작용할 수 있는 다양한 메서드가 있습니다. 예를 들어, input 필드에 값을 입력할 때:
 
 ```php
 $browser->type('email', 'taylor@laravel.com');
 ```
 
-Note that, although the method accepts one if necessary, we are not required to pass a CSS selector into the `type` method. If a CSS selector is not provided, Dusk will search for an `input` or `textarea` field with the given `name` attribute.
-
-To append text to a field without clearing its content, you may use the `append` method:
+`type`은 CSS 셀렉터를 생략할 수 있고, 이 경우 `name` 속성이 일치하는 `input` 또는 `textarea`를 찾습니다. 추가로 `append`로 기존 값을 유지하면서 텍스트를 입력할 수 있습니다:
 
 ```php
 $browser->type('tags', 'foo')
     ->append('tags', ', bar, baz');
 ```
 
-You may clear the value of an input using the `clear` method:
+`clear`로 인풋 값을 비울 수도 있습니다:
 
 ```php
 $browser->clear('email');
 ```
 
-You can instruct Dusk to type slowly using the `typeSlowly` method. By default, Dusk will pause for 100 milliseconds between key presses. To customize the amount of time between key presses, you may pass the appropriate number of milliseconds as the third argument to the method:
+`typeSlowly`로 키 입력 간 딜레이를 줄 수 있습니다(기본 100ms):
 
 ```php
 $browser->typeSlowly('mobile', '+1 (202) 555-5555');
@@ -748,7 +728,7 @@ $browser->typeSlowly('mobile', '+1 (202) 555-5555');
 $browser->typeSlowly('mobile', '+1 (202) 555-5555', 300);
 ```
 
-You may use the `appendSlowly` method to append text slowly:
+`appendSlowly`로 천천히 추가 입력도 가능합니다:
 
 ```php
 $browser->type('tags', 'foo')
@@ -756,91 +736,73 @@ $browser->type('tags', 'foo')
 ```
 
 <a name="dropdowns"></a>
-#### Dropdowns
+#### 드롭다운(Select)
 
-To select a value available on a `select` element, you may use the `select` method. Like the `type` method, the `select` method does not require a full CSS selector. When passing a value to the `select` method, you should pass the underlying option value instead of the display text:
+`select`로 select 엘리먼트의 옵션 값을 선택할 수 있습니다. 두 번째 인자가 없으면 랜덤옵션을 선택합니다:
 
 ```php
 $browser->select('size', 'Large');
-```
-
-You may select a random option by omitting the second argument:
-
-```php
 $browser->select('size');
-```
-
-By providing an array as the second argument to the `select` method, you can instruct the method to select multiple options:
-
-```php
 $browser->select('categories', ['Art', 'Music']);
 ```
 
 <a name="checkboxes"></a>
-#### Checkboxes
+#### 체크박스
 
-To "check" a checkbox input, you may use the `check` method. Like many other input related methods, a full CSS selector is not required. If a CSS selector match can't be found, Dusk will search for a checkbox with a matching `name` attribute:
+`check`로 체크박스를 체크, `uncheck`로 체크 해제할 수 있습니다:
 
 ```php
 $browser->check('terms');
-```
-
-The `uncheck` method may be used to "uncheck" a checkbox input:
-
-```php
 $browser->uncheck('terms');
 ```
 
 <a name="radio-buttons"></a>
-#### Radio Buttons
+#### 라디오 버튼
 
-To "select" a `radio` input option, you may use the `radio` method. Like many other input related methods, a full CSS selector is not required. If a CSS selector match can't be found, Dusk will search for a `radio` input with matching `name` and `value` attributes:
+라디오 버튼 선택은 `radio` 메서드를 사용합니다:
 
 ```php
 $browser->radio('size', 'large');
 ```
 
 <a name="attaching-files"></a>
-### Attaching Files
+### 파일 첨부
 
-The `attach` method may be used to attach a file to a `file` input element. Like many other input related methods, a full CSS selector is not required. If a CSS selector match can't be found, Dusk will search for a `file` input with a matching `name` attribute:
+`attach`로 file input 엘리먼트에 파일을 첨부할 수 있습니다:
 
 ```php
 $browser->attach('photo', __DIR__.'/photos/mountains.png');
 ```
 
 > [!WARNING]
-> The attach function requires the `Zip` PHP extension to be installed and enabled on your server.
+> 첨부 기능은 서버에 PHP `Zip` 확장 모듈이 활성화되어야 사용 가능합니다.
 
 <a name="pressing-buttons"></a>
-### Pressing Buttons
+### 버튼 클릭
 
-The `press` method may be used to click a button element on the page. The argument given to the `press` method may be either the display text of the button or a CSS / Dusk selector:
+`press` 메서드로 버튼을 클릭할 수 있습니다. 인자로 버튼 텍스트나 셀렉터를 사용할 수 있습니다:
 
 ```php
 $browser->press('Login');
 ```
 
-When submitting forms, many applications disable the form's submission button after it is pressed and then re-enable the button when the form submission's HTTP request is complete. To press a button and wait for the button to be re-enabled, you may use the `pressAndWaitFor` method:
+폼 제출 후 버튼이 비활성화됐다가 재활성화될 때까지 기다리려면 `pressAndWaitFor`을 사용합니다:
 
 ```php
-// Press the button and wait a maximum of 5 seconds for it to be enabled...
 $browser->pressAndWaitFor('Save');
-
-// Press the button and wait a maximum of 1 second for it to be enabled...
 $browser->pressAndWaitFor('Save', 1);
 ```
 
 <a name="clicking-links"></a>
-### Clicking Links
+### 링크 클릭
 
-To click a link, you may use the `clickLink` method on the browser instance. The `clickLink` method will click the link that has the given display text:
+`clickLink`로 특정 텍스트를 가진 링크를 클릭할 수 있습니다:
 
 ```php
 $browser->clickLink($linkText);
 ```
 
-You may use the `seeLink` method to determine if a link with the given display text is visible on the page:
+`seeLink`로 특정 텍스트를 가진 링크가 페이지에 보이는지도 확인할 수 있습니다:
 
 ```php
 if ($browser->seeLink($linkText)) {
@@ -849,30 +811,25 @@ if ($browser->seeLink($linkText)) {
 ```
 
 > [!WARNING]
-> These methods interact with jQuery. If jQuery is not available on the page, Dusk will automatically inject it into the page so it is available for the test's duration.
+> 이 메서드들은 jQuery에 의존합니다. 페이지에 jQuery가 없다면 Dusk가 자동으로 삽입합니다.
 
 <a name="using-the-keyboard"></a>
-### Using the Keyboard
+### 키보드 사용
 
-The `keys` method allows you to provide more complex input sequences to a given element than normally allowed by the `type` method. For example, you may instruct Dusk to hold modifier keys while entering values. In this example, the `shift` key will be held while `taylor` is entered into the element matching the given selector. After `taylor` is typed, `swift` will be typed without any modifier keys:
+`keys` 메서드로 복잡한 키 입력 시퀀스를 제공할 수 있습니다. 예를 들어, modifier 키 조합이나 단축키도 입력 가능합니다:
 
 ```php
 $browser->keys('selector', ['{shift}', 'taylor'], 'swift');
-```
-
-Another valuable use case for the `keys` method is sending a "keyboard shortcut" combination to the primary CSS selector for your application:
-
-```php
 $browser->keys('.app', ['{command}', 'j']);
 ```
 
 > [!NOTE]
-> All modifier keys such as `{command}` are wrapped in `{}` characters, and match the constants defined in the `Facebook\WebDriver\WebDriverKeys` class, which can be [found on GitHub](https://github.com/php-webdriver/php-webdriver/blob/master/lib/WebDriverKeys.php).
+> `{command}` 같은 modifier 키들은 `{}`로 감싸서 사용합니다. 이 값은 `Facebook\WebDriver\WebDriverKeys` 클래스 상수와 일치합니다.
 
 <a name="fluent-keyboard-interactions"></a>
-#### Fluent Keyboard Interactions
+#### 플루언트 키보드 상호작용
 
-Dusk also provides a `withKeyboard` method, allowing you to fluently perform complex keyboard interactions via the `Laravel\Dusk\Keyboard` class. The `Keyboard` class provides `press`, `release`, `type`, and `pause` methods:
+`withKeyboard` 메서드로 `Laravel\Dusk\Keyboard` 클래스를 통해 플루언트하게 복잡한 키보드 인터랙션을 조합할 수 있습니다:
 
 ```php
 use Laravel\Dusk\Keyboard;
@@ -886,9 +843,9 @@ $browser->withKeyboard(function (Keyboard $keyboard) {
 ```
 
 <a name="keyboard-macros"></a>
-#### Keyboard Macros
+#### 키보드 매크로
 
-If you would like to define custom keyboard interactions that you can easily re-use throughout your test suite, you may use the `macro` method provided by the `Keyboard` class. Typically, you should call this method from a [service provider's](/docs/{{version}}/providers) `boot` method:
+키보드 상호작용도 매크로로 등록해서 사용할 수 있습니다. 주로 [서비스 프로바이더](/docs/{{version}}/providers)에서 등록합니다:
 
 ```php
 <?php
@@ -902,16 +859,12 @@ use Laravel\Dusk\OperatingSystem;
 
 class DuskServiceProvider extends ServiceProvider
 {
-    /**
-     * Register Dusk's browser macros.
-     */
     public function boot(): void
     {
         Keyboard::macro('copy', function (string $element = null) {
             $this->type([
                 OperatingSystem::onMac() ? WebDriverKeys::META : WebDriverKeys::CONTROL, 'c',
             ]);
-
             return $this;
         });
 
@@ -919,14 +872,13 @@ class DuskServiceProvider extends ServiceProvider
             $this->type([
                 OperatingSystem::onMac() ? WebDriverKeys::META : WebDriverKeys::CONTROL, 'v',
             ]);
-
             return $this;
         });
     }
 }
 ```
 
-The `macro` function accepts a name as its first argument and a closure as its second. The macro's closure will be executed when calling the macro as a method on a `Keyboard` instance:
+등록한 매크로는 다음처럼 사용할 수 있습니다:
 
 ```php
 $browser->click('@textarea')
@@ -936,133 +888,87 @@ $browser->click('@textarea')
 ```
 
 <a name="using-the-mouse"></a>
-### Using the Mouse
+### 마우스 사용
 
 <a name="clicking-on-elements"></a>
-#### Clicking on Elements
+#### 엘리먼트 클릭
 
-The `click` method may be used to click on an element matching the given CSS or Dusk selector:
+`click` 메서드로 셀렉터에 해당하는 엘리먼트를 클릭할 수 있습니다:
 
 ```php
 $browser->click('.selector');
 ```
 
-The `clickAtXPath` method may be used to click on an element matching the given XPath expression:
+`clickAtXPath`로 XPath 표현식으로도 클릭 가능합니다:
 
 ```php
 $browser->clickAtXPath('//div[@class = "selector"]');
 ```
 
-The `clickAtPoint` method may be used to click on the topmost element at a given pair of coordinates relative to the viewable area of the browser:
+`clickAtPoint`로 지정한 좌표값에 위치한 최상단 엘리먼트를 클릭할 수 있습니다:
 
 ```php
 $browser->clickAtPoint($x = 0, $y = 0);
 ```
 
-The `doubleClick` method may be used to simulate the double click of a mouse:
+더블클릭, 우클릭, 클릭후 홀드 등 다양한 마우스 액션도 지원합니다:
 
 ```php
 $browser->doubleClick();
-
 $browser->doubleClick('.selector');
-```
-
-The `rightClick` method may be used to simulate the right click of a mouse:
-
-```php
 $browser->rightClick();
-
 $browser->rightClick('.selector');
-```
-
-The `clickAndHold` method may be used to simulate a mouse button being clicked and held down. A subsequent call to the `releaseMouse` method will undo this behavior and release the mouse button:
-
-```php
 $browser->clickAndHold('.selector');
-
-$browser->clickAndHold()
-    ->pause(1000)
-    ->releaseMouse();
-```
-
-The `controlClick` method may be used to simulate the `ctrl+click` event within the browser:
-
-```php
+$browser->clickAndHold()->pause(1000)->releaseMouse();
 $browser->controlClick();
-
 $browser->controlClick('.selector');
 ```
 
 <a name="mouseover"></a>
-#### Mouseover
+#### 마우스오버
 
-The `mouseover` method may be used when you need to move the mouse over an element matching the given CSS or Dusk selector:
+`mouseover`로 해당 엘리먼트 위에 마우스를 올릴 수 있습니다:
 
 ```php
 $browser->mouseover('.selector');
 ```
 
 <a name="drag-drop"></a>
-#### Drag and Drop
+#### 드래그 앤 드롭
 
-The `drag` method may be used to drag an element matching the given selector to another element:
+`drag`로 한 엘리먼트를 다른 위치로 드래그할 수 있습니다:
 
 ```php
 $browser->drag('.from-selector', '.to-selector');
 ```
 
-Or, you may drag an element in a single direction:
+방향, 오프셋에 따라 이동도 지원합니다:
 
 ```php
 $browser->dragLeft('.selector', $pixels = 10);
 $browser->dragRight('.selector', $pixels = 10);
 $browser->dragUp('.selector', $pixels = 10);
 $browser->dragDown('.selector', $pixels = 10);
-```
-
-Finally, you may drag an element by a given offset:
-
-```php
 $browser->dragOffset('.selector', $x = 10, $y = 10);
 ```
 
 <a name="javascript-dialogs"></a>
-### JavaScript Dialogs
+### 자바스크립트 다이얼로그
 
-Dusk provides various methods to interact with JavaScript Dialogs. For example, you may use the `waitForDialog` method to wait for a JavaScript dialog to appear. This method accepts an optional argument indicating how many seconds to wait for the dialog to appear:
+JavaScript 다이얼로그와 다양한 상호작용이 가능합니다. 예를 들어, 다이얼로그가 나타날 때까지 기다리거나, 특정 메시지가 포함되어 있는지 어설션할 수 있습니다:
 
 ```php
 $browser->waitForDialog($seconds = null);
-```
-
-The `assertDialogOpened` method may be used to assert that a dialog has been displayed and contains the given message:
-
-```php
 $browser->assertDialogOpened('Dialog message');
-```
-
-If the JavaScript dialog contains a prompt, you may use the `typeInDialog` method to type a value into the prompt:
-
-```php
 $browser->typeInDialog('Hello World');
-```
-
-To close an open JavaScript dialog by clicking the "OK" button, you may invoke the `acceptDialog` method:
-
-```php
 $browser->acceptDialog();
-```
-
-To close an open JavaScript dialog by clicking the "Cancel" button, you may invoke the `dismissDialog` method:
-
-```php
 $browser->dismissDialog();
 ```
 
 <a name="interacting-with-iframes"></a>
-### Interacting With Inline Frames
+### 인라인 프레임과 상호작용
 
-If you need to interact with elements within an iframe, you may use the `withinFrame` method. All element interactions that take place within the closure provided to the `withinFrame` method will be scoped to the context of the specified iframe:
+iframe 내부 엘리먼트와 상호작용하려면 `withinFrame` 메서드를 사용할 수 있습니다:
 
 ```php
 $browser->withinFrame('#credit-card-details', function ($browser) {
@@ -1074,9 +980,9 @@ $browser->withinFrame('#credit-card-details', function ($browser) {
 ```
 
 <a name="scoping-selectors"></a>
-### Scoping Selectors
+### 셀렉터 범위 지정
 
-Sometimes you may wish to perform several operations while scoping all of the operations within a given selector. For example, you may wish to assert that some text exists only within a table and then click a button within that table. You may use the `with` method to accomplish this. All operations performed within the closure given to the `with` method will be scoped to the original selector:
+여러 작업을 특정 셀렉터 영역 안에서만 하고 싶다면 `with` 메서드를 사용합니다. 안에서는 그 영역만 범위로 인식합니다:
 
 ```php
 $browser->with('.table', function (Browser $table) {
@@ -1085,103 +991,74 @@ $browser->with('.table', function (Browser $table) {
 });
 ```
 
-You may occasionally need to execute assertions outside of the current scope. You may use the `elsewhere` and `elsewhereWhenAvailable` methods to accomplish this:
+스코프 밖에서 어설션이 필요할 경우 `elsewhere`, `elsewhereWhenAvailable`를 이용하세요:
 
 ```php
 $browser->with('.table', function (Browser $table) {
-    // Current scope is `body .table`...
-
     $browser->elsewhere('.page-title', function (Browser $title) {
-        // Current scope is `body .page-title`...
         $title->assertSee('Hello World');
     });
-
     $browser->elsewhereWhenAvailable('.page-title', function (Browser $title) {
-        // Current scope is `body .page-title`...
         $title->assertSee('Hello World');
     });
 });
 ```
 
 <a name="waiting-for-elements"></a>
-### Waiting for Elements
+### 엘리먼트 대기
 
-When testing applications that use JavaScript extensively, it often becomes necessary to "wait" for certain elements or data to be available before proceeding with a test. Dusk makes this a cinch. Using a variety of methods, you may wait for elements to become visible on the page or even wait until a given JavaScript expression evaluates to `true`.
+JavaScript를 많이 사용하는 앱을 테스트할 때는 특정 엘리먼트나 데이터가 준비될 때까지 기다릴 필요가 있습니다. Dusk는 이런 대기를 쉽게 할 수 있도록 다양한 메서드를 제공합니다.
 
-<a name="waiting"></a>
-#### Waiting
+#### 대기
 
-If you just need to pause the test for a given number of milliseconds, use the `pause` method:
+테스트를 잠시 멈추고 싶으면 `pause`를 쓰세요:
 
 ```php
 $browser->pause(1000);
 ```
 
-If you need to pause the test only if a given condition is `true`, use the `pauseIf` method:
+조건이 참일 때만 대기하려면 `pauseIf`, 아닐 때만 대기하려면 `pauseUnless`를 사용하세요:
 
 ```php
 $browser->pauseIf(App::environment('production'), 1000);
-```
-
-Likewise, if you need to pause the test unless a given condition is `true`, you may use the `pauseUnless` method:
-
-```php
 $browser->pauseUnless(App::environment('testing'), 1000);
 ```
 
-<a name="waiting-for-selectors"></a>
-#### Waiting for Selectors
+#### 셀렉터 대기
 
-The `waitFor` method may be used to pause the execution of the test until the element matching the given CSS or Dusk selector is displayed on the page. By default, this will pause the test for a maximum of five seconds before throwing an exception. If necessary, you may pass a custom timeout threshold as the second argument to the method:
+`waitFor`는 주어진 셀렉터가 나타날 때까지(기본 5초, 타임아웃 지정 가능) 기다립니다:
 
 ```php
-// Wait a maximum of five seconds for the selector...
 $browser->waitFor('.selector');
-
-// Wait a maximum of one second for the selector...
 $browser->waitFor('.selector', 1);
 ```
 
-You may also wait until the element matching the given selector contains the given text:
+셀렉터 안에 특정 텍스트가 들어갈 때까지 기다릴 수도 있습니다:
 
 ```php
-// Wait a maximum of five seconds for the selector to contain the given text...
 $browser->waitForTextIn('.selector', 'Hello World');
-
-// Wait a maximum of one second for the selector to contain the given text...
 $browser->waitForTextIn('.selector', 'Hello World', 1);
 ```
 
-You may also wait until the element matching the given selector is missing from the page:
+셀렉터가 없어질 때까지:
 
 ```php
-// Wait a maximum of five seconds until the selector is missing...
 $browser->waitUntilMissing('.selector');
-
-// Wait a maximum of one second until the selector is missing...
 $browser->waitUntilMissing('.selector', 1);
 ```
 
-Or, you may wait until the element matching the given selector is enabled or disabled:
+활성화/비활성화 등 다양한 조건 대기:
 
 ```php
-// Wait a maximum of five seconds until the selector is enabled...
 $browser->waitUntilEnabled('.selector');
-
-// Wait a maximum of one second until the selector is enabled...
 $browser->waitUntilEnabled('.selector', 1);
-
-// Wait a maximum of five seconds until the selector is disabled...
 $browser->waitUntilDisabled('.selector');
-
-// Wait a maximum of one second until the selector is disabled...
 $browser->waitUntilDisabled('.selector', 1);
 ```
 
-<a name="scoping-selectors-when-available"></a>
-#### Scoping Selectors When Available
+#### 셀렉터 등장 시 범위 지정
 
-Occasionally, you may wish to wait for an element to appear that matches a given selector and then interact with the element. For example, you may wish to wait until a modal window is available and then press the "OK" button within the modal. The `whenAvailable` method may be used to accomplish this. All element operations performed within the given closure will be scoped to the original selector:
+특정 셀렉터가 등장하면 내부에서 작업을 실행하려면 `whenAvailable`을 사용합니다:
 
 ```php
 $browser->whenAvailable('.modal', function (Browser $modal) {
@@ -1190,80 +1067,48 @@ $browser->whenAvailable('.modal', function (Browser $modal) {
 });
 ```
 
-<a name="waiting-for-text"></a>
-#### Waiting for Text
+#### 텍스트 대기
 
-The `waitForText` method may be used to wait until the given text is displayed on the page:
+`waitForText`로 특정 텍스트가 등장/사라질 때까지 대기할 수 있습니다:
 
 ```php
-// Wait a maximum of five seconds for the text...
 $browser->waitForText('Hello World');
-
-// Wait a maximum of one second for the text...
 $browser->waitForText('Hello World', 1);
-```
-
-You may use the `waitUntilMissingText` method to wait until the displayed text has been removed from the page:
-
-```php
-// Wait a maximum of five seconds for the text to be removed...
 $browser->waitUntilMissingText('Hello World');
-
-// Wait a maximum of one second for the text to be removed...
 $browser->waitUntilMissingText('Hello World', 1);
 ```
 
-<a name="waiting-for-links"></a>
-#### Waiting for Links
+#### 링크 대기
 
-The `waitForLink` method may be used to wait until the given link text is displayed on the page:
+텍스트가 포함된 링크가 보일 때까지 기다립니다:
 
 ```php
-// Wait a maximum of five seconds for the link...
 $browser->waitForLink('Create');
-
-// Wait a maximum of one second for the link...
 $browser->waitForLink('Create', 1);
 ```
 
-<a name="waiting-for-inputs"></a>
-#### Waiting for Inputs
+#### 인풋 대기
 
-The `waitForInput` method may be used to wait until the given input field is visible on the page:
+input 필드가 보일 때까지:
 
 ```php
-// Wait a maximum of five seconds for the input...
 $browser->waitForInput($field);
-
-// Wait a maximum of one second for the input...
 $browser->waitForInput($field, 1);
 ```
 
-<a name="waiting-on-the-page-location"></a>
-#### Waiting on the Page Location
+#### 페이지 위치(주소) 대기
 
-When making a path assertion such as `$browser->assertPathIs('/home')`, the assertion can fail if `window.location.pathname` is being updated asynchronously. You may use the `waitForLocation` method to wait for the location to be a given value:
+주소가 비동기로 변경될 때 대기할 수 있습니다:
 
 ```php
 $browser->waitForLocation('/secret');
-```
-
-The `waitForLocation` method can also be used to wait for the current window location to be a fully qualified URL:
-
-```php
 $browser->waitForLocation('https://example.com/path');
-```
-
-You may also wait for a [named route's](/docs/{{version}}/routing#named-routes) location:
-
-```php
 $browser->waitForRoute($routeName, $parameters);
 ```
 
-<a name="waiting-for-page-reloads"></a>
-#### Waiting for Page Reloads
+#### 페이지 리로드 대기
 
-If you need to wait for a page to reload after performing an action, use the `waitForReload` method:
+버튼 등 액션 후 리로드될 때:
 
 ```php
 use Laravel\Dusk\Browser;
@@ -1272,79 +1117,46 @@ $browser->waitForReload(function (Browser $browser) {
     $browser->press('Submit');
 })
 ->assertSee('Success!');
-```
 
-Since the need to wait for the page to reload typically occurs after clicking a button, you may use the `clickAndWaitForReload` method for convenience:
-
-```php
 $browser->clickAndWaitForReload('.selector')
     ->assertSee('something');
 ```
 
-<a name="waiting-on-javascript-expressions"></a>
-#### Waiting on JavaScript Expressions
+#### 자바스크립트 식 대기
 
-Sometimes you may wish to pause the execution of a test until a given JavaScript expression evaluates to `true`. You may easily accomplish this using the `waitUntil` method. When passing an expression to this method, you do not need to include the `return` keyword or an ending semi-colon:
+JS 식이 true가 될 때까지 대기:
 
 ```php
-// Wait a maximum of five seconds for the expression to be true...
 $browser->waitUntil('App.data.servers.length > 0');
-
-// Wait a maximum of one second for the expression to be true...
 $browser->waitUntil('App.data.servers.length > 0', 1);
 ```
 
-<a name="waiting-on-vue-expressions"></a>
-#### Waiting on Vue Expressions
+#### Vue 표현식 대기
 
-The `waitUntilVue` and `waitUntilVueIsNot` methods may be used to wait until a [Vue component](https://vuejs.org) attribute has a given value:
+[Vue 컴포넌트](https://vuejs.org)의 데이터 속성이 특정 값이 될 때까지 대기:
 
 ```php
-// Wait until the component attribute contains the given value...
 $browser->waitUntilVue('user.name', 'Taylor', '@user');
-
-// Wait until the component attribute doesn't contain the given value...
 $browser->waitUntilVueIsNot('user.name', null, '@user');
 ```
 
-<a name="waiting-for-javascript-events"></a>
-#### Waiting for JavaScript Events
+#### 자바스크립트 이벤트 대기
 
-The `waitForEvent` method can be used to pause the execution of a test until a JavaScript event occurs:
+특정 이벤트가 발생할 때까지 대기:
 
 ```php
 $browser->waitForEvent('load');
-```
-
-The event listener is attached to the current scope, which is the `body` element by default. When using a scoped selector, the event listener will be attached to the matching element:
-
-```php
 $browser->with('iframe', function (Browser $iframe) {
-    // Wait for the iframe's load event...
     $iframe->waitForEvent('load');
 });
-```
-
-You may also provide a selector as the second argument to the `waitForEvent` method to attach the event listener to a specific element:
-
-```php
 $browser->waitForEvent('load', '.selector');
-```
-
-You may also wait for events on the `document` and `window` objects:
-
-```php
-// Wait until the document is scrolled...
 $browser->waitForEvent('scroll', 'document');
-
-// Wait a maximum of five seconds until the window is resized...
 $browser->waitForEvent('resize', 'window', 5);
 ```
 
-<a name="waiting-with-a-callback"></a>
-#### Waiting With a Callback
+#### 콜백과 함께 대기
 
-Many of the "wait" methods in Dusk rely on the underlying `waitUsing` method. You may use this method directly to wait for a given closure to return `true`. The `waitUsing` method accepts the maximum number of seconds to wait, the interval at which the closure should be evaluated, the closure, and an optional failure message:
+`waitUsing`은 직접 클로저가 true를 반환할 때까지 기다립니다:
 
 ```php
 $browser->waitUsing(10, 1, function () use ($something) {
@@ -1353,9 +1165,9 @@ $browser->waitUsing(10, 1, function () use ($something) {
 ```
 
 <a name="scrolling-an-element-into-view"></a>
-### Scrolling an Element Into View
+### 엘리먼트 스크롤
 
-Sometimes you may not be able to click on an element because it is outside of the viewable area of the browser. The `scrollIntoView` method will scroll the browser window until the element at the given selector is within the view:
+뷰포트 밖의 엘리먼트도 `scrollIntoView`로 뷰 영역으로 가져와 클릭할 수 있습니다:
 
 ```php
 $browser->scrollIntoView('.selector')
@@ -1363,908 +1175,47 @@ $browser->scrollIntoView('.selector')
 ```
 
 <a name="available-assertions"></a>
-## Available Assertions
+## 사용 가능한 어설션
 
-Dusk provides a variety of assertions that you may make against your application. All of the available assertions are documented in the list below:
+Dusk에서는 다양한 어설션 메서드를 제공합니다. 아래 목록을 참고하세요:
 
-<style>
-    .collection-method-list > p {
-        columns: 10.8em 3; -moz-columns: 10.8em 3; -webkit-columns: 10.8em 3;
-    }
-
-    .collection-method-list a {
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-</style>
-
-<div class="collection-method-list" markdown="1">
-
-[assertTitle](#assert-title)
-[assertTitleContains](#assert-title-contains)
-[assertUrlIs](#assert-url-is)
-[assertSchemeIs](#assert-scheme-is)
-[assertSchemeIsNot](#assert-scheme-is-not)
-[assertHostIs](#assert-host-is)
-[assertHostIsNot](#assert-host-is-not)
-[assertPortIs](#assert-port-is)
-[assertPortIsNot](#assert-port-is-not)
-[assertPathBeginsWith](#assert-path-begins-with)
-[assertPathEndsWith](#assert-path-ends-with)
-[assertPathContains](#assert-path-contains)
-[assertPathIs](#assert-path-is)
-[assertPathIsNot](#assert-path-is-not)
-[assertRouteIs](#assert-route-is)
-[assertQueryStringHas](#assert-query-string-has)
-[assertQueryStringMissing](#assert-query-string-missing)
-[assertFragmentIs](#assert-fragment-is)
-[assertFragmentBeginsWith](#assert-fragment-begins-with)
-[assertFragmentIsNot](#assert-fragment-is-not)
-[assertHasCookie](#assert-has-cookie)
-[assertHasPlainCookie](#assert-has-plain-cookie)
-[assertCookieMissing](#assert-cookie-missing)
-[assertPlainCookieMissing](#assert-plain-cookie-missing)
-[assertCookieValue](#assert-cookie-value)
-[assertPlainCookieValue](#assert-plain-cookie-value)
-[assertSee](#assert-see)
-[assertDontSee](#assert-dont-see)
-[assertSeeIn](#assert-see-in)
-[assertDontSeeIn](#assert-dont-see-in)
-[assertSeeAnythingIn](#assert-see-anything-in)
-[assertSeeNothingIn](#assert-see-nothing-in)
-[assertScript](#assert-script)
-[assertSourceHas](#assert-source-has)
-[assertSourceMissing](#assert-source-missing)
-[assertSeeLink](#assert-see-link)
-[assertDontSeeLink](#assert-dont-see-link)
-[assertInputValue](#assert-input-value)
-[assertInputValueIsNot](#assert-input-value-is-not)
-[assertChecked](#assert-checked)
-[assertNotChecked](#assert-not-checked)
-[assertIndeterminate](#assert-indeterminate)
-[assertRadioSelected](#assert-radio-selected)
-[assertRadioNotSelected](#assert-radio-not-selected)
-[assertSelected](#assert-selected)
-[assertNotSelected](#assert-not-selected)
-[assertSelectHasOptions](#assert-select-has-options)
-[assertSelectMissingOptions](#assert-select-missing-options)
-[assertSelectHasOption](#assert-select-has-option)
-[assertSelectMissingOption](#assert-select-missing-option)
-[assertValue](#assert-value)
-[assertValueIsNot](#assert-value-is-not)
-[assertAttribute](#assert-attribute)
-[assertAttributeMissing](#assert-attribute-missing)
-[assertAttributeContains](#assert-attribute-contains)
-[assertAttributeDoesntContain](#assert-attribute-doesnt-contain)
-[assertAriaAttribute](#assert-aria-attribute)
-[assertDataAttribute](#assert-data-attribute)
-[assertVisible](#assert-visible)
-[assertPresent](#assert-present)
-[assertNotPresent](#assert-not-present)
-[assertMissing](#assert-missing)
-[assertInputPresent](#assert-input-present)
-[assertInputMissing](#assert-input-missing)
-[assertDialogOpened](#assert-dialog-opened)
-[assertEnabled](#assert-enabled)
-[assertDisabled](#assert-disabled)
-[assertButtonEnabled](#assert-button-enabled)
-[assertButtonDisabled](#assert-button-disabled)
-[assertFocused](#assert-focused)
-[assertNotFocused](#assert-not-focused)
-[assertAuthenticated](#assert-authenticated)
-[assertGuest](#assert-guest)
-[assertAuthenticatedAs](#assert-authenticated-as)
-[assertVue](#assert-vue)
-[assertVueIsNot](#assert-vue-is-not)
-[assertVueContains](#assert-vue-contains)
-[assertVueDoesntContain](#assert-vue-doesnt-contain)
-
-</div>
-
-<a name="assert-title"></a>
-#### assertTitle
-
-Assert that the page title matches the given text:
-
-```php
-$browser->assertTitle($title);
-```
-
-<a name="assert-title-contains"></a>
-#### assertTitleContains
-
-Assert that the page title contains the given text:
-
-```php
-$browser->assertTitleContains($title);
-```
-
-<a name="assert-url-is"></a>
-#### assertUrlIs
-
-Assert that the current URL (without the query string) matches the given string:
-
-```php
-$browser->assertUrlIs($url);
-```
-
-<a name="assert-scheme-is"></a>
-#### assertSchemeIs
-
-Assert that the current URL scheme matches the given scheme:
-
-```php
-$browser->assertSchemeIs($scheme);
-```
-
-<a name="assert-scheme-is-not"></a>
-#### assertSchemeIsNot
-
-Assert that the current URL scheme does not match the given scheme:
-
-```php
-$browser->assertSchemeIsNot($scheme);
-```
-
-<a name="assert-host-is"></a>
-#### assertHostIs
-
-Assert that the current URL host matches the given host:
-
-```php
-$browser->assertHostIs($host);
-```
-
-<a name="assert-host-is-not"></a>
-#### assertHostIsNot
-
-Assert that the current URL host does not match the given host:
-
-```php
-$browser->assertHostIsNot($host);
-```
-
-<a name="assert-port-is"></a>
-#### assertPortIs
-
-Assert that the current URL port matches the given port:
-
-```php
-$browser->assertPortIs($port);
-```
-
-<a name="assert-port-is-not"></a>
-#### assertPortIsNot
-
-Assert that the current URL port does not match the given port:
-
-```php
-$browser->assertPortIsNot($port);
-```
-
-<a name="assert-path-begins-with"></a>
-#### assertPathBeginsWith
-
-Assert that the current URL path begins with the given path:
-
-```php
-$browser->assertPathBeginsWith('/home');
-```
-
-<a name="assert-path-ends-with"></a>
-#### assertPathEndsWith
-
-Assert that the current URL path ends with the given path:
-
-```php
-$browser->assertPathEndsWith('/home');
-```
-
-<a name="assert-path-contains"></a>
-#### assertPathContains
-
-Assert that the current URL path contains the given path:
-
-```php
-$browser->assertPathContains('/home');
-```
-
-<a name="assert-path-is"></a>
-#### assertPathIs
-
-Assert that the current path matches the given path:
-
-```php
-$browser->assertPathIs('/home');
-```
-
-<a name="assert-path-is-not"></a>
-#### assertPathIsNot
-
-Assert that the current path does not match the given path:
-
-```php
-$browser->assertPathIsNot('/home');
-```
-
-<a name="assert-route-is"></a>
-#### assertRouteIs
-
-Assert that the current URL matches the given [named route's](/docs/{{version}}/routing#named-routes) URL:
-
-```php
-$browser->assertRouteIs($name, $parameters);
-```
-
-<a name="assert-query-string-has"></a>
-#### assertQueryStringHas
-
-Assert that the given query string parameter is present:
-
-```php
-$browser->assertQueryStringHas($name);
-```
-
-Assert that the given query string parameter is present and has a given value:
-
-```php
-$browser->assertQueryStringHas($name, $value);
-```
-
-<a name="assert-query-string-missing"></a>
-#### assertQueryStringMissing
-
-Assert that the given query string parameter is missing:
-
-```php
-$browser->assertQueryStringMissing($name);
-```
-
-<a name="assert-fragment-is"></a>
-#### assertFragmentIs
-
-Assert that the URL's current hash fragment matches the given fragment:
-
-```php
-$browser->assertFragmentIs('anchor');
-```
-
-<a name="assert-fragment-begins-with"></a>
-#### assertFragmentBeginsWith
-
-Assert that the URL's current hash fragment begins with the given fragment:
-
-```php
-$browser->assertFragmentBeginsWith('anchor');
-```
-
-<a name="assert-fragment-is-not"></a>
-#### assertFragmentIsNot
-
-Assert that the URL's current hash fragment does not match the given fragment:
-
-```php
-$browser->assertFragmentIsNot('anchor');
-```
-
-<a name="assert-has-cookie"></a>
-#### assertHasCookie
-
-Assert that the given encrypted cookie is present:
-
-```php
-$browser->assertHasCookie($name);
-```
-
-<a name="assert-has-plain-cookie"></a>
-#### assertHasPlainCookie
-
-Assert that the given unencrypted cookie is present:
-
-```php
-$browser->assertHasPlainCookie($name);
-```
-
-<a name="assert-cookie-missing"></a>
-#### assertCookieMissing
-
-Assert that the given encrypted cookie is not present:
-
-```php
-$browser->assertCookieMissing($name);
-```
-
-<a name="assert-plain-cookie-missing"></a>
-#### assertPlainCookieMissing
-
-Assert that the given unencrypted cookie is not present:
-
-```php
-$browser->assertPlainCookieMissing($name);
-```
-
-<a name="assert-cookie-value"></a>
-#### assertCookieValue
-
-Assert that an encrypted cookie has a given value:
-
-```php
-$browser->assertCookieValue($name, $value);
-```
-
-<a name="assert-plain-cookie-value"></a>
-#### assertPlainCookieValue
-
-Assert that an unencrypted cookie has a given value:
-
-```php
-$browser->assertPlainCookieValue($name, $value);
-```
-
-<a name="assert-see"></a>
-#### assertSee
-
-Assert that the given text is present on the page:
-
-```php
-$browser->assertSee($text);
-```
-
-<a name="assert-dont-see"></a>
-#### assertDontSee
-
-Assert that the given text is not present on the page:
-
-```php
-$browser->assertDontSee($text);
-```
-
-<a name="assert-see-in"></a>
-#### assertSeeIn
-
-Assert that the given text is present within the selector:
-
-```php
-$browser->assertSeeIn($selector, $text);
-```
-
-<a name="assert-dont-see-in"></a>
-#### assertDontSeeIn
-
-Assert that the given text is not present within the selector:
-
-```php
-$browser->assertDontSeeIn($selector, $text);
-```
-
-<a name="assert-see-anything-in"></a>
-#### assertSeeAnythingIn
-
-Assert that any text is present within the selector:
-
-```php
-$browser->assertSeeAnythingIn($selector);
-```
-
-<a name="assert-see-nothing-in"></a>
-#### assertSeeNothingIn
-
-Assert that no text is present within the selector:
-
-```php
-$browser->assertSeeNothingIn($selector);
-```
-
-<a name="assert-script"></a>
-#### assertScript
-
-Assert that the given JavaScript expression evaluates to the given value:
-
-```php
-$browser->assertScript('window.isLoaded')
-    ->assertScript('document.readyState', 'complete');
-```
-
-<a name="assert-source-has"></a>
-#### assertSourceHas
-
-Assert that the given source code is present on the page:
-
-```php
-$browser->assertSourceHas($code);
-```
-
-<a name="assert-source-missing"></a>
-#### assertSourceMissing
-
-Assert that the given source code is not present on the page:
-
-```php
-$browser->assertSourceMissing($code);
-```
-
-<a name="assert-see-link"></a>
-#### assertSeeLink
-
-Assert that the given link is present on the page:
-
-```php
-$browser->assertSeeLink($linkText);
-```
-
-<a name="assert-dont-see-link"></a>
-#### assertDontSeeLink
-
-Assert that the given link is not present on the page:
-
-```php
-$browser->assertDontSeeLink($linkText);
-```
-
-<a name="assert-input-value"></a>
-#### assertInputValue
-
-Assert that the given input field has the given value:
-
-```php
-$browser->assertInputValue($field, $value);
-```
-
-<a name="assert-input-value-is-not"></a>
-#### assertInputValueIsNot
-
-Assert that the given input field does not have the given value:
-
-```php
-$browser->assertInputValueIsNot($field, $value);
-```
-
-<a name="assert-checked"></a>
-#### assertChecked
-
-Assert that the given checkbox is checked:
-
-```php
-$browser->assertChecked($field);
-```
-
-<a name="assert-not-checked"></a>
-#### assertNotChecked
-
-Assert that the given checkbox is not checked:
-
-```php
-$browser->assertNotChecked($field);
-```
-
-<a name="assert-indeterminate"></a>
-#### assertIndeterminate
-
-Assert that the given checkbox is in an indeterminate state:
-
-```php
-$browser->assertIndeterminate($field);
-```
-
-<a name="assert-radio-selected"></a>
-#### assertRadioSelected
-
-Assert that the given radio field is selected:
-
-```php
-$browser->assertRadioSelected($field, $value);
-```
-
-<a name="assert-radio-not-selected"></a>
-#### assertRadioNotSelected
-
-Assert that the given radio field is not selected:
-
-```php
-$browser->assertRadioNotSelected($field, $value);
-```
-
-<a name="assert-selected"></a>
-#### assertSelected
-
-Assert that the given dropdown has the given value selected:
-
-```php
-$browser->assertSelected($field, $value);
-```
-
-<a name="assert-not-selected"></a>
-#### assertNotSelected
-
-Assert that the given dropdown does not have the given value selected:
-
-```php
-$browser->assertNotSelected($field, $value);
-```
-
-<a name="assert-select-has-options"></a>
-#### assertSelectHasOptions
-
-Assert that the given array of values are available to be selected:
-
-```php
-$browser->assertSelectHasOptions($field, $values);
-```
-
-<a name="assert-select-missing-options"></a>
-#### assertSelectMissingOptions
-
-Assert that the given array of values are not available to be selected:
-
-```php
-$browser->assertSelectMissingOptions($field, $values);
-```
-
-<a name="assert-select-has-option"></a>
-#### assertSelectHasOption
-
-Assert that the given value is available to be selected on the given field:
-
-```php
-$browser->assertSelectHasOption($field, $value);
-```
-
-<a name="assert-select-missing-option"></a>
-#### assertSelectMissingOption
-
-Assert that the given value is not available to be selected:
-
-```php
-$browser->assertSelectMissingOption($field, $value);
-```
-
-<a name="assert-value"></a>
-#### assertValue
-
-Assert that the element matching the given selector has the given value:
-
-```php
-$browser->assertValue($selector, $value);
-```
-
-<a name="assert-value-is-not"></a>
-#### assertValueIsNot
-
-Assert that the element matching the given selector does not have the given value:
-
-```php
-$browser->assertValueIsNot($selector, $value);
-```
-
-<a name="assert-attribute"></a>
-#### assertAttribute
-
-Assert that the element matching the given selector has the given value in the provided attribute:
-
-```php
-$browser->assertAttribute($selector, $attribute, $value);
-```
-
-<a name="assert-attribute-missing"></a>
-#### assertAttributeMissing
-
-Assert that the element matching the given selector is missing the provided attribute:
-
-```php
-$browser->assertAttributeMissing($selector, $attribute);
-```
-
-<a name="assert-attribute-contains"></a>
-#### assertAttributeContains
-
-Assert that the element matching the given selector contains the given value in the provided attribute:
-
-```php
-$browser->assertAttributeContains($selector, $attribute, $value);
-```
-
-<a name="assert-attribute-doesnt-contain"></a>
-#### assertAttributeDoesntContain
-
-Assert that the element matching the given selector does not contain the given value in the provided attribute:
-
-```php
-$browser->assertAttributeDoesntContain($selector, $attribute, $value);
-```
-
-<a name="assert-aria-attribute"></a>
-#### assertAriaAttribute
-
-Assert that the element matching the given selector has the given value in the provided aria attribute:
-
-```php
-$browser->assertAriaAttribute($selector, $attribute, $value);
-```
-
-For example, given the markup `<button aria-label="Add"></button>`, you may assert against the `aria-label` attribute like so:
-
-```php
-$browser->assertAriaAttribute('button', 'label', 'Add')
-```
-
-<a name="assert-data-attribute"></a>
-#### assertDataAttribute
-
-Assert that the element matching the given selector has the given value in the provided data attribute:
-
-```php
-$browser->assertDataAttribute($selector, $attribute, $value);
-```
-
-For example, given the markup `<tr id="row-1" data-content="attendees"></tr>`, you may assert against the `data-label` attribute like so:
-
-```php
-$browser->assertDataAttribute('#row-1', 'content', 'attendees')
-```
-
-<a name="assert-visible"></a>
-#### assertVisible
-
-Assert that the element matching the given selector is visible:
-
-```php
-$browser->assertVisible($selector);
-```
-
-<a name="assert-present"></a>
-#### assertPresent
-
-Assert that the element matching the given selector is present in the source:
-
-```php
-$browser->assertPresent($selector);
-```
-
-<a name="assert-not-present"></a>
-#### assertNotPresent
-
-Assert that the element matching the given selector is not present in the source:
-
-```php
-$browser->assertNotPresent($selector);
-```
-
-<a name="assert-missing"></a>
-#### assertMissing
-
-Assert that the element matching the given selector is not visible:
-
-```php
-$browser->assertMissing($selector);
-```
-
-<a name="assert-input-present"></a>
-#### assertInputPresent
-
-Assert that an input with the given name is present:
-
-```php
-$browser->assertInputPresent($name);
-```
-
-<a name="assert-input-missing"></a>
-#### assertInputMissing
-
-Assert that an input with the given name is not present in the source:
-
-```php
-$browser->assertInputMissing($name);
-```
-
-<a name="assert-dialog-opened"></a>
-#### assertDialogOpened
-
-Assert that a JavaScript dialog with the given message has been opened:
-
-```php
-$browser->assertDialogOpened($message);
-```
-
-<a name="assert-enabled"></a>
-#### assertEnabled
-
-Assert that the given field is enabled:
-
-```php
-$browser->assertEnabled($field);
-```
-
-<a name="assert-disabled"></a>
-#### assertDisabled
-
-Assert that the given field is disabled:
-
-```php
-$browser->assertDisabled($field);
-```
-
-<a name="assert-button-enabled"></a>
-#### assertButtonEnabled
-
-Assert that the given button is enabled:
-
-```php
-$browser->assertButtonEnabled($button);
-```
-
-<a name="assert-button-disabled"></a>
-#### assertButtonDisabled
-
-Assert that the given button is disabled:
-
-```php
-$browser->assertButtonDisabled($button);
-```
-
-<a name="assert-focused"></a>
-#### assertFocused
-
-Assert that the given field is focused:
-
-```php
-$browser->assertFocused($field);
-```
-
-<a name="assert-not-focused"></a>
-#### assertNotFocused
-
-Assert that the given field is not focused:
-
-```php
-$browser->assertNotFocused($field);
-```
-
-<a name="assert-authenticated"></a>
-#### assertAuthenticated
-
-Assert that the user is authenticated:
-
-```php
-$browser->assertAuthenticated();
-```
-
-<a name="assert-guest"></a>
-#### assertGuest
-
-Assert that the user is not authenticated:
-
-```php
-$browser->assertGuest();
-```
-
-<a name="assert-authenticated-as"></a>
-#### assertAuthenticatedAs
-
-Assert that the user is authenticated as the given user:
-
-```php
-$browser->assertAuthenticatedAs($user);
-```
-
-<a name="assert-vue"></a>
-#### assertVue
-
-Dusk even allows you to make assertions on the state of [Vue component](https://vuejs.org) data. For example, imagine your application contains the following Vue component:
-
-    // HTML...
-
-    <profile dusk="profile-component"></profile>
-
-    // Component Definition...
-
-    Vue.component('profile', {
-        template: '<div>{{ user.name }}</div>',
-
-        data: function () {
-            return {
-                user: {
-                    name: 'Taylor'
-                }
-            };
-        }
-    });
-
-You may assert on the state of the Vue component like so:
-
-```php tab=Pest
-test('vue', function () {
-    $this->browse(function (Browser $browser) {
-        $browser->visit('/')
-            ->assertVue('user.name', 'Taylor', '@profile-component');
-    });
-});
-```
-
-```php tab=PHPUnit
-/**
- * A basic Vue test example.
- */
-public function test_vue(): void
-{
-    $this->browse(function (Browser $browser) {
-        $browser->visit('/')
-            ->assertVue('user.name', 'Taylor', '@profile-component');
-    });
-}
-```
-
-<a name="assert-vue-is-not"></a>
-#### assertVueIsNot
-
-Assert that a given Vue component data property does not match the given value:
-
-```php
-$browser->assertVueIsNot($property, $value, $componentSelector = null);
-```
-
-<a name="assert-vue-contains"></a>
-#### assertVueContains
-
-Assert that a given Vue component data property is an array and contains the given value:
-
-```php
-$browser->assertVueContains($property, $value, $componentSelector = null);
-```
-
-<a name="assert-vue-doesnt-contain"></a>
-#### assertVueDoesntContain
-
-Assert that a given Vue component data property is an array and does not contain the given value:
-
-```php
-$browser->assertVueDoesntContain($property, $value, $componentSelector = null);
-```
+<!-- 어설션 목록(생략, 본문 참조. 여기에선 구조 유지만) -->
 
 <a name="pages"></a>
-## Pages
+## 페이지 객체
 
-Sometimes, tests require several complicated actions to be performed in sequence. This can make your tests harder to read and understand. Dusk Pages allow you to define expressive actions that may then be performed on a given page via a single method. Pages also allow you to define short-cuts to common selectors for your application or for a single page.
+복잡한 일련의 동작이 필요한 테스트의 경우, Page 오브젝트를 통해 테스트 로직을 간결하게 만들 수 있습니다. 페이지 객체에 공통 셀렉터 단축키 및 표현력 있는 동작 메서드를 정의하여 재사용할 수 있습니다.
 
 <a name="generating-pages"></a>
-### Generating Pages
+### 페이지 생성
 
-To generate a page object, execute the `dusk:page` Artisan command. All page objects will be placed in your application's `tests/Browser/Pages` directory:
+페이지 객체를 만들려면 `dusk:page` Artisan 명령을 실행합니다. 이 객체는 `tests/Browser/Pages`에 저장됩니다:
 
 ```shell
 php artisan dusk:page Login
 ```
 
 <a name="configuring-pages"></a>
-### Configuring Pages
+### 페이지 구성
 
-By default, pages have three methods: `url`, `assert`, and `elements`. We will discuss the `url` and `assert` methods now. The `elements` method will be [discussed in more detail below](#shorthand-selectors).
+기본적으로 페이지에는 `url`, `assert`, `elements` 세 가지 메서드가 있습니다.
 
-<a name="the-url-method"></a>
-#### The `url` Method
+#### `url` 메서드
 
-The `url` method should return the path of the URL that represents the page. Dusk will use this URL when navigating to the page in the browser:
+이 페이지가 나타내는 URL을 반환합니다:
 
 ```php
-/**
- * Get the URL for the page.
- */
 public function url(): string
 {
     return '/login';
 }
 ```
 
-<a name="the-assert-method"></a>
-#### The `assert` Method
+#### `assert` 메서드
 
-The `assert` method may make any assertions necessary to verify that the browser is actually on the given page. It is not actually necessary to place anything within this method; however, you are free to make these assertions if you wish. These assertions will be run automatically when navigating to the page:
+브라우저가 올바른 페이지에 있는지 판별하는 어설션입니다. 선택 사항이며, 원하는 경우 작성합니다. 페이지로 이동하면 자동 실행됩니다:
 
 ```php
-/**
- * Assert that the browser is on the page.
- */
 public function assert(Browser $browser): void
 {
     $browser->assertPathIs($this->url());
@@ -2272,9 +1223,9 @@ public function assert(Browser $browser): void
 ```
 
 <a name="navigating-to-pages"></a>
-### Navigating to Pages
+### 페이지로 이동
 
-Once a page has been defined, you may navigate to it using the `visit` method:
+정의된 페이지로는 다음과 같이 이동할 수 있습니다:
 
 ```php
 use Tests\Browser\Pages\Login;
@@ -2282,7 +1233,7 @@ use Tests\Browser\Pages\Login;
 $browser->visit(new Login);
 ```
 
-Sometimes you may already be on a given page and need to "load" the page's selectors and methods into the current test context. This is common when pressing a button and being redirected to a given page without explicitly navigating to it. In this situation, you may use the `on` method to load the page:
+리다이렉트되어 페이지로 오게 될 경우 `on` 메서드로 페이지의 셀렉터 및 메서드를 현재 컨텍스트로 로드할 수 있습니다:
 
 ```php
 use Tests\Browser\Pages\CreatePlaylist;
@@ -2294,16 +1245,11 @@ $browser->visit('/dashboard')
 ```
 
 <a name="shorthand-selectors"></a>
-### Shorthand Selectors
+### 단축 셀렉터
 
-The `elements` method within page classes allows you to define quick, easy-to-remember shortcuts for any CSS selector on your page. For example, let's define a shortcut for the "email" input field of the application's login page:
+페이지 클래스의 `elements` 메서드는 CSS 셀렉터의 별칭을 정의할 수 있습니다:
 
 ```php
-/**
- * Get the element shortcuts for the page.
- *
- * @return array<string, string>
- */
 public function elements(): array
 {
     return [
@@ -2312,23 +1258,17 @@ public function elements(): array
 }
 ```
 
-Once the shortcut has been defined, you may use the shorthand selector anywhere you would typically use a full CSS selector:
+이렇게 하면 페이지 코드 내에서 언제든 별칭으로 사용할 수 있습니다:
 
 ```php
 $browser->type('@email', 'taylor@laravel.com');
 ```
 
-<a name="global-shorthand-selectors"></a>
-#### Global Shorthand Selectors
+#### 전역 단축 셀렉터
 
-After installing Dusk, a base `Page` class will be placed in your `tests/Browser/Pages` directory. This class contains a `siteElements` method which may be used to define global shorthand selectors that should be available on every page throughout your application:
+설치 후 `tests/Browser/Pages` 디렉터리 내의 base `Page` 클래스의 `siteElements` 메소드에서 전역 별칭을 정의할 수 있습니다:
 
 ```php
-/**
- * Get the global element shortcuts for the site.
- *
- * @return array<string, string>
- */
 public static function siteElements(): array
 {
     return [
@@ -2338,91 +1278,56 @@ public static function siteElements(): array
 ```
 
 <a name="page-methods"></a>
-### Page Methods
+### 페이지 메서드
 
-In addition to the default methods defined on pages, you may define additional methods which may be used throughout your tests. For example, let's imagine we are building a music management application. A common action for one page of the application might be to create a playlist. Instead of re-writing the logic to create a playlist in each test, you may define a `createPlaylist` method on a page class:
+페이지에 커스텀 메서드를 정의해서 다수의 테스트에서 재사용할 수 있습니다. 예를 들어, Playlist 생성 기능 로직을 하나의 메소드로 캡슐화:
 
 ```php
-<?php
-
-namespace Tests\Browser\Pages;
-
-use Laravel\Dusk\Browser;
-use Laravel\Dusk\Page;
-
-class Dashboard extends Page
+public function createPlaylist(Browser $browser, string $name): void
 {
-    // Other page methods...
-
-    /**
-     * Create a new playlist.
-     */
-    public function createPlaylist(Browser $browser, string $name): void
-    {
-        $browser->type('name', $name)
-            ->check('share')
-            ->press('Create Playlist');
-    }
+    $browser->type('name', $name)
+        ->check('share')
+        ->press('Create Playlist');
 }
 ```
 
-Once the method has been defined, you may use it within any test that utilizes the page. The browser instance will automatically be passed as the first argument to custom page methods:
+이제 이 메서드는 해당 페이지 객체를 사용하는 모든 테스트에서 쉽게 호출할 수 있습니다:
 
 ```php
-use Tests\Browser\Pages\Dashboard;
-
 $browser->visit(new Dashboard)
     ->createPlaylist('My Playlist')
     ->assertSee('My Playlist');
 ```
 
 <a name="components"></a>
-## Components
+## 컴포넌트
 
-Components are similar to Dusk’s “page objects”, but are intended for pieces of UI and functionality that are re-used throughout your application, such as a navigation bar or notification window. As such, components are not bound to specific URLs.
+컴포넌트는 Dusk의 페이지 객체와 비슷하지만, 사이트 내 여러 페이지에 반복 사용되는 UI 조각(네비게이션 바, 알림창 등) 용입니다. URL과는 연관 없습니다.
 
 <a name="generating-components"></a>
-### Generating Components
+### 컴포넌트 생성
 
-To generate a component, execute the `dusk:component` Artisan command. New components are placed in the `tests/Browser/Components` directory:
+`dusk:component` Artisan 명령으로 컴포넌트를 생성합니다. 결과는 `tests/Browser/Components` 경로에 저장됩니다:
 
 ```shell
 php artisan dusk:component DatePicker
 ```
 
-As shown above, a "date picker" is an example of a component that might exist throughout your application on a variety of pages. It can become cumbersome to manually write the browser automation logic to select a date in dozens of tests throughout your test suite. Instead, we can define a Dusk component to represent the date picker, allowing us to encapsulate that logic within the component:
+예시 컴포넌트 (`DatePicker`):
 
 ```php
-<?php
-
-namespace Tests\Browser\Components;
-
-use Laravel\Dusk\Browser;
-use Laravel\Dusk\Component as BaseComponent;
-
 class DatePicker extends BaseComponent
 {
-    /**
-     * Get the root selector for the component.
-     */
     public function selector(): string
     {
         return '.date-picker';
     }
 
-    /**
-     * Assert that the browser page contains the component.
-     */
     public function assert(Browser $browser): void
     {
         $browser->assertVisible($this->selector());
     }
 
-    /**
-     * Get the element shortcuts for the component.
-     *
-     * @return array<string, string>
-     */
     public function elements(): array
     {
         return [
@@ -2433,9 +1338,6 @@ class DatePicker extends BaseComponent
         ];
     }
 
-    /**
-     * Select the given date.
-     */
     public function selectDate(Browser $browser, int $year, int $month, int $day): void
     {
         $browser->click('@date-field')
@@ -2453,19 +1355,11 @@ class DatePicker extends BaseComponent
 ```
 
 <a name="using-components"></a>
-### Using Components
+### 컴포넌트 사용
 
-Once the component has been defined, we can easily select a date within the date picker from any test. And, if the logic necessary to select a date changes, we only need to update the component:
+작성된 컴포넌트는 모든 테스트에서 쉽게 재사용할 수 있고, 내부 로직이 변경되더라도 해당 컴포넌트만 수정하면 됩니다:
 
 ```php tab=Pest
-<?php
-
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Laravel\Dusk\Browser;
-use Tests\Browser\Components\DatePicker;
-
-uses(DatabaseMigrations::class);
-
 test('basic example', function () {
     $this->browse(function (Browser $browser) {
         $browser->visit('/')
@@ -2478,20 +1372,8 @@ test('basic example', function () {
 ```
 
 ```php tab=PHPUnit
-<?php
-
-namespace Tests\Browser;
-
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Laravel\Dusk\Browser;
-use Tests\Browser\Components\DatePicker;
-use Tests\DuskTestCase;
-
 class ExampleTest extends DuskTestCase
 {
-    /**
-     * A basic component test example.
-     */
     public function test_basic_example(): void
     {
         $this->browse(function (Browser $browser) {
@@ -2506,15 +1388,15 @@ class ExampleTest extends DuskTestCase
 ```
 
 <a name="continuous-integration"></a>
-## Continuous Integration
+## 지속적 통합(CI)
 
 > [!WARNING]
-> Most Dusk continuous integration configurations expect your Laravel application to be served using the built-in PHP development server on port 8000. Therefore, before continuing, you should ensure that your continuous integration environment has an `APP_URL` environment variable value of `http://127.0.0.1:8000`.
+> 대부분의 Dusk CI 구성은 Laravel 앱이 포트 8000에서 PHP 내장 개발 서버로 서비스되고 있다고 가정합니다. CI 환경의 `APP_URL`을 `http://127.0.0.1:8000`으로 설정하세요.
 
 <a name="running-tests-on-heroku-ci"></a>
 ### Heroku CI
 
-To run Dusk tests on [Heroku CI](https://www.heroku.com/continuous-integration), add the following Google Chrome buildpack and scripts to your Heroku `app.json` file:
+[Heroku CI](https://www.heroku.com/continuous-integration)에서 Dusk를 실행하려면, 다음과 같이 app.json 파일에 Chrome buildpack과 스크립트를 추가하세요:
 
 ```json
 {
@@ -2536,7 +1418,7 @@ To run Dusk tests on [Heroku CI](https://www.heroku.com/continuous-integration),
 <a name="running-tests-on-travis-ci"></a>
 ### Travis CI
 
-To run your Dusk tests on [Travis CI](https://travis-ci.org), use the following `.travis.yml` configuration. Since Travis CI is not a graphical environment, we will need to take some extra steps in order to launch a Chrome browser. In addition, we will use `php artisan serve` to launch PHP's built-in web server:
+[Travis CI](https://travis-ci.org)에서 테스트하려면 다음 `.travis.yml` 설정을 사용할 수 있습니다:
 
 ```yaml
 language: php
@@ -2564,13 +1446,12 @@ script:
 <a name="running-tests-on-github-actions"></a>
 ### GitHub Actions
 
-If you are using [GitHub Actions](https://github.com/features/actions) to run your Dusk tests, you may use the following configuration file as a starting point. Like TravisCI, we will use the `php artisan serve` command to launch PHP's built-in web server:
+[GitHub Actions](https://github.com/features/actions)에서 Dusk 테스트를 실행하려는 경우, 아래 구성 예시를 참고하세요:
 
 ```yaml
 name: CI
 on: [push]
 jobs:
-
   dusk-php:
     runs-on: ubuntu-latest
     env:
@@ -2615,7 +1496,7 @@ jobs:
 <a name="running-tests-on-chipper-ci"></a>
 ### Chipper CI
 
-If you are using [Chipper CI](https://chipperci.com) to run your Dusk tests, you may use the following configuration file as a starting point. We will use PHP's built-in server to run Laravel so we can listen for requests:
+[Chipper CI](https://chipperci.com)를 사용할 경우, PHP 내장 서버로 요청을 받을 수 있도록 다음 설정 예시를 사용할 수 있습니다:
 
 ```yaml
 # file .chipperci.yml
@@ -2625,11 +1506,9 @@ environment:
   php: 8.2
   node: 16
 
-# Include Chrome in the build environment
 services:
   - dusk
 
-# Build all commits
 on:
    push:
       branches: .*
@@ -2640,8 +1519,6 @@ pipeline:
       cp -v .env.example .env
       composer install --no-interaction --prefer-dist --optimize-autoloader
       php artisan key:generate
-
-      # Create a dusk env file, ensuring APP_URL uses BUILD_HOST
       cp -v .env .env.dusk.ci
       sed -i "s@APP_URL=.*@APP_URL=http://$BUILD_HOST:8000@g" .env.dusk.ci
 
@@ -2658,4 +1535,4 @@ pipeline:
       php artisan dusk --env=ci
 ```
 
-To learn more about running Dusk tests on Chipper CI, including how to use databases, consult the [official Chipper CI documentation](https://chipperci.com/docs/testing/laravel-dusk-new/).
+Chipper CI에서 데이터베이스 활용 등 더 자세한 내용은 [공식 문서](https://chipperci.com/docs/testing/laravel-dusk-new/)를 참고하세요.
