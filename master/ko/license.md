@@ -1,21 +1,15 @@
-The MIT License (MIT)
+MIT 라이선스 (MIT)
 
-Copyright (c) Taylor Otwell
+저작권 (c) Taylor Otwell
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+이 소프트웨어 및 관련 문서 파일(이하 "소프트웨어")의 사본을 취득한 모든 사람에게 
+아래 조건을 충족하는 한, 사용, 복사, 수정, 병합, 출판, 배포, 서브라이선스, 또는 
+판매할 권리와, 소프트웨어가 제공된 사람에게 동일한 권리를 허가할 권리를 포함하여 
+소프트웨어를 제한 없이 자유롭게 취급할 수 있는 권한이 무료로 부여됩니다.
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+위의 저작권 표시와 이 허가 문구는 소프트웨어의 모든 복사본 또는 실질적인 부분에 포함되어야 합니다.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+본 소프트웨어는 "있는 그대로" 제공되며, 상품성, 특정 목적에 대한 적합성 및 비침해에 대한
+명시적이거나 묵시적인 어떠한 보증도 제공하지 않습니다. 어떠한 경우에도 저자 또는 저작권자는 
+소프트웨어 또는 소프트웨어의 사용이나 기타 거래로 인해 또는 그와 관련하여 발생하는 계약, 불법행위 또는 기타 사유로 발생하는 
+어떠한 클레임, 손해, 기타 책임에 대해서도 책임을 지지 않습니다.

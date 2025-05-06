@@ -1,96 +1,96 @@
 # Laravel Sail
 
-- [Introduction](#introduction)
-- [Installation and Setup](#installation)
-    - [Installing Sail Into Existing Applications](#installing-sail-into-existing-applications)
-    - [Rebuilding Sail Images](#rebuilding-sail-images)
-    - [Configuring A Shell Alias](#configuring-a-shell-alias)
-- [Starting and Stopping Sail](#starting-and-stopping-sail)
-- [Executing Commands](#executing-sail-commands)
-    - [Executing PHP Commands](#executing-php-commands)
-    - [Executing Composer Commands](#executing-composer-commands)
-    - [Executing Artisan Commands](#executing-artisan-commands)
-    - [Executing Node / NPM Commands](#executing-node-npm-commands)
-- [Interacting With Databases](#interacting-with-sail-databases)
+- [소개](#introduction)
+- [설치 및 설정](#installation)
+    - [기존 애플리케이션에 Sail 설치하기](#installing-sail-into-existing-applications)
+    - [Sail 이미지 재빌드하기](#rebuilding-sail-images)
+    - [셸 별칭(alias) 설정하기](#configuring-a-shell-alias)
+- [Sail 시작 및 중지](#starting-and-stopping-sail)
+- [명령 실행](#executing-sail-commands)
+    - [PHP 명령 실행](#executing-php-commands)
+    - [Composer 명령 실행](#executing-composer-commands)
+    - [Artisan 명령 실행](#executing-artisan-commands)
+    - [Node / NPM 명령 실행](#executing-node-npm-commands)
+- [데이터베이스와 상호작용](#interacting-with-sail-databases)
     - [MySQL](#mysql)
     - [MongoDB](#mongodb)
     - [Redis](#redis)
     - [Valkey](#valkey)
     - [Meilisearch](#meilisearch)
     - [Typesense](#typesense)
-- [File Storage](#file-storage)
-- [Running Tests](#running-tests)
+- [파일 스토리지](#file-storage)
+- [테스트 실행](#running-tests)
     - [Laravel Dusk](#laravel-dusk)
-- [Previewing Emails](#previewing-emails)
-- [Container CLI](#sail-container-cli)
-- [PHP Versions](#sail-php-versions)
-- [Node Versions](#sail-node-versions)
-- [Sharing Your Site](#sharing-your-site)
-- [Debugging With Xdebug](#debugging-with-xdebug)
-  - [Xdebug CLI Usage](#xdebug-cli-usage)
-  - [Xdebug Browser Usage](#xdebug-browser-usage)
-- [Customization](#sail-customization)
+- [이메일 미리보기](#previewing-emails)
+- [컨테이너 CLI](#sail-container-cli)
+- [PHP 버전](#sail-php-versions)
+- [Node 버전](#sail-node-versions)
+- [사이트 공유하기](#sharing-your-site)
+- [Xdebug로 디버깅](#debugging-with-xdebug)
+  - [Xdebug CLI 사용법](#xdebug-cli-usage)
+  - [Xdebug 브라우저 사용법](#xdebug-browser-usage)
+- [커스터마이징](#sail-customization)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-[Laravel Sail](https://github.com/laravel/sail) is a light-weight command-line interface for interacting with Laravel's default Docker development environment. Sail provides a great starting point for building a Laravel application using PHP, MySQL, and Redis without requiring prior Docker experience.
+[Laravel Sail](https://github.com/laravel/sail)은 Laravel의 기본 Docker 개발 환경과 상호작용하기 위한 경량화된 커맨드라인 인터페이스입니다. Sail은 PHP, MySQL, Redis를 이용한 Laravel 애플리케이션을 구축할 때 Docker에 대한 사전 경험 없이도 훌륭한 출발점을 제공합니다.
 
-At its heart, Sail is the `docker-compose.yml` file and the `sail` script that is stored at the root of your project. The `sail` script provides a CLI with convenient methods for interacting with the Docker containers defined by the `docker-compose.yml` file.
+Sail의 핵심은 프로젝트 루트에 위치한 `docker-compose.yml` 파일과 `sail` 스크립트입니다. `sail` 스크립트는 `docker-compose.yml` 파일에 정의된 Docker 컨테이너와 편리하게 상호작용할 수 있는 CLI를 제공합니다.
 
-Laravel Sail is supported on macOS, Linux, and Windows (via [WSL2](https://docs.microsoft.com/en-us/windows/wsl/about)).
+Laravel Sail은 macOS, Linux, Windows( [WSL2](https://docs.microsoft.com/en-us/windows/wsl/about) 활용)에서 지원됩니다.
 
 <a name="installation"></a>
-## Installation and Setup
+## 설치 및 설정
 
-Laravel Sail is automatically installed with all new Laravel applications so you may start using it immediately.
+Laravel Sail은 모든 신규 Laravel 애플리케이션에 자동으로 설치되므로 즉시 사용할 수 있습니다.
 
 <a name="installing-sail-into-existing-applications"></a>
-### Installing Sail Into Existing Applications
+### 기존 애플리케이션에 Sail 설치하기
 
-If you are interested in using Sail with an existing Laravel application, you may simply install Sail using the Composer package manager. Of course, these steps assume that your existing local development environment allows you to install Composer dependencies:
+기존 Laravel 애플리케이션에서 Sail을 사용하고 싶다면 Composer 패키지 매니저를 통해 Sail을 설치할 수 있습니다. 물론 이 과정은 로컬 개발 환경에 Composer 의존성 설치가 가능한 상태임을 전제로 합니다:
 
 ```shell
 composer require laravel/sail --dev
 ```
 
-After Sail has been installed, you may run the `sail:install` Artisan command. This command will publish Sail's `docker-compose.yml` file to the root of your application and modify your `.env` file with the required environment variables in order to connect to the Docker services:
+Sail을 설치한 후, `sail:install` Artisan 명령을 실행할 수 있습니다. 이 명령은 Sail의 `docker-compose.yml` 파일을 애플리케이션 루트에 게시하고, Docker 서비스와 연결하는 데 필요한 환경 변수를 `.env` 파일에 추가합니다:
 
 ```shell
 php artisan sail:install
 ```
 
-Finally, you may start Sail. To continue learning how to use Sail, please continue reading the remainder of this documentation:
+마지막으로, Sail을 시작할 수 있습니다. Sail 사용법을 더 배우고 싶다면 이 문서의 나머지 부분을 참고하세요:
 
 ```shell
 ./vendor/bin/sail up
 ```
 
 > [!WARNING]
-> If you are using Docker Desktop for Linux, you should use the `default` Docker context by executing the following command: `docker context use default`.
+> Linux에서 Docker Desktop을 사용 중이라면, 다음 명령어로 `default` Docker 컨텍스트를 사용해야 합니다: `docker context use default`.
 
 <a name="adding-additional-services"></a>
-#### Adding Additional Services
+#### 추가 서비스 설치하기
 
-If you would like to add an additional service to your existing Sail installation, you may run the `sail:add` Artisan command:
+Sail 설치 후 추가로 서비스를 더하고 싶다면, `sail:add` Artisan 명령을 사용할 수 있습니다:
 
 ```shell
 php artisan sail:add
 ```
 
 <a name="using-devcontainers"></a>
-#### Using Devcontainers
+#### Devcontainer 사용하기
 
-If you would like to develop within a [Devcontainer](https://code.visualstudio.com/docs/remote/containers), you may provide the `--devcontainer` option to the `sail:install` command. The `--devcontainer` option will instruct the `sail:install` command to publish a default `.devcontainer/devcontainer.json ` file to the root of your application:
+[Devcontainer](https://code.visualstudio.com/docs/remote/containers) 환경에서 개발하고 싶다면, `sail:install` 명령에 `--devcontainer` 옵션을 추가하면 됩니다. 이 옵션은 기본 `.devcontainer/devcontainer.json` 파일을 애플리케이션 루트에 게시합니다:
 
 ```shell
 php artisan sail:install --devcontainer
 ```
 
 <a name="rebuilding-sail-images"></a>
-### Rebuilding Sail Images
+### Sail 이미지 재빌드하기
 
-Sometimes you may want to completely rebuild your Sail images to ensure all of the image's packages and software are up to date. You may accomplish this using the `build` command:
+Sail 이미지의 모든 패키지와 소프트웨어를 최신 상태로 유지하려면 이미지를 완전히 재빌드해야 할 수 있습니다. 다음과 같이 `build` 명령으로 할 수 있습니다:
 
 ```shell
 docker compose down -v
@@ -101,72 +101,72 @@ sail up
 ```
 
 <a name="configuring-a-shell-alias"></a>
-### Configuring A Shell Alias
+### 셸 별칭(alias) 설정하기
 
-By default, Sail commands are invoked using the `vendor/bin/sail` script that is included with all new Laravel applications:
+기본적으로 Sail 명령은 모든 신규 Laravel 애플리케이션에 포함된 `vendor/bin/sail` 스크립트로 호출합니다:
 
 ```shell
 ./vendor/bin/sail up
 ```
 
-However, instead of repeatedly typing `vendor/bin/sail` to execute Sail commands, you may wish to configure a shell alias that allows you to execute Sail's commands more easily:
+하지만 매번 `vendor/bin/sail`을 입력하는 대신, 셸 별칭(alias)을 등록하여 Sail 명령을 더 간편하게 사용할 수 있습니다:
 
 ```shell
 alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
 ```
 
-To make sure this is always available, you may add this to your shell configuration file in your home directory, such as `~/.zshrc` or `~/.bashrc`, and then restart your shell.
+항상 사용할 수 있도록 이 별칭을 홈 디렉터리의 셸 설정 파일(예: `~/.zshrc` 또는 `~/.bashrc`)에 추가한 후 셸을 재시작하세요.
 
-Once the shell alias has been configured, you may execute Sail commands by simply typing `sail`. The remainder of this documentation's examples will assume that you have configured this alias:
+별칭이 설정되면 이후 Sail 명령은 단순히 `sail`로 실행할 수 있습니다. 이 문서의 나머지 예제들은 별칭이 설정되었다고 가정합니다:
 
 ```shell
 sail up
 ```
 
 <a name="starting-and-stopping-sail"></a>
-## Starting and Stopping Sail
+## Sail 시작 및 중지
 
-Laravel Sail's `docker-compose.yml` file defines a variety of Docker containers that work together to help you build Laravel applications. Each of these containers is an entry within the `services` configuration of your `docker-compose.yml` file. The `laravel.test` container is the primary application container that will be serving your application.
+Laravel Sail의 `docker-compose.yml` 파일은 Laravel 애플리케이션 구축에 필요한 다양한 Docker 컨테이너를 정의합니다. 각각의 컨테이너는 `docker-compose.yml` 파일 내 `services` 설정에서 확인할 수 있습니다. `laravel.test` 컨테이너는 애플리케이션을 서비스하는 주요 컨테이너입니다.
 
-Before starting Sail, you should ensure that no other web servers or databases are running on your local computer. To start all of the Docker containers defined in your application's `docker-compose.yml` file, you should execute the `up` command:
+Sail을 시작하기 전에 로컬 컴퓨터에서 웹 서버나 데이터베이스가 동작하고 있지 않은지 확인하세요. 애플리케이션의 `docker-compose.yml` 파일에 정의된 모든 Docker 컨테이너를 시작하려면 `up` 명령을 실행하세요:
 
 ```shell
 sail up
 ```
 
-To start all of the Docker containers in the background, you may start Sail in "detached" mode:
+모든 컨테이너를 백그라운드(데몬) 모드로 시작하려면 `-d` 옵션을 사용하세요:
 
 ```shell
 sail up -d
 ```
 
-Once the application's containers have been started, you may access the project in your web browser at: http://localhost.
+모든 컨테이너가 시작되면 웹 브라우저에서 http://localhost로 프로젝트에 접근할 수 있습니다.
 
-To stop all of the containers, you may simply press Control + C to stop the container's execution. Or, if the containers are running in the background, you may use the `stop` command:
+모든 컨테이너를 중지하려면 Control + C를 누르거나, 백그라운드에서 실행 중이라면 `stop` 명령을 사용할 수 있습니다:
 
 ```shell
 sail stop
 ```
 
 <a name="executing-sail-commands"></a>
-## Executing Commands
+## 명령 실행
 
-When using Laravel Sail, your application is executing within a Docker container and is isolated from your local computer. However, Sail provides a convenient way to run various commands against your application such as arbitrary PHP commands, Artisan commands, Composer commands, and Node / NPM commands.
+Laravel Sail을 사용할 때 애플리케이션은 Docker 컨테이너 내에서 실행되며, 로컬 컴퓨터와 격리됩니다. 그러나 Sail은 다양한 명령어(PHP, Artisan, Composer, Node / NPM 등)를 애플리케이션에 대해 실행할 수 있도록 편리한 방법을 제공합니다.
 
-**When reading the Laravel documentation, you will often see references to Composer, Artisan, and Node / NPM commands that do not reference Sail.** Those examples assume that these tools are installed on your local computer. If you are using Sail for your local Laravel development environment, you should execute those commands using Sail:
+**Laravel 공식 문서에서는 Sail을 언급하지 않은 Composer, Artisan, Node / NPM 명령 예시들이 자주 등장합니다.** 이 예제들은 해당 도구가 로컬 컴퓨터에 설치되어 있음을 전제로 합니다. Sail로 환경을 구성한 경우 이러한 명령들은 Sail로 실행해야 합니다:
 
 ```shell
-# Running Artisan commands locally...
+# 로컬에서 Artisan 명령 실행...
 php artisan queue:work
 
-# Running Artisan commands within Laravel Sail...
+# Laravel Sail 컨테이너에서 Artisan 명령 실행...
 sail artisan queue:work
 ```
 
 <a name="executing-php-commands"></a>
-### Executing PHP Commands
+### PHP 명령 실행
 
-PHP commands may be executed using the `php` command. Of course, these commands will execute using the PHP version that is configured for your application. To learn more about the PHP versions available to Laravel Sail, consult the [PHP version documentation](#sail-php-versions):
+`php` 명령으로 PHP 명령을 실행할 수 있습니다. 이때 사용되는 PHP 버전은 애플리케이션에 설정된 버전입니다. Sail이 지원하는 PHP 버전 정보는 [PHP 버전 문서](#sail-php-versions)를 참고하세요:
 
 ```shell
 sail php --version
@@ -175,27 +175,27 @@ sail php script.php
 ```
 
 <a name="executing-composer-commands"></a>
-### Executing Composer Commands
+### Composer 명령 실행
 
-Composer commands may be executed using the `composer` command. Laravel Sail's application container includes a Composer installation:
+`composer` 명령으로 Composer 명령을 실행할 수 있습니다. Sail의 애플리케이션 컨테이너에는 Composer가 설치되어 있습니다:
 
 ```shell
 sail composer require laravel/sanctum
 ```
 
 <a name="executing-artisan-commands"></a>
-### Executing Artisan Commands
+### Artisan 명령 실행
 
-Laravel Artisan commands may be executed using the `artisan` command:
+`artisan` 명령으로 Laravel Artisan 명령을 실행할 수 있습니다:
 
 ```shell
 sail artisan queue:work
 ```
 
 <a name="executing-node-npm-commands"></a>
-### Executing Node / NPM Commands
+### Node / NPM 명령 실행
 
-Node commands may be executed using the `node` command while NPM commands may be executed using the `npm` command:
+Node 명령은 `node`로, NPM 명령은 `npm`으로 실행할 수 있습니다:
 
 ```shell
 sail node --version
@@ -203,32 +203,32 @@ sail node --version
 sail npm run dev
 ```
 
-If you wish, you may use Yarn instead of NPM:
+원한다면 NPM 대신 Yarn을 사용할 수도 있습니다:
 
 ```shell
 sail yarn
 ```
 
 <a name="interacting-with-sail-databases"></a>
-## Interacting With Databases
+## 데이터베이스와 상호작용
 
 <a name="mysql"></a>
 ### MySQL
 
-As you may have noticed, your application's `docker-compose.yml` file contains an entry for a MySQL container. This container uses a [Docker volume](https://docs.docker.com/storage/volumes/) so that the data stored in your database is persisted even when stopping and restarting your containers.
+애플리케이션의 `docker-compose.yml` 파일에는 MySQL 컨테이너가 정의되어 있습니다. 이 컨테이너는 [Docker 볼륨](https://docs.docker.com/storage/volumes/)을 사용하므로, 컨테이너를 중지하거나 재시작해도 데이터가 보존됩니다.
 
-In addition, the first time the MySQL container starts, it will create two databases for you. The first database is named using the value of your `DB_DATABASE` environment variable and is for your local development. The second is a dedicated testing database named `testing` and will ensure that your tests do not interfere with your development data.
+또한 MySQL 컨테이너가 처음 시작될 때 두 개의 데이터베이스가 자동 생성됩니다. 첫 번째 데이터베이스는 `DB_DATABASE` 환경 변수의 값으로 이름이 지정되며 로컬 개발용입니다. 두 번째는 `testing`이라는 테스트 전용 데이터베이스로, 테스트 코드가 개발 데이터에 영향을 주지 않도록 보장합니다.
 
-Once you have started your containers, you may connect to the MySQL instance within your application by setting your `DB_HOST` environment variable within your application's `.env` file to `mysql`.
+컨테이너를 시작했다면, `.env` 파일의 `DB_HOST` 환경 변수를 `mysql`로 지정하여 애플리케이션에서 MySQL에 연결할 수 있습니다.
 
-To connect to your application's MySQL database from your local machine, you may use a graphical database management application such as [TablePlus](https://tableplus.com). By default, the MySQL database is accessible at `localhost` port 3306 and the access credentials correspond to the values of your `DB_USERNAME` and `DB_PASSWORD` environment variables. Or, you may connect as the `root` user, which also utilizes the value of your `DB_PASSWORD` environment variable as its password.
+로컬 컴퓨터에서 그래픽 데이터베이스 관리 툴([TablePlus](https://tableplus.com) 등)을 이용해 연결하려면, 기본적으로 MySQL은 `localhost`의 3306 포트에서 접근할 수 있으며, 아이디와 비밀번호는 `DB_USERNAME`과 `DB_PASSWORD` 환경 변수의 값을 사용합니다. 또는 `root` 사용자로 접속할 수도 있으며, 이 경우 비밀번호는 역시 `DB_PASSWORD` 환경 변수의 값을 사용합니다.
 
 <a name="mongodb"></a>
 ### MongoDB
 
-If you chose to install the [MongoDB](https://www.mongodb.com/) service when installing Sail, your application's `docker-compose.yml` file contains an entry for a [MongoDB Atlas Local](https://www.mongodb.com/docs/atlas/cli/current/atlas-cli-local-cloud/) container which provides the MongoDB document database with Atlas features like [Search Indexes](https://www.mongodb.com/docs/atlas/atlas-search/). This container uses a [Docker volume](https://docs.docker.com/storage/volumes/) so that the data stored in your database is persisted even when stopping and restarting your containers.
+Sail 설치 시 [MongoDB](https://www.mongodb.com/) 서비스를 선택했다면, `docker-compose.yml` 파일에 [MongoDB Atlas Local](https://www.mongodb.com/docs/atlas/cli/current/atlas-cli-local-cloud/) 컨테이너가 추가됩니다. 이 컨테이너는 [Atlas Search Indexes](https://www.mongodb.com/docs/atlas/atlas-search/)와 같은 기능도 포함하는 MongoDB 문서 데이터베이스를 제공합니다. 또한 [Docker 볼륨](https://docs.docker.com/storage/volumes/)을 사용해 데이터가 유지됩니다.
 
-Once you have started your containers, you may connect to the MongoDB instance within your application by setting your `MONGODB_URI` environment variable within your application's `.env` file to `mongodb://mongodb:27017`. Authentication is disabled by default, but you can set the `MONGODB_USERNAME` and `MONGODB_PASSWORD` environment variables to enable authentication before starting the `mongodb` container. Then, add the credentials to the connection string:
+컨테이너 실행 후, `.env` 파일의 `MONGODB_URI` 환경 변수를 `mongodb://mongodb:27017`로 설정하면 애플리케이션 내부에서 MongoDB에 연결할 수 있습니다. 인증 기능은 기본적으로 비활성화되어 있으나, 컨테이너 실행 전 `MONGODB_USERNAME`, `MONGODB_PASSWORD` 환경 변수를 설정하면 인증을 활성화할 수 있습니다. 그 후 접속 문자열에 자격증명을 추가하세요:
 
 ```ini
 MONGODB_USERNAME=user
@@ -236,35 +236,35 @@ MONGODB_PASSWORD=laravel
 MONGODB_URI=mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:27017
 ```
 
-For seamless integration of MongoDB with your application, you can install the [official package maintained by MongoDB](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/).
+애플리케이션에 MongoDB를 원활하게 연결하기 위해 [MongoDB 공식 Laravel 패키지](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/)를 설치할 수 있습니다.
 
-To connect to your application's MongoDB database from your local machine, you may use a graphical interface such as [Compass](https://www.mongodb.com/products/tools/compass). By default, the MongoDB database is accessible at `localhost` port `27017`.
+로컬 컴퓨터에서 [Compass](https://www.mongodb.com/products/tools/compass) 등 그래픽 툴로 접속하려면 기본적으로 `localhost`의 27017 포트로 접근할 수 있습니다.
 
 <a name="redis"></a>
 ### Redis
 
-Your application's `docker-compose.yml` file also contains an entry for a [Redis](https://redis.io) container. This container uses a [Docker volume](https://docs.docker.com/storage/volumes/) so that the data stored in your Redis instance is persisted even when stopping and restarting your containers. Once you have started your containers, you may connect to the Redis instance within your application by setting your `REDIS_HOST` environment variable within your application's `.env` file to `redis`.
+`docker-compose.yml` 파일에는 [Redis](https://redis.io) 컨테이너도 정의되어 있습니다. 이 컨테이너 역시 [Docker 볼륨](https://docs.docker.com/storage/volumes/)을 사용하여 데이터가 계속 유지됩니다. 컨테이너 실행 후, `.env` 파일의 `REDIS_HOST` 변수를 `redis`로 입력하면 애플리케이션 내부에서 Redis 인스턴스에 연결할 수 있습니다.
 
-To connect to your application's Redis database from your local machine, you may use a graphical database management application such as [TablePlus](https://tableplus.com). By default, the Redis database is accessible at `localhost` port 6379.
+로컬 컴퓨터에서 [TablePlus](https://tableplus.com) 같은 데이터베이스 관리 툴로 연결하려면, 기본적으로 Redis는 `localhost`의 6379 포트에서 접근할 수 있습니다.
 
 <a name="valkey"></a>
 ### Valkey
 
-If you choose to install Valkey service when installing Sail, your application's `docker-compose.yml` file will contain an entry for [Valkey](https://valkey.io/). This container uses a [Docker volume](https://docs.docker.com/storage/volumes/) so that the data stored in your Valkey instance is persisted even when stopping and restarting your containers. You can connect to this container in you application by setting your `REDIS_HOST` environment variable within your application's `.env` file to `valkey`.
+Sail 설치 시 Valkey 서비스를 선택하면, `docker-compose.yml` 파일에 [Valkey](https://valkey.io/)가 추가됩니다. 이 컨테이너는 [Docker 볼륨](https://docs.docker.com/storage/volumes/)을 사용하므로 데이터가 유지됩니다. 애플리케이션의 `.env` 파일에서 `REDIS_HOST` 변수를 `valkey`로 설정하면 이 컨테이너로 연결할 수 있습니다.
 
-To connect to your application's Valkey database from your local machine, you may use a graphical database management application such as [TablePlus](https://tableplus.com). By default, the Valkey database is accessible at `localhost` port 6379.
+로컬 컴퓨터에서 [TablePlus](https://tableplus.com) 같은 툴로 연결할 때도 기본적으로 `localhost`의 6379 포트에서 사용할 수 있습니다.
 
 <a name="meilisearch"></a>
 ### Meilisearch
 
-If you chose to install the [Meilisearch](https://www.meilisearch.com) service when installing Sail, your application's `docker-compose.yml` file will contain an entry for this powerful search engine that is integrated with [Laravel Scout](/docs/{{version}}/scout). Once you have started your containers, you may connect to the Meilisearch instance within your application by setting your `MEILISEARCH_HOST` environment variable to `http://meilisearch:7700`.
+Sail 설치 시 [Meilisearch](https://www.meilisearch.com) 서비스를 선택했다면, `docker-compose.yml` 파일에 이 강력한 검색 엔진이 포함됩니다. [Laravel Scout](/docs/{{version}}/scout)와 통합되어 있습니다. 컨테이너 실행 후, `.env` 파일에서 `MEILISEARCH_HOST` 변수를 `http://meilisearch:7700`으로 설정하면 애플리케이션에서 Meilisearch에 연결할 수 있습니다.
 
-From your local machine, you may access Meilisearch's web based administration panel by navigating to `http://localhost:7700` in your web browser.
+로컬 브라우저에서는 `http://localhost:7700`으로 접속하여 Meilisearch의 웹 기반 관리 패널을 사용할 수 있습니다.
 
 <a name="typesense"></a>
 ### Typesense
 
-If you chose to install the [Typesense](https://typesense.org) service when installing Sail, your application's `docker-compose.yml` file will contain an entry for this lightning fast, open-source search engine that is natively integrated with [Laravel Scout](/docs/{{version}}/scout#typesense). Once you have started your containers, you may connect to the Typesense instance within your application by setting the following environment variables:
+Sail 설치 시 [Typesense](https://typesense.org) 서비스를 선택했다면, `docker-compose.yml` 파일에 이 빠르고 오픈소스인 검색 엔진이 추가됩니다. [Laravel Scout](/docs/{{version}}/scout#typesense)와 네이티브로 통합되어 있습니다. 컨테이너 실행 후, 다음 환경 변수를 설정하면 애플리케이션에서 Typesense에 연결할 수 있습니다:
 
 ```ini
 TYPESENSE_HOST=typesense
@@ -273,14 +273,14 @@ TYPESENSE_PROTOCOL=http
 TYPESENSE_API_KEY=xyz
 ```
 
-From your local machine, you may access Typesense's API via `http://localhost:8108`.
+로컬 컴퓨터에서는 `http://localhost:8108`로 API에 접속할 수 있습니다.
 
 <a name="file-storage"></a>
-## File Storage
+## 파일 스토리지
 
-If you plan to use Amazon S3 to store files while running your application in its production environment, you may wish to install the [MinIO](https://min.io) service when installing Sail. MinIO provides an S3 compatible API that you may use to develop locally using Laravel's `s3` file storage driver without creating "test" storage buckets in your production S3 environment. If you choose to install MinIO while installing Sail, a MinIO configuration section will be added to your application's `docker-compose.yml` file.
+프로덕션 환경에서 Amazon S3를 사용할 계획이라면, Sail 설치 시 [MinIO](https://min.io) 서비스를 함께 설치하는 것이 좋습니다. MinIO는 S3 호환 API를 제공하여, 실제 S3 환경에 테스트용 버킷을 만들지 않고도 로컬에서 `s3` 파일 스토리지 드라이버로 개발할 수 있게 해줍니다. MinIO를 설치하면 `docker-compose.yml` 파일에 관련 설정이 추가됩니다.
 
-By default, your application's `filesystems` configuration file already contains a disk configuration for the `s3` disk. In addition to using this disk to interact with Amazon S3, you may use it to interact with any S3 compatible file storage service such as MinIO by simply modifying the associated environment variables that control its configuration. For example, when using MinIO, your filesystem environment variable configuration should be defined as follows:
+기본적으로 애플리케이션의 `filesystems` 설정 파일에는 이미 `s3` 디스크 구성이 들어 있습니다. 이 디스크로 Amazon S3 뿐만 아니라 MinIO 등 S3 호환 파일 스토리지 서비스와도 연동할 수 있습니다. 환경 변수만 적절히 수정하면 됩니다. 예를 들어 MinIO 사용 시 파일시스템 환경 변수를 다음과 같이 정의하세요:
 
 ```ini
 FILESYSTEM_DISK=s3
@@ -292,21 +292,21 @@ AWS_ENDPOINT=http://minio:9000
 AWS_USE_PATH_STYLE_ENDPOINT=true
 ```
 
-In order for Laravel's Flysystem integration to generate proper URLs when using MinIO, you should define the `AWS_URL` environment variable so that it matches your application's local URL and includes the bucket name in the URL path:
+Laravel의 Flysystem 통합이 MinIO 사용 시 올바른 URL을 생성하려면, `AWS_URL` 환경 변수를 애플리케이션의 로컬 URL과 버킷명이 포함되도록 정의해야 합니다:
 
 ```ini
 AWS_URL=http://localhost:9000/local
 ```
 
-You may create buckets via the MinIO console, which is available at `http://localhost:8900`. The default username for the MinIO console is `sail` while the default password is `password`.
+MinIO 콘솔(http://localhost:8900)에서 버킷을 생성할 수 있습니다. 기본 MinIO 콘솔 아이디는 `sail`, 비밀번호는 `password`입니다.
 
 > [!WARNING]
-> Generating temporary storage URLs via the `temporaryUrl` method is not supported when using MinIO.
+> MinIO 사용 시 `temporaryUrl` 메서드를 통한 임시 스토리지 URL 생성은 지원되지 않습니다.
 
 <a name="running-tests"></a>
-## Running Tests
+## 테스트 실행
 
-Laravel provides amazing testing support out of the box, and you may use Sail's `test` command to run your applications [feature and unit tests](/docs/{{version}}/testing). Any CLI options that are accepted by Pest / PHPUnit may also be passed to the `test` command:
+Laravel은 기본적으로 강력한 테스트 지원을 제공하며, Sail의 `test` 명령을 이용해 [기능 및 단위 테스트](/docs/{{version}}/testing)를 실행할 수 있습니다. Pest / PHPUnit에서 허용하는 모든 CLI 옵션도 함께 전달할 수 있습니다:
 
 ```shell
 sail test
@@ -314,13 +314,13 @@ sail test
 sail test --group orders
 ```
 
-The Sail `test` command is equivalent to running the `test` Artisan command:
+Sail의 `test` 명령은 `test` Artisan 명령과 동일합니다:
 
 ```shell
 sail artisan test
 ```
 
-By default, Sail will create a dedicated `testing` database so that your tests do not interfere with the current state of your database. In a default Laravel installation, Sail will also configure your `phpunit.xml` file to use this database when executing your tests:
+기본적으로 Sail은 `testing` 전용 데이터베이스를 생성하여, 테스트가 현재 데이터베이스 상태에 영향을 주지 않도록 합니다. 기본 Laravel 설치에서는 Sail이 자동으로 `phpunit.xml` 파일 또한 올바르게 구성합니다:
 
 ```xml
 <env name="DB_DATABASE" value="testing"/>
@@ -329,7 +329,7 @@ By default, Sail will create a dedicated `testing` database so that your tests d
 <a name="laravel-dusk"></a>
 ### Laravel Dusk
 
-[Laravel Dusk](/docs/{{version}}/dusk) provides an expressive, easy-to-use browser automation and testing API. Thanks to Sail, you may run these tests without ever installing Selenium or other tools on your local computer. To get started, uncomment the Selenium service in your application's `docker-compose.yml` file:
+[Laravel Dusk](/docs/{{version}}/dusk)는 간결하고 사용하기 편한 브라우저 자동화 및 테스트 API를 제공합니다. Sail을 활용하면 로컬 컴퓨터에 Selenium 등 별도 도구를 설치하지 않고도 이 테스트를 실행할 수 있습니다. 시작하려면, 애플리케이션의 `docker-compose.yml` 파일에서 Selenium 서비스를 주석 해제하세요:
 
 ```yaml
 selenium:
@@ -342,7 +342,7 @@ selenium:
         - sail
 ```
 
-Next, ensure that the `laravel.test` service in your application's `docker-compose.yml` file has a `depends_on` entry for `selenium`:
+그리고 `laravel.test` 서비스에 `selenium`이 의존 서비스로 설정되어 있는지 확인하세요:
 
 ```yaml
 depends_on:
@@ -351,16 +351,16 @@ depends_on:
     - selenium
 ```
 
-Finally, you may run your Dusk test suite by starting Sail and running the `dusk` command:
+이제 Sail을 시작한 뒤, `dusk` 명령으로 Dusk 테스트를 실행할 수 있습니다:
 
 ```shell
 sail dusk
 ```
 
 <a name="selenium-on-apple-silicon"></a>
-#### Selenium on Apple Silicon
+#### Apple Silicon에서 Selenium 사용
 
-If your local machine contains an Apple Silicon chip, your `selenium` service must use the `selenium/standalone-chromium` image:
+로컬 컴퓨터가 Apple Silicon 칩을 사용할 경우, `selenium/standalone-chromium` 이미지를 사용해야 합니다:
 
 ```yaml
 selenium:
@@ -374,9 +374,9 @@ selenium:
 ```
 
 <a name="previewing-emails"></a>
-## Previewing Emails
+## 이메일 미리보기
 
-Laravel Sail's default `docker-compose.yml` file contains a service entry for [Mailpit](https://github.com/axllent/mailpit). Mailpit intercepts emails sent by your application during local development and provides a convenient web interface so that you can preview your email messages in your browser. When using Sail, Mailpit's default host is `mailpit` and is available via port 1025:
+Laravel Sail의 기본 `docker-compose.yml` 파일에는 [Mailpit](https://github.com/axllent/mailpit) 서비스가 포함되어 있습니다. Mailpit은 개발 중 애플리케이션에서 발송한 이메일을 가로채고, 웹 인터페이스를 통해 이메일 내용을 브라우저에서 미리볼 수 있게 해줍니다. Sail에서는 기본적으로 Mailpit의 호스트가 `mailpit`이고, 포트 1025에 연결됩니다:
 
 ```ini
 MAIL_HOST=mailpit
@@ -384,12 +384,12 @@ MAIL_PORT=1025
 MAIL_ENCRYPTION=null
 ```
 
-When Sail is running, you may access the Mailpit web interface at: http://localhost:8025
+Sail이 실행 중이라면 http://localhost:8025에서 Mailpit 웹 인터페이스를 사용할 수 있습니다.
 
 <a name="sail-container-cli"></a>
-## Container CLI
+## 컨테이너 CLI
 
-Sometimes you may wish to start a Bash session within your application's container. You may use the `shell` command to connect to your application's container, allowing you to inspect its files and installed services as well as execute arbitrary shell commands within the container:
+때로는 애플리케이션 컨테이너 내부에서 Bash 세션을 시작하고 싶을 때가 있습니다. `shell` 명령을 사용해서 내부로 진입할 수 있으며, 서비스나 파일을 탐색하거나 임의의 셸 명령을 실행할 수 있습니다:
 
 ```shell
 sail shell
@@ -397,16 +397,16 @@ sail shell
 sail root-shell
 ```
 
-To start a new [Laravel Tinker](https://github.com/laravel/tinker) session, you may execute the `tinker` command:
+[Laravel Tinker](https://github.com/laravel/tinker) 세션을 시작하려면 `tinker` 명령을 사용하세요:
 
 ```shell
 sail tinker
 ```
 
 <a name="sail-php-versions"></a>
-## PHP Versions
+## PHP 버전
 
-Sail currently supports serving your application via PHP 8.4, 8.3, 8.2, 8.1, or PHP 8.0. The default PHP version used by Sail is currently PHP 8.4. To change the PHP version that is used to serve your application, you should update the `build` definition of the `laravel.test` container in your application's `docker-compose.yml` file:
+Sail은 현재 PHP 8.4, 8.3, 8.2, 8.1, 8.0을 통한 서비스 제공을 지원합니다. 기본 PHP 버전은 8.4입니다. PHP 버전을 변경하려면 애플리케이션의 `docker-compose.yml` 파일에서 `laravel.test` 컨테이너의 `build` 경로를 수정하세요:
 
 ```yaml
 # PHP 8.4
@@ -425,13 +425,13 @@ context: ./vendor/laravel/sail/runtimes/8.1
 context: ./vendor/laravel/sail/runtimes/8.0
 ```
 
-In addition, you may wish to update your `image` name to reflect the version of PHP being used by your application. This option is also defined in your application's `docker-compose.yml` file:
+또한, 사용 중인 PHP 버전에 맞게 `image` 이름도 변경할 수 있습니다. 이 설정 역시 `docker-compose.yml` 파일에 있습니다:
 
 ```yaml
 image: sail-8.2/app
 ```
 
-After updating your application's `docker-compose.yml` file, you should rebuild your container images:
+`docker-compose.yml` 파일을 수정했다면, 컨테이너 이미지를 재빌드하세요:
 
 ```shell
 sail build --no-cache
@@ -440,9 +440,9 @@ sail up
 ```
 
 <a name="sail-node-versions"></a>
-## Node Versions
+## Node 버전
 
-Sail installs Node 20 by default. To change the Node version that is installed when building your images, you may update the `build.args` definition of the `laravel.test` service in your application's `docker-compose.yml` file:
+Sail은 기본적으로 Node 20을 설치합니다. 설치되는 Node 버전을 변경하려면, `docker-compose.yml` 파일의 `laravel.test` 서비스에서 `build.args` 항목을 수정하세요:
 
 ```yaml
 build:
@@ -451,7 +451,7 @@ build:
         NODE_VERSION: '18'
 ```
 
-After updating your application's `docker-compose.yml` file, you should rebuild your container images:
+수정 후에는 컨테이너 이미지를 다시 빌드해야 합니다:
 
 ```shell
 sail build --no-cache
@@ -460,15 +460,15 @@ sail up
 ```
 
 <a name="sharing-your-site"></a>
-## Sharing Your Site
+## 사이트 공유하기
 
-Sometimes you may need to share your site publicly in order to preview your site for a colleague or to test webhook integrations with your application. To share your site, you may use the `share` command. After executing this command, you will be issued a random `laravel-sail.site` URL that you may use to access your application:
+외부에 사이트를 잠시 공개하거나, 동료에게 미리보기를 보여주거나, 웹훅 통합을 테스트할 때 사이트를 공유해야 할 수 있습니다. 이 경우 `share` 명령을 사용하세요. 실행하면 무작위 `laravel-sail.site` URL이 발급되며, 이 URL로 애플리케이션에 접근할 수 있습니다:
 
 ```shell
 sail share
 ```
 
-When sharing your site via the `share` command, you should configure your application's trusted proxies using the `trustProxies` middleware method in your application's `bootstrap/app.php` file. Otherwise, URL generation helpers such as `url` and `route` will be unable to determine the correct HTTP host that should be used during URL generation:
+`share` 명령으로 사이트를 공유할 때, 애플리케이션의 `bootstrap/app.php` 파일에서 `trustProxies` 미들웨어 메서드로 신뢰할 수 있는 프록시를 설정해야 합니다. 그렇지 않으면 `url` 및 `route`와 같은 URL 생성 헬퍼가 올바른 HTTP 호스트를 파악하지 못할 수 있습니다:
 
 ```php
 ->withMiddleware(function (Middleware $middleware) {
@@ -476,42 +476,42 @@ When sharing your site via the `share` command, you should configure your applic
 })
 ```
 
-If you would like to choose the subdomain for your shared site, you may provide the `subdomain` option when executing the `share` command:
+공유 사이트의 서브도메인을 직접 지정하려면 `subdomain` 옵션을 사용할 수 있습니다:
 
 ```shell
 sail share --subdomain=my-sail-site
 ```
 
 > [!NOTE]
-> The `share` command is powered by [Expose](https://github.com/beyondcode/expose), an open source tunneling service by [BeyondCode](https://beyondco.de).
+> `share` 명령은 [BeyondCode](https://beyondco.de)의 오픈소스 터널링 서비스인 [Expose](https://github.com/beyondcode/expose) 기반입니다.
 
 <a name="debugging-with-xdebug"></a>
-## Debugging With Xdebug
+## Xdebug로 디버깅
 
-Laravel Sail's Docker configuration includes support for [Xdebug](https://xdebug.org/), a popular and powerful debugger for PHP. To enable Xdebug, ensure you have [published your Sail configuration](#sail-customization). Then, add the following variables to your application's `.env` file to configure Xdebug:
+Laravel Sail의 Docker 구성은 강력한 PHP 디버거인 [Xdebug](https://xdebug.org/)를 지원합니다. Xdebug를 활성화하려면 [Sail 설정을 게시](#sail-customization)한 상태여야 하며, 아래와 같이 애플리케이션의 `.env` 파일에 변수들을 추가하세요:
 
 ```ini
 SAIL_XDEBUG_MODE=develop,debug,coverage
 ```
 
-Next, ensure that your published `php.ini` file includes the following configuration so that Xdebug is activated in the specified modes:
+그리고 게시된 `php.ini`의 다음 설정이 포함되어 있는지 확인하세요:
 
 ```ini
 [xdebug]
 xdebug.mode=${XDEBUG_MODE}
 ```
 
-After modifying the `php.ini` file, remember to rebuild your Docker images so that your changes to the `php.ini` file take effect:
+`php.ini`를 수정했다면 Docker 이미지를 재빌드하여 변경사항을 반영하세요:
 
 ```shell
 sail build --no-cache
 ```
 
-#### Linux Host IP Configuration
+#### 리눅스 호스트 IP 설정
 
-Internally, the `XDEBUG_CONFIG` environment variable is defined as `client_host=host.docker.internal` so that Xdebug will be properly configured for Mac and Windows (WSL2). If your local machine is running Linux and you're using Docker 20.10+, `host.docker.internal` is available, and no manual configuration is required.
+내부적으로 `XDEBUG_CONFIG` 환경 변수는 `client_host=host.docker.internal`로 지정되어 있으므로 Mac과 Windows(WSL2)에서는 별도의 설정이 필요 없습니다. Linux에서 Docker 20.10 이상을 사용한다면 `host.docker.internal`도 바로 사용할 수 있습니다.
 
-For Docker versions older than 20.10, `host.docker.internal` is not supported on Linux, and you will need to manually define the host IP. To do this, configure a static IP for your container by defining a custom network in your `docker-compose.yml` file:
+만약 Docker 20.10 미만의 리눅스 환경이라면 `host.docker.internal`이 지원되지 않으므로, 컨테이너에 고정 IP를 직접 할당해야 합니다. `docker-compose.yml`에 커스텀 네트워크를 설정하세요:
 
 ```yaml
 networks:
@@ -527,45 +527,45 @@ services:
         ipv4_address: 172.20.0.2
 ```
 
-Once you have set the static IP, define the SAIL_XDEBUG_CONFIG variable within your application's .env file:
+고정 IP를 할당했다면, `.env` 파일에 SAIL_XDEBUG_CONFIG 변수를 설정하세요:
 
 ```ini
 SAIL_XDEBUG_CONFIG="client_host=172.20.0.2"
 ```
 
 <a name="xdebug-cli-usage"></a>
-### Xdebug CLI Usage
+### Xdebug CLI 사용법
 
-A `sail debug` command may be used to start a debugging session when running an Artisan command:
+Artisan 명령을 디버깅 세션으로 실행하려면 `sail debug` 명령을 사용하세요:
 
 ```shell
-# Run an Artisan command without Xdebug...
+# Xdebug 없이 Artisan 명령 실행...
 sail artisan migrate
 
-# Run an Artisan command with Xdebug...
+# Xdebug로 Artisan 명령 실행...
 sail debug migrate
 ```
 
 <a name="xdebug-browser-usage"></a>
-### Xdebug Browser Usage
+### Xdebug 브라우저 사용법
 
-To debug your application while interacting with the application via a web browser, follow the [instructions provided by Xdebug](https://xdebug.org/docs/step_debug#web-application) for initiating an Xdebug session from the web browser.
+웹 브라우저로 애플리케이션에 접근하면서 디버깅하려면, [Xdebug 공식 문서](https://xdebug.org/docs/step_debug#web-application)의 안내에 따라 디버깅 세션을 시작하세요.
 
-If you're using PhpStorm, please review JetBrains' documentation regarding [zero-configuration debugging](https://www.jetbrains.com/help/phpstorm/zero-configuration-debugging.html).
+PhpStorm 환경이라면 [제로설정(Zero-configuration) 디버깅](https://www.jetbrains.com/help/phpstorm/zero-configuration-debugging.html) 문서를 참고하세요.
 
 > [!WARNING]
-> Laravel Sail relies on `artisan serve` to serve your application. The `artisan serve` command only accepts the `XDEBUG_CONFIG` and `XDEBUG_MODE` variables as of Laravel version 8.53.0. Older versions of Laravel (8.52.0 and below) do not support these variables and will not accept debug connections.
+> Laravel Sail은 `artisan serve` 명령으로 애플리케이션을 서비스합니다. `XDEBUG_CONFIG` 및 `XDEBUG_MODE` 변수는 Laravel 8.53.0 이상에서만 지원됩니다. 8.52.0 이하 버전에서는 지원되지 않으니 유의하세요.
 
 <a name="sail-customization"></a>
-## Customization
+## 커스터마이징
 
-Since Sail is just Docker, you are free to customize nearly everything about it. To publish Sail's own Dockerfiles, you may execute the `sail:publish` command:
+Sail은 Docker이기 때문에 거의 모든 부분을 자유롭게 커스터마이즈할 수 있습니다. Sail의 자체 Dockerfile을 게시하려면, 아래 명령을 실행하세요:
 
 ```shell
 sail artisan sail:publish
 ```
 
-After running this command, the Dockerfiles and other configuration files used by Laravel Sail will be placed within a `docker` directory in your application's root directory. After customizing your Sail installation, you may wish to change the image name for the application container in your application's `docker-compose.yml` file. After doing so, rebuild your application's containers using the `build` command. Assigning a unique name to the application image is particularly important if you are using Sail to develop multiple Laravel applications on a single machine:
+명령 실행 시 Dockerfile 및 관련 설정 파일들이 애플리케이션의 `docker` 디렉터리에 복사됩니다. 커스터마이즈 후에는 애플리케이션 컨테이너의 `docker-compose.yml` 파일에서 이미지 이름을 바꾸고, 반드시 컨테이너를 다시 빌드해야 합니다. 같은 컴퓨터에서 여러 Laravel 애플리케이션을 개발하는 경우에는 컨테이너 이미지에 고유 이름을 주는 것이 특히 중요합니다:
 
 ```shell
 sail build --no-cache

@@ -1,39 +1,39 @@
-# Eloquent: API Resources
+# Eloquent: API 리소스
 
-- [Introduction](#introduction)
-- [Generating Resources](#generating-resources)
-- [Concept Overview](#concept-overview)
-    - [Resource Collections](#resource-collections)
-- [Writing Resources](#writing-resources)
-    - [Data Wrapping](#data-wrapping)
-    - [Pagination](#pagination)
-    - [Conditional Attributes](#conditional-attributes)
-    - [Conditional Relationships](#conditional-relationships)
-    - [Adding Meta Data](#adding-meta-data)
-- [Resource Responses](#resource-responses)
+- [소개](#introduction)
+- [리소스 생성](#generating-resources)
+- [개념 개요](#concept-overview)
+    - [리소스 컬렉션](#resource-collections)
+- [리소스 작성](#writing-resources)
+    - [데이터 래핑](#data-wrapping)
+    - [페이지네이션](#pagination)
+    - [조건부 속성](#conditional-attributes)
+    - [조건부 관계](#conditional-relationships)
+    - [메타 데이터 추가](#adding-meta-data)
+- [리소스 응답](#resource-responses)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-When building an API, you may need a transformation layer that sits between your Eloquent models and the JSON responses that are actually returned to your application's users. For example, you may wish to display certain attributes for a subset of users and not others, or you may wish to always include certain relationships in the JSON representation of your models. Eloquent's resource classes allow you to expressively and easily transform your models and model collections into JSON.
+API를 구축할 때, Eloquent 모델과 실제로 애플리케이션 사용자에게 반환되는 JSON 응답 사이에 변환 계층이 필요할 수 있습니다. 예를 들어, 일부 사용자에게만 특정 속성을 표시하거나, 모델의 JSON 표현에 항상 특정 관계를 포함시키고 싶을 수 있습니다. Eloquent의 리소스 클래스는 모델과 모델 컬렉션을 표현력 있게, 쉽게 JSON으로 변환할 수 있게 해줍니다.
 
-Of course, you may always convert Eloquent models or collections to JSON using their `toJson` methods; however, Eloquent resources provide more granular and robust control over the JSON serialization of your models and their relationships.
+물론 Eloquent 모델이나 컬렉션을 그들의 `toJson` 메소드로 항상 JSON으로 변환할 수도 있습니다. 하지만, Eloquent 리소스는 모델 및 그 관계의 JSON 직렬화에 대해 더 세밀하고 강력한 제어를 제공합니다.
 
 <a name="generating-resources"></a>
-## Generating Resources
+## 리소스 생성
 
-To generate a resource class, you may use the `make:resource` Artisan command. By default, resources will be placed in the `app/Http/Resources` directory of your application. Resources extend the `Illuminate\Http\Resources\Json\JsonResource` class:
+리소스 클래스를 생성하려면 `make:resource` 아티즌 명령어를 사용할 수 있습니다. 기본적으로, 리소스는 애플리케이션의 `app/Http/Resources` 디렉터리에 생성됩니다. 리소스는 `Illuminate\Http\Resources\Json\JsonResource` 클래스를 상속합니다:
 
 ```shell
 php artisan make:resource UserResource
 ```
 
 <a name="generating-resource-collections"></a>
-#### Resource Collections
+#### 리소스 컬렉션
 
-In addition to generating resources that transform individual models, you may generate resources that are responsible for transforming collections of models. This allows your JSON responses to include links and other meta information that is relevant to an entire collection of a given resource.
+개별 모델을 변환하는 리소스뿐만 아니라, 모델의 컬렉션을 변환하는 책임을 지는 리소스도 생성할 수 있습니다. 이를 통해 JSON 응답에 해당 리소스 전체 컬렉션과 관련된 링크 및 기타 메타 정보를 포함할 수 있습니다.
 
-To create a resource collection, you should use the `--collection` flag when creating the resource. Or, including the word `Collection` in the resource name will indicate to Laravel that it should create a collection resource. Collection resources extend the `Illuminate\Http\Resources\Json\ResourceCollection` class:
+리소스 컬렉션을 생성하려면, 리소스 생성 시 `--collection` 플래그를 사용하세요. 또는 리소스 이름에 `Collection`이라는 단어를 포함시키면 Laravel이 컬렉션 리소스를 생성해야 함을 인식합니다. 컬렉션 리소스는 `Illuminate\Http\Resources\Json\ResourceCollection` 클래스를 상속합니다:
 
 ```shell
 php artisan make:resource User --collection
@@ -42,12 +42,12 @@ php artisan make:resource UserCollection
 ```
 
 <a name="concept-overview"></a>
-## Concept Overview
+## 개념 개요
 
 > [!NOTE]
-> This is a high-level overview of resources and resource collections. You are highly encouraged to read the other sections of this documentation to gain a deeper understanding of the customization and power offered to you by resources.
+> 이것은 리소스 및 리소스 컬렉션에 대한 높은 수준의 개요입니다. 리소스가 제공하는 커스터마이징과 강력한 기능을 보다 심도 있게 이해하려면 이 문서의 다른 섹션을 읽어 보시기 바랍니다.
 
-Before diving into all of the options available to you when writing resources, let's first take a high-level look at how resources are used within Laravel. A resource class represents a single model that needs to be transformed into a JSON structure. For example, here is a simple `UserResource` resource class:
+리소스를 작성할 때 사용할 수 있는 모든 옵션에 대해 살펴보기 전에, 먼저 Laravel에서 리소스가 어떻게 사용되는지 높은 수준에서 살펴보겠습니다. 리소스 클래스는 JSON 구조로 변환해야 할 단일 모델을 나타냅니다. 예를 들어, 다음은 간단한 `UserResource` 리소스 클래스입니다:
 
 ```php
 <?php
@@ -60,7 +60,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class UserResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * 리소스를 배열로 변환합니다.
      *
      * @return array<string, mixed>
      */
@@ -77,9 +77,9 @@ class UserResource extends JsonResource
 }
 ```
 
-Every resource class defines a `toArray` method which returns the array of attributes that should be converted to JSON when the resource is returned as a response from a route or controller method.
+모든 리소스 클래스는 리소스가 라우트 또는 컨트롤러 메서드에서 반환될 때 JSON으로 변환되어야 하는 속성 배열을 반환하는 `toArray` 메서드를 정의합니다.
 
-Note that we can access model properties directly from the `$this` variable. This is because a resource class will automatically proxy property and method access down to the underlying model for convenient access. Once the resource is defined, it may be returned from a route or controller. The resource accepts the underlying model instance via its constructor:
+모델 속성은 `$this` 변수로 직접 접근할 수 있습니다. 이는 리소스 클래스가 속성 및 메서드 접근을 편리하게 기본 모델에 프록시하기 때문입니다. 리소스를 정의한 후에는, 라우트나 컨트롤러에서 반환할 수 있습니다. 리소스는 생성자를 통해 모델 인스턴스를 전달받습니다:
 
 ```php
 use App\Http\Resources\UserResource;
@@ -91,9 +91,9 @@ Route::get('/user/{id}', function (string $id) {
 ```
 
 <a name="resource-collections"></a>
-### Resource Collections
+### 리소스 컬렉션
 
-If you are returning a collection of resources or a paginated response, you should use the `collection` method provided by your resource class when creating the resource instance in your route or controller:
+리소스의 컬렉션이나 페이지네이션된 응답을 반환하려는 경우, 라우트나 컨트롤러에서 리소스 인스턴스를 생성할 때 리소스 클래스가 제공하는 `collection` 메소드를 사용해야 합니다:
 
 ```php
 use App\Http\Resources\UserResource;
@@ -104,13 +104,13 @@ Route::get('/users', function () {
 });
 ```
 
-Note that this does not allow any addition of custom meta data that may need to be returned with your collection. If you would like to customize the resource collection response, you may create a dedicated resource to represent the collection:
+이 방식은 컬렉션과 함께 반환해야 할 커스텀 메타 데이터를 추가할 수는 없습니다. 컬렉션 리소스 응답을 커스터마이즈하고 싶다면, 컬렉션을 나타내는 전용 리소스를 생성할 수 있습니다:
 
 ```shell
 php artisan make:resource UserCollection
 ```
 
-Once the resource collection class has been generated, you may easily define any meta data that should be included with the response:
+리소스 컬렉션 클래스가 생성되면, 응답에 포함시킬 메타 데이터를 쉽게 정의할 수 있습니다:
 
 ```php
 <?php
@@ -123,7 +123,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 class UserCollection extends ResourceCollection
 {
     /**
-     * Transform the resource collection into an array.
+     * 리소스 컬렉션을 배열로 변환합니다.
      *
      * @return array<int|string, mixed>
      */
@@ -139,7 +139,7 @@ class UserCollection extends ResourceCollection
 }
 ```
 
-After defining your resource collection, it may be returned from a route or controller:
+리소스 컬렉션을 정의한 후, 라우트나 컨트롤러에서 반환할 수 있습니다:
 
 ```php
 use App\Http\Resources\UserCollection;
@@ -151,9 +151,9 @@ Route::get('/users', function () {
 ```
 
 <a name="preserving-collection-keys"></a>
-#### Preserving Collection Keys
+#### 컬렉션 키 보존하기
 
-When returning a resource collection from a route, Laravel resets the collection's keys so that they are in numerical order. However, you may add a `preserveKeys` property to your resource class indicating whether a collection's original keys should be preserved:
+라우트에서 리소스 컬렉션을 반환할 때, Laravel은 컬렉션의 키를 숫자 순서로 재설정합니다. 그러나 리소스 클래스에 컬렉션의 원래 키를 보존할지를 나타내는 `preserveKeys` 속성을 추가할 수 있습니다:
 
 ```php
 <?php
@@ -165,7 +165,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class UserResource extends JsonResource
 {
     /**
-     * Indicates if the resource's collection keys should be preserved.
+     * 리소스의 컬렉션 키를 보존할지 여부를 나타냅니다.
      *
      * @var bool
      */
@@ -173,7 +173,7 @@ class UserResource extends JsonResource
 }
 ```
 
-When the `preserveKeys` property is set to `true`, collection keys will be preserved when the collection is returned from a route or controller:
+`preserveKeys` 속성이 `true`로 설정된 경우, 컬렉션이 라우트나 컨트롤러에서 반환될 때 컬렉션 키가 그대로 보존됩니다:
 
 ```php
 use App\Http\Resources\UserResource;
@@ -185,11 +185,11 @@ Route::get('/users', function () {
 ```
 
 <a name="customizing-the-underlying-resource-class"></a>
-#### Customizing the Underlying Resource Class
+#### 기본 리소스 클래스 커스터마이징
 
-Typically, the `$this->collection` property of a resource collection is automatically populated with the result of mapping each item of the collection to its singular resource class. The singular resource class is assumed to be the collection's class name without the trailing `Collection` portion of the class name. In addition, depending on your personal preference, the singular resource class may or may not be suffixed with `Resource`.
+일반적으로, 리소스 컬렉션의 `$this->collection` 속성은 컬렉션의 각 항목을 단수 리소스 클래스로 매핑한 결과로 자동 채워집니다. 단수 리소스 클래스는 컬렉션 리소스 클래스 이름에서 끝의 `Collection` 부분을 제거한 이름으로 간주됩니다. 또한, 개인 취향에 따라 단수 리소스 클래스에 `Resource` 접미사를 붙일 수도, 붙이지 않아도 됩니다.
 
-For example, `UserCollection` will attempt to map the given user instances into the `UserResource` resource. To customize this behavior, you may override the `$collects` property of your resource collection:
+예를 들어, `UserCollection`은 전달된 User 인스턴스를 `UserResource` 리소스로 매핑하려고 시도합니다. 이 동작을 커스터마이즈하려면, 리소스 컬렉션의 `$collects` 속성을 오버라이드할 수 있습니다:
 
 ```php
 <?php
@@ -201,7 +201,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 class UserCollection extends ResourceCollection
 {
     /**
-     * The resource that this resource collects.
+     * 이 리소스가 수집하는 리소스입니다.
      *
      * @var string
      */
@@ -210,12 +210,12 @@ class UserCollection extends ResourceCollection
 ```
 
 <a name="writing-resources"></a>
-## Writing Resources
+## 리소스 작성
 
 > [!NOTE]
-> If you have not read the [concept overview](#concept-overview), you are highly encouraged to do so before proceeding with this documentation.
+> [개념 개요](#concept-overview)를 먼저 읽은 뒤 이 문서를 계속 읽는 것이 좋습니다.
 
-Resources only need to transform a given model into an array. So, each resource contains a `toArray` method which translates your model's attributes into an API friendly array that can be returned from your application's routes or controllers:
+리소스는 주어진 모델을 배열로 변환하는 작업만 하면 됩니다. 즉, 각 리소스는 모델의 속성을 API 친화적인 배열로 변환하는 `toArray` 메소드를 포함하고 있으며, 이를 애플리케이션의 라우트나 컨트롤러에서 반환할 수 있습니다:
 
 ```php
 <?php
@@ -228,7 +228,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class UserResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * 리소스를 배열로 변환합니다.
      *
      * @return array<string, mixed>
      */
@@ -245,7 +245,7 @@ class UserResource extends JsonResource
 }
 ```
 
-Once a resource has been defined, it may be returned directly from a route or controller:
+리소스를 정의한 후에는, 라우트나 컨트롤러에서 직접 반환할 수 있습니다:
 
 ```php
 use App\Http\Resources\UserResource;
@@ -257,16 +257,16 @@ Route::get('/user/{id}', function (string $id) {
 ```
 
 <a name="relationships"></a>
-#### Relationships
+#### 관계
 
-If you would like to include related resources in your response, you may add them to the array returned by your resource's `toArray` method. In this example, we will use the `PostResource` resource's `collection` method to add the user's blog posts to the resource response:
+응답에 관련 리소스를 포함하고 싶은 경우, 리소스의 `toArray` 메소드에서 반환하는 배열에 추가하면 됩니다. 이 예제에서는 `PostResource` 리소스의 `collection` 메소드를 사용해 사용자의 블로그 포스트를 응답에 포함합니다:
 
 ```php
 use App\Http\Resources\PostResource;
 use Illuminate\Http\Request;
 
 /**
- * Transform the resource into an array.
+ * 리소스를 배열로 변환합니다.
  *
  * @return array<string, mixed>
  */
@@ -284,12 +284,12 @@ public function toArray(Request $request): array
 ```
 
 > [!NOTE]
-> If you would like to include relationships only when they have already been loaded, check out the documentation on [conditional relationships](#conditional-relationships).
+> 관계를 이미 로드한 경우에만 포함하고자 한다면 [조건부 관계](#conditional-relationships) 문서를 참조하세요.
 
 <a name="writing-resource-collections"></a>
-#### Resource Collections
+#### 리소스 컬렉션
 
-While resources transform a single model into an array, resource collections transform a collection of models into an array. However, it is not absolutely necessary to define a resource collection class for each one of your models since all resources provide a `collection` method to generate an "ad-hoc" resource collection on the fly:
+리소스가 단일 모델을 배열로 변환한다면, 리소스 컬렉션은 모델의 컬렉션을 배열로 변환합니다. 모든 모델마다 리소스 컬렉션 클래스를 정의할 필요는 없습니다. 모든 리소스는 "즉석"으로 리소스 컬렉션을 생성할 수 있는 `collection` 메소드를 제공합니다:
 
 ```php
 use App\Http\Resources\UserResource;
@@ -300,7 +300,7 @@ Route::get('/users', function () {
 });
 ```
 
-However, if you need to customize the meta data returned with the collection, it is necessary to define your own resource collection:
+하지만 컬렉션과 함께 반환할 메타 데이터를 커스터마이즈하려면, 자체 리소스 컬렉션을 정의해야 합니다:
 
 ```php
 <?php
@@ -313,7 +313,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 class UserCollection extends ResourceCollection
 {
     /**
-     * Transform the resource collection into an array.
+     * 리소스 컬렉션을 배열로 변환합니다.
      *
      * @return array<string, mixed>
      */
@@ -329,7 +329,7 @@ class UserCollection extends ResourceCollection
 }
 ```
 
-Like singular resources, resource collections may be returned directly from routes or controllers:
+단수 리소스처럼, 리소스 컬렉션도 라우트나 컨트롤러에서 직접 반환할 수 있습니다:
 
 ```php
 use App\Http\Resources\UserCollection;
@@ -341,9 +341,9 @@ Route::get('/users', function () {
 ```
 
 <a name="data-wrapping"></a>
-### Data Wrapping
+### 데이터 래핑
 
-By default, your outermost resource is wrapped in a `data` key when the resource response is converted to JSON. So, for example, a typical resource collection response looks like the following:
+기본적으로, 가장 바깥쪽의 리소스는 리소스 응답이 JSON으로 변환될 때 `data` 키로 래핑됩니다. 예를 들어, 일반적인 리소스 컬렉션 응답은 다음과 같습니다:
 
 ```json
 {
@@ -362,7 +362,7 @@ By default, your outermost resource is wrapped in a `data` key when the resource
 }
 ```
 
-If you would like to disable the wrapping of the outermost resource, you should invoke the `withoutWrapping` method on the base `Illuminate\Http\Resources\Json\JsonResource` class. Typically, you should call this method from your `AppServiceProvider` or another [service provider](/docs/{{version}}/providers) that is loaded on every request to your application:
+가장 바깥쪽 리소스의 래핑을 비활성화하려면, 기본 `Illuminate\Http\Resources\Json\JsonResource` 클래스에서 `withoutWrapping` 메소드를 호출하면 됩니다. 보통 이 메소드는 `AppServiceProvider`나 모든 요청마다 로드되는 다른 [서비스 프로바이더](/docs/{{version}}/providers)에서 호출해야 합니다:
 
 ```php
 <?php
@@ -375,7 +375,7 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * 모든 애플리케이션 서비스를 등록합니다.
      */
     public function register(): void
     {
@@ -383,7 +383,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * 모든 애플리케이션 서비스를 부트스트랩합니다.
      */
     public function boot(): void
     {
@@ -393,14 +393,14 @@ class AppServiceProvider extends ServiceProvider
 ```
 
 > [!WARNING]
-> The `withoutWrapping` method only affects the outermost response and will not remove `data` keys that you manually add to your own resource collections.
+> `withoutWrapping` 메소드는 오직 최상위 응답에만 영향을 주며, 직접 리소스 컬렉션에 수동으로 추가한 `data` 키는 제거하지 않습니다.
 
 <a name="wrapping-nested-resources"></a>
-#### Wrapping Nested Resources
+#### 중첩 리소스 래핑
 
-You have total freedom to determine how your resource's relationships are wrapped. If you would like all resource collections to be wrapped in a `data` key, regardless of their nesting, you should define a resource collection class for each resource and return the collection within a `data` key.
+리소스의 관계가 어떻게 래핑될지는 완전히 자유롭게 결정할 수 있습니다. 중첩 수준과 상관없이 모든 리소스 컬렉션을 `data` 키로 래핑하고 싶다면, 각 리소스마다 리소스 컬렉션 클래스를 정의하고, 컬렉션을 `data` 키 안에 반환하면 됩니다.
 
-You may be wondering if this will cause your outermost resource to be wrapped in two `data` keys. Don't worry, Laravel will never let your resources be accidentally double-wrapped, so you don't have to be concerned about the nesting level of the resource collection you are transforming:
+이렇게 하면 최상위 리소스가 두 개의 `data` 키로 래핑되는지 궁금할 수 있습니다. 걱정하지 마세요. Laravel은 리소스가 두 번 래핑되는 것을 방지하므로, 변환하는 리소스 컬렉션의 중첩 수준에 대해 염려할 필요가 없습니다:
 
 ```php
 <?php
@@ -412,7 +412,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 class CommentsCollection extends ResourceCollection
 {
     /**
-     * Transform the resource collection into an array.
+     * 리소스 컬렉션을 배열로 변환합니다.
      *
      * @return array<string, mixed>
      */
@@ -424,9 +424,9 @@ class CommentsCollection extends ResourceCollection
 ```
 
 <a name="data-wrapping-and-pagination"></a>
-#### Data Wrapping and Pagination
+#### 데이터 래핑 & 페이지네이션
 
-When returning paginated collections via a resource response, Laravel will wrap your resource data in a `data` key even if the `withoutWrapping` method has been called. This is because paginated responses always contain `meta` and `links` keys with information about the paginator's state:
+리소스 응답을 통해 페이지네이션된 컬렉션을 반환할 때, `withoutWrapping` 메소드를 호출했더라도 Laravel은 리소스 데이터를 `data` 키로 래핑합니다. 이는 페이지네이션 응답에는 항상 페이지네이터 상태 정보를 담은 `meta` 및 `links` 키가 포함되기 때문입니다:
 
 ```json
 {
@@ -461,9 +461,9 @@ When returning paginated collections via a resource response, Laravel will wrap 
 ```
 
 <a name="pagination"></a>
-### Pagination
+### 페이지네이션
 
-You may pass a Laravel paginator instance to the `collection` method of a resource or to a custom resource collection:
+리소스의 `collection` 메소드나 커스텀 리소스 컬렉션에 Laravel 페이지네이터 인스턴스를 전달할 수 있습니다:
 
 ```php
 use App\Http\Resources\UserCollection;
@@ -474,7 +474,7 @@ Route::get('/users', function () {
 });
 ```
 
-Paginated responses always contain `meta` and `links` keys with information about the paginator's state:
+페이지네이션 응답에는 항상 페이지네이터 상태 정보를 담은 `meta` 및 `links` 키가 포함됩니다:
 
 ```json
 {
@@ -509,13 +509,13 @@ Paginated responses always contain `meta` and `links` keys with information abou
 ```
 
 <a name="customizing-the-pagination-information"></a>
-#### Customizing the Pagination Information
+#### 페이지네이션 정보 커스터마이즈
 
-If you would like to customize the information included in the `links` or `meta` keys of the pagination response, you may define a `paginationInformation` method on the resource. This method will receive the `$paginated` data and the array of `$default` information, which is an array containing the `links` and `meta` keys:
+페이지네이션 응답의 `links`나 `meta` 키에 포함되는 정보를 커스터마이즈하려면, 리소스에 `paginationInformation` 메서드를 정의할 수 있습니다. 이 메서드는 `$paginated` 데이터와 `links` 및 `meta` 키가 포함된 `$default` 정보 배열을 받습니다:
 
 ```php
 /**
- * Customize the pagination information for the resource.
+ * 리소스의 페이지네이션 정보를 커스터마이즈합니다.
  *
  * @param  \Illuminate\Http\Request  $request
  * @param  array $paginated
@@ -531,13 +531,13 @@ public function paginationInformation($request, $paginated, $default)
 ```
 
 <a name="conditional-attributes"></a>
-### Conditional Attributes
+### 조건부 속성
 
-Sometimes you may wish to only include an attribute in a resource response if a given condition is met. For example, you may wish to only include a value if the current user is an "administrator". Laravel provides a variety of helper methods to assist you in this situation. The `when` method may be used to conditionally add an attribute to a resource response:
+때때로, 특정 조건이 충족될 때에만 리소스 응답에 속성을 포함하고 싶을 수 있습니다. 예를 들어, 현재 사용자가 “관리자” 일 때만 값을 포함하고 싶을 때가 있습니다. Laravel은 이를 지원하기 위한 다양한 헬퍼 메소드를 제공합니다. `when` 메소드를 사용하면 조건부로 속성을 리소스 응답에 추가할 수 있습니다:
 
 ```php
 /**
- * Transform the resource into an array.
+ * 리소스를 배열로 변환합니다.
  *
  * @return array<string, mixed>
  */
@@ -554,9 +554,9 @@ public function toArray(Request $request): array
 }
 ```
 
-In this example, the `secret` key will only be returned in the final resource response if the authenticated user's `isAdmin` method returns `true`. If the method returns `false`, the `secret` key will be removed from the resource response before it is sent to the client. The `when` method allows you to expressively define your resources without resorting to conditional statements when building the array.
+이 예시에서, 인증된 사용자의 `isAdmin` 메서드가 `true`를 반환하는 경우에만 `secret` 키가 리소스 응답에 포함됩니다. `false`이면, 클라이언트에게 전송되기 전에 `secret` 키가 제거됩니다. `when` 메소드는 배열을 작성할 때 조건문을 사용하지 않고도 리소스를 표현력있게 정의할 수 있습니다.
 
-The `when` method also accepts a closure as its second argument, allowing you to calculate the resulting value only if the given condition is `true`:
+`when` 메소드는 두 번째 인수로 클로저도 받을 수 있어, 조건이 `true`일 때만 결과 값을 계산할 수 있습니다:
 
 ```php
 'secret' => $this->when($request->user()->isAdmin(), function () {
@@ -564,26 +564,26 @@ The `when` method also accepts a closure as its second argument, allowing you to
 }),
 ```
 
-The `whenHas` method may be used to include an attribute if it is actually present on the underlying model:
+`whenHas` 메소드는 기본 모델에 속성이 실제로 존재할 때만 속성을 포함합니다:
 
 ```php
 'name' => $this->whenHas('name'),
 ```
 
-Additionally, the `whenNotNull` method may be used to include an attribute in the resource response if the attribute is not null:
+또한, `whenNotNull` 메소드는 속성 값이 null이 아닐 때만 리소스 응답에 속성을 포함시킵니다:
 
 ```php
 'name' => $this->whenNotNull($this->name),
 ```
 
 <a name="merging-conditional-attributes"></a>
-#### Merging Conditional Attributes
+#### 조건부 속성 병합
 
-Sometimes you may have several attributes that should only be included in the resource response based on the same condition. In this case, you may use the `mergeWhen` method to include the attributes in the response only when the given condition is `true`:
+동일한 조건에 따라 여러 속성을 리소스 응답에 포함시켜야 할 때가 있습니다. 이땐, `mergeWhen` 메소드를 사용해 조건이 `true`일 때만 여러 속성을 응답에 추가할 수 있습니다:
 
 ```php
 /**
- * Transform the resource into an array.
+ * 리소스를 배열로 변환합니다.
  *
  * @return array<string, mixed>
  */
@@ -603,23 +603,23 @@ public function toArray(Request $request): array
 }
 ```
 
-Again, if the given condition is `false`, these attributes will be removed from the resource response before it is sent to the client.
+역시, 조건이 `false`면 클라이언트로 전송되기 전에 이 속성들은 응답에서 제거됩니다.
 
 > [!WARNING]
-> The `mergeWhen` method should not be used within arrays that mix string and numeric keys. Furthermore, it should not be used within arrays with numeric keys that are not ordered sequentially.
+> `mergeWhen` 메소드는 문자열과 숫자 키가 혼합된 배열 내, 또는 순차적으로 정렬되지 않은 숫자 키 배열 내에서 사용해서는 안 됩니다.
 
 <a name="conditional-relationships"></a>
-### Conditional Relationships
+### 조건부 관계
 
-In addition to conditionally loading attributes, you may conditionally include relationships on your resource responses based on if the relationship has already been loaded on the model. This allows your controller to decide which relationships should be loaded on the model and your resource can easily include them only when they have actually been loaded. Ultimately, this makes it easier to avoid "N+1" query problems within your resources.
+속성만이 아니라, 모델에 이미 관계가 로드되어 있는 경우에만 리소스 응답에 관계를 조건부로 포함시킬 수 있습니다. 이를 통해 컨트롤러가 어떤 관계를 로드할지 결정하고, 리소스는 실제로 로드되었을 때만 포함시킬 수 있습니다. 결과적으로, 리소스 내에서 "N+1" 쿼리 문제를 더 쉽게 방지할 수 있습니다.
 
-The `whenLoaded` method may be used to conditionally load a relationship. In order to avoid unnecessarily loading relationships, this method accepts the name of the relationship instead of the relationship itself:
+`whenLoaded` 메소드를 사용하여 관계를 조건부로 포함할 수 있습니다. 명시적으로 관계 전체가 아닌, 관계 이름만 전달하여 불필요한 로드를 방지합니다:
 
 ```php
 use App\Http\Resources\PostResource;
 
 /**
- * Transform the resource into an array.
+ * 리소스를 배열로 변환합니다.
  *
  * @return array<string, mixed>
  */
@@ -636,22 +636,22 @@ public function toArray(Request $request): array
 }
 ```
 
-In this example, if the relationship has not been loaded, the `posts` key will be removed from the resource response before it is sent to the client.
+이 예시에서, 관계가 로드되지 않았다면 `posts` 키는 클라이언트로 전송되기 전에 리소스 응답에서 제거됩니다.
 
 <a name="conditional-relationship-counts"></a>
-#### Conditional Relationship Counts
+#### 조건부 관계 카운트
 
-In addition to conditionally including relationships, you may conditionally include relationship "counts" on your resource responses based on if the relationship's count has been loaded on the model:
+관계 자체뿐 아니라, 모델에 관계의 개수가 로드되어 있는 경우에만 관계의 "카운트"를 리소스 응답에 조건부로 포함할 수 있습니다:
 
 ```php
 new UserResource($user->loadCount('posts'));
 ```
 
-The `whenCounted` method may be used to conditionally include a relationship's count in your resource response. This method avoids unnecessarily including the attribute if the relationships' count is not present:
+`whenCounted` 메소드를 이용하면, 관계의 카운트가 존재하는 경우에만 해당 정보를 리소스 응답에 포함시킬 수 있습니다:
 
 ```php
 /**
- * Transform the resource into an array.
+ * 리소스를 배열로 변환합니다.
  *
  * @return array<string, mixed>
  */
@@ -668,9 +668,9 @@ public function toArray(Request $request): array
 }
 ```
 
-In this example, if the `posts` relationship's count has not been loaded, the `posts_count` key will be removed from the resource response before it is sent to the client.
+이 예시에서, `posts` 관계의 카운트가 로드되어 있지 않으면 `posts_count` 키가 응답에서 제거됩니다.
 
-Other types of aggregates, such as `avg`, `sum`, `min`, and `max` may also be conditionally loaded using the `whenAggregated` method:
+`avg`, `sum`, `min`, `max`와 같은 집계 값도 `whenAggregated` 메소드로 조건부로 로드할 수 있습니다:
 
 ```php
 'words_avg' => $this->whenAggregated('posts', 'words', 'avg'),
@@ -680,13 +680,13 @@ Other types of aggregates, such as `avg`, `sum`, `min`, and `max` may also be co
 ```
 
 <a name="conditional-pivot-information"></a>
-#### Conditional Pivot Information
+#### 조건부 Pivot 정보
 
-In addition to conditionally including relationship information in your resource responses, you may conditionally include data from the intermediate tables of many-to-many relationships using the `whenPivotLoaded` method. The `whenPivotLoaded` method accepts the name of the pivot table as its first argument. The second argument should be a closure that returns the value to be returned if the pivot information is available on the model:
+또한, 다대다(many-to-many) 관계의 중간 테이블에서 데이터가 모델에 존재하는 경우에만 이를 리소스 응답에 조건부로 포함시킬 수 있습니다. `whenPivotLoaded` 메소드는 첫 번째 인수로 피벗 테이블의 이름을 받으며, 두 번째 인수로 클로저를 받아 피벗 정보가 모델에 있는 경우 반환할 값을 지정합니다:
 
 ```php
 /**
- * Transform the resource into an array.
+ * 리소스를 배열로 변환합니다.
  *
  * @return array<string, mixed>
  */
@@ -702,7 +702,7 @@ public function toArray(Request $request): array
 }
 ```
 
-If your relationship is using a [custom intermediate table model](/docs/{{version}}/eloquent-relationships#defining-custom-intermediate-table-models), you may pass an instance of the intermediate table model as the first argument to the `whenPivotLoaded` method:
+[커스텀 중간 테이블 모델](/docs/{{version}}/eloquent-relationships#defining-custom-intermediate-table-models)을 사용하는 경우, `whenPivotLoaded`의 첫 번째 인수로 중간 테이블 모델 인스턴스를 전달할 수 있습니다:
 
 ```php
 'expires_at' => $this->whenPivotLoaded(new Membership, function () {
@@ -710,11 +710,11 @@ If your relationship is using a [custom intermediate table model](/docs/{{versio
 }),
 ```
 
-If your intermediate table is using an accessor other than `pivot`, you may use the `whenPivotLoadedAs` method:
+중간 테이블이 `pivot` 이외의 접근자를 사용하는 경우, `whenPivotLoadedAs` 메소드를 사용할 수 있습니다:
 
 ```php
 /**
- * Transform the resource into an array.
+ * 리소스를 배열로 변환합니다.
  *
  * @return array<string, mixed>
  */
@@ -731,13 +731,13 @@ public function toArray(Request $request): array
 ```
 
 <a name="adding-meta-data"></a>
-### Adding Meta Data
+### 메타 데이터 추가
 
-Some JSON API standards require the addition of meta data to your resource and resource collections responses. This often includes things like `links` to the resource or related resources, or meta data about the resource itself. If you need to return additional meta data about a resource, include it in your `toArray` method. For example, you might include `links` information when transforming a resource collection:
+일부 JSON API 표준은 리소스 및 리소스 컬렉션 응답에 메타 데이터 추가를 요구합니다. 이에는 일반적으로 리소스나 관련 리소스로의 `links` 또는 리소스 자체에 대한 메타 데이터가 포함됩니다. 메타 데이터를 추가로 반환하려면, `toArray` 메소드에서 포함하면 됩니다. 예를 들어, 리소스 컬렉션 변환시 `links` 정보를 포함할 수 있습니다:
 
 ```php
 /**
- * Transform the resource into an array.
+ * 리소스를 배열로 변환합니다.
  *
  * @return array<string, mixed>
  */
@@ -752,12 +752,12 @@ public function toArray(Request $request): array
 }
 ```
 
-When returning additional meta data from your resources, you never have to worry about accidentally overriding the `links` or `meta` keys that are automatically added by Laravel when returning paginated responses. Any additional `links` you define will be merged with the links provided by the paginator.
+리소스에서 추가 메타 데이터를 반환할 때, 페이지네이션 응답 시 Laravel이 자동으로 추가하는 `links`나 `meta` 키를 실수로 덮어쓸 염려는 없습니다. 직접 정의한 모든 추가 `links`는 페이지네이터가 제공하는 링크와 병합됩니다.
 
 <a name="top-level-meta-data"></a>
-#### Top Level Meta Data
+#### 최상위 메타 데이터
 
-Sometimes you may wish to only include certain meta data with a resource response if the resource is the outermost resource being returned. Typically, this includes meta information about the response as a whole. To define this meta data, add a `with` method to your resource class. This method should return an array of meta data to be included with the resource response only when the resource is the outermost resource being transformed:
+가끔 리소스가 최상위로 반환될 때만 특정 메타 데이터를 포함시키고 싶을 수 있습니다. 보통 이는 응답 전체에 대한 메타 정보입니다. 이를 정의하려면, 리소스 클래스에 `with` 메소드를 추가하세요. 이 메소드는 리소스가 변환되는 최상위 리소스인 경우에만 리소스 응답에 포함할 메타 데이터 배열을 반환해야 합니다:
 
 ```php
 <?php
@@ -769,7 +769,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 class UserCollection extends ResourceCollection
 {
     /**
-     * Transform the resource collection into an array.
+     * 리소스 컬렉션을 배열로 변환합니다.
      *
      * @return array<string, mixed>
      */
@@ -779,7 +779,7 @@ class UserCollection extends ResourceCollection
     }
 
     /**
-     * Get additional data that should be returned with the resource array.
+     * 리소스 배열과 함께 반환할 추가 데이터를 가져옵니다.
      *
      * @return array<string, mixed>
      */
@@ -795,9 +795,9 @@ class UserCollection extends ResourceCollection
 ```
 
 <a name="adding-meta-data-when-constructing-resources"></a>
-#### Adding Meta Data When Constructing Resources
+#### 리소스 생성 시 메타 데이터 추가
 
-You may also add top-level data when constructing resource instances in your route or controller. The `additional` method, which is available on all resources, accepts an array of data that should be added to the resource response:
+라우트나 컨트롤러에서 리소스 인스턴스를 생성할 때, 최상위 데이터를 추가할 수도 있습니다. 모든 리소스에 제공되는 `additional` 메소드는 리소스 응답에 추가할 데이터를 배열로 전달받습니다:
 
 ```php
 return (new UserCollection(User::all()->load('roles')))
@@ -807,9 +807,9 @@ return (new UserCollection(User::all()->load('roles')))
 ```
 
 <a name="resource-responses"></a>
-## Resource Responses
+## 리소스 응답
 
-As you have already read, resources may be returned directly from routes and controllers:
+앞서 언급한 대로, 리소스는 라우트나 컨트롤러에서 직접 반환할 수 있습니다:
 
 ```php
 use App\Http\Resources\UserResource;
@@ -820,7 +820,7 @@ Route::get('/user/{id}', function (string $id) {
 });
 ```
 
-However, sometimes you may need to customize the outgoing HTTP response before it is sent to the client. There are two ways to accomplish this. First, you may chain the `response` method onto the resource. This method will return an `Illuminate\Http\JsonResponse` instance, giving you full control over the response's headers:
+그러나, 클라이언트로 전송되기 전에 HTTP 응답을 커스터마이즈해야 할 때가 있습니다. 이를 위한 두 가지 방법이 있습니다. 첫째, 리소스에 `response` 메서드를 체이닝할 수 있습니다. 이 메서드는 `Illuminate\Http\JsonResponse` 인스턴스를 반환하며, 응답 헤더를 자유롭게 제어할 수 있습니다:
 
 ```php
 use App\Http\Resources\UserResource;
@@ -833,7 +833,7 @@ Route::get('/user', function () {
 });
 ```
 
-Alternatively, you may define a `withResponse` method within the resource itself. This method will be called when the resource is returned as the outermost resource in a response:
+또 다른 방법으로, 리소스 클래스 내에 `withResponse` 메소드를 정의할 수 있습니다. 이 메소드는 리소스가 응답에서 최상위 리소스로 반환될 때 호출됩니다:
 
 ```php
 <?php
@@ -847,7 +847,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class UserResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * 리소스를 배열로 변환합니다.
      *
      * @return array<string, mixed>
      */
@@ -859,7 +859,7 @@ class UserResource extends JsonResource
     }
 
     /**
-     * Customize the outgoing response for the resource.
+     * 리소스의 응답을 커스터마이즈합니다.
      */
     public function withResponse(Request $request, JsonResponse $response): void
     {

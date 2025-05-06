@@ -1,43 +1,43 @@
-# Encryption
+# 암호화
 
-- [Introduction](#introduction)
-- [Configuration](#configuration)
-    - [Gracefully Rotating Encryption Keys](#gracefully-rotating-encryption-keys)
-- [Using the Encrypter](#using-the-encrypter)
+- [소개](#introduction)
+- [구성](#configuration)
+    - [암호화 키의 무중단 교체](#gracefully-rotating-encryption-keys)
+- [Encrypter 사용하기](#using-the-encrypter)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel's encryption services provide a simple, convenient interface for encrypting and decrypting text via OpenSSL using AES-256 and AES-128 encryption. All of Laravel's encrypted values are signed using a message authentication code (MAC) so that their underlying value cannot be modified or tampered with once encrypted.
+Laravel의 암호화 서비스는 OpenSSL을 사용하여 AES-256 및 AES-128 암호화로 텍스트를 암호화하고 복호화할 수 있는 간단하고 편리한 인터페이스를 제공합니다. Laravel에서 암호화된 모든 값은 메시지 인증 코드(MAC)를 사용해 서명되므로, 암호화된 후 해당 값이 수정되거나 위조될 수 없습니다.
 
 <a name="configuration"></a>
-## Configuration
+## 구성
 
-Before using Laravel's encrypter, you must set the `key` configuration option in your `config/app.php` configuration file. This configuration value is driven by the `APP_KEY` environment variable. You should use the `php artisan key:generate` command to generate this variable's value since the `key:generate` command will use PHP's secure random bytes generator to build a cryptographically secure key for your application. Typically, the value of the `APP_KEY` environment variable will be generated for you during [Laravel's installation](/docs/{{version}}/installation).
+Laravel의 Encrypter를 사용하기 전에, `config/app.php` 설정 파일의 `key` 설정 옵션을 지정해야 합니다. 이 설정 값은 `APP_KEY` 환경 변수에 의해 결정됩니다. `php artisan key:generate` 명령어를 사용하여 이 변수의 값을 생성해야 하며, 이 명령어는 PHP의 보안 난수 생성기를 사용하여 애플리케이션에 암호학적으로 안전한 키를 만들어줍니다. 일반적으로, [Laravel 설치](/docs/{{version}}/installation) 과정에서 `APP_KEY` 환경 변수 값이 자동으로 생성됩니다.
 
 <a name="gracefully-rotating-encryption-keys"></a>
-### Gracefully Rotating Encryption Keys
+### 암호화 키의 무중단 교체
 
-If you change your application's encryption key, all authenticated user sessions will be logged out of your application. This is because every cookie, including session cookies, are encrypted by Laravel. In addition, it will no longer be possible to decrypt any data that was encrypted with your previous encryption key.
+애플리케이션의 암호화 키를 변경하면, 인증된 모든 사용자 세션이 로그아웃됩니다. 이는 모든 쿠키(세션 쿠키 포함)가 Laravel에 의해 암호화되기 때문입니다. 또한 이전 암호화 키로 암호화된 데이터를 더 이상 복호화할 수 없습니다.
 
-To mitigate this issue, Laravel allows you to list your previous encryption keys in your application's `APP_PREVIOUS_KEYS` environment variable. This variable may contain a comma-delimited list of all of your previous encryption keys:
+이 문제를 완화하기 위해, Laravel에서는 애플리케이션의 `APP_PREVIOUS_KEYS` 환경 변수에 이전 암호화 키들을 나열할 수 있도록 지원합니다. 이 변수에는 이전 암호화 키들을 콤마(,)로 구분하여 나열할 수 있습니다:
 
 ```ini
 APP_KEY="base64:J63qRTDLub5NuZvP+kb8YIorGS6qFYHKVo6u7179stY="
 APP_PREVIOUS_KEYS="base64:2nLsGFGzyoae2ax3EF2Lyq/hH6QghBGLIq5uL+Gp8/w="
 ```
 
-When you set this environment variable, Laravel will always use the "current" encryption key when encrypting values. However, when decrypting values, Laravel will first try the current key, and if decryption fails using the current key, Laravel will try all previous keys until one of the keys is able to decrypt the value.
+이 환경 변수를 설정하면, Laravel은 값을 암호화할 때는 항상 "현재" 암호화 키를 사용합니다. 그러나 값을 복호화할 때는 먼저 현재 키로 시도하고, 복호화가 실패하면 이전의 모든 키를 차례로 시도하여 복호화가 성공하는 키를 찾습니다.
 
-This approach to graceful decryption allows users to keep using your application uninterrupted even if your encryption key is rotated.
+이러한 무중단 복호화 방식 덕분에, 암호화 키를 교체하더라도 사용자들은 기존과 동일하게 애플리케이션을 사용할 수 있습니다.
 
 <a name="using-the-encrypter"></a>
-## Using the Encrypter
+## Encrypter 사용하기
 
 <a name="encrypting-a-value"></a>
-#### Encrypting a Value
+#### 값 암호화하기
 
-You may encrypt a value using the `encryptString` method provided by the `Crypt` facade. All encrypted values are encrypted using OpenSSL and the AES-256-CBC cipher. Furthermore, all encrypted values are signed with a message authentication code (MAC). The integrated message authentication code will prevent the decryption of any values that have been tampered with by malicious users:
+`Crypt` 파사드가 제공하는 `encryptString` 메서드를 사용해 값을 암호화할 수 있습니다. 모든 암호화된 값은 OpenSSL과 AES-256-CBC 암호 방식을 사용해 암호화됩니다. 또한 모든 암호화 값은 메시지 인증 코드(MAC)로 서명됩니다. 이 메시지 인증 코드는 악의적인 사용자가 값을 변조한 경우 복호화를 방지합니다:
 
 ```php
 <?php
@@ -51,7 +51,7 @@ use Illuminate\Support\Facades\Crypt;
 class DigitalOceanTokenController extends Controller
 {
     /**
-     * Store a DigitalOcean API token for the user.
+     * 사용자의 DigitalOcean API 토큰을 저장합니다.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -65,9 +65,9 @@ class DigitalOceanTokenController extends Controller
 ```
 
 <a name="decrypting-a-value"></a>
-#### Decrypting a Value
+#### 값 복호화하기
 
-You may decrypt values using the `decryptString` method provided by the `Crypt` facade. If the value cannot be properly decrypted, such as when the message authentication code is invalid, an `Illuminate\Contracts\Encryption\DecryptException` will be thrown:
+`Crypt` 파사드가 제공하는 `decryptString` 메서드를 사용해 값을 복호화할 수 있습니다. 메시지 인증 코드가 올바르지 않은 경우 등 값이 정상적으로 복호화되지 않으면 `Illuminate\Contracts\Encryption\DecryptException` 예외가 발생합니다:
 
 ```php
 use Illuminate\Contracts\Encryption\DecryptException;

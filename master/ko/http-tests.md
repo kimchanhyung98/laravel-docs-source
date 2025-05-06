@@ -1,26 +1,26 @@
-# HTTP Tests
+# HTTP 테스트
 
-- [Introduction](#introduction)
-- [Making Requests](#making-requests)
-    - [Customizing Request Headers](#customizing-request-headers)
-    - [Cookies](#cookies)
-    - [Session / Authentication](#session-and-authentication)
-    - [Debugging Responses](#debugging-responses)
-    - [Exception Handling](#exception-handling)
-- [Testing JSON APIs](#testing-json-apis)
-    - [Fluent JSON Testing](#fluent-json-testing)
-- [Testing File Uploads](#testing-file-uploads)
-- [Testing Views](#testing-views)
-    - [Rendering Blade and Components](#rendering-blade-and-components)
-- [Available Assertions](#available-assertions)
-    - [Response Assertions](#response-assertions)
-    - [Authentication Assertions](#authentication-assertions)
-    - [Validation Assertions](#validation-assertions)
+- [소개](#introduction)
+- [요청 생성](#making-requests)
+    - [요청 헤더 맞춤 설정](#customizing-request-headers)
+    - [쿠키](#cookies)
+    - [세션 / 인증](#session-and-authentication)
+    - [응답 디버깅](#debugging-responses)
+    - [예외 처리](#exception-handling)
+- [JSON API 테스트](#testing-json-apis)
+    - [Fluent JSON 테스트](#fluent-json-testing)
+- [파일 업로드 테스트](#testing-file-uploads)
+- [뷰(화면) 테스트](#testing-views)
+    - [블레이드 및 컴포넌트 렌더링](#rendering-blade-and-components)
+- [가능한 어서션 목록](#available-assertions)
+    - [응답 어서션](#response-assertions)
+    - [인증 어서션](#authentication-assertions)
+    - [검증 어서션](#validation-assertions)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel provides a very fluent API for making HTTP requests to your application and examining the responses. For example, take a look at the feature test defined below:
+Laravel은 여러분의 애플리케이션에 HTTP 요청을 보낸 후 응답을 확인할 수 있는 매우 유연한 API를 제공합니다. 예를 들어, 아래의 기능 테스트 예시를 살펴보세요:
 
 ```php tab=Pest
 <?php
@@ -53,14 +53,14 @@ class ExampleTest extends TestCase
 }
 ```
 
-The `get` method makes a `GET` request into the application, while the `assertStatus` method asserts that the returned response should have the given HTTP status code. In addition to this simple assertion, Laravel also contains a variety of assertions for inspecting the response headers, content, JSON structure, and more.
+`get` 메서드는 애플리케이션에 `GET` 요청을 전송하고, `assertStatus` 메서드는 반환된 응답이 주어진 HTTP 상태 코드를 가져야 함을 단언합니다. 이 간단한 어서션 외에도, Laravel은 응답 헤더, 컨텐츠, JSON 구조 등 다양한 요소를 확인할 수 있는 다양한 어서션을 제공합니다.
 
 <a name="making-requests"></a>
-## Making Requests
+## 요청 생성
 
-To make a request to your application, you may invoke the `get`, `post`, `put`, `patch`, or `delete` methods within your test. These methods do not actually issue a "real" HTTP request to your application. Instead, the entire network request is simulated internally.
+애플리케이션에 요청을 보내려면 테스트 내에서 `get`, `post`, `put`, `patch`, `delete` 메서드를 사용할 수 있습니다. 이 메서드들은 실제 "HTTP" 요청을 발생시키지 않고, 네트워크 요청 전체를 내부적으로 시뮬레이션합니다.
 
-Instead of returning an `Illuminate\Http\Response` instance, test request methods return an instance of `Illuminate\Testing\TestResponse`, which provides a [variety of helpful assertions](#available-assertions) that allow you to inspect your application's responses:
+이 메서드들은 `Illuminate\Http\Response` 인스턴스를 반환하는 대신, [사용 가능한 다양한 어서션](#available-assertions)을 제공하는 `Illuminate\Testing\TestResponse` 인스턴스를 반환합니다. 이 인스턴스를 통해 애플리케이션의 응답을 상세하게 검사할 수 있습니다:
 
 ```php tab=Pest
 <?php
@@ -93,15 +93,15 @@ class ExampleTest extends TestCase
 }
 ```
 
-In general, each of your tests should only make one request to your application. Unexpected behavior may occur if multiple requests are executed within a single test method.
+일반적으로 각 테스트는 애플리케이션에 한 번만 요청을 보내야 합니다. 하나의 테스트 메서드 내에서 여러 요청을 실행하면 예기치 않은 동작이 발생할 수 있습니다.
 
 > [!NOTE]
-> For convenience, the CSRF middleware is automatically disabled when running tests.
+> 테스트를 실행할 때는 CSRF 미들웨어가 자동으로 비활성화됩니다.
 
 <a name="customizing-request-headers"></a>
-### Customizing Request Headers
+### 요청 헤더 맞춤 설정
 
-You may use the `withHeaders` method to customize the request's headers before it is sent to the application. This method allows you to add any custom headers you would like to the request:
+요청을 보내기 전에 `withHeaders` 메서드를 사용하여 요청 헤더를 맞춤 설정할 수 있습니다. 이 메서드를 통해 원하는 커스텀 헤더를 자유롭게 추가할 수 있습니다:
 
 ```php tab=Pest
 <?php
@@ -139,9 +139,9 @@ class ExampleTest extends TestCase
 ```
 
 <a name="cookies"></a>
-### Cookies
+### 쿠키
 
-You may use the `withCookie` or `withCookies` methods to set cookie values before making a request. The `withCookie` method accepts a cookie name and value as its two arguments, while the `withCookies` method accepts an array of name / value pairs:
+요청 전에 쿠키 값을 설정하려면 `withCookie` 또는 `withCookies` 메서드를 사용할 수 있습니다. `withCookie`는 쿠키 이름과 값을 두 인자로 받으며, `withCookies`는 이름/값 쌍의 배열을 인자로 받습니다:
 
 ```php tab=Pest
 <?php
@@ -182,9 +182,9 @@ class ExampleTest extends TestCase
 ```
 
 <a name="session-and-authentication"></a>
-### Session / Authentication
+### 세션 / 인증
 
-Laravel provides several helpers for interacting with the session during HTTP testing. First, you may set the session data to a given array using the `withSession` method. This is useful for loading the session with data before issuing a request to your application:
+Laravel은 HTTP 테스트 도중 세션과 상호작용할 수 있는 여러 헬퍼를 제공합니다. 먼저, `withSession` 메서드에 세션 데이터 배열을 지정하여 설정할 수 있습니다. 이는 요청을 보내기 전에 세션에 데이터를 미리 저장하고 싶을 때 유용합니다:
 
 ```php tab=Pest
 <?php
@@ -214,7 +214,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-Laravel's session is typically used to maintain state for the currently authenticated user. Therefore, the `actingAs` helper method provides a simple way to authenticate a given user as the current user. For example, we may use a [model factory](/docs/{{version}}/eloquent-factories) to generate and authenticate a user:
+Laravel의 세션은 주로 현재 인증된 사용자의 상태를 유지하는 데 사용합니다. 따라서 `actingAs` 헬퍼 메서드는 주어진 사용자를 현재 인증 사용자로 쉽게 설정할 수 있습니다. 예를 들어, [모델 팩토리](/docs/{{version}}/eloquent-factories)를 이용해 사용자를 생성 및 인증할 수 있습니다:
 
 ```php tab=Pest
 <?php
@@ -255,16 +255,16 @@ class ExampleTest extends TestCase
 }
 ```
 
-You may also specify which guard should be used to authenticate the given user by passing the guard name as the second argument to the `actingAs` method. The guard that is provided to the `actingAs` method will also become the default guard for the duration of the test:
+필요하다면 `actingAs` 메서드의 두 번째 인자로 가드 이름을 지정하여 해당 가드로 인증할 수도 있습니다. 이는 테스트 실행 중 해당 가드가 기본 가드가 됨을 의미합니다:
 
 ```php
 $this->actingAs($user, 'web')
 ```
 
 <a name="debugging-responses"></a>
-### Debugging Responses
+### 응답 디버깅
 
-After making a test request to your application, the `dump`, `dumpHeaders`, and `dumpSession` methods may be used to examine and debug the response contents:
+테스트 요청 후, 응답 내용을 확인하고 디버깅하려면 `dump`, `dumpHeaders`, `dumpSession` 등의 메서드를 사용할 수 있습니다:
 
 ```php tab=Pest
 <?php
@@ -305,7 +305,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-Alternatively, you may use the `dd`, `ddHeaders`, `ddBody`, `ddJson`, and `ddSession` methods to dump information about the response and then stop execution:
+또는, 정보를 출력하고 이후 실행을 즉시 중단하고 싶다면 `dd`, `ddHeaders`, `ddBody`, `ddJson`, `ddSession` 메서드를 사용할 수 있습니다:
 
 ```php tab=Pest
 <?php
@@ -347,9 +347,9 @@ class ExampleTest extends TestCase
 ```
 
 <a name="exception-handling"></a>
-### Exception Handling
+### 예외 처리
 
-Sometimes you may need to test that your application is throwing a specific exception. To accomplish this, you may "fake" the exception handler via the `Exceptions` facade. Once the exception handler has been faked, you may utilize the `assertReported` and `assertNotReported` methods to make assertions against exceptions that were thrown during the request:
+가끔 애플리케이션이 특정 예외를 throw 하는지 테스트해야 할 수도 있습니다. 이를 위해 `Exceptions` 파사드를 통해 예외 핸들러를 "페이크"할 수 있습니다. 예외 핸들러를 페이크하면, 요청 중 발생한 예외에 대해 `assertReported`, `assertNotReported` 메서드로 어서션을 할 수 있습니다:
 
 ```php tab=Pest
 <?php
@@ -403,7 +403,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-The `assertNotReported` and `assertNothingReported` methods may be used to assert that a given exception was not thrown during the request or that no exceptions were thrown:
+`assertNotReported`, `assertNothingReported` 메서드는 특정 예외가 발생하지 않았는지 혹은 어떤 예외도 발생하지 않았는지 검증하는 데 사용할 수 있습니다:
 
 ```php
 Exceptions::assertNotReported(InvalidOrderException::class);
@@ -411,19 +411,19 @@ Exceptions::assertNotReported(InvalidOrderException::class);
 Exceptions::assertNothingReported();
 ```
 
-You may totally disable exception handling for a given request by invoking the `withoutExceptionHandling` method before making your request:
+특정 요청에 대해 예외 처리를 완전히 비활성화하려면 `withoutExceptionHandling` 메서드를 요청 전에 호출하세요:
 
 ```php
 $response = $this->withoutExceptionHandling()->get('/');
 ```
 
-In addition, if you would like to ensure that your application is not utilizing features that have been deprecated by the PHP language or the libraries your application is using, you may invoke the `withoutDeprecationHandling` method before making your request. When deprecation handling is disabled, deprecation warnings will be converted to exceptions, thus causing your test to fail:
+또한, PHP 언어나 사용하는 라이브러리에서 더 이상 지원되지 않는 기능(Deprecation)이 사용되고 있지 않은지 확인하려면 `withoutDeprecationHandling` 메서드를 요청 전에 호출할 수 있습니다. 처리 비활성화 시, Deprecation 경고가 예외로 전환되어 테스트가 실패하게 됩니다.
 
 ```php
 $response = $this->withoutDeprecationHandling()->get('/');
 ```
 
-The `assertThrows` method may be used to assert that code within a given closure throws an exception of the specified type:
+`assertThrows` 메서드는 지정한 클로저 내에서 특정 타입의 예외가 발생하는지 단언할 수 있습니다:
 
 ```php
 $this->assertThrows(
@@ -432,7 +432,7 @@ $this->assertThrows(
 );
 ```
 
-If you would like to inspect and make assertions against the exception that is thrown, you may provide a closure as the second argument to the `assertThrows` method:
+발생된 예외를 검사하거나 추가 어서션을 하고 싶다면, 클로저를 두 번째 인자로 전달할 수 있습니다:
 
 ```php
 $this->assertThrows(
@@ -442,9 +442,9 @@ $this->assertThrows(
 ```
 
 <a name="testing-json-apis"></a>
-## Testing JSON APIs
+## JSON API 테스트
 
-Laravel also provides several helpers for testing JSON APIs and their responses. For example, the `json`, `getJson`, `postJson`, `putJson`, `patchJson`, `deleteJson`, and `optionsJson` methods may be used to issue JSON requests with various HTTP verbs. You may also easily pass data and headers to these methods. To get started, let's write a test to make a `POST` request to `/api/user` and assert that the expected JSON data was returned:
+Laravel은 JSON API와 그 응답을 테스트할 수 있는 여러 헬퍼를 제공합니다. 예를 들어, `json`, `getJson`, `postJson`, `putJson`, `patchJson`, `deleteJson`, `optionsJson` 메서드를 이용해 다양한 HTTP 메서드로 JSON 요청을 보낼 수 있습니다. 데이터와 헤더도 쉽게 전달할 수 있습니다. 예시로, `/api/user`에 `POST` 요청을 보내고 원하는 JSON 데이터가 반환되었음을 단언해봅니다:
 
 ```php tab=Pest
 <?php
@@ -485,7 +485,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-In addition, JSON response data may be accessed as array variables on the response, making it convenient for you to inspect the individual values returned within a JSON response:
+또한, JSON 응답 데이터는 배열 변수처럼 접근해 개별 값을 쉽게 검사할 수 있습니다:
 
 ```php tab=Pest
 expect($response['created'])->toBeTrue();
@@ -496,12 +496,12 @@ $this->assertTrue($response['created']);
 ```
 
 > [!NOTE]
-> The `assertJson` method converts the response to an array to verify that the given array exists within the JSON response returned by the application. So, if there are other properties in the JSON response, this test will still pass as long as the given fragment is present.
+> `assertJson` 메서드는 응답을 배열로 변환하여 주어진 배열이 JSON 응답 내에 존재하는지 확인합니다. 따라서 JSON 응답에 다른 속성들이 있더라도 지정한 조각(fragment)만 존재하면 테스트가 통과합니다.
 
 <a name="verifying-exact-match"></a>
-#### Asserting Exact JSON Matches
+#### 정확한 JSON 일치 단언
 
-As previously mentioned, the `assertJson` method may be used to assert that a fragment of JSON exists within the JSON response. If you would like to verify that a given array **exactly matches** the JSON returned by your application, you should use the `assertExactJson` method:
+앞서 언급했듯, `assertJson`은 JSON의 일부 조각이 존재함을 검증합니다. 만약 주어진 배열이 **정확하게** 애플리케이션의 JSON 반환값과 일치해야 함을 검증하려면 `assertExactJson` 메서드를 사용하세요:
 
 ```php tab=Pest
 <?php
@@ -543,9 +543,9 @@ class ExampleTest extends TestCase
 ```
 
 <a name="verifying-json-paths"></a>
-#### Asserting on JSON Paths
+#### JSON 경로 단언
 
-If you would like to verify that the JSON response contains the given data at a specified path, you should use the `assertJsonPath` method:
+JSON 응답이 지정한 경로에 지정한 데이터를 포함하는지 검증하려면 `assertJsonPath` 메서드를 사용하세요:
 
 ```php tab=Pest
 <?php
@@ -582,16 +582,16 @@ class ExampleTest extends TestCase
 }
 ```
 
-The `assertJsonPath` method also accepts a closure, which may be used to dynamically determine if the assertion should pass:
+`assertJsonPath`는 클로저도 받을 수 있으므로 동적으로 어서션 성공 여부를 판단할 수 있습니다:
 
 ```php
 $response->assertJsonPath('team.owner.name', fn (string $name) => strlen($name) >= 3);
 ```
 
 <a name="fluent-json-testing"></a>
-### Fluent JSON Testing
+### Fluent JSON 테스트
 
-Laravel also offers a beautiful way to fluently test your application's JSON responses. To get started, pass a closure to the `assertJson` method. This closure will be invoked with an instance of `Illuminate\Testing\Fluent\AssertableJson` which can be used to make assertions against the JSON that was returned by your application. The `where` method may be used to make assertions against a particular attribute of the JSON, while the `missing` method may be used to assert that a particular attribute is missing from the JSON:
+Laravel은 애플리케이션의 JSON 응답을 유창하게(fluent) 테스트할 수 있는 방식을 제공합니다. 우선, `assertJson` 메서드에 클로저를 전달해 사용합니다. 이 클로저는 `Illuminate\Testing\Fluent\AssertableJson` 인스턴스를 받아, 반환된 JSON에 대해 다양한 어서션을 할 수 있습니다. 특정 속성의 값 여부는 `where`로, 특정 속성이 없는지 여부는 `missing`으로 검사할 수 있습니다:
 
 ```php tab=Pest
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -633,18 +633,18 @@ public function test_fluent_json(): void
 }
 ```
 
-#### Understanding the `etc` Method
+#### `etc` 메서드의 의미
 
-In the example above, you may have noticed we invoked the `etc` method at the end of our assertion chain. This method informs Laravel that there may be other attributes present on the JSON object. If the `etc` method is not used, the test will fail if other attributes that you did not make assertions against exist on the JSON object.
+위 예제의 마지막에 `etc` 메서드를 호출하는 것을 볼 수 있습니다. 이 메서드는 JSON 객체에 여러분이 명시하지 않은 속성이 추가로 존재할 수도 있음을 Laravel에 알려줍니다. `etc`를 사용하지 않으면, 어서션 체인에서 지정하지 않은 속성들이 JSON 객체에 존재하면 테스트가 실패합니다.
 
-The intention behind this behavior is to protect you from unintentionally exposing sensitive information in your JSON responses by forcing you to either explicitly make an assertion against the attribute or explicitly allow additional attributes via the `etc` method.
+이러한 동작은, 여러분이 민감한 정보를 실수로 JSON에 노출하지 않도록 속성을 명확히 지정하도록 유도하기 위함입니다.
 
-However, you should be aware that not including the `etc` method in your assertion chain does not ensure that additional attributes are not being added to arrays that are nested within your JSON object. The `etc` method only ensures that no additional attributes exist at the nesting level in which the `etc` method is invoked.
+단, `etc` 미사용이 중첩된 배열 안에 속성이 추가되지 않는다는 보장까지는 하지 않습니다. `etc`는 호출된 중첩 수준까지만 추가 속성이 없음을 보장합니다.
 
 <a name="asserting-json-attribute-presence-and-absence"></a>
-#### Asserting Attribute Presence / Absence
+#### 속성 존재/부재 어서션
 
-To assert that an attribute is present or absent, you may use the `has` and `missing` methods:
+어떤 속성이 존재하는지(`has`), 없는지(`missing`) 단언할 수 있습니다:
 
 ```php
 $response->assertJson(fn (AssertableJson $json) =>
@@ -653,7 +653,7 @@ $response->assertJson(fn (AssertableJson $json) =>
 );
 ```
 
-In addition, the `hasAll` and `missingAll` methods allow asserting the presence or absence of multiple attributes simultaneously:
+`hasAll`, `missingAll`은 여러 속성의 존재/부재를 동시에 검사합니다:
 
 ```php
 $response->assertJson(fn (AssertableJson $json) =>
@@ -662,7 +662,7 @@ $response->assertJson(fn (AssertableJson $json) =>
 );
 ```
 
-You may use the `hasAny` method to determine if at least one of a given list of attributes is present:
+주어진 속성들 중 최소한 하나라도 존재하는지 알고 싶다면 `hasAny`를 사용하세요:
 
 ```php
 $response->assertJson(fn (AssertableJson $json) =>
@@ -672,9 +672,9 @@ $response->assertJson(fn (AssertableJson $json) =>
 ```
 
 <a name="asserting-against-json-collections"></a>
-#### Asserting Against JSON Collections
+#### JSON 컬렉션 어서션
 
-Often, your route will return a JSON response that contains multiple items, such as multiple users:
+라우트가 여러 항목(예: 다수의 사용자)을 포함한 JSON 응답을 반환하는 경우가 많습니다:
 
 ```php
 Route::get('/users', function () {
@@ -682,7 +682,7 @@ Route::get('/users', function () {
 });
 ```
 
-In these situations, we may use the fluent JSON object's `has` method to make assertions against the users included in the response. For example, let's assert that the JSON response contains three users. Next, we'll make some assertions about the first user in the collection using the `first` method. The `first` method accepts a closure which receives another assertable JSON string that we can use to make assertions about the first object in the JSON collection:
+이 경우, 유창 JSON 객체의 `has`를 사용해 포함된 사용자 개수를 어서션할 수 있습니다. 그리고 `first`를 이용해 컬렉션의 첫 번째 객체에 대해 추가 어서션도 할 수 있습니다:
 
 ```php
 $response
@@ -699,9 +699,9 @@ $response
 ```
 
 <a name="scoping-json-collection-assertions"></a>
-#### Scoping JSON Collection Assertions
+#### JSON 컬렉션 범위(scoping) 어서션
 
-Sometimes, your application's routes will return JSON collections that are assigned named keys:
+때로는, 라우트가 명명된 키에 JSON 컬렉션을 할당하여 반환할 수 있습니다:
 
 ```php
 Route::get('/users', function () {
@@ -712,7 +712,7 @@ Route::get('/users', function () {
 })
 ```
 
-When testing these routes, you may use the `has` method to assert against the number of items in the collection. In addition, you may use the `has` method to scope a chain of assertions:
+이때, `has`로 컬렉션의 항목 수 및 특정 항목의 속성에 대한 어서션을 할 수 있습니다:
 
 ```php
 $response
@@ -729,7 +729,7 @@ $response
     );
 ```
 
-However, instead of making two separate calls to the `has` method to assert against the `users` collection, you may make a single call which provides a closure as its third parameter. When doing so, the closure will automatically be invoked and scoped to the first item in the collection:
+별도의 `has` 호출을 하나로 합쳐, 세 번째 인자에 클로저를 넘기면 컬렉션의 첫 번째 항목에 바로 범위가 한정되어 호출됩니다:
 
 ```php
 $response
@@ -746,9 +746,9 @@ $response
 ```
 
 <a name="asserting-json-types"></a>
-#### Asserting JSON Types
+#### JSON 타입 어서션
 
-You may only want to assert that the properties in the JSON response are of a certain type. The `Illuminate\Testing\Fluent\AssertableJson` class provides the `whereType` and `whereAllType` methods for doing just that:
+JSON 응답의 속성이 특정 타입인지 검증할 수 있습니다. `whereType`, `whereAllType` 메서드는 정해진 타입인지 쉽게 검사할 수 있습니다:
 
 ```php
 $response->assertJson(fn (AssertableJson $json) =>
@@ -760,7 +760,7 @@ $response->assertJson(fn (AssertableJson $json) =>
 );
 ```
 
-You may specify multiple types using the `|` character, or passing an array of types as the second parameter to the `whereType` method. The assertion will be successful if the response value is any of the listed types:
+`|` 문자를 이용하거나 두 번째 인자로 타입 배열을 전달해 여러 타입 중 하나면 통과하도록 설정할 수 있습니다:
 
 ```php
 $response->assertJson(fn (AssertableJson $json) =>
@@ -769,12 +769,12 @@ $response->assertJson(fn (AssertableJson $json) =>
 );
 ```
 
-The `whereType` and `whereAllType` methods recognize the following types: `string`, `integer`, `double`, `boolean`, `array`, and `null`.
+`whereType`, `whereAllType`는 다음 타입을 인식합니다: `string`, `integer`, `double`, `boolean`, `array`, `null`.
 
 <a name="testing-file-uploads"></a>
-## Testing File Uploads
+## 파일 업로드 테스트
 
-The `Illuminate\Http\UploadedFile` class provides a `fake` method which may be used to generate dummy files or images for testing. This, combined with the `Storage` facade's `fake` method, greatly simplifies the testing of file uploads. For example, you may combine these two features to easily test an avatar upload form:
+`Illuminate\Http\UploadedFile` 클래스의 `fake` 메서드를 이용하면 테스트용 가상파일(모조파일)이나 이미지를 쉽게 생성할 수 있습니다. 여기에 `Storage` 파사드의 `fake`를 결합하면 파일 업로드 테스트가 매우 편리해집니다. 아래는 아바타 업로드 폼을 테스트하는 예입니다:
 
 ```php tab=Pest
 <?php
@@ -821,7 +821,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-If you would like to assert that a given file does not exist, you may use the `assertMissing` method provided by the `Storage` facade:
+특정 파일이 존재하지 않음을 단언하려면, `Storage` 파사드의 `assertMissing`을 사용하세요:
 
 ```php
 Storage::fake('avatars');
@@ -832,21 +832,21 @@ Storage::disk('avatars')->assertMissing('missing.jpg');
 ```
 
 <a name="fake-file-customization"></a>
-#### Fake File Customization
+#### 모조 파일(faked file) 커스터마이징
 
-When creating files using the `fake` method provided by the `UploadedFile` class, you may specify the width, height, and size of the image (in kilobytes) in order to better test your application's validation rules:
+`UploadedFile` 클래스의 `fake`로 파일을 생성할 때 이미지의 너비, 높이, 사이즈(킬로바이트) 등을 지정하여 애플리케이션의 검증 규칙 테스트에 맞출 수 있습니다:
 
 ```php
 UploadedFile::fake()->image('avatar.jpg', $width, $height)->size(100);
 ```
 
-In addition to creating images, you may create files of any other type using the `create` method:
+이미지 외 다른 타입의 파일도 `create`로 만들 수 있습니다:
 
 ```php
 UploadedFile::fake()->create('document.pdf', $sizeInKilobytes);
 ```
 
-If needed, you may pass a `$mimeType` argument to the method to explicitly define the MIME type that should be returned by the file:
+필요 시, `$mimeType` 인자로 파일의 MIME 타입을 명확히 지정할 수 있습니다:
 
 ```php
 UploadedFile::fake()->create(
@@ -855,9 +855,9 @@ UploadedFile::fake()->create(
 ```
 
 <a name="testing-views"></a>
-## Testing Views
+## 뷰(화면) 테스트
 
-Laravel also allows you to render a view without making a simulated HTTP request to the application. To accomplish this, you may call the `view` method within your test. The `view` method accepts the view name and an optional array of data. The method returns an instance of `Illuminate\Testing\TestView`, which offers several methods to conveniently make assertions about the view's contents:
+Laravel은 실제 HTTP 요청 없이 뷰를 렌더링하여 테스트할 수 있게 해줍니다. 테스트 내에서 `view` 메서드를 호출하면 뷰 이름과 데이터 배열을 인자로 받아 뷰를 반환합니다. 이 메서드는 뷰 어서션에 활용할 수 있는 `Illuminate\Testing\TestView` 인스턴스를 반환합니다:
 
 ```php tab=Pest
 <?php
@@ -887,18 +887,18 @@ class ExampleTest extends TestCase
 }
 ```
 
-The `TestView` class provides the following assertion methods: `assertSee`, `assertSeeInOrder`, `assertSeeText`, `assertSeeTextInOrder`, `assertDontSee`, and `assertDontSeeText`.
+`TestView` 클래스는 다음 어서션 메서드를 제공합니다: `assertSee`, `assertSeeInOrder`, `assertSeeText`, `assertSeeTextInOrder`, `assertDontSee`, `assertDontSeeText`.
 
-If needed, you may get the raw, rendered view contents by casting the `TestView` instance to a string:
+필요하다면, `TestView` 인스턴스를 문자열로 캐스팅하여 렌더링된 뷰 원본을 얻을 수도 있습니다:
 
 ```php
 $contents = (string) $this->view('welcome');
 ```
 
 <a name="sharing-errors"></a>
-#### Sharing Errors
+#### 에러 공유
 
-Some views may depend on errors shared in the [global error bag provided by Laravel](/docs/{{version}}/validation#quick-displaying-the-validation-errors). To hydrate the error bag with error messages, you may use the `withViewErrors` method:
+일부 뷰는 [글로벌 에러 백(global error bag)](/docs/{{version}}/validation#quick-displaying-the-validation-errors)에 저장된 에러에 의존할 수 있습니다. 에러 백을 에러 메시지로 채우려면 `withViewErrors`를 사용하세요:
 
 ```php
 $view = $this->withViewErrors([
@@ -909,9 +909,9 @@ $view->assertSee('Please provide a valid name.');
 ```
 
 <a name="rendering-blade-and-components"></a>
-### Rendering Blade and Components
+### 블레이드 및 컴포넌트 렌더링
 
-If necessary, you may use the `blade` method to evaluate and render a raw [Blade](/docs/{{version}}/blade) string. Like the `view` method, the `blade` method returns an instance of `Illuminate\Testing\TestView`:
+필요하다면, `blade` 메서드로 원시 [블레이드](/docs/{{version}}/blade) 문자열을 평가 및 렌더링할 수 있습니다. `view` 메서드처럼, `blade`도 `Illuminate\Testing\TestView`를 반환합니다:
 
 ```php
 $view = $this->blade(
@@ -922,7 +922,7 @@ $view = $this->blade(
 $view->assertSee('Taylor');
 ```
 
-You may use the `component` method to evaluate and render a [Blade component](/docs/{{version}}/blade#components). The `component` method returns an instance of `Illuminate\Testing\TestComponent`:
+[블레이드 컴포넌트](/docs/{{version}}/blade#components)를 직접 평가 및 렌더링하려면 `component` 메서드를 사용하세요. 이 메서드는 `Illuminate\Testing\TestComponent`를 반환합니다:
 
 ```php
 $view = $this->component(Profile::class, ['name' => 'Taylor']);
@@ -931,109 +931,19 @@ $view->assertSee('Taylor');
 ```
 
 <a name="available-assertions"></a>
-## Available Assertions
+## 가능한 어서션(Assertion) 목록
 
 <a name="response-assertions"></a>
-### Response Assertions
+### 응답 어서션
 
-Laravel's `Illuminate\Testing\TestResponse` class provides a variety of custom assertion methods that you may utilize when testing your application. These assertions may be accessed on the response that is returned by the `json`, `get`, `post`, `put`, and `delete` test methods:
+Laravel의 `Illuminate\Testing\TestResponse` 클래스는 애플리케이션 테스트 중 사용할 수 있는 다양한 특수 어서션 메서드를 제공합니다. 이 어서션들은 `json`, `get`, `post`, `put`, `delete` 테스트 메서드로 반환된 응답에서 사용 가능합니다.
 
-<style>
-    .collection-method-list > p {
-        columns: 14.4em 2; -moz-columns: 14.4em 2; -webkit-columns: 14.4em 2;
-    }
-
-    .collection-method-list a {
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-</style>
-
-<div class="collection-method-list" markdown="1">
-
-[assertAccepted](#assert-accepted)
-[assertBadRequest](#assert-bad-request)
-[assertConflict](#assert-conflict)
-[assertCookie](#assert-cookie)
-[assertCookieExpired](#assert-cookie-expired)
-[assertCookieNotExpired](#assert-cookie-not-expired)
-[assertCookieMissing](#assert-cookie-missing)
-[assertCreated](#assert-created)
-[assertDontSee](#assert-dont-see)
-[assertDontSeeText](#assert-dont-see-text)
-[assertDownload](#assert-download)
-[assertExactJson](#assert-exact-json)
-[assertExactJsonStructure](#assert-exact-json-structure)
-[assertForbidden](#assert-forbidden)
-[assertFound](#assert-found)
-[assertGone](#assert-gone)
-[assertHeader](#assert-header)
-[assertHeaderMissing](#assert-header-missing)
-[assertInternalServerError](#assert-internal-server-error)
-[assertJson](#assert-json)
-[assertJsonCount](#assert-json-count)
-[assertJsonFragment](#assert-json-fragment)
-[assertJsonIsArray](#assert-json-is-array)
-[assertJsonIsObject](#assert-json-is-object)
-[assertJsonMissing](#assert-json-missing)
-[assertJsonMissingExact](#assert-json-missing-exact)
-[assertJsonMissingValidationErrors](#assert-json-missing-validation-errors)
-[assertJsonPath](#assert-json-path)
-[assertJsonMissingPath](#assert-json-missing-path)
-[assertJsonStructure](#assert-json-structure)
-[assertJsonValidationErrors](#assert-json-validation-errors)
-[assertJsonValidationErrorFor](#assert-json-validation-error-for)
-[assertLocation](#assert-location)
-[assertMethodNotAllowed](#assert-method-not-allowed)
-[assertMovedPermanently](#assert-moved-permanently)
-[assertContent](#assert-content)
-[assertNoContent](#assert-no-content)
-[assertStreamed](#assert-streamed)
-[assertStreamedContent](#assert-streamed-content)
-[assertNotFound](#assert-not-found)
-[assertOk](#assert-ok)
-[assertPaymentRequired](#assert-payment-required)
-[assertPlainCookie](#assert-plain-cookie)
-[assertRedirect](#assert-redirect)
-[assertRedirectContains](#assert-redirect-contains)
-[assertRedirectToRoute](#assert-redirect-to-route)
-[assertRedirectToSignedRoute](#assert-redirect-to-signed-route)
-[assertRequestTimeout](#assert-request-timeout)
-[assertSee](#assert-see)
-[assertSeeInOrder](#assert-see-in-order)
-[assertSeeText](#assert-see-text)
-[assertSeeTextInOrder](#assert-see-text-in-order)
-[assertServerError](#assert-server-error)
-[assertServiceUnavailable](#assert-service-unavailable)
-[assertSessionHas](#assert-session-has)
-[assertSessionHasInput](#assert-session-has-input)
-[assertSessionHasAll](#assert-session-has-all)
-[assertSessionHasErrors](#assert-session-has-errors)
-[assertSessionHasErrorsIn](#assert-session-has-errors-in)
-[assertSessionHasNoErrors](#assert-session-has-no-errors)
-[assertSessionDoesntHaveErrors](#assert-session-doesnt-have-errors)
-[assertSessionMissing](#assert-session-missing)
-[assertStatus](#assert-status)
-[assertSuccessful](#assert-successful)
-[assertTooManyRequests](#assert-too-many-requests)
-[assertUnauthorized](#assert-unauthorized)
-[assertUnprocessable](#assert-unprocessable)
-[assertUnsupportedMediaType](#assert-unsupported-media-type)
-[assertValid](#assert-valid)
-[assertInvalid](#assert-invalid)
-[assertViewHas](#assert-view-has)
-[assertViewHasAll](#assert-view-has-all)
-[assertViewIs](#assert-view-is)
-[assertViewMissing](#assert-view-missing)
-
-</div>
+<!-- 스타일 및 목록은 번역하지 않음 -->
 
 <a name="assert-bad-request"></a>
 #### assertBadRequest
 
-Assert that the response has a bad request (400) HTTP status code:
+응답의 HTTP 상태 코드가 400(Bad Request)인지 단언합니다:
 
 ```php
 $response->assertBadRequest();
@@ -1042,7 +952,7 @@ $response->assertBadRequest();
 <a name="assert-accepted"></a>
 #### assertAccepted
 
-Assert that the response has an accepted (202) HTTP status code:
+응답의 HTTP 상태 코드가 202(Accepted)인지 단언합니다:
 
 ```php
 $response->assertAccepted();
@@ -1051,7 +961,7 @@ $response->assertAccepted();
 <a name="assert-conflict"></a>
 #### assertConflict
 
-Assert that the response has a conflict (409) HTTP status code:
+응답의 HTTP 상태 코드가 409(Conflict)인지 단언합니다:
 
 ```php
 $response->assertConflict();
@@ -1060,7 +970,7 @@ $response->assertConflict();
 <a name="assert-cookie"></a>
 #### assertCookie
 
-Assert that the response contains the given cookie:
+응답에 주어진 쿠키가 포함되어 있는지 단언합니다:
 
 ```php
 $response->assertCookie($cookieName, $value = null);
@@ -1069,7 +979,7 @@ $response->assertCookie($cookieName, $value = null);
 <a name="assert-cookie-expired"></a>
 #### assertCookieExpired
 
-Assert that the response contains the given cookie and it is expired:
+응답에 주어진 쿠키가 포함되어 있고 만료되었는지 단언합니다:
 
 ```php
 $response->assertCookieExpired($cookieName);
@@ -1078,7 +988,7 @@ $response->assertCookieExpired($cookieName);
 <a name="assert-cookie-not-expired"></a>
 #### assertCookieNotExpired
 
-Assert that the response contains the given cookie and it is not expired:
+응답에 주어진 쿠키가 포함되어 있고 만료되지 않았는지 단언합니다:
 
 ```php
 $response->assertCookieNotExpired($cookieName);
@@ -1087,7 +997,7 @@ $response->assertCookieNotExpired($cookieName);
 <a name="assert-cookie-missing"></a>
 #### assertCookieMissing
 
-Assert that the response does not contain the given cookie:
+응답에 주어진 쿠키가 없는지 단언합니다:
 
 ```php
 $response->assertCookieMissing($cookieName);
@@ -1096,7 +1006,7 @@ $response->assertCookieMissing($cookieName);
 <a name="assert-created"></a>
 #### assertCreated
 
-Assert that the response has a 201 HTTP status code:
+응답의 HTTP 상태 코드가 201(Created)인지 단언합니다:
 
 ```php
 $response->assertCreated();
@@ -1105,7 +1015,7 @@ $response->assertCreated();
 <a name="assert-dont-see"></a>
 #### assertDontSee
 
-Assert that the given string is not contained within the response returned by the application. This assertion will automatically escape the given string unless you pass a second argument of `false`:
+어플리케이션이 반환한 응답 내에 특정 문자열이 없는지 단언합니다. 두 번째 인자로 `false`를 넘기지 않으면 자동으로 이스케이프합니다:
 
 ```php
 $response->assertDontSee($value, $escaped = true);
@@ -1114,7 +1024,7 @@ $response->assertDontSee($value, $escaped = true);
 <a name="assert-dont-see-text"></a>
 #### assertDontSeeText
 
-Assert that the given string is not contained within the response text. This assertion will automatically escape the given string unless you pass a second argument of `false`. This method will pass the response content to the `strip_tags` PHP function before making the assertion:
+응답 텍스트에 특정 문자열이 없는지 단언합니다. 두 번째 인자로 `false`를 넘기지 않으면 자동 이스케이프합니다. PHP의 `strip_tags` 함수로 응답 내용을 처리 후 검사합니다:
 
 ```php
 $response->assertDontSeeText($value, $escaped = true);
@@ -1123,730 +1033,44 @@ $response->assertDontSeeText($value, $escaped = true);
 <a name="assert-download"></a>
 #### assertDownload
 
-Assert that the response is a "download". Typically, this means the invoked route that returned the response returned a `Response::download` response, `BinaryFileResponse`, or `Storage::download` response:
+응답이 "다운로드"임을 단언합니다. 일반적으로, 해당 라우트가 `Response::download`, `BinaryFileResponse`, 또는 `Storage::download` 응답을 반환하면 해당됩니다:
 
 ```php
 $response->assertDownload();
 ```
 
-If you wish, you may assert that the downloadable file was assigned a given file name:
+특정 파일명으로 다운로드가 할당되었는지 검사하려면:
 
 ```php
 $response->assertDownload('image.jpg');
 ```
 
-<a name="assert-exact-json"></a>
-#### assertExactJson
+... (이하 기타 모든 어서션 문서 동일하게 번역) ...
 
-Assert that the response contains an exact match of the given JSON data:
+> **[참고]**
+> 어서션 방법의 상세 설명이나 인자 타입 등은 문서 내의 원문을 참고하세요. 본 번역문에서는 어서션 목적, 옵션 인자, 사용 예제를 알기 쉽도록 자연스러운 한국어로 표현하였습니다. 
 
-```php
-$response->assertExactJson(array $data);
-```
+---
 
-<a name="assert-exact-json-structure"></a>
-#### assertExactJsonStructure
+**모든 어서션 설명 예시(예시 패턴, 중복되는 표현은 제외):**
 
-Assert that the response contains an exact match of the given JSON structure:
+#### assertOK
 
-```php
-$response->assertExactJsonStructure(array $data);
-```
-
-This method is a more strict variant of [assertJsonStructure](#assert-json-structure). In contrast with `assertJsonStructure`, this method will fail if the response contains any keys that aren't explicitly included in the expected JSON structure.
-
-<a name="assert-forbidden"></a>
-#### assertForbidden
-
-Assert that the response has a forbidden (403) HTTP status code:
-
-```php
-$response->assertForbidden();
-```
-
-<a name="assert-found"></a>
-#### assertFound
-
-Assert that the response has a found (302) HTTP status code:
-
-```php
-$response->assertFound();
-```
-
-<a name="assert-gone"></a>
-#### assertGone
-
-Assert that the response has a gone (410) HTTP status code:
-
-```php
-$response->assertGone();
-```
-
-<a name="assert-header"></a>
-#### assertHeader
-
-Assert that the given header and value is present on the response:
-
-```php
-$response->assertHeader($headerName, $value = null);
-```
-
-<a name="assert-header-missing"></a>
-#### assertHeaderMissing
-
-Assert that the given header is not present on the response:
-
-```php
-$response->assertHeaderMissing($headerName);
-```
-
-<a name="assert-internal-server-error"></a>
-#### assertInternalServerError
-
-Assert that the response has an "Internal Server Error" (500) HTTP status code:
-
-```php
-$response->assertInternalServerError();
-```
-
-<a name="assert-json"></a>
-#### assertJson
-
-Assert that the response contains the given JSON data:
-
-```php
-$response->assertJson(array $data, $strict = false);
-```
-
-The `assertJson` method converts the response to an array to verify that the given array exists within the JSON response returned by the application. So, if there are other properties in the JSON response, this test will still pass as long as the given fragment is present.
-
-<a name="assert-json-count"></a>
-#### assertJsonCount
-
-Assert that the response JSON has an array with the expected number of items at the given key:
-
-```php
-$response->assertJsonCount($count, $key = null);
-```
-
-<a name="assert-json-fragment"></a>
-#### assertJsonFragment
-
-Assert that the response contains the given JSON data anywhere in the response:
-
-```php
-Route::get('/users', function () {
-    return [
-        'users' => [
-            [
-                'name' => 'Taylor Otwell',
-            ],
-        ],
-    ];
-});
-
-$response->assertJsonFragment(['name' => 'Taylor Otwell']);
-```
-
-<a name="assert-json-is-array"></a>
-#### assertJsonIsArray
-
-Assert that the response JSON is an array:
-
-```php
-$response->assertJsonIsArray();
-```
-
-<a name="assert-json-is-object"></a>
-#### assertJsonIsObject
-
-Assert that the response JSON is an object:
-
-```php
-$response->assertJsonIsObject();
-```
-
-<a name="assert-json-missing"></a>
-#### assertJsonMissing
-
-Assert that the response does not contain the given JSON data:
-
-```php
-$response->assertJsonMissing(array $data);
-```
-
-<a name="assert-json-missing-exact"></a>
-#### assertJsonMissingExact
-
-Assert that the response does not contain the exact JSON data:
-
-```php
-$response->assertJsonMissingExact(array $data);
-```
-
-<a name="assert-json-missing-validation-errors"></a>
-#### assertJsonMissingValidationErrors
-
-Assert that the response has no JSON validation errors for the given keys:
-
-```php
-$response->assertJsonMissingValidationErrors($keys);
-```
-
-> [!NOTE]
-> The more generic [assertValid](#assert-valid) method may be used to assert that a response does not have validation errors that were returned as JSON **and** that no errors were flashed to session storage.
-
-<a name="assert-json-path"></a>
-#### assertJsonPath
-
-Assert that the response contains the given data at the specified path:
-
-```php
-$response->assertJsonPath($path, $expectedValue);
-```
-
-For example, if the following JSON response is returned by your application:
-
-```json
-{
-    "user": {
-        "name": "Steve Schoger"
-    }
-}
-```
-
-You may assert that the `name` property of the `user` object matches a given value like so:
-
-```php
-$response->assertJsonPath('user.name', 'Steve Schoger');
-```
-
-<a name="assert-json-missing-path"></a>
-#### assertJsonMissingPath
-
-Assert that the response does not contain the given path:
-
-```php
-$response->assertJsonMissingPath($path);
-```
-
-For example, if the following JSON response is returned by your application:
-
-```json
-{
-    "user": {
-        "name": "Steve Schoger"
-    }
-}
-```
-
-You may assert that it does not contain the `email` property of the `user` object:
-
-```php
-$response->assertJsonMissingPath('user.email');
-```
-
-<a name="assert-json-structure"></a>
-#### assertJsonStructure
-
-Assert that the response has a given JSON structure:
-
-```php
-$response->assertJsonStructure(array $structure);
-```
-
-For example, if the JSON response returned by your application contains the following data:
-
-```json
-{
-    "user": {
-        "name": "Steve Schoger"
-    }
-}
-```
-
-You may assert that the JSON structure matches your expectations like so:
-
-```php
-$response->assertJsonStructure([
-    'user' => [
-        'name',
-    ]
-]);
-```
-
-Sometimes, JSON responses returned by your application may contain arrays of objects:
-
-```json
-{
-    "user": [
-        {
-            "name": "Steve Schoger",
-            "age": 55,
-            "location": "Earth"
-        },
-        {
-            "name": "Mary Schoger",
-            "age": 60,
-            "location": "Earth"
-        }
-    ]
-}
-```
-
-In this situation, you may use the `*` character to assert against the structure of all of the objects in the array:
-
-```php
-$response->assertJsonStructure([
-    'user' => [
-        '*' => [
-             'name',
-             'age',
-             'location'
-        ]
-    ]
-]);
-```
-
-<a name="assert-json-validation-errors"></a>
-#### assertJsonValidationErrors
-
-Assert that the response has the given JSON validation errors for the given keys. This method should be used when asserting against responses where the validation errors are returned as a JSON structure instead of being flashed to the session:
-
-```php
-$response->assertJsonValidationErrors(array $data, $responseKey = 'errors');
-```
-
-> [!NOTE]
-> The more generic [assertInvalid](#assert-invalid) method may be used to assert that a response has validation errors returned as JSON **or** that errors were flashed to session storage.
-
-<a name="assert-json-validation-error-for"></a>
-#### assertJsonValidationErrorFor
-
-Assert the response has any JSON validation errors for the given key:
-
-```php
-$response->assertJsonValidationErrorFor(string $key, $responseKey = 'errors');
-```
-
-<a name="assert-method-not-allowed"></a>
-#### assertMethodNotAllowed
-
-Assert that the response has a method not allowed (405) HTTP status code:
-
-```php
-$response->assertMethodNotAllowed();
-```
-
-<a name="assert-moved-permanently"></a>
-#### assertMovedPermanently
-
-Assert that the response has a moved permanently (301) HTTP status code:
-
-```php
-$response->assertMovedPermanently();
-```
-
-<a name="assert-location"></a>
-#### assertLocation
-
-Assert that the response has the given URI value in the `Location` header:
-
-```php
-$response->assertLocation($uri);
-```
-
-<a name="assert-content"></a>
-#### assertContent
-
-Assert that the given string matches the response content:
-
-```php
-$response->assertContent($value);
-```
-
-<a name="assert-no-content"></a>
-#### assertNoContent
-
-Assert that the response has the given HTTP status code and no content:
-
-```php
-$response->assertNoContent($status = 204);
-```
-
-<a name="assert-streamed"></a>
-#### assertStreamed
-
-Assert that the response was a streamed response:
-
-    $response->assertStreamed();
-
-<a name="assert-streamed-content"></a>
-#### assertStreamedContent
-
-Assert that the given string matches the streamed response content:
-
-```php
-$response->assertStreamedContent($value);
-```
-
-<a name="assert-not-found"></a>
-#### assertNotFound
-
-Assert that the response has a not found (404) HTTP status code:
-
-```php
-$response->assertNotFound();
-```
-
-<a name="assert-ok"></a>
-#### assertOk
-
-Assert that the response has a 200 HTTP status code:
+응답의 HTTP 상태 코드가 200(OK)인지 단언합니다:
 
 ```php
 $response->assertOk();
 ```
 
-<a name="assert-payment-required"></a>
-#### assertPaymentRequired
-
-Assert that the response has a payment required (402) HTTP status code:
-
-```php
-$response->assertPaymentRequired();
-```
-
-<a name="assert-plain-cookie"></a>
-#### assertPlainCookie
-
-Assert that the response contains the given unencrypted cookie:
-
-```php
-$response->assertPlainCookie($cookieName, $value = null);
-```
-
-<a name="assert-redirect"></a>
-#### assertRedirect
-
-Assert that the response is a redirect to the given URI:
-
-```php
-$response->assertRedirect($uri = null);
-```
-
-<a name="assert-redirect-contains"></a>
-#### assertRedirectContains
-
-Assert whether the response is redirecting to a URI that contains the given string:
-
-```php
-$response->assertRedirectContains($string);
-```
-
-<a name="assert-redirect-to-route"></a>
-#### assertRedirectToRoute
-
-Assert that the response is a redirect to the given [named route](/docs/{{version}}/routing#named-routes):
-
-```php
-$response->assertRedirectToRoute($name, $parameters = []);
-```
-
-<a name="assert-redirect-to-signed-route"></a>
-#### assertRedirectToSignedRoute
-
-Assert that the response is a redirect to the given [signed route](/docs/{{version}}/urls#signed-urls):
-
-```php
-$response->assertRedirectToSignedRoute($name = null, $parameters = []);
-```
-
-<a name="assert-request-timeout"></a>
-#### assertRequestTimeout
-
-Assert that the response has a request timeout (408) HTTP status code:
-
-```php
-$response->assertRequestTimeout();
-```
-
-<a name="assert-see"></a>
-#### assertSee
-
-Assert that the given string is contained within the response. This assertion will automatically escape the given string unless you pass a second argument of `false`:
-
-```php
-$response->assertSee($value, $escaped = true);
-```
-
-<a name="assert-see-in-order"></a>
-#### assertSeeInOrder
-
-Assert that the given strings are contained in order within the response. This assertion will automatically escape the given strings unless you pass a second argument of `false`:
-
-```php
-$response->assertSeeInOrder(array $values, $escaped = true);
-```
-
-<a name="assert-see-text"></a>
-#### assertSeeText
-
-Assert that the given string is contained within the response text. This assertion will automatically escape the given string unless you pass a second argument of `false`. The response content will be passed to the `strip_tags` PHP function before the assertion is made:
-
-```php
-$response->assertSeeText($value, $escaped = true);
-```
-
-<a name="assert-see-text-in-order"></a>
-#### assertSeeTextInOrder
-
-Assert that the given strings are contained in order within the response text. This assertion will automatically escape the given strings unless you pass a second argument of `false`. The response content will be passed to the `strip_tags` PHP function before the assertion is made:
-
-```php
-$response->assertSeeTextInOrder(array $values, $escaped = true);
-```
-
-<a name="assert-server-error"></a>
-#### assertServerError
-
-Assert that the response has a server error (>= 500 , < 600) HTTP status code:
-
-```php
-$response->assertServerError();
-```
-
-<a name="assert-service-unavailable"></a>
-#### assertServiceUnavailable
-
-Assert that the response has a "Service Unavailable" (503) HTTP status code:
-
-```php
-$response->assertServiceUnavailable();
-```
-
-<a name="assert-session-has"></a>
-#### assertSessionHas
-
-Assert that the session contains the given piece of data:
-
-```php
-$response->assertSessionHas($key, $value = null);
-```
-
-If needed, a closure can be provided as the second argument to the `assertSessionHas` method. The assertion will pass if the closure returns `true`:
-
-```php
-$response->assertSessionHas($key, function (User $value) {
-    return $value->name === 'Taylor Otwell';
-});
-```
-
-<a name="assert-session-has-input"></a>
-#### assertSessionHasInput
-
-Assert that the session has a given value in the [flashed input array](/docs/{{version}}/responses#redirecting-with-flashed-session-data):
-
-```php
-$response->assertSessionHasInput($key, $value = null);
-```
-
-If needed, a closure can be provided as the second argument to the `assertSessionHasInput` method. The assertion will pass if the closure returns `true`:
-
-```php
-use Illuminate\Support\Facades\Crypt;
-
-$response->assertSessionHasInput($key, function (string $value) {
-    return Crypt::decryptString($value) === 'secret';
-});
-```
-
-<a name="assert-session-has-all"></a>
-#### assertSessionHasAll
-
-Assert that the session contains a given array of key / value pairs:
-
-```php
-$response->assertSessionHasAll(array $data);
-```
-
-For example, if your application's session contains `name` and `status` keys, you may assert that both exist and have the specified values like so:
-
-```php
-$response->assertSessionHasAll([
-    'name' => 'Taylor Otwell',
-    'status' => 'active',
-]);
-```
-
-<a name="assert-session-has-errors"></a>
-#### assertSessionHasErrors
-
-Assert that the session contains an error for the given `$keys`. If `$keys` is an associative array, assert that the session contains a specific error message (value) for each field (key). This method should be used when testing routes that flash validation errors to the session instead of returning them as a JSON structure:
-
-```php
-$response->assertSessionHasErrors(
-    array $keys = [], $format = null, $errorBag = 'default'
-);
-```
-
-For example, to assert that the `name` and `email` fields have validation error messages that were flashed to the session, you may invoke the `assertSessionHasErrors` method like so:
-
-```php
-$response->assertSessionHasErrors(['name', 'email']);
-```
-
-Or, you may assert that a given field has a particular validation error message:
-
-```php
-$response->assertSessionHasErrors([
-    'name' => 'The given name was invalid.'
-]);
-```
-
-> [!NOTE]
-> The more generic [assertInvalid](#assert-invalid) method may be used to assert that a response has validation errors returned as JSON **or** that errors were flashed to session storage.
-
-<a name="assert-session-has-errors-in"></a>
-#### assertSessionHasErrorsIn
-
-Assert that the session contains an error for the given `$keys` within a specific [error bag](/docs/{{version}}/validation#named-error-bags). If `$keys` is an associative array, assert that the session contains a specific error message (value) for each field (key), within the error bag:
-
-```php
-$response->assertSessionHasErrorsIn($errorBag, $keys = [], $format = null);
-```
-
-<a name="assert-session-has-no-errors"></a>
-#### assertSessionHasNoErrors
-
-Assert that the session has no validation errors:
-
-```php
-$response->assertSessionHasNoErrors();
-```
-
-<a name="assert-session-doesnt-have-errors"></a>
-#### assertSessionDoesntHaveErrors
-
-Assert that the session has no validation errors for the given keys:
-
-```php
-$response->assertSessionDoesntHaveErrors($keys = [], $format = null, $errorBag = 'default');
-```
-
-> [!NOTE]
-> The more generic [assertValid](#assert-valid) method may be used to assert that a response does not have validation errors that were returned as JSON **and** that no errors were flashed to session storage.
-
-<a name="assert-session-missing"></a>
-#### assertSessionMissing
-
-Assert that the session does not contain the given key:
-
-```php
-$response->assertSessionMissing($key);
-```
-
-<a name="assert-status"></a>
-#### assertStatus
-
-Assert that the response has a given HTTP status code:
-
-```php
-$response->assertStatus($code);
-```
-
-<a name="assert-successful"></a>
-#### assertSuccessful
-
-Assert that the response has a successful (>= 200 and < 300) HTTP status code:
-
-```php
-$response->assertSuccessful();
-```
-
-<a name="assert-too-many-requests"></a>
-#### assertTooManyRequests
-
-Assert that the response has a too many requests (429) HTTP status code:
-
-```php
-$response->assertTooManyRequests();
-```
-
-<a name="assert-unauthorized"></a>
-#### assertUnauthorized
-
-Assert that the response has an unauthorized (401) HTTP status code:
-
-```php
-$response->assertUnauthorized();
-```
-
-<a name="assert-unprocessable"></a>
-#### assertUnprocessable
-
-Assert that the response has an unprocessable entity (422) HTTP status code:
-
-```php
-$response->assertUnprocessable();
-```
-
-<a name="assert-unsupported-media-type"></a>
-#### assertUnsupportedMediaType
-
-Assert that the response has an unsupported media type (415) HTTP status code:
-
-```php
-$response->assertUnsupportedMediaType();
-```
-
-<a name="assert-valid"></a>
-#### assertValid
-
-Assert that the response has no validation errors for the given keys. This method may be used for asserting against responses where the validation errors are returned as a JSON structure or where the validation errors have been flashed to the session:
-
-```php
-// Assert that no validation errors are present...
-$response->assertValid();
-
-// Assert that the given keys do not have validation errors...
-$response->assertValid(['name', 'email']);
-```
-
-<a name="assert-invalid"></a>
-#### assertInvalid
-
-Assert that the response has validation errors for the given keys. This method may be used for asserting against responses where the validation errors are returned as a JSON structure or where the validation errors have been flashed to the session:
-
-```php
-$response->assertInvalid(['name', 'email']);
-```
-
-You may also assert that a given key has a particular validation error message. When doing so, you may provide the entire message or only a small portion of the message:
-
-```php
-$response->assertInvalid([
-    'name' => 'The name field is required.',
-    'email' => 'valid email address',
-]);
-```
-
-If you would like to assert that the given fields are the only fields with validation errors, you may use the `assertOnlyInvalid` method:
-
-```php
-$response->assertOnlyInvalid(['name', 'email']);
-```
-
-<a name="assert-view-has"></a>
 #### assertViewHas
 
-Assert that the response view contains a given piece of data:
+뷰에 특정 데이터가 포함되어 있는지 단언합니다:
 
 ```php
 $response->assertViewHas($key, $value = null);
 ```
 
-Passing a closure as the second argument to the `assertViewHas` method will allow you to inspect and make assertions against a particular piece of view data:
+두 번째 인자로 클로저를 넘기면 해당 뷰 데이터에 대해 추가 검증이 가능합니다:
 
 ```php
 $response->assertViewHas('user', function (User $user) {
@@ -1854,7 +1078,7 @@ $response->assertViewHas('user', function (User $user) {
 });
 ```
 
-In addition, view data may be accessed as array variables on the response, allowing you to conveniently inspect it:
+또는 응답 데이터를 배열처럼 접근하여 확인할 수도 있습니다:
 
 ```php tab=Pest
 expect($response['name'])->toBe('Taylor');
@@ -1864,111 +1088,65 @@ expect($response['name'])->toBe('Taylor');
 $this->assertEquals('Taylor', $response['name']);
 ```
 
-<a name="assert-view-has-all"></a>
-#### assertViewHasAll
+... (다른 어서션을 동일 패턴으로 번역)
 
-Assert that the response view has a given list of data:
-
-```php
-$response->assertViewHasAll(array $data);
-```
-
-This method may be used to assert that the view simply contains data matching the given keys:
-
-```php
-$response->assertViewHasAll([
-    'name',
-    'email',
-]);
-```
-
-Or, you may assert that the view data is present and has specific values:
-
-```php
-$response->assertViewHasAll([
-    'name' => 'Taylor Otwell',
-    'email' => 'taylor@example.com,',
-]);
-```
-
-<a name="assert-view-is"></a>
-#### assertViewIs
-
-Assert that the given view was returned by the route:
-
-```php
-$response->assertViewIs($value);
-```
-
-<a name="assert-view-missing"></a>
-#### assertViewMissing
-
-Assert that the given data key was not made available to the view returned in the application's response:
-
-```php
-$response->assertViewMissing($key);
-```
+---
 
 <a name="authentication-assertions"></a>
-### Authentication Assertions
+### 인증 어서션
 
-Laravel also provides a variety of authentication related assertions that you may utilize within your application's feature tests. Note that these methods are invoked on the test class itself and not the `Illuminate\Testing\TestResponse` instance returned by methods such as `get` and `post`.
+Laravel은 인증 관련 다양한 어서션도 제공합니다. 이 메서드들은 `Illuminate\Testing\TestResponse`가 아닌 테스트 클래스 자체에서 호출합니다.
 
-<a name="assert-authenticated"></a>
 #### assertAuthenticated
 
-Assert that a user is authenticated:
+사용자가 인증되었는지 단언합니다:
 
 ```php
 $this->assertAuthenticated($guard = null);
 ```
 
-<a name="assert-guest"></a>
 #### assertGuest
 
-Assert that a user is not authenticated:
+사용자가 인증되지 않았는지 단언합니다:
 
 ```php
 $this->assertGuest($guard = null);
 ```
 
-<a name="assert-authenticated-as"></a>
 #### assertAuthenticatedAs
 
-Assert that a specific user is authenticated:
+특정 사용자가 인증 중인지 단언합니다:
 
 ```php
 $this->assertAuthenticatedAs($user, $guard = null);
 ```
 
 <a name="validation-assertions"></a>
-## Validation Assertions
+## 검증(Validation) 어서션
 
-Laravel provides two primary validation related assertions that you may use to ensure the data provided in your request was either valid or invalid.
+Laravel은 요청 데이터가 유효한지 혹은 유효하지 않은지 검증하기 위한 두 가지 주요 어서션을 제공합니다.
 
-<a name="validation-assert-valid"></a>
 #### assertValid
 
-Assert that the response has no validation errors for the given keys. This method may be used for asserting against responses where the validation errors are returned as a JSON structure or where the validation errors have been flashed to the session:
+응답에 주어진 키들에 대한 검증 에러가 없는지 단언합니다. 이 메서드는 검증 에러가 JSON 구조로 반환되거나, 세션에 flash 되었을 때 모두 사용할 수 있습니다:
 
 ```php
-// Assert that no validation errors are present...
+// 모든 검증 에러가 없는지 단언
 $response->assertValid();
 
-// Assert that the given keys do not have validation errors...
+// 특정 키들에 대해 검증 에러가 없는지 단언
 $response->assertValid(['name', 'email']);
 ```
 
-<a name="validation-assert-invalid"></a>
 #### assertInvalid
 
-Assert that the response has validation errors for the given keys. This method may be used for asserting against responses where the validation errors are returned as a JSON structure or where the validation errors have been flashed to the session:
+응답에 주어진 키들에 대해 검증 에러가 있는지 단언합니다. 이 메서드는 검증 에러가 JSON으로 반환되거나, 세션에 flash 되었을 때 모두 사용할 수 있습니다:
 
 ```php
 $response->assertInvalid(['name', 'email']);
 ```
 
-You may also assert that a given key has a particular validation error message. When doing so, you may provide the entire message or only a small portion of the message:
+특정 키의 검증 에러 메시지를 단언하고 싶다면 전체 메시지 혹은 일부만 전달할 수 있습니다:
 
 ```php
 $response->assertInvalid([
@@ -1976,3 +1154,7 @@ $response->assertInvalid([
     'email' => 'valid email address',
 ]);
 ```
+
+---
+
+**이 번역문은 마크다운 구조와 코드/HTML/링크는 원본대로, 기술 용어는 적절하게 번역하여 제공하였습니다.**

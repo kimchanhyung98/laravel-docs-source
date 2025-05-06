@@ -1,22 +1,22 @@
 # Mocking
 
-- [Introduction](#introduction)
-- [Mocking Objects](#mocking-objects)
-- [Mocking Facades](#mocking-facades)
-    - [Facade Spies](#facade-spies)
-- [Interacting With Time](#interacting-with-time)
+- [소개](#introduction)
+- [객체 모킹](#mocking-objects)
+- [파사드 모킹](#mocking-facades)
+    - [파사드 스파이](#facade-spies)
+- [시간과의 상호작용](#interacting-with-time)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-When testing Laravel applications, you may wish to "mock" certain aspects of your application so they are not actually executed during a given test. For example, when testing a controller that dispatches an event, you may wish to mock the event listeners so they are not actually executed during the test. This allows you to only test the controller's HTTP response without worrying about the execution of the event listeners since the event listeners can be tested in their own test case.
+Laravel 애플리케이션을 테스트할 때 특정 기능이 실제로 실행되지 않도록 "모킹(mock)"하고 싶을 때가 있습니다. 예를 들어, 이벤트를 디스패치하는 컨트롤러를 테스트할 때 이벤트 리스너가 실제로 실행되지 않도록 모킹할 수 있습니다. 이렇게 하면 이벤트 리스너의 동작은 별도의 테스트 케이스에서 검증하고, 현재 테스트에서는 컨트롤러의 HTTP 응답만 검증할 수 있습니다.
 
-Laravel provides helpful methods for mocking events, jobs, and other facades out of the box. These helpers primarily provide a convenience layer over Mockery so you do not have to manually make complicated Mockery method calls.
+Laravel은 이벤트, 잡, 그리고 기타 파사드를 모킹하기 위한 유용한 메서드를 기본적으로 제공합니다. 이들 헬퍼는 Mockery 위에 편의 레이어를 제공하여, 복잡한 Mockery 메서드 호출을 직접 작성하지 않아도 됩니다.
 
 <a name="mocking-objects"></a>
-## Mocking Objects
+## 객체 모킹
 
-When mocking an object that is going to be injected into your application via Laravel's [service container](/docs/{{version}}/container), you will need to bind your mocked instance into the container as an `instance` binding. This will instruct the container to use your mocked instance of the object instead of constructing the object itself:
+Laravel의 [서비스 컨테이너](/docs/{{version}}/container)를 통해 애플리케이션에 주입될 객체를 모킹할 때는, 모킹한 인스턴스를 `instance` 바인딩으로 컨테이너에 바인딩해야 합니다. 이렇게 하면 컨테이너가 직접 객체를 생성하는 대신, 당신이 지정한 모킹 인스턴스를 사용하도록 할 수 있습니다.
 
 ```php tab=Pest
 use App\Service;
@@ -49,7 +49,7 @@ public function test_something_can_be_mocked(): void
 }
 ```
 
-In order to make this more convenient, you may use the `mock` method that is provided by Laravel's base test case class. For example, the following example is equivalent to the example above:
+이 과정을 더 쉽게 하기 위해, Laravel 기본 테스트 케이스 클래스에서 제공하는 `mock` 메서드를 사용할 수 있습니다. 아래 예시는 위의 예제와 동일한 동작을 수행합니다.
 
 ```php
 use App\Service;
@@ -60,7 +60,7 @@ $mock = $this->mock(Service::class, function (MockInterface $mock) {
 });
 ```
 
-You may use the `partialMock` method when you only need to mock a few methods of an object. The methods that are not mocked will be executed normally when called:
+객체의 일부 메서드만 모킹이 필요할 땐 `partialMock` 메서드를 사용할 수 있습니다. 모킹하지 않은 메서드는 호출 시 정상적으로 실행됩니다.
 
 ```php
 use App\Service;
@@ -71,7 +71,7 @@ $mock = $this->partialMock(Service::class, function (MockInterface $mock) {
 });
 ```
 
-Similarly, if you want to [spy](http://docs.mockery.io/en/latest/reference/spies.html) on an object, Laravel's base test case class offers a `spy` method as a convenient wrapper around the `Mockery::spy` method. Spies are similar to mocks; however, spies record any interaction between the spy and the code being tested, allowing you to make assertions after the code is executed:
+비슷하게, 객체에 대해 [스파이](http://docs.mockery.io/en/latest/reference/spies.html)를 적용하고 싶을 경우, Laravel의 기본 테스트 케이스 클래스에서 제공하는 `spy` 메서드를 사용할 수 있습니다. 스파이는 모킹과 유사하지만, 테스트 중 해당 객체와의 모든 상호작용을 기록하여 코드 실행 후 이를 검증할 수 있게 해줍니다.
 
 ```php
 use App\Service;
@@ -84,9 +84,9 @@ $spy->shouldHaveReceived('process');
 ```
 
 <a name="mocking-facades"></a>
-## Mocking Facades
+## 파사드 모킹
 
-Unlike traditional static method calls, [facades](/docs/{{version}}/facades) (including [real-time facades](/docs/{{version}}/facades#real-time-facades)) may be mocked. This provides a great advantage over traditional static methods and grants you the same testability that you would have if you were using traditional dependency injection. When testing, you may often want to mock a call to a Laravel facade that occurs in one of your controllers. For example, consider the following controller action:
+기존의 정적 메서드 호출과는 달리, [파사드](/docs/{{version}}/facades) (그리고 [실시간 파사드](/docs/{{version}}/facades#real-time-facades))는 모킹이 가능합니다. 이는 정적 메서드보다 더 나은 테스트 용이성을 제공하며, 전통적인 의존성 주입을 사용하는 것과 동일한 수준의 테스트 유연성을 제공합니다. 테스트 시 컨트롤러 등에서 발생하는 Laravel 파사드 호출을 주로 모킹하게 됩니다. 아래는 예시 컨트롤러입니다.
 
 ```php
 <?php
@@ -98,7 +98,7 @@ use Illuminate\Support\Facades\Cache;
 class UserController extends Controller
 {
     /**
-     * Retrieve a list of all users of the application.
+     * 모든 사용자 목록을 조회합니다.
      */
     public function index(): array
     {
@@ -111,7 +111,7 @@ class UserController extends Controller
 }
 ```
 
-We can mock the call to the `Cache` facade by using the `shouldReceive` method, which will return an instance of a [Mockery](https://github.com/padraic/mockery) mock. Since facades are actually resolved and managed by the Laravel [service container](/docs/{{version}}/container), they have much more testability than a typical static class. For example, let's mock our call to the `Cache` facade's `get` method:
+`Cache` 파사드의 호출은 [Mockery](https://github.com/padraic/mockery) 모킹 인스턴스를 반환하는 `shouldReceive` 메서드를 이용해 모킹할 수 있습니다. 파사드는 Laravel [서비스 컨테이너](/docs/{{version}}/container)에 의해 해석 및 관리되므로 일반 정적 클래스보다 훨씬 높은 테스트 용이성을 제공합니다. 예를 들어, `Cache` 파사드의 `get` 메서드 호출을 다음과 같이 모킹할 수 있습니다.
 
 ```php tab=Pest
 <?php
@@ -155,12 +155,12 @@ class UserControllerTest extends TestCase
 ```
 
 > [!WARNING]
-> You should not mock the `Request` facade. Instead, pass the input you desire into the [HTTP testing methods](/docs/{{version}}/http-tests) such as `get` and `post` when running your test. Likewise, instead of mocking the `Config` facade, call the `Config::set` method in your tests.
+> `Request` 파사드는 모킹하지 말아야 합니다. 대신 테스트를 실행할 때 [HTTP 테스트 메서드](/docs/{{version}}/http-tests)인 `get`, `post` 등에 원하는 입력 값을 전달하세요. 마찬가지로 `Config` 파사드를 모킹하는 대신, 테스트에서 `Config::set` 메서드를 직접 호출하세요.
 
 <a name="facade-spies"></a>
-### Facade Spies
+### 파사드 스파이
 
-If you would like to [spy](http://docs.mockery.io/en/latest/reference/spies.html) on a facade, you may call the `spy` method on the corresponding facade. Spies are similar to mocks; however, spies record any interaction between the spy and the code being tested, allowing you to make assertions after the code is executed:
+파사드에 대해 [스파이](http://docs.mockery.io/en/latest/reference/spies.html)를 적용하고 싶을 때는 해당 파사드에서 `spy` 메서드를 호출하면 됩니다. 스파이는 모킹과 비슷하지만, 테스트 중 상호작용을 기록하고 코드가 실행된 후 이를 검증할 수 있습니다.
 
 ```php tab=Pest
 <?php
@@ -194,13 +194,13 @@ public function test_values_are_be_stored_in_cache(): void
 ```
 
 <a name="interacting-with-time"></a>
-## Interacting With Time
+## 시간과의 상호작용
 
-When testing, you may occasionally need to modify the time returned by helpers such as `now` or `Illuminate\Support\Carbon::now()`. Thankfully, Laravel's base feature test class includes helpers that allow you to manipulate the current time:
+테스트 시 `now` 또는 `Illuminate\Support\Carbon::now()`와 같은 헬퍼가 반환하는 시간을 조작해야 할 때가 있습니다. 다행히도, Laravel의 기본 기능 테스트 클래스는 현재 시간을 조작할 수 있는 헬퍼 메서드를 제공합니다.
 
 ```php tab=Pest
 test('time can be manipulated', function () {
-    // Travel into the future...
+    // 미래로 이동...
     $this->travel(5)->milliseconds();
     $this->travel(5)->seconds();
     $this->travel(5)->minutes();
@@ -209,13 +209,13 @@ test('time can be manipulated', function () {
     $this->travel(5)->weeks();
     $this->travel(5)->years();
 
-    // Travel into the past...
+    // 과거로 이동...
     $this->travel(-5)->hours();
 
-    // Travel to an explicit time...
+    // 특정 시점으로 이동...
     $this->travelTo(now()->subHours(6));
 
-    // Return back to the present time...
+    // 현재 시점으로 복귀...
     $this->travelBack();
 });
 ```
@@ -223,7 +223,7 @@ test('time can be manipulated', function () {
 ```php tab=PHPUnit
 public function test_time_can_be_manipulated(): void
 {
-    // Travel into the future...
+    // 미래로 이동...
     $this->travel(5)->milliseconds();
     $this->travel(5)->seconds();
     $this->travel(5)->minutes();
@@ -232,46 +232,46 @@ public function test_time_can_be_manipulated(): void
     $this->travel(5)->weeks();
     $this->travel(5)->years();
 
-    // Travel into the past...
+    // 과거로 이동...
     $this->travel(-5)->hours();
 
-    // Travel to an explicit time...
+    // 특정 시점으로 이동...
     $this->travelTo(now()->subHours(6));
 
-    // Return back to the present time...
+    // 현재 시점으로 복귀...
     $this->travelBack();
 }
 ```
 
-You may also provide a closure to the various time travel methods. The closure will be invoked with time frozen at the specified time. Once the closure has executed, time will resume as normal:
+각종 시간 이동 메서드에 클로저를 전달할 수도 있습니다. 클로저는 지정한 시간에 시간이 "멈춘" 상태로 실행되며, 실행이 끝나면 시간이 정상적으로 다시 흐르기 시작합니다.
 
 ```php
 $this->travel(5)->days(function () {
-    // Test something five days into the future...
+    // 5일 후 미래에 대한 테스트...
 });
 
 $this->travelTo(now()->subDays(10), function () {
-    // Test something during a given moment...
+    // 특정 순간에 대한 테스트...
 });
 ```
 
-The `freezeTime` method may be used to freeze the current time. Similarly, the `freezeSecond` method will freeze the current time but at the start of the current second:
+`freezeTime` 메서드를 사용하면 현재 시간을 고정(freeze)할 수 있습니다. 마찬가지로, `freezeSecond`는 현재 초가 시작되는 시점에 시간을 고정합니다.
 
 ```php
 use Illuminate\Support\Carbon;
 
-// Freeze time and resume normal time after executing closure...
+// 시간 고정 후, 클로저 실행이 끝나면 정상 시간으로 복귀...
 $this->freezeTime(function (Carbon $time) {
     // ...
 });
 
-// Freeze time at the current second and resume normal time after executing closure...
+// 현재 초에 시간 고정 후, 클로저 실행이 끝나면 정상 시간으로 복귀...
 $this->freezeSecond(function (Carbon $time) {
     // ...
 })
 ```
 
-As you would expect, all of the methods discussed above are primarily useful for testing time sensitive application behavior, such as locking inactive posts on a discussion forum:
+위에서 설명한 모든 메서드는 토론 포럼에서 비활성 글을 일정 시간 이후 잠그는 등의 시간에 민감한 애플리케이션 동작을 테스트할 때 특히 유용합니다.
 
 ```php tab=Pest
 use App\Models\Thread;
