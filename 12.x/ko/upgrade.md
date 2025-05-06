@@ -1,87 +1,87 @@
-# Upgrade Guide
+# 업그레이드 가이드
 
-- [Upgrading To 12.0 From 11.x](#upgrade-12.0)
+- [11.x에서 12.0으로 업그레이드하기](#upgrade-12.0)
 
 <a name="high-impact-changes"></a>
-## High Impact Changes
+## 영향이 큰 변경 사항
 
 <div class="content-list" markdown="1">
 
-- [Updating Dependencies](#updating-dependencies)
-- [Updating the Laravel Installer](#updating-the-laravel-installer)
+- [의존성 업데이트](#updating-dependencies)
+- [Laravel Installer 업데이트](#updating-the-laravel-installer)
 
 </div>
 
 <a name="medium-impact-changes"></a>
-## Medium Impact Changes
+## 중간 정도 영향의 변경 사항
 
 <div class="content-list" markdown="1">
 
-- [Models and UUIDv7](#models-and-uuidv7)
+- [모델과 UUIDv7](#models-and-uuidv7)
 
 </div>
 
 <a name="low-impact-changes"></a>
-## Low Impact Changes
+## 영향이 적은 변경 사항
 
 <div class="content-list" markdown="1">
 
 - [Carbon 3](#carbon-3)
-- [Concurrency Result Index Mapping](#concurrency-result-index-mapping)
-- [Container Class Dependency Resolution](#container-class-dependency-resolution)
-- [Image Validation Now Excludes SVGs](#image-validation)
-- [Multi-Schema Database Inspecting](#multi-schema-database-inspecting)
-- [Nested Array Request Merging](#nested-array-request-merging)
+- [동시성 결과 인덱스 매핑](#concurrency-result-index-mapping)
+- [컨테이너 클래스 의존성 해결](#container-class-dependency-resolution)
+- [이미지 유효성 검사에서 SVG 제외](#image-validation)
+- [다중 스키마 데이터베이스 검사](#multi-schema-database-inspecting)
+- [중첩 배열 요청 병합](#nested-array-request-merging)
 
 </div>
 
 <a name="upgrade-12.0"></a>
-## Upgrading To 12.0 From 11.x
+## 11.x에서 12.0으로 업그레이드하기
 
-#### Estimated Upgrade Time: 5 Minutes
+#### 예상 소요 시간: 5분
 
 > [!NOTE]
-> We attempt to document every possible breaking change. Since some of these breaking changes are in obscure parts of the framework only a portion of these changes may actually affect your application. Want to save time? You can use [Laravel Shift](https://laravelshift.com/) to help automate your application upgrades.
+> 가능한 모든 파손 변경 사항을 문서화하려고 노력했습니다. 이 중 일부는 프레임워크의 잘 알려지지 않은 부분에 해당하므로 실제로는 일부 변경사항만이 여러분의 애플리케이션에 영향을 줄 수 있습니다. 시간을 절약하고 싶으신가요? [Laravel Shift](https://laravelshift.com/)를 사용해 애플리케이션 업그레이드를 자동화할 수 있습니다.
 
 <a name="updating-dependencies"></a>
-### Updating Dependencies
+### 의존성 업데이트
 
-**Likelihood Of Impact: High**
+**영향 가능성: 높음**
 
-You should update the following dependencies in your application's `composer.json` file:
+애플리케이션의 `composer.json` 파일에서 다음 의존성을 업데이트해야 합니다:
 
 <div class="content-list" markdown="1">
 
-- `laravel/framework` to `^12.0`
-- `phpunit/phpunit` to `^11.0`
-- `pestphp/pest` to `^3.0`
+- `laravel/framework`을 `^12.0`으로
+- `phpunit/phpunit`을 `^11.0`으로
+- `pestphp/pest`을 `^3.0`으로
 
 </div>
 
 <a name="carbon-3"></a>
 #### Carbon 3
 
-**Likelihood Of Impact: Low**
+**영향 가능성: 낮음**
 
-Support for [Carbon 2.x](https://carbon.nesbot.com/docs/) has been removed. All Laravel 12 applications now require [Carbon 3.x](https://carbon.nesbot.com/docs/#api-carbon-3).
+[Carbon 2.x](https://carbon.nesbot.com/docs/)에 대한 지원이 제거되었습니다. 모든 Laravel 12 애플리케이션은 이제 [Carbon 3.x](https://carbon.nesbot.com/docs/#api-carbon-3)를 필요로 합니다.
 
 <a name="updating-the-laravel-installer"></a>
-### Updating the Laravel Installer
+### Laravel Installer 업데이트
 
-If you are using the Laravel installer CLI tool to create new Laravel applications, you should update your installer installation to be compatible with Laravel 12.x and the [new Laravel starter kits](https://laravel.com/starter-kits). If you installed the Laravel installer via `composer global require`, you may update the installer using `composer global update`:
+Laravel 새 프로젝트 생성을 위해 Laravel Installer CLI 도구를 사용 중이라면, Installer를 12.x 및 [새 Laravel 스타터 킷](https://laravel.com/starter-kits)과 호환되도록 업데이트해야 합니다. 만약 `composer global require`로 설치했다면, 아래 명령어로 업데이트할 수 있습니다:
 
 ```shell
 composer global update laravel/installer
 ```
 
-If you originally installed PHP and Laravel via `php.new`, you may simply re-run the `php.new` installation commands for your operating system to install the latest version of PHP and the Laravel installer:
+만약 PHP와 Laravel을 `php.new`를 통해 설치했다면, 운영 체제에 맞는 `php.new` 설치 명령을 재실행하면 최신 PHP와 Laravel Installer를 다시 설치할 수 있습니다:
 
 ```shell tab=macOS
 /bin/bash -c "$(curl -fsSL https://php.new/install/mac/8.4)"
 ```
 
 ```shell tab=Windows PowerShell
-# Run as administrator...
+# 관리자 권한으로 실행하세요...
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.4'))
 ```
 
@@ -89,27 +89,27 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 /bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.4)"
 ```
 
-Or, if you are using [Laravel Herd's](https://herd.laravel.com) bundled copy of the Laravel installer, you should update your Herd installation to the latest release.
+또는, [Laravel Herd](https://herd.laravel.com)에 번들된 Laravel Installer를 사용 중이라면 Herd를 최신 버전으로 업데이트해야 합니다.
 
 <a name="authentication"></a>
-### Authentication
+### 인증
 
 <a name="updated-databasetokenrepository-constructor-signature"></a>
-#### Updated `DatabaseTokenRepository` Constructor Signature
+#### `DatabaseTokenRepository` 생성자 시그니처 업데이트
 
-**Likelihood Of Impact: Very Low**
+**영향 가능성: 매우 낮음**
 
-The constructor of the `Illuminate\Auth\Passwords\DatabaseTokenRepository` class now expects the `$expires` parameter to be given in seconds, rather than minutes.
+`Illuminate\Auth\Passwords\DatabaseTokenRepository` 클래스의 생성자가 이제 `$expires` 매개변수를 분 단위가 아닌 초 단위로 받도록 변경되었습니다.
 
 <a name="concurrency"></a>
-### Concurrency
+### 동시성
 
 <a name="concurrency-result-index-mapping"></a>
-#### Concurrency Result Index Mapping
+#### 동시성 결과 인덱스 매핑
 
-**Likelihood Of Impact: Low**
+**영향 가능성: 낮음**
 
-When invoking the `Concurrency::run` method with an associative array, the results of the concurrent operations are now returned with their associated keys:
+`Concurrency::run` 메서드를 연관 배열과 함께 호출할 때, 동시 작업의 결과가 해당 키와 함께 반환됩니다:
 
 ```php
 $result = Concurrency::run([
@@ -121,14 +121,14 @@ $result = Concurrency::run([
 ```
 
 <a name="container"></a>
-### Container
+### 컨테이너
 
 <a name="container-class-dependency-resolution"></a>
-#### Container Class Dependency Resolution
+#### 컨테이너 클래스 의존성 해결
 
-**Likelihood Of Impact: Low**
+**영향 가능성: 낮음**
 
-The dependency injection container now respects the default value of class properties when resolving a class instance. If you were previously relying on the container to resolve a class instance without the default value, you may need to adjust your application to account for this new behavior:
+의존성 주입 컨테이너가 이제 클래스 프로퍼티의 기본값을 존중하여 클래스 인스턴스를 해석합니다. 만약 이전에 기본값 없이 컨테이너가 클래스를 해석하는 것에 의존하고 있었다면, 이 동작 변경을 고려하여 애플리케이션을 조정해야 할 수 있습니다:
 
 ```php
 class Example
@@ -146,27 +146,27 @@ $example->date === null;
 ```
 
 <a name="database"></a>
-### Database
+### 데이터베이스
 
 <a name="multi-schema-database-inspecting"></a>
-#### Multi-Schema Database Inspecting
+#### 다중 스키마 데이터베이스 검사
 
-**Likelihood Of Impact: Low**
+**영향 가능성: 낮음**
 
-The `Schema::getTables()`, `Schema::getViews()`, and `Schema::getTypes()` methods now include the results from all schemas by default. You may pass the `schema` argument to retrieve the result for the given schema only:
+`Schema::getTables()`, `Schema::getViews()`, `Schema::getTypes()` 메서드는 이제 기본적으로 모든 스키마의 결과를 포함합니다. 특정 스키마만 조회하려면 `schema` 인자를 전달할 수 있습니다:
 
 ```php
-// All tables on all schemas...
+// 모든 스키마의 모든 테이블...
 $tables = Schema::getTables();
 
-// All tables on the 'main' schema...
+// 'main' 스키마의 모든 테이블...
 $table = Schema::getTables(schema: 'main');
 
-// All tables on the 'main' and 'blog' schemas...
+// 'main' 및 'blog' 스키마의 모든 테이블...
 $table = Schema::getTables(schema: ['main', 'blog']);
 ```
 
-The `Schema::getTableListing()` method now returns schema-qualified table names by default. You may pass the `schemaQualified` argument to change the behavior as desired:
+`Schema::getTableListing()` 메서드는 이제 기본적으로 스키마가 포함된 테이블명을 반환합니다. 원한다면 `schemaQualified` 인자를 이용해 동작을 변경할 수 있습니다:
 
 ```php
 $tables = Schema::getTableListing();
@@ -179,41 +179,41 @@ $table = Schema::getTableListing(schema: 'main', schemaQualified: false);
 // ['migrations', 'users']
 ```
 
-The `db:table` and `db:show` commands now output the results of all schemas on MySQL, MariaDB, and SQLite, just like PostgreSQL and SQL Server.
+`db:table` 및 `db:show` 명령은 이제 MySQL, MariaDB, SQLite에서도 PostgreSQL, SQL Server와 마찬가지로 모든 스키마의 결과를 출력합니다.
 
 <a name="updated-blueprint-constructor-signature"></a>
-#### Updated `Blueprint` Constructor Signature
+#### `Blueprint` 생성자 시그니처 업데이트
 
-**Likelihood Of Impact: Very Low**
+**영향 가능성: 매우 낮음**
 
-The constructor of the `Illuminate\Database\Schema\Blueprint` class now expects an instance of `Illuminate\Database\Connection` as its first argument.
+`Illuminate\Database\Schema\Blueprint` 클래스의 생성자가 이제 첫 번째 인자로 `Illuminate\Database\Connection` 인스턴스를 받도록 변경되었습니다.
 
 <a name="eloquent"></a>
 ### Eloquent
 
 <a name="models-and-uuidv7"></a>
-#### Models and UUIDv7
+#### 모델과 UUIDv7
 
-**Likelihood Of Impact: Medium**
+**영향 가능성: 중간**
 
-The `HasUuids` trait now returns UUIDs that are compatible with version 7 of the UUID spec (ordered UUIDs). If you would like to continue using ordered UUIDv4 strings for your model's IDs, you should now use the `HasVersion4Uuids` trait:
+`HasUuids` 트레잇이 이제 UUID 스펙 버전 7(순차적 UUID)과 호환되는 UUID를 반환합니다. 여전히 모델의 ID에 순차적 UUIDv4 문자열을 사용하고 싶다면 이제 `HasVersion4Uuids` 트레잇을 사용해야 합니다:
 
 ```php
 use Illuminate\Database\Eloquent\Concerns\HasUuids; // [tl! remove]
 use Illuminate\Database\Eloquent\Concerns\HasVersion4Uuids as HasUuids; // [tl! add]
 ```
 
-The `HasVersion7Uuids` trait has been removed. If you were previously using this trait, you should use the `HasUuids` trait instead, which now provides the same behavior.
+`HasVersion7Uuids` 트레잇은 제거되었습니다. 이전에 이 트레잇을 사용했다면 이제 동일한 동작을 제공하는 `HasUuids` 트레잇을 사용하면 됩니다.
 
 <a name="requests"></a>
-### Requests
+### Request
 
 <a name="nested-array-request-merging"></a>
-#### Nested Array Request Merging
+#### 중첩 배열 요청 병합
 
-**Likelihood Of Impact: Low**
+**영향 가능성: 낮음**
 
-The `$request->mergeIfMissing()` method now allows merging nested array data using "dot" notation. If you were previously relying on this method to create a top-level array key containing the "dot" notation version of the key, you may need to adjust your application to account for this new behavior:
+`$request->mergeIfMissing()` 메서드는 이제 "dot" 표기법을 사용해 중첩 배열 데이터를 병합할 수 있습니다. 이전까지 이 메서드가 "dot" 표기법 키를 포함하는 최상위 배열 키를 생성하는 것에 의존했다면, 이번 변화에 맞게 애플리케이션을 조정해야 할 수 있습니다:
 
 ```php
 $request->mergeIfMissing([
@@ -222,23 +222,23 @@ $request->mergeIfMissing([
 ```
 
 <a name="validation"></a>
-### Validation
+### 유효성 검사
 
 <a name="image-validation"></a>
-#### Image Validation Now Excludes SVGs
+#### 이미지 유효성 검사 규칙에서 SVG 제외
 
-The `image` validation rule no longer allows SVG images by default. If you would like to allow SVGs when using the `image` rule, you must explicitly allow them:
+`image` 유효성 검사 규칙이 이제 기본적으로 SVG 이미지를 허용하지 않습니다. `image` 규칙을 사용할 때 SVG를 허용하고 싶다면 명시적으로 허용해야 합니다:
 
 ```php
 use Illuminate\Validation\Rules\File;
 
 'photo' => 'required|image:allow_svg'
 
-// Or...
+// 또는...
 'photo' => ['required', File::image(allowSvg: true)],
 ```
 
 <a name="miscellaneous"></a>
-### Miscellaneous
+### 기타
 
-We also encourage you to view the changes in the `laravel/laravel` [GitHub repository](https://github.com/laravel/laravel). While many of these changes are not required, you may wish to keep these files in sync with your application. Some of these changes will be covered in this upgrade guide, but others, such as changes to configuration files or comments, will not be. You can easily view the changes with the [GitHub comparison tool](https://github.com/laravel/laravel/compare/11.x...12.x) and choose which updates are important to you.
+`laravel/laravel` [깃허브 저장소](https://github.com/laravel/laravel)의 변경점도 참고하시길 권장합니다. 많은 변경사항은 필수 사항이 아니지만 코드 동기화를 고려해볼 수 있습니다. 이 가이드에서 다루는 변경사항 외에 설정 파일, 주석 등 일부 변경사항은 다루지 않습니다. [GitHub 비교 도구](https://github.com/laravel/laravel/compare/11.x...12.x)로 변경점을 쉽게 확인하고, 필요한 업데이트만 선택적으로 적용할 수 있습니다.

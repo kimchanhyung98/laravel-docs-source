@@ -1,49 +1,49 @@
-# File Storage
+# 파일 스토리지
 
-- [Introduction](#introduction)
-- [Configuration](#configuration)
-    - [The Local Driver](#the-local-driver)
-    - [The Public Disk](#the-public-disk)
-    - [Driver Prerequisites](#driver-prerequisites)
-    - [Scoped and Read-Only Filesystems](#scoped-and-read-only-filesystems)
-    - [Amazon S3 Compatible Filesystems](#amazon-s3-compatible-filesystems)
-- [Obtaining Disk Instances](#obtaining-disk-instances)
-    - [On-Demand Disks](#on-demand-disks)
-- [Retrieving Files](#retrieving-files)
-    - [Downloading Files](#downloading-files)
-    - [File URLs](#file-urls)
-    - [Temporary URLs](#temporary-urls)
-    - [File Metadata](#file-metadata)
-- [Storing Files](#storing-files)
-    - [Prepending and Appending To Files](#prepending-appending-to-files)
-    - [Copying and Moving Files](#copying-moving-files)
-    - [Automatic Streaming](#automatic-streaming)
-    - [File Uploads](#file-uploads)
-    - [File Visibility](#file-visibility)
-- [Deleting Files](#deleting-files)
-- [Directories](#directories)
-- [Testing](#testing)
-- [Custom Filesystems](#custom-filesystems)
+- [소개](#introduction)
+- [구성](#configuration)
+    - [로컬 드라이버](#the-local-driver)
+    - [퍼블릭 디스크](#the-public-disk)
+    - [드라이버 사전 요구사항](#driver-prerequisites)
+    - [스코프 및 읽기 전용 파일시스템](#scoped-and-read-only-filesystems)
+    - [Amazon S3 호환 파일시스템](#amazon-s3-compatible-filesystems)
+- [디스크 인스턴스 얻기](#obtaining-disk-instances)
+    - [온디맨드 디스크](#on-demand-disks)
+- [파일 가져오기](#retrieving-files)
+    - [파일 다운로드](#downloading-files)
+    - [파일 URL](#file-urls)
+    - [임시 URL](#temporary-urls)
+    - [파일 메타데이터](#file-metadata)
+- [파일 저장](#storing-files)
+    - [파일에 내용 앞뒤로 추가](#prepending-appending-to-files)
+    - [파일 복사 및 이동](#copying-moving-files)
+    - [자동 스트리밍](#automatic-streaming)
+    - [파일 업로드](#file-uploads)
+    - [파일 공개 범위](#file-visibility)
+- [파일 삭제](#deleting-files)
+- [디렉토리](#directories)
+- [테스트](#testing)
+- [커스텀 파일시스템](#custom-filesystems)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel provides a powerful filesystem abstraction thanks to the wonderful [Flysystem](https://github.com/thephpleague/flysystem) PHP package by Frank de Jonge. The Laravel Flysystem integration provides simple drivers for working with local filesystems, SFTP, and Amazon S3. Even better, it's amazingly simple to switch between these storage options between your local development machine and production server as the API remains the same for each system.
+Laravel은 Frank de Jonge가 만든 훌륭한 [Flysystem](https://github.com/thephpleague/flysystem) PHP 패키지 덕분에 강력한 파일시스템 추상화를 제공합니다. Laravel의 Flysystem 통합은 로컬 파일시스템, SFTP, Amazon S3와 작업할 수 있는 간단한 드라이버를 제공합니다. 더욱 좋은 점은 각 시스템의 API가 동일하게 유지되므로, 로컬 개발 환경과 프로덕션 서버 간의 스토리지 옵션 전환이 매우 쉽다는 것입니다.
 
 <a name="configuration"></a>
-## Configuration
+## 구성
 
-Laravel's filesystem configuration file is located at `config/filesystems.php`. Within this file, you may configure all of your filesystem "disks". Each disk represents a particular storage driver and storage location. Example configurations for each supported driver are included in the configuration file so you can modify the configuration to reflect your storage preferences and credentials.
+Laravel의 파일시스템 구성 파일은 `config/filesystems.php`에 위치합니다. 이 파일 안에서 모든 파일시스템 "디스크"를 구성할 수 있습니다. 각각의 디스크는 특정 스토리지 드라이버와 스토리지 위치를 나타냅니다. 각 드라이버별로 예제 구성도 포함되어 있으므로, 자신의 스토리지 선호도와 자격 증명에 맞게 설정을 수정하면 됩니다.
 
-The `local` driver interacts with files stored locally on the server running the Laravel application while the `s3` driver is used to write to Amazon's S3 cloud storage service.
+`local` 드라이버는 Laravel 애플리케이션이 실행 중인 서버에 저장된 파일과 상호작용하고, `s3` 드라이버는 Amazon S3 클라우드 스토리지 서비스에 기록할 때 사용합니다.
 
 > [!NOTE]
-> You may configure as many disks as you like and may even have multiple disks that use the same driver.
+> 원하는 만큼 많은 디스크를 구성할 수 있으며, 같은 드라이버를 사용하는 여러 디스크도 생성할 수 있습니다.
 
 <a name="the-local-driver"></a>
-### The Local Driver
+### 로컬 드라이버
 
-When using the `local` driver, all file operations are relative to the `root` directory defined in your `filesystems` configuration file. By default, this value is set to the `storage/app/private` directory. Therefore, the following method would write to `storage/app/private/example.txt`:
+`local` 드라이버를 사용할 때 모든 파일 작업은 `filesystems` 구성 파일에서 정의한 `root` 디렉토리를 기준으로 상대적으로 동작합니다. 기본적으로 이 값은 `storage/app/private` 디렉토리로 설정되어 있습니다. 따라서 아래 메서드는 `storage/app/private/example.txt`에 기록하게 됩니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -52,25 +52,25 @@ Storage::disk('local')->put('example.txt', 'Contents');
 ```
 
 <a name="the-public-disk"></a>
-### The Public Disk
+### 퍼블릭 디스크
 
-The `public` disk included in your application's `filesystems` configuration file is intended for files that are going to be publicly accessible. By default, the `public` disk uses the `local` driver and stores its files in `storage/app/public`.
+애플리케이션의 `filesystems` 구성 파일에 포함된 `public` 디스크는 공개적으로 접근 가능한 파일용입니다. 기본적으로 `public` 디스크는 `local` 드라이버를 사용하며, 파일을 `storage/app/public` 디렉토리에 저장합니다.
 
-If your `public` disk uses the `local` driver and you want to make these files accessible from the web, you should create a symbolic link from source directory `storage/app/public` to target directory `public/storage`:
+만약 퍼블릭 디스크가 `local` 드라이버를 사용하고 있고, 이 파일들을 웹에서 접근 가능하게 만들고 싶다면, 소스 디렉토리 `storage/app/public`에서 대상 디렉토리 `public/storage`로 심볼릭 링크를 생성해야 합니다.
 
-To create the symbolic link, you may use the `storage:link` Artisan command:
+심볼릭 링크를 생성하려면 `storage:link` 아티즌 명령어를 사용합니다.
 
 ```shell
 php artisan storage:link
 ```
 
-Once a file has been stored and the symbolic link has been created, you can create a URL to the files using the `asset` helper:
+파일이 저장되고 심볼릭 링크가 만들어지면, `asset` 헬퍼를 사용해 파일의 URL을 생성할 수 있습니다.
 
 ```php
 echo asset('storage/file.txt');
 ```
 
-You may configure additional symbolic links in your `filesystems` configuration file. Each of the configured links will be created when you run the `storage:link` command:
+추가 심볼릭 링크는 `filesystems` 구성 파일에서 설정할 수 있습니다. 설정된 각 링크는 `storage:link` 명령을 실행할 때 생성됩니다.
 
 ```php
 'links' => [
@@ -79,25 +79,25 @@ You may configure additional symbolic links in your `filesystems` configuration 
 ],
 ```
 
-The `storage:unlink` command may be used to destroy your configured symbolic links:
+`storage:unlink` 명령은 설정된 심볼릭 링크들을 해제할 때 사용할 수 있습니다.
 
 ```shell
 php artisan storage:unlink
 ```
 
 <a name="driver-prerequisites"></a>
-### Driver Prerequisites
+### 드라이버 사전 요구사항
 
 <a name="s3-driver-configuration"></a>
-#### S3 Driver Configuration
+#### S3 드라이버 구성
 
-Before using the S3 driver, you will need to install the Flysystem S3 package via the Composer package manager:
+S3 드라이버를 사용하기 전에 Composer 패키지 관리자를 통해 Flysystem S3 패키지를 설치해야 합니다.
 
 ```shell
 composer require league/flysystem-aws-s3-v3 "^3.0" --with-all-dependencies
 ```
 
-An S3 disk configuration array is located in your `config/filesystems.php` configuration file. Typically, you should configure your S3 information and credentials using the following environment variables which are referenced by the `config/filesystems.php` configuration file:
+S3 디스크 구성 배열은 `config/filesystems.php` 에 있습니다. 일반적으로 아래 환경변수를 통해 S3 정보와 자격증명을 설정하며, 이는 `config/filesystems.php` 파일에서 참조됩니다.
 
 ```ini
 AWS_ACCESS_KEY_ID=<your-key-id>
@@ -107,18 +107,18 @@ AWS_BUCKET=<your-bucket-name>
 AWS_USE_PATH_STYLE_ENDPOINT=false
 ```
 
-For convenience, these environment variables match the naming convention used by the AWS CLI.
+편의를 위해 이 환경변수들은 AWS CLI와 동일한 네이밍 규칙을 따릅니다.
 
 <a name="ftp-driver-configuration"></a>
-#### FTP Driver Configuration
+#### FTP 드라이버 구성
 
-Before using the FTP driver, you will need to install the Flysystem FTP package via the Composer package manager:
+FTP 드라이버를 사용하기 전에 Composer 패키지 관리자를 통해 Flysystem FTP 패키지를 설치해야 합니다.
 
 ```shell
 composer require league/flysystem-ftp "^3.0"
 ```
 
-Laravel's Flysystem integrations work great with FTP; however, a sample configuration is not included with the framework's default `config/filesystems.php` configuration file. If you need to configure an FTP filesystem, you may use the configuration example below:
+Laravel의 Flysystem 통합은 FTP와도 잘 작동합니다. 하지만, 프레임워크의 기본 `config/filesystems.php` 에는 샘플 구성이 포함되어 있지 않습니다. FTP 파일시스템을 구성하려면 아래 예제 구성을 사용할 수 있습니다.
 
 ```php
 'ftp' => [
@@ -127,7 +127,7 @@ Laravel's Flysystem integrations work great with FTP; however, a sample configur
     'username' => env('FTP_USERNAME'),
     'password' => env('FTP_PASSWORD'),
 
-    // Optional FTP Settings...
+    // 선택적 FTP 설정...
     // 'port' => env('FTP_PORT', 21),
     // 'root' => env('FTP_ROOT'),
     // 'passive' => true,
@@ -137,34 +137,34 @@ Laravel's Flysystem integrations work great with FTP; however, a sample configur
 ```
 
 <a name="sftp-driver-configuration"></a>
-#### SFTP Driver Configuration
+#### SFTP 드라이버 구성
 
-Before using the SFTP driver, you will need to install the Flysystem SFTP package via the Composer package manager:
+SFTP 드라이버를 사용하기 전에 Composer 패키지 관리자를 통해 Flysystem SFTP 패키지를 설치해야 합니다.
 
 ```shell
 composer require league/flysystem-sftp-v3 "^3.0"
 ```
 
-Laravel's Flysystem integrations work great with SFTP; however, a sample configuration is not included with the framework's default `config/filesystems.php` configuration file. If you need to configure an SFTP filesystem, you may use the configuration example below:
+Laravel의 Flysystem 통합은 SFTP와도 잘 작동합니다. 하지만, 프레임워크의 기본 `config/filesystems.php` 에는 샘플 구성이 포함되어 있지 않습니다. SFTP 파일시스템을 구성하려면 아래 예제 구성을 사용할 수 있습니다.
 
 ```php
 'sftp' => [
     'driver' => 'sftp',
     'host' => env('SFTP_HOST'),
 
-    // Settings for basic authentication...
+    // 기본 인증 설정
     'username' => env('SFTP_USERNAME'),
     'password' => env('SFTP_PASSWORD'),
 
-    // Settings for SSH key based authentication with encryption password...
+    // 암호화 비밀번호를 사용하는 SSH 키 기반 인증 설정
     'privateKey' => env('SFTP_PRIVATE_KEY'),
     'passphrase' => env('SFTP_PASSPHRASE'),
 
-    // Settings for file / directory permissions...
+    // 파일/디렉토리 권한 설정
     'visibility' => 'private', // `private` = 0600, `public` = 0644
     'directory_visibility' => 'private', // `private` = 0700, `public` = 0755
 
-    // Optional SFTP Settings...
+    // 선택적 SFTP 설정
     // 'hostFingerprint' => env('SFTP_HOST_FINGERPRINT'),
     // 'maxTries' => 4,
     // 'passphrase' => env('SFTP_PASSPHRASE'),
@@ -176,15 +176,15 @@ Laravel's Flysystem integrations work great with SFTP; however, a sample configu
 ```
 
 <a name="scoped-and-read-only-filesystems"></a>
-### Scoped and Read-Only Filesystems
+### 스코프 및 읽기 전용 파일시스템
 
-Scoped disks allow you to define a filesystem where all paths are automatically prefixed with a given path prefix. Before creating a scoped filesystem disk, you will need to install an additional Flysystem package via the Composer package manager:
+스코프 디스크를 활용하면 모든 경로가 지정한 경로 접두사로 자동으로 시작되는 파일시스템을 정의할 수 있습니다. 스코프 파일시스템 디스크를 생성하기 전에 Composer 패키지 관리자를 통해 추가 Flysystem 패키지를 설치해야 합니다.
 
 ```shell
 composer require league/flysystem-path-prefixing "^3.0"
 ```
 
-You may create a path scoped instance of any existing filesystem disk by defining a disk that utilizes the `scoped` driver. For example, you may create a disk which scopes your existing `s3` disk to a specific path prefix, and then every file operation using your scoped disk will utilize the specified prefix:
+`scoped` 드라이버를 활용하여 기존 파일시스템 디스크의 경로 스코프 인스턴스를 만들 수 있습니다. 예를 들어, 기존 `s3` 디스크를 특정 경로 접두사로 스코프하여, 이후 스코프 디스크를 사용하는 모든 파일 작업에서 해당 접두사를 활용합니다.
 
 ```php
 's3-videos' => [
@@ -194,13 +194,13 @@ You may create a path scoped instance of any existing filesystem disk by definin
 ],
 ```
 
-"Read-only" disks allow you to create filesystem disks that do not allow write operations. Before using the `read-only` configuration option, you will need to install an additional Flysystem package via the Composer package manager:
+읽기 전용("read-only") 디스크는 쓰기 작업을 허용하지 않는 파일시스템 디스크를 만듭니다. `read-only` 옵션을 사용하려면 Composer 패키지 관리자를 통해 추가 Flysystem 패키지를 설치해야 합니다.
 
 ```shell
 composer require league/flysystem-read-only "^3.0"
 ```
 
-Next, you may include the `read-only` configuration option in one or more of your disk's configuration arrays:
+그 다음, 디스크 구성 배열 내에 `read-only` 옵션을 포함할 수 있습니다.
 
 ```php
 's3-videos' => [
@@ -211,11 +211,11 @@ Next, you may include the `read-only` configuration option in one or more of you
 ```
 
 <a name="amazon-s3-compatible-filesystems"></a>
-### Amazon S3 Compatible Filesystems
+### Amazon S3 호환 파일시스템
 
-By default, your application's `filesystems` configuration file contains a disk configuration for the `s3` disk. In addition to using this disk to interact with [Amazon S3](https://aws.amazon.com/s3/), you may use it to interact with any S3-compatible file storage service such as [MinIO](https://github.com/minio/minio), [DigitalOcean Spaces](https://www.digitalocean.com/products/spaces/), [Vultr Object Storage](https://www.vultr.com/products/object-storage/), [Cloudflare R2](https://www.cloudflare.com/developer-platform/products/r2/), or [Hetzner Cloud Storage](https://www.hetzner.com/storage/object-storage/).
+기본적으로, 애플리케이션의 `filesystems` 구성 파일에는 `s3` 디스크에 대한 구성 예제가 있습니다. 이 디스크를 [Amazon S3](https://aws.amazon.com/s3/) 뿐만 아니라, [MinIO](https://github.com/minio/minio), [DigitalOcean Spaces](https://www.digitalocean.com/products/spaces/), [Vultr Object Storage](https://www.vultr.com/products/object-storage/), [Cloudflare R2](https://www.cloudflare.com/developer-platform/products/r2/), [Hetzner Cloud Storage](https://www.hetzner.com/storage/object-storage/)와 같은 S3 호환 파일 저장소 서비스와 상호작용하는 데도 사용할 수 있습니다.
 
-Typically, after updating the disk's credentials to match the credentials of the service you are planning to use, you only need to update the value of the `endpoint` configuration option. This option's value is typically defined via the `AWS_ENDPOINT` environment variable:
+보통 사용할 서비스의 자격 증명으로 디스크 설정을 변경한 후, `endpoint` 구성 옵션의 값을 업데이트하기만 하면 됩니다. 이 값은 일반적으로 `AWS_ENDPOINT` 환경 변수로 정의합니다.
 
 ```php
 'endpoint' => env('AWS_ENDPOINT', 'https://minio:9000'),
@@ -224,19 +224,19 @@ Typically, after updating the disk's credentials to match the credentials of the
 <a name="minio"></a>
 #### MinIO
 
-In order for Laravel's Flysystem integration to generate proper URLs when using MinIO, you should define the `AWS_URL` environment variable so that it matches your application's local URL and includes the bucket name in the URL path:
+MinIO 사용 시 Laravel의 Flysystem 통합이 올바른 URL을 생성하려면, 애플리케이션의 로컬 URL과 버킷 이름을 포함하여 `AWS_URL` 환경 변수를 정의해야 합니다.
 
 ```ini
 AWS_URL=http://localhost:9000/local
 ```
 
 > [!WARNING]
-> Generating temporary storage URLs via the `temporaryUrl` method may not work when using MinIO if the `endpoint` is not accessible by the client.
+> 클라이언트가 `endpoint`에 접근할 수 없다면 `temporaryUrl` 메서드를 통한 임시 스토리지 URL 생성이 MinIO에서 동작하지 않을 수 있습니다.
 
 <a name="obtaining-disk-instances"></a>
-## Obtaining Disk Instances
+## 디스크 인스턴스 얻기
 
-The `Storage` facade may be used to interact with any of your configured disks. For example, you may use the `put` method on the facade to store an avatar on the default disk. If you call methods on the `Storage` facade without first calling the `disk` method, the method will automatically be passed to the default disk:
+`Storage` 파사드를 사용하여 구성된 모든 디스크와 상호작용할 수 있습니다. 예를 들어, 파사드의 `put` 메서드를 사용해 기본 디스크에 아바타를 저장할 수 있습니다. `Storage` 파사드에서 `disk` 메서드를 먼저 호출하지 않고 직접 메서드를 호출하면, 해당 메서드는 자동으로 기본 디스크에 전달됩니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -244,16 +244,16 @@ use Illuminate\Support\Facades\Storage;
 Storage::put('avatars/1', $content);
 ```
 
-If your application interacts with multiple disks, you may use the `disk` method on the `Storage` facade to work with files on a particular disk:
+애플리케이션이 여러 디스크를 사용할 경우, `Storage` 파사드의 `disk` 메서드를 통해 특정 디스크에 파일 작업을 할 수 있습니다.
 
 ```php
 Storage::disk('s3')->put('avatars/1', $content);
 ```
 
 <a name="on-demand-disks"></a>
-### On-Demand Disks
+### 온디맨드 디스크
 
-Sometimes you may wish to create a disk at runtime using a given configuration without that configuration actually being present in your application's `filesystems` configuration file. To accomplish this, you may pass a configuration array to the `Storage` facade's `build` method:
+애플리케이션의 `filesystems` 구성 파일에 정의되어 있지 않은 설정으로 런타임에 디스크를 생성하려는 경우, `Storage` 파사드의 `build` 메서드에 구성 배열을 전달할 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -267,21 +267,21 @@ $disk->put('image.jpg', $content);
 ```
 
 <a name="retrieving-files"></a>
-## Retrieving Files
+## 파일 가져오기
 
-The `get` method may be used to retrieve the contents of a file. The raw string contents of the file will be returned by the method. Remember, all file paths should be specified relative to the disk's "root" location:
+`get` 메서드를 사용해 파일의 내용을 가져올 수 있습니다. 이 메서드는 파일의 원시 문자열 내용을 반환합니다. 모든 파일 경로는 디스크의 "root" 위치를 기준으로 상대 경로로 지정해야 합니다.
 
 ```php
 $contents = Storage::get('file.jpg');
 ```
 
-If the file you are retrieving contains JSON, you may use the `json` method to retrieve the file and decode its contents:
+가져오는 파일이 JSON인 경우, `json` 메서드를 사용해 파일을 가져오고 그 내용을 디코드할 수 있습니다.
 
 ```php
 $orders = Storage::json('orders.json');
 ```
 
-The `exists` method may be used to determine if a file exists on the disk:
+`exists` 메서드는 디스크에 파일이 존재하는지 확인하는 데 사용할 수 있습니다.
 
 ```php
 if (Storage::disk('s3')->exists('file.jpg')) {
@@ -289,7 +289,7 @@ if (Storage::disk('s3')->exists('file.jpg')) {
 }
 ```
 
-The `missing` method may be used to determine if a file is missing from the disk:
+`missing` 메서드는 디스크에 파일이 없는지 확인하는 데 사용할 수 있습니다.
 
 ```php
 if (Storage::disk('s3')->missing('file.jpg')) {
@@ -298,9 +298,9 @@ if (Storage::disk('s3')->missing('file.jpg')) {
 ```
 
 <a name="downloading-files"></a>
-### Downloading Files
+### 파일 다운로드
 
-The `download` method may be used to generate a response that forces the user's browser to download the file at the given path. The `download` method accepts a filename as the second argument to the method, which will determine the filename that is seen by the user downloading the file. Finally, you may pass an array of HTTP headers as the third argument to the method:
+`download` 메서드는 지정한 경로의 파일을 사용자의 브라우저가 다운로드하도록 응답을 생성합니다. 두 번째 인수로 파일명을 지정하면, 다운로드 받을 때 보이는 파일명이 결정됩니다. 마지막으로 HTTP 헤더 배열을 세 번째 인수로 전달할 수 있습니다.
 
 ```php
 return Storage::download('file.jpg');
@@ -309,9 +309,9 @@ return Storage::download('file.jpg', $name, $headers);
 ```
 
 <a name="file-urls"></a>
-### File URLs
+### 파일 URL
 
-You may use the `url` method to get the URL for a given file. If you are using the `local` driver, this will typically just prepend `/storage` to the given path and return a relative URL to the file. If you are using the `s3` driver, the fully qualified remote URL will be returned:
+`url` 메서드를 사용해 파일의 URL을 얻을 수 있습니다. `local` 드라이버를 사용하면, 대개 이 메서드는 `/storage`를 경로 앞에 붙여 반환하며, 상대 URL을 반환합니다. `s3` 드라이버를 사용할 경우, 완전한 원격 URL이 반환됩니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -319,15 +319,15 @@ use Illuminate\Support\Facades\Storage;
 $url = Storage::url('file.jpg');
 ```
 
-When using the `local` driver, all files that should be publicly accessible should be placed in the `storage/app/public` directory. Furthermore, you should [create a symbolic link](#the-public-disk) at `public/storage` which points to the `storage/app/public` directory.
+`local` 드라이버 사용 시, 공개적으로 접근 가능한 모든 파일은 `storage/app/public`에 있어야 합니다. 또한 [`public/storage`에 심볼릭 링크를 만들어야](#the-public-disk) 합니다.
 
 > [!WARNING]
-> When using the `local` driver, the return value of `url` is not URL encoded. For this reason, we recommend always storing your files using names that will create valid URLs.
+> `local` 드라이버 사용 시, `url`의 반환값은 URL 인코딩되지 않습니다. 따라서 파일명을 항상 valid URL이 될 수 있게 지정하는 것을 권장합니다.
 
 <a name="url-host-customization"></a>
-#### URL Host Customization
+#### URL 호스트 커스터마이징
 
-If you would like to modify the host for URLs generated using the `Storage` facade, you may add or change the `url` option in the disk's configuration array:
+`Storage` 파사드를 통해 생성되는 URL의 호스트를 수정하고 싶다면, 디스크 구성 배열의 `url` 옵션을 추가 및 변경할 수 있습니다.
 
 ```php
 'public' => [
@@ -340,9 +340,9 @@ If you would like to modify the host for URLs generated using the `Storage` faca
 ```
 
 <a name="temporary-urls"></a>
-### Temporary URLs
+### 임시 URL
 
-Using the `temporaryUrl` method, you may create temporary URLs to files stored using the `local` and `s3` drivers. This method accepts a path and a `DateTime` instance specifying when the URL should expire:
+`temporaryUrl` 메서드를 이용해 `local`과 `s3` 드라이버로 저장된 파일에 대한 임시 URL을 생성할 수 있습니다. 이 메서드는 경로와 만료 시간을 지정하는 `DateTime` 인스턴스를 입력받습니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -353,9 +353,9 @@ $url = Storage::temporaryUrl(
 ```
 
 <a name="enabling-local-temporary-urls"></a>
-#### Enabling Local Temporary URLs
+#### 로컬 임시 URL 활성화
 
-If you started developing your application before support for temporary URLs was introduced to the `local` driver, you may need to enable local temporary URLs. To do so, add the `serve` option to your `local` disk's configuration array within the `config/filesystems.php` configuration file:
+임시 URL 지원이 도입되기 전에 개발을 시작한 프로젝트라면, 로컬 임시 URL을 직접 활성화해야 할 수도 있습니다. `config/filesystems.php` 구성 파일의 `local` 디스크 배열에 `serve` 옵션을 추가하세요.
 
 ```php
 'local' => [
@@ -367,9 +367,9 @@ If you started developing your application before support for temporary URLs was
 ```
 
 <a name="s3-request-parameters"></a>
-#### S3 Request Parameters
+#### S3 요청 파라미터
 
-If you need to specify additional [S3 request parameters](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectGET.html#RESTObjectGET-requests), you may pass the array of request parameters as the third argument to the `temporaryUrl` method:
+추가 [S3 요청 파라미터](https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectGET.html#RESTObjectGET-requests)가 필요하다면, `temporaryUrl` 메서드의 세 번째 인수로 파라미터 배열을 전달할 수 있습니다.
 
 ```php
 $url = Storage::temporaryUrl(
@@ -383,9 +383,9 @@ $url = Storage::temporaryUrl(
 ```
 
 <a name="customizing-temporary-urls"></a>
-#### Customizing Temporary URLs
+#### 임시 URL 커스터마이징
 
-If you need to customize how temporary URLs are created for a specific storage disk, you can use the `buildTemporaryUrlsUsing` method. For example, this can be useful if you have a controller that allows you to download files stored via a disk that doesn't typically support temporary URLs. Usually, this method should be called from the `boot` method of a service provider:
+특정 스토리지 디스크에 대해 임시 URL 생성 방식을 커스터마이징하려면, `buildTemporaryUrlsUsing` 메서드를 사용할 수 있습니다. 예를 들어, 일반적으로 임시 URL을 지원하지 않는 디스크로 저장된 파일을 다운로드할 수 있도록 컨트롤러를 사용하는 경우에 유용합니다. 이 메서드는 보통 서비스 프로바이더의 `boot` 메서드에서 호출되어야 합니다.
 
 ```php
 <?php
@@ -418,12 +418,12 @@ class AppServiceProvider extends ServiceProvider
 ```
 
 <a name="temporary-upload-urls"></a>
-#### Temporary Upload URLs
+#### 임시 업로드 URL
 
 > [!WARNING]
-> The ability to generate temporary upload URLs is only supported by the `s3` driver.
+> 임시 업로드 URL 생성을 지원하는 드라이버는 `s3` 뿐입니다.
 
-If you need to generate a temporary URL that can be used to upload a file directly from your client-side application, you may use the `temporaryUploadUrl` method. This method accepts a path and a `DateTime` instance specifying when the URL should expire. The `temporaryUploadUrl` method returns an associative array which may be destructured into the upload URL and the headers that should be included with the upload request:
+클라이언트 사이드 애플리케이션에서 파일을 직접 업로드하기 위한 임시 URL이 필요하다면, `temporaryUploadUrl` 메서드를 사용할 수 있습니다. 이 메서드는 경로와 만료 시간을 입력받으며, 업로드 URL과 업로드 요청에 포함해야 할 헤더로 구성된 연관 배열을 반환합니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -433,12 +433,12 @@ use Illuminate\Support\Facades\Storage;
 );
 ```
 
-This method is primarily useful in serverless environments that require the client-side application to directly upload files to a cloud storage system such as Amazon S3.
+이 메서드는 주로 서버리스 환경에서 클라이언트 사이드 애플리케이션이 Amazon S3와 같은 클라우드 스토리지에 직접 파일을 업로드해야 하는 경우에 사용됩니다.
 
 <a name="file-metadata"></a>
-### File Metadata
+### 파일 메타데이터
 
-In addition to reading and writing files, Laravel can also provide information about the files themselves. For example, the `size` method may be used to get the size of a file in bytes:
+파일을 읽고 쓰는 것 외에도, Laravel은 파일 자체에 대한 정보도 제공할 수 있습니다. 예를 들어, `size` 메서드는 파일의 크기를 바이트 단위로 가져옵니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -446,22 +446,22 @@ use Illuminate\Support\Facades\Storage;
 $size = Storage::size('file.jpg');
 ```
 
-The `lastModified` method returns the UNIX timestamp of the last time the file was modified:
+`lastModified` 메서드는 파일이 마지막으로 수정된 UNIX 타임스탬프를 반환합니다.
 
 ```php
 $time = Storage::lastModified('file.jpg');
 ```
 
-The MIME type of a given file may be obtained via the `mimeType` method:
+`mimeType` 메서드로 지정한 파일의 MIME 타입을 확인할 수 있습니다.
 
 ```php
 $mime = Storage::mimeType('file.jpg');
 ```
 
 <a name="file-paths"></a>
-#### File Paths
+#### 파일 경로
 
-You may use the `path` method to get the path for a given file. If you are using the `local` driver, this will return the absolute path to the file. If you are using the `s3` driver, this method will return the relative path to the file in the S3 bucket:
+`path` 메서드를 사용해 단일 파일의 경로를 가져올 수 있습니다. `local` 드라이버를 사용하는 경우 파일의 절대 경로를 반환하며, `s3` 드라이버의 경우 S3 버킷 내의 상대 경로를 반환합니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -470,9 +470,9 @@ $path = Storage::path('file.jpg');
 ```
 
 <a name="storing-files"></a>
-## Storing Files
+## 파일 저장
 
-The `put` method may be used to store file contents on a disk. You may also pass a PHP `resource` to the `put` method, which will use Flysystem's underlying stream support. Remember, all file paths should be specified relative to the "root" location configured for the disk:
+`put` 메서드를 사용해 디스크에 파일 내용을 저장할 수 있습니다. 또한, PHP `resource`를 `put` 메서드에 전달하면 Flysystem의 스트림 기능을 사용하게 됩니다. 모든 파일 경로는 디스크별로 설정한 "root" 위치를 기준으로 지정해야 합니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -483,17 +483,17 @@ Storage::put('file.jpg', $resource);
 ```
 
 <a name="failed-writes"></a>
-#### Failed Writes
+#### 쓰기 실패
 
-If the `put` method (or other "write" operations) is unable to write the file to disk, `false` will be returned:
+`put` 메서드(혹은 다른 "쓰기" 작업)로 파일 저장에 실패하면, `false`가 반환됩니다.
 
 ```php
 if (! Storage::put('file.jpg', $contents)) {
-    // The file could not be written to disk...
+    // 파일이 저장되지 않았습니다...
 }
 ```
 
-If you wish, you may define the `throw` option within your filesystem disk's configuration array. When this option is defined as `true`, "write" methods such as `put` will throw an instance of `League\Flysystem\UnableToWriteFile` when write operations fail:
+원한다면, 파일시스템 디스크 구성 배열에 `throw` 옵션을 지정할 수 있습니다. 이 옵션을 `true`로 설정하면, `put` 같은 "쓰기" 메서드 실패 시 `League\Flysystem\UnableToWriteFile` 예외가 발생합니다.
 
 ```php
 'public' => [
@@ -504,9 +504,9 @@ If you wish, you may define the `throw` option within your filesystem disk's con
 ```
 
 <a name="prepending-appending-to-files"></a>
-### Prepending and Appending To Files
+### 파일에 내용 앞뒤로 추가
 
-The `prepend` and `append` methods allow you to write to the beginning or end of a file:
+`prepend`와 `append` 메서드를 사용해 파일 앞 또는 뒤에 데이터를 쓸 수 있습니다.
 
 ```php
 Storage::prepend('file.log', 'Prepended Text');
@@ -515,9 +515,9 @@ Storage::append('file.log', 'Appended Text');
 ```
 
 <a name="copying-moving-files"></a>
-### Copying and Moving Files
+### 파일 복사 및 이동
 
-The `copy` method may be used to copy an existing file to a new location on the disk, while the `move` method may be used to rename or move an existing file to a new location:
+`copy` 메서드는 기존 파일을 새로운 위치로 복사하고, `move` 메서드는 기존 파일을 새 위치로 이름을 바꾸거나 이동할 때 사용합니다.
 
 ```php
 Storage::copy('old/file.jpg', 'new/file.jpg');
@@ -526,33 +526,33 @@ Storage::move('old/file.jpg', 'new/file.jpg');
 ```
 
 <a name="automatic-streaming"></a>
-### Automatic Streaming
+### 자동 스트리밍
 
-Streaming files to storage offers significantly reduced memory usage. If you would like Laravel to automatically manage streaming a given file to your storage location, you may use the `putFile` or `putFileAs` method. This method accepts either an `Illuminate\Http\File` or `Illuminate\Http\UploadedFile` instance and will automatically stream the file to your desired location:
+파일을 스토리지에 스트리밍하면 메모리 사용량이 크게 줄어듭니다. Laravel이 자동으로 파일 스트리밍을 관리하게 하려면 `putFile` 또는 `putFileAs` 메서드를 사용하세요. 이 메서드는 `Illuminate\Http\File` 또는 `Illuminate\Http\UploadedFile` 인스턴스를 받아 자동으로 파일을 원하는 위치에 스트리밍합니다.
 
 ```php
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 
-// Automatically generate a unique ID for filename...
+// 파일명에 고유 ID 자동 생성
 $path = Storage::putFile('photos', new File('/path/to/photo'));
 
-// Manually specify a filename...
+// 지정한 파일명으로 저장
 $path = Storage::putFileAs('photos', new File('/path/to/photo'), 'photo.jpg');
 ```
 
-There are a few important things to note about the `putFile` method. Note that we only specified a directory name and not a filename. By default, the `putFile` method will generate a unique ID to serve as the filename. The file's extension will be determined by examining the file's MIME type. The path to the file will be returned by the `putFile` method so you can store the path, including the generated filename, in your database.
+`putFile` 메서드는 디렉토리명만 지정하면 파일명은 고유 ID로 자동 생성됩니다. 파일의 확장자는 MIME 타입을 검사하여 결정됩니다. 반환값으로 전체 파일 경로(생성된 파일명 포함)를 돌려줘서 데이터베이스에 저장할 수 있습니다.
 
-The `putFile` and `putFileAs` methods also accept an argument to specify the "visibility" of the stored file. This is particularly useful if you are storing the file on a cloud disk such as Amazon S3 and would like the file to be publicly accessible via generated URLs:
+`putFile`과 `putFileAs` 메서드는 저장할 파일의 "공개 범위(visibility)"도 인수로 받을 수 있습니다. Amazon S3 등 클라우드 디스크에 파일을 공개적으로 저장하고 URL로 접근하도록 하고 싶다면 이 기능이 유용합니다.
 
 ```php
 Storage::putFile('photos', new File('/path/to/photo'), 'public');
 ```
 
 <a name="file-uploads"></a>
-### File Uploads
+### 파일 업로드
 
-In web applications, one of the most common use-cases for storing files is storing user uploaded files such as photos and documents. Laravel makes it very easy to store uploaded files using the `store` method on an uploaded file instance. Call the `store` method with the path at which you wish to store the uploaded file:
+웹 애플리케이션에서 가장 흔한 파일 저장 예시는 사용자가 업로드하는 사진이나 문서 등의 파일 저장입니다. Laravel에서는 업로드된 파일 인스턴스의 `store` 메서드를 사용해 손쉽게 업로드 파일을 저장할 수 있습니다. 파일을 저장할 경로를 인수로 넘깁니다.
 
 ```php
 <?php
@@ -564,7 +564,7 @@ use Illuminate\Http\Request;
 class UserAvatarController extends Controller
 {
     /**
-     * Update the avatar for the user.
+     * 사용자 아바타를 업데이트합니다.
      */
     public function update(Request $request): string
     {
@@ -575,18 +575,18 @@ class UserAvatarController extends Controller
 }
 ```
 
-There are a few important things to note about this example. Note that we only specified a directory name, not a filename. By default, the `store` method will generate a unique ID to serve as the filename. The file's extension will be determined by examining the file's MIME type. The path to the file will be returned by the `store` method so you can store the path, including the generated filename, in your database.
+이 예시에서 볼 수 있듯이, 디렉토리명만 지정하면 파일명은 자동으로 고유 ID로 생성됩니다. 파일의 확장자는 MIME 타입을 검사하여 결정됩니다. 경로(파일명 포함)는 반환값으로 전달되어 데이터베이스에 저장할 수 있습니다.
 
-You may also call the `putFile` method on the `Storage` facade to perform the same file storage operation as the example above:
+위와 동일하게 `Storage` 파사드의 `putFile` 메서드를 활용해서도 같은 작업을 할 수 있습니다.
 
 ```php
 $path = Storage::putFile('avatars', $request->file('avatar'));
 ```
 
 <a name="specifying-a-file-name"></a>
-#### Specifying a File Name
+#### 파일명 지정
 
-If you do not want a filename to be automatically assigned to your stored file, you may use the `storeAs` method, which receives the path, the filename, and the (optional) disk as its arguments:
+파일명을 자동으로 할당받고 싶지 않은 경우, `storeAs` 메서드를 사용할 수 있습니다. 이 메서드는 경로, 파일명, (선택) 디스크명을 인수로 받습니다.
 
 ```php
 $path = $request->file('avatar')->storeAs(
@@ -594,7 +594,7 @@ $path = $request->file('avatar')->storeAs(
 );
 ```
 
-You may also use the `putFileAs` method on the `Storage` facade, which will perform the same file storage operation as the example above:
+마찬가지로 `Storage` 파사드의 `putFileAs`를 사용할 수 있습니다.
 
 ```php
 $path = Storage::putFileAs(
@@ -603,12 +603,12 @@ $path = Storage::putFileAs(
 ```
 
 > [!WARNING]
-> Unprintable and invalid unicode characters will automatically be removed from file paths. Therefore, you may wish to sanitize your file paths before passing them to Laravel's file storage methods. File paths are normalized using the `League\Flysystem\WhitespacePathNormalizer::normalizePath` method.
+> 출력 불가(unprintable) 또는 잘못된 유니코드 문자는 파일 경로에서 자동으로 제거됩니다. 따라서 파일 경로를 Laravel 파일 저장 메서드에 전달하기 전에 직접 정제(sanitize)할 필요가 있습니다. 파일 경로는 `League\Flysystem\WhitespacePathNormalizer::normalizePath`로 정규화됩니다.
 
 <a name="specifying-a-disk"></a>
-#### Specifying a Disk
+#### 디스크 지정
 
-By default, this uploaded file's `store` method will use your default disk. If you would like to specify another disk, pass the disk name as the second argument to the `store` method:
+업로드 파일의 `store` 메서드는 기본적으로 기본 디스크를 사용합니다. 다른 디스크를 지정하려면 두 번째 인수로 디스크명을 전달합니다.
 
 ```php
 $path = $request->file('avatar')->store(
@@ -616,7 +616,7 @@ $path = $request->file('avatar')->store(
 );
 ```
 
-If you are using the `storeAs` method, you may pass the disk name as the third argument to the method:
+`storeAs` 메서드를 사용할 땐 세 번째 인수로 디스크명을 전달하세요.
 
 ```php
 $path = $request->file('avatar')->storeAs(
@@ -627,9 +627,9 @@ $path = $request->file('avatar')->storeAs(
 ```
 
 <a name="other-uploaded-file-information"></a>
-#### Other Uploaded File Information
+#### 기타 업로드된 파일 정보
 
-If you would like to get the original name and extension of the uploaded file, you may do so using the `getClientOriginalName` and `getClientOriginalExtension` methods:
+업로드된 파일의 원래 이름과 확장자를 가져오려면 `getClientOriginalName`과 `getClientOriginalExtension` 메서드를 사용하세요.
 
 ```php
 $file = $request->file('avatar');
@@ -638,21 +638,21 @@ $name = $file->getClientOriginalName();
 $extension = $file->getClientOriginalExtension();
 ```
 
-However, keep in mind that the `getClientOriginalName` and `getClientOriginalExtension` methods are considered unsafe, as the file name and extension may be tampered with by a malicious user. For this reason, you should typically prefer the `hashName` and `extension` methods to get a name and an extension for the given file upload:
+하지만, 이 메서드들은 사용자가 악의적으로 변경할 수 있으므로 안전하지 않습니다. 보다 안전하게 이름과 확장자를 얻으려면 `hashName`과 `extension` 메서드를 권장합니다.
 
 ```php
 $file = $request->file('avatar');
 
-$name = $file->hashName(); // Generate a unique, random name...
-$extension = $file->extension(); // Determine the file's extension based on the file's MIME type...
+$name = $file->hashName(); // 고유하고 랜덤한 이름 생성
+$extension = $file->extension(); // MIME 타입에 따라 파일 확장자 결정
 ```
 
 <a name="file-visibility"></a>
-### File Visibility
+### 파일 공개 범위(Visibility)
 
-In Laravel's Flysystem integration, "visibility" is an abstraction of file permissions across multiple platforms. Files may either be declared `public` or `private`. When a file is declared `public`, you are indicating that the file should generally be accessible to others. For example, when using the S3 driver, you may retrieve URLs for `public` files.
+Laravel의 Flysystem 통합에서 "visibility(공개 범위)"는 여러 플랫폼에 걸친 파일 권한의 추상화 개념입니다. 파일은 `public` 또는 `private`로 선언할 수 있습니다. `public`로 선언하면 파일이 보통 다른 이들에게 접근 가능하다는 뜻입니다. 예를 들어, S3 드라이버를 사용할 경우, `public` 파일의 URL을 받아올 수 있습니다.
 
-You can set the visibility when writing the file via the `put` method:
+파일을 쓸 때 `put` 메서드를 통해 공개 범위를 설정할 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -660,7 +660,7 @@ use Illuminate\Support\Facades\Storage;
 Storage::put('file.jpg', $contents, 'public');
 ```
 
-If the file has already been stored, its visibility can be retrieved and set via the `getVisibility` and `setVisibility` methods:
+이미 저장된 파일의 공개 범위는 `getVisibility`, `setVisibility` 메서드로 얻거나 변경할 수 있습니다.
 
 ```php
 $visibility = Storage::getVisibility('file.jpg');
@@ -668,7 +668,7 @@ $visibility = Storage::getVisibility('file.jpg');
 Storage::setVisibility('file.jpg', 'public');
 ```
 
-When interacting with uploaded files, you may use the `storePublicly` and `storePubliclyAs` methods to store the uploaded file with `public` visibility:
+업로드된 파일과 상호작용할 때, `storePublicly`와 `storePubliclyAs` 메서드를 사용해 `public` 공개 범위로 업로드할 수 있습니다.
 
 ```php
 $path = $request->file('avatar')->storePublicly('avatars', 's3');
@@ -681,9 +681,9 @@ $path = $request->file('avatar')->storePubliclyAs(
 ```
 
 <a name="local-files-and-visibility"></a>
-#### Local Files and Visibility
+#### 로컬 파일과 공개 범위
 
-When using the `local` driver, `public` [visibility](#file-visibility) translates to `0755` permissions for directories and `0644` permissions for files. You can modify the permissions mappings in your application's `filesystems` configuration file:
+`local` 드라이버를 사용할 때, `public` [공개 범위](#file-visibility)는 디렉토리에는 `0755`, 파일에는 `0644` 권한을 의미합니다. 이 권한 매핑은 애플리케이션의 `filesystems` 구성 파일에서 수정할 수 있습니다.
 
 ```php
 'local' => [
@@ -704,9 +704,9 @@ When using the `local` driver, `public` [visibility](#file-visibility) translate
 ```
 
 <a name="deleting-files"></a>
-## Deleting Files
+## 파일 삭제
 
-The `delete` method accepts a single filename or an array of files to delete:
+`delete` 메서드는 단일 파일명 또는 파일명의 배열을 인수로 받아 파일을 삭제합니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -716,7 +716,7 @@ Storage::delete('file.jpg');
 Storage::delete(['file.jpg', 'file2.jpg']);
 ```
 
-If necessary, you may specify the disk that the file should be deleted from:
+필요하다면 파일을 삭제할 디스크도 지정할 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -725,12 +725,12 @@ Storage::disk('s3')->delete('path/file.jpg');
 ```
 
 <a name="directories"></a>
-## Directories
+## 디렉토리
 
 <a name="get-all-files-within-a-directory"></a>
-#### Get All Files Within a Directory
+#### 디렉토리 내 모든 파일 가져오기
 
-The `files` method returns an array of all of the files in a given directory. If you would like to retrieve a list of all files within a given directory including all subdirectories, you may use the `allFiles` method:
+`files` 메서드는 특정 디렉토리 내 모든 파일의 배열을 반환합니다. 하위 디렉토리까지 포함해 모든 파일 목록을 가져오려면 `allFiles` 메서드를 사용하세요.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -741,9 +741,9 @@ $files = Storage::allFiles($directory);
 ```
 
 <a name="get-all-directories-within-a-directory"></a>
-#### Get All Directories Within a Directory
+#### 디렉토리 내 모든 디렉토리 가져오기
 
-The `directories` method returns an array of all the directories within a given directory. Additionally, you may use the `allDirectories` method to get a list of all directories within a given directory and all of its subdirectories:
+`directories` 메서드는 특정 디렉토리 내의 모든 디렉토리의 배열을 반환합니다. `allDirectories` 메서드를 통해 하위 디렉토리까지 전체 목록을 가져올 수 있습니다.
 
 ```php
 $directories = Storage::directories($directory);
@@ -752,27 +752,27 @@ $directories = Storage::allDirectories($directory);
 ```
 
 <a name="create-a-directory"></a>
-#### Create a Directory
+#### 디렉토리 생성
 
-The `makeDirectory` method will create the given directory, including any needed subdirectories:
+`makeDirectory` 메서드는 필요하다면 하위 디렉토리까지 포함하여 지정한 디렉토리를 생성합니다.
 
 ```php
 Storage::makeDirectory($directory);
 ```
 
 <a name="delete-a-directory"></a>
-#### Delete a Directory
+#### 디렉토리 삭제
 
-Finally, the `deleteDirectory` method may be used to remove a directory and all of its files:
+마지막으로, `deleteDirectory` 메서드를 사용해 디렉토리와 그 안의 모든 파일을 제거할 수 있습니다.
 
 ```php
 Storage::deleteDirectory($directory);
 ```
 
 <a name="testing"></a>
-## Testing
+## 테스트
 
-The `Storage` facade's `fake` method allows you to easily generate a fake disk that, combined with the file generation utilities of the `Illuminate\Http\UploadedFile` class, greatly simplifies the testing of file uploads. For example:
+`Storage` 파사드의 `fake` 메서드는 쉽게 임시 디스크를 생성할 수 있도록 해줍니다. 이는 `Illuminate\Http\UploadedFile` 클래스의 파일 생성 유틸리티와 결합해 파일 업로드 테스트를 매우 단순화합니다. 예:
 
 ```php tab=Pest
 <?php
@@ -788,18 +788,18 @@ test('albums can be uploaded', function () {
         UploadedFile::fake()->image('photo2.jpg')
     ]);
 
-    // Assert one or more files were stored...
+    // 파일이 저장되었는지 확인...
     Storage::disk('photos')->assertExists('photo1.jpg');
     Storage::disk('photos')->assertExists(['photo1.jpg', 'photo2.jpg']);
 
-    // Assert one or more files were not stored...
+    // 파일이 저장되지 않았는지 확인...
     Storage::disk('photos')->assertMissing('missing.jpg');
     Storage::disk('photos')->assertMissing(['missing.jpg', 'non-existing.jpg']);
 
-    // Assert that the number of files in a given directory matches the expected count...
+    // 특정 디렉토리의 파일 개수가 예상과 일치하는지 확인...
     Storage::disk('photos')->assertCount('/wallpapers', 2);
 
-    // Assert that a given directory is empty...
+    // 특정 디렉토리가 비어있는지 확인...
     Storage::disk('photos')->assertDirectoryEmpty('/wallpapers');
 });
 ```
@@ -824,40 +824,40 @@ class ExampleTest extends TestCase
             UploadedFile::fake()->image('photo2.jpg')
         ]);
 
-        // Assert one or more files were stored...
+        // 파일이 저장되었는지 확인...
         Storage::disk('photos')->assertExists('photo1.jpg');
         Storage::disk('photos')->assertExists(['photo1.jpg', 'photo2.jpg']);
 
-        // Assert one or more files were not stored...
+        // 파일이 저장되지 않았는지 확인...
         Storage::disk('photos')->assertMissing('missing.jpg');
         Storage::disk('photos')->assertMissing(['missing.jpg', 'non-existing.jpg']);
 
-        // Assert that the number of files in a given directory matches the expected count...
+        // 특정 디렉토리의 파일 개수가 예상과 일치하는지 확인...
         Storage::disk('photos')->assertCount('/wallpapers', 2);
 
-        // Assert that a given directory is empty...
+        // 특정 디렉토리가 비어있는지 확인...
         Storage::disk('photos')->assertDirectoryEmpty('/wallpapers');
     }
 }
 ```
 
-By default, the `fake` method will delete all files in its temporary directory. If you would like to keep these files, you may use the "persistentFake" method instead. For more information on testing file uploads, you may consult the [HTTP testing documentation's information on file uploads](/docs/{{version}}/http-tests#testing-file-uploads).
+기본적으로, `fake` 메서드는 임시 디렉토리 내의 모든 파일을 삭제합니다. 파일을 유지하고 싶다면 "persistentFake" 메서드를 사용하세요. 파일 업로드 테스트에 대해 더 알고 싶다면 [HTTP 테스트 문서의 파일 업로드 관련 내용](/docs/{{version}}/http-tests#testing-file-uploads)을 참고하세요.
 
 > [!WARNING]
-> The `image` method requires the [GD extension](https://www.php.net/manual/en/book.image.php).
+> `image` 메서드는 [GD 익스텐션](https://www.php.net/manual/en/book.image.php)이 필요합니다.
 
 <a name="custom-filesystems"></a>
-## Custom Filesystems
+## 커스텀 파일시스템
 
-Laravel's Flysystem integration provides support for several "drivers" out of the box; however, Flysystem is not limited to these and has adapters for many other storage systems. You can create a custom driver if you want to use one of these additional adapters in your Laravel application.
+Laravel의 Flysystem 통합은 여러 "드라이버"를 기본으로 지원합니다. 하지만 Flysystem 자체는 더 많은 스토리지 시스템용 어댑터가 있습니다. 이들 어댑터 중 하나를 Laravel 애플리케이션에서 사용하고 싶을 경우 커스텀 드라이버를 만들 수 있습니다.
 
-In order to define a custom filesystem you will need a Flysystem adapter. Let's add a community maintained Dropbox adapter to our project:
+커스텀 파일시스템을 정의하려면 Flysystem 어댑터가 필요합니다. 아래와 같이 커뮤니티에서 관리하는 Dropbox 어댑터를 프로젝트에 추가합니다.
 
 ```shell
 composer require spatie/flysystem-dropbox
 ```
 
-Next, you can register the driver within the `boot` method of one of your application's [service providers](/docs/{{version}}/providers). To accomplish this, you should use the `extend` method of the `Storage` facade:
+그 다음, 애플리케이션의 [서비스 프로바이더](/docs/{{version}}/providers) 중 하나의 `boot` 메서드 내에서 드라이버를 등록할 수 있습니다. 이를 위해 `Storage` 파사드의 `extend` 메서드를 사용하세요.
 
 ```php
 <?php
@@ -902,6 +902,6 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-The first argument of the `extend` method is the name of the driver and the second is a closure that receives the `$app` and `$config` variables. The closure must return an instance of `Illuminate\Filesystem\FilesystemAdapter`. The `$config` variable contains the values defined in `config/filesystems.php` for the specified disk.
+`extend` 메서드의 첫 번째 인수는 드라이버의 이름이고, 두 번째 인수는 `$app`과 `$config` 변수를 받는 클로저입니다. 이 클로저는 반드시 `Illuminate\Filesystem\FilesystemAdapter` 인스턴스를 반환해야 합니다. `$config` 변수에는 지정한 디스크의 `config/filesystems.php` 구성 값이 들어 있습니다.
 
-Once you have created and registered the extension's service provider, you may use the `dropbox` driver in your `config/filesystems.php` configuration file.
+확장 서비스 프로바이더를 생성 및 등록한 후에는, `config/filesystems.php`에서 `dropbox` 드라이버를 자유롭게 사용할 수 있습니다.

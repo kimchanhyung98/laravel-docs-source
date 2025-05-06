@@ -1,86 +1,86 @@
 # Laravel Pulse
 
-- [Introduction](#introduction)
-- [Installation](#installation)
-    - [Configuration](#configuration)
-- [Dashboard](#dashboard)
-    - [Authorization](#dashboard-authorization)
-    - [Customization](#dashboard-customization)
-    - [Resolving Users](#dashboard-resolving-users)
-    - [Cards](#dashboard-cards)
-- [Capturing Entries](#capturing-entries)
-    - [Recorders](#recorders)
-    - [Filtering](#filtering)
-- [Performance](#performance)
-    - [Using a Different Database](#using-a-different-database)
-    - [Redis Ingest](#ingest)
-    - [Sampling](#sampling)
-    - [Trimming](#trimming)
-    - [Handling Pulse Exceptions](#pulse-exceptions)
-- [Custom Cards](#custom-cards)
-    - [Card Components](#custom-card-components)
-    - [Styling](#custom-card-styling)
-    - [Data Capture and Aggregation](#custom-card-data)
+- [소개](#introduction)
+- [설치](#installation)
+    - [설정](#configuration)
+- [대시보드](#dashboard)
+    - [인증](#dashboard-authorization)
+    - [커스터마이즈](#dashboard-customization)
+    - [유저 해상](#dashboard-resolving-users)
+    - [카드](#dashboard-cards)
+- [엔트리 캡처](#capturing-entries)
+    - [레코더](#recorders)
+    - [필터링](#filtering)
+- [성능](#performance)
+    - [다른 데이터베이스 사용](#using-a-different-database)
+    - [Redis 인제스트](#ingest)
+    - [샘플링](#sampling)
+    - [트리밍](#trimming)
+    - [Pulse 예외 처리](#pulse-exceptions)
+- [커스텀 카드](#custom-cards)
+    - [카드 컴포넌트](#custom-card-components)
+    - [스타일링](#custom-card-styling)
+    - [데이터 캡처 및 집계](#custom-card-data)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-[Laravel Pulse](https://github.com/laravel/pulse) delivers at-a-glance insights into your application's performance and usage. With Pulse, you can track down bottlenecks like slow jobs and endpoints, find your most active users, and more.
+[Laravel Pulse](https://github.com/laravel/pulse)는 애플리케이션의 성능 및 사용 내역을 한눈에 파악할 수 있도록 인사이트를 제공합니다. Pulse를 통해 느린 작업 및 엔드포인트와 같은 병목 현상을 추적하고, 가장 활발한 사용자를 찾아내는 등 다양한 정보를 확인할 수 있습니다.
 
-For in-depth debugging of individual events, check out [Laravel Telescope](/docs/{{version}}/telescope).
+개별 이벤트에 대한 심층 디버깅은 [Laravel Telescope](/docs/{{version}}/telescope)를 참고하세요.
 
 <a name="installation"></a>
-## Installation
+## 설치
 
 > [!WARNING]
-> Pulse's first-party storage implementation currently requires a MySQL, MariaDB, or PostgreSQL database. If you are using a different database engine, you will need a separate MySQL, MariaDB, or PostgreSQL database for your Pulse data.
+> Pulse의 공식 스토리지 구현은 현재 MySQL, MariaDB 또는 PostgreSQL 데이터베이스가 필요합니다. 다른 DB 엔진을 사용할 경우 Pulse 데이터 저장을 위한 별도의 MySQL, MariaDB, PostgreSQL 데이터베이스가 필요합니다.
 
-You may install Pulse using the Composer package manager:
+Composer 패키지 관리자를 통해 Pulse를 설치할 수 있습니다:
 
 ```shell
 composer require laravel/pulse
 ```
 
-Next, you should publish the Pulse configuration and migration files using the `vendor:publish` Artisan command:
+다음으로, `vendor:publish` Artisan 명령을 사용하여 Pulse 설정 파일과 마이그레이션 파일을 발행해야 합니다:
 
 ```shell
 php artisan vendor:publish --provider="Laravel\Pulse\PulseServiceProvider"
 ```
 
-Finally, you should run the `migrate` command in order to create the tables needed to store Pulse's data:
+마지막으로 Pulse 데이터 저장에 필요한 테이블을 생성하려면 `migrate` 명령을 실행하세요:
 
 ```shell
 php artisan migrate
 ```
 
-Once Pulse's database migrations have been run, you may access the Pulse dashboard via the `/pulse` route.
+Pulse 데이터베이스 마이그레이션을 실행한 후에는 `/pulse` 경로를 통해 Pulse 대시보드에 접근할 수 있습니다.
 
 > [!NOTE]
-> If you do not want to store Pulse data in your application's primary database, you may [specify a dedicated database connection](#using-a-different-database).
+> Pulse 데이터를 기본 애플리케이션 데이터베이스에 저장하지 않으려면, [전용 데이터베이스 연결 지정](#using-a-different-database)이 가능합니다.
 
 <a name="configuration"></a>
-### Configuration
+### 설정
 
-Many of Pulse's configuration options can be controlled using environment variables. To see the available options, register new recorders, or configure advanced options, you may publish the `config/pulse.php` configuration file:
+Pulse의 다양한 설정 옵션은 환경 변수로 제어할 수 있습니다. 사용 가능한 옵션을 확인하고, 새로운 레코더를 등록하거나 고급 옵션을 구성하려면, `config/pulse.php` 환경설정 파일을 발행할 수 있습니다:
 
 ```shell
 php artisan vendor:publish --tag=pulse-config
 ```
 
 <a name="dashboard"></a>
-## Dashboard
+## 대시보드
 
 <a name="dashboard-authorization"></a>
-### Authorization
+### 인증
 
-The Pulse dashboard may be accessed via the `/pulse` route. By default, you will only be able to access this dashboard in the `local` environment, so you will need to configure authorization for your production environments by customizing the `'viewPulse'` authorization gate. You can accomplish this within your application's `app/Providers/AppServiceProvider.php` file:
+Pulse 대시보드는 `/pulse` 경로에서 접근할 수 있습니다. 기본적으로 `local` 환경에서만 대시보드를 볼 수 있으므로, 프로덕션 환경에서는 `'viewPulse'` 인가 게이트를 커스터마이즈하여 접근 권한을 설정해야 합니다. 이는 애플리케이션의 `app/Providers/AppServiceProvider.php` 파일에서 진행할 수 있습니다:
 
 ```php
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Bootstrap any application services.
+ * 부트스트랩 서비스.
  */
 public function boot(): void
 {
@@ -93,17 +93,17 @@ public function boot(): void
 ```
 
 <a name="dashboard-customization"></a>
-### Customization
+### 커스터마이즈
 
-The Pulse dashboard cards and layout may be configured by publishing the dashboard view. The dashboard view will be published to `resources/views/vendor/pulse/dashboard.blade.php`:
+Pulse 대시보드 카드와 레이아웃은 대시보드 뷰 파일을 발행하여 수정할 수 있습니다. 이 뷰는 `resources/views/vendor/pulse/dashboard.blade.php` 경로에 발행됩니다:
 
 ```shell
 php artisan vendor:publish --tag=pulse-dashboard
 ```
 
-The dashboard is powered by [Livewire](https://livewire.laravel.com/), and allows you to customize the cards and layout without needing to rebuild any JavaScript assets.
+대시보드는 [Livewire](https://livewire.laravel.com/) 기반이며, 별도의 JavaScript 빌드 없이 카드나 레이아웃을 쉽게 커스터마이즈할 수 있습니다.
 
-Within this file, the `<x-pulse>` component is responsible for rendering the dashboard and provides a grid layout for the cards. If you would like the dashboard to span the full width of the screen, you may provide the `full-width` prop to the component:
+이 파일에서 `<x-pulse>` 컴포넌트는 대시보드 렌더링을 담당하며, 카드의 그리드 레이아웃을 제공합니다. 대시보드를 전체 화면 폭으로 표시하려면 `full-width` prop을 제공하면 됩니다:
 
 ```blade
 <x-pulse full-width>
@@ -111,7 +111,7 @@ Within this file, the `<x-pulse>` component is responsible for rendering the das
 </x-pulse>
 ```
 
-By default, the `<x-pulse>` component will create a 12 column grid, but you may customize this using the `cols` prop:
+기본적으로 `<x-pulse>` 컴포넌트는 12 컬럼 그리드를 생성하지만, `cols` prop 으로 수정 가능합니다:
 
 ```blade
 <x-pulse cols="16">
@@ -119,32 +119,32 @@ By default, the `<x-pulse>` component will create a 12 column grid, but you may 
 </x-pulse>
 ```
 
-Each card accepts a `cols` and `rows` prop to control the space and positioning:
+각 카드는 `cols` 및 `rows` prop을 받아 공간 및 위치를 제어합니다:
 
 ```blade
 <livewire:pulse.usage cols="4" rows="2" />
 ```
 
-Most cards also accept an `expand` prop to show the full card instead of scrolling:
+대부분의 카드에는 카드 전체를 스크롤 없이 보여주는 `expand` prop도 사용할 수 있습니다:
 
 ```blade
 <livewire:pulse.slow-queries expand />
 ```
 
 <a name="dashboard-resolving-users"></a>
-### Resolving Users
+### 유저 해상
 
-For cards that display information about your users, such as the Application Usage card, Pulse will only record the user's ID. When rendering the dashboard, Pulse will resolve the `name` and `email` fields from your default `Authenticatable` model and display avatars using the Gravatar web service.
+Application Usage 카드 등 사용자 정보를 표시하는 카드의 경우 Pulse는 오직 사용자 ID만 저장합니다. 대시보드 렌더링 시 Pulse는 기본 `Authenticatable` 모델에서 `name`과 `email` 필드를 해석해 Gravatar 웹 서비스를 이용해 아바타를 표시합니다.
 
-You may customize the fields and avatar by invoking the `Pulse::user` method within your application's `App\Providers\AppServiceProvider` class.
+사용자 필드 및 아바타 표시를 커스터마이즈하려면 애플리케이션의 `App\Providers\AppServiceProvider` 클래스에서 `Pulse::user` 메서드를 사용하세요.
 
-The `user` method accepts a closure which will receive the `Authenticatable` model to be displayed and should return an array containing `name`, `extra`, and `avatar` information for the user:
+`user` 메서드는 표시할 `Authenticatable` 모델을 입력받고 `name`, `extra`, `avatar` 정보를 담은 배열을 반환해야 합니다:
 
 ```php
 use Laravel\Pulse\Facades\Pulse;
 
 /**
- * Bootstrap any application services.
+ * 부트스트랩 서비스.
  */
 public function boot(): void
 {
@@ -153,34 +153,33 @@ public function boot(): void
         'extra' => $user->email,
         'avatar' => $user->avatar_url,
     ]);
-
     // ...
 }
 ```
 
 > [!NOTE]
-> You may completely customize how the authenticated user is captured and retrieved by implementing the `Laravel\Pulse\Contracts\ResolvesUsers` contract and binding it in Laravel's [service container](/docs/{{version}}/container#binding-a-singleton).
+> 인증된 사용자 정보를 캡처하고 조회하는 방식을 완전히 커스터마이즈하려면, `Laravel\Pulse\Contracts\ResolvesUsers` 계약을 구현하고 Laravel [서비스 컨테이너](/docs/{{version}}/container#binding-a-singleton)에 바인딩할 수 있습니다.
 
 <a name="dashboard-cards"></a>
-### Cards
+### 카드
 
 <a name="servers-card"></a>
-#### Servers
+#### 서버
 
-The `<livewire:pulse.servers />` card displays system resource usage for all servers running the `pulse:check` command. Please refer to the documentation regarding the [servers recorder](#servers-recorder) for more information on system resource reporting.
+`<livewire:pulse.servers />` 카드는 `pulse:check` 명령을 실행 중인 모든 서버의 시스템 리소스 사용량을 보여줍니다. 시스템 리소스 레포팅 관련 추가 정보는 [서버 레코더](#servers-recorder) 문서를 참고하세요.
 
-If you replace a server in your infrastructure, you may wish to stop displaying the inactive server in the Pulse dashboard after a given duration. You may accomplish this using the `ignore-after` prop, which accepts the number of seconds after which inactive servers should be removed from the Pulse dashboard. Alternatively, you may provide a relative time formatted string, such as `1 hour` or `3 days and 1 hour`:
+인프라 내 서버를 교체한 경우, Pulse 대시보드에서 비활성 서버를 일정 기간 후에 숨기고 싶을 수 있습니다. 이때 `ignore-after` prop을 사용하면 비활성 서버를 대시보드에서 몇 초 후 제외할지 설정할 수 있습니다. 또는 `1 hour`, `3 days and 1 hour` 같은 상대적 시간 문자열도 사용할 수 있습니다:
 
 ```blade
 <livewire:pulse.servers ignore-after="3 hours" />
 ```
 
 <a name="application-usage-card"></a>
-#### Application Usage
+#### 애플리케이션 사용량
 
-The `<livewire:pulse.usage />` card displays the top 10 users making requests to your application, dispatching jobs, and experiencing slow requests.
+`<livewire:pulse.usage />` 카드는 애플리케이션에 요청을 보내고, 작업을 디스패치하며, 느린 요청을 겪고 있는 상위 10명의 사용자를 보여줍니다.
 
-If you wish to view all usage metrics on screen at the same time, you may include the card multiple times and specify the `type` attribute:
+모든 지표를 한 화면에 보고 싶다면 카드를 여러 번 포함하고 `type` 속성을 지정하면 됩니다:
 
 ```blade
 <livewire:pulse.usage type="requests" />
@@ -188,94 +187,94 @@ If you wish to view all usage metrics on screen at the same time, you may includ
 <livewire:pulse.usage type="jobs" />
 ```
 
-To learn how to customize how Pulse retrieves and displays user information, consult our documentation on [resolving users](#dashboard-resolving-users).
+Pulse가 사용자 정보를 조회하고 표시하는 방식을 커스터마이즈하려면 [유저 해상](#dashboard-resolving-users) 문서를 참고하세요.
 
 > [!NOTE]
-> If your application receives a lot of requests or dispatches a lot of jobs, you may wish to enable [sampling](#sampling). See the [user requests recorder](#user-requests-recorder), [user jobs recorder](#user-jobs-recorder), and [slow jobs recorder](#slow-jobs-recorder) documentation for more information.
+> 애플리케이션에서 요청 또는 작업이 많이 발생한다면, [샘플링](#sampling) 사용을 권장합니다. [사용자 요청 레코더](#user-requests-recorder), [사용자 작업 레코더](#user-jobs-recorder), [느린 작업 레코더](#slow-jobs-recorder) 문서도 참고하세요.
 
 <a name="exceptions-card"></a>
-#### Exceptions
+#### 예외
 
-The `<livewire:pulse.exceptions />` card shows the frequency and recency of exceptions occurring in your application. By default, exceptions are grouped based on the exception class and location where it occurred. See the [exceptions recorder](#exceptions-recorder) documentation for more information.
+`<livewire:pulse.exceptions />` 카드는 애플리케이션에서 발생한 예외의 빈도와 최근 발생 시점을 보여줍니다. 기본적으로 예외 클래스와 발생 지점별로 그룹화됩니다. 자세한 내용은 [예외 레코더](#exceptions-recorder) 문서를 참고하세요.
 
 <a name="queues-card"></a>
-#### Queues
+#### 큐
 
-The `<livewire:pulse.queues />` card shows the throughput of the queues in your application, including the number of jobs queued, processing, processed, released, and failed. See the [queues recorder](#queues-recorder) documentation for more information.
+`<livewire:pulse.queues />` 카드는 애플리케이션의 큐 처리 현황(대기, 처리 중, 완료, 재시도, 실패 작업 수 포함)을 보여줍니다. 자세한 정보는 [큐 레코더](#queues-recorder) 문서를 참고하세요.
 
 <a name="slow-requests-card"></a>
-#### Slow Requests
+#### 느린 요청
 
-The `<livewire:pulse.slow-requests />` card shows incoming requests to your application that exceed the configured threshold, which is 1,000ms by default. See the [slow requests recorder](#slow-requests-recorder) documentation for more information.
+`<livewire:pulse.slow-requests />` 카드는 기본적으로 1,000ms 이상의 요청을 기록합니다. 더 자세한 내용은 [느린 요청 레코더](#slow-requests-recorder) 문서를 확인하세요.
 
 <a name="slow-jobs-card"></a>
-#### Slow Jobs
+#### 느린 작업
 
-The `<livewire:pulse.slow-jobs />` card shows the queued jobs in your application that exceed the configured threshold, which is 1,000ms by default. See the [slow jobs recorder](#slow-jobs-recorder) documentation for more information.
+`<livewire:pulse.slow-jobs />` 카드는 기본적으로 1,000ms 초과 작업을 표시합니다. 자세한 내용은 [느린 작업 레코더](#slow-jobs-recorder) 문서를 참고하세요.
 
 <a name="slow-queries-card"></a>
-#### Slow Queries
+#### 느린 쿼리
 
-The `<livewire:pulse.slow-queries />` card shows the database queries in your application that exceed the configured threshold, which is 1,000ms by default.
+`<livewire:pulse.slow-queries />` 카드는 기본적으로 1,000ms 이상 소요된 데이터베이스 쿼리를 표시합니다.
 
-By default, slow queries are grouped based on the SQL query (without bindings) and the location where it occurred, but you may choose to not capture the location if you wish to group solely on the SQL query.
+기본적으로 쿼리는 SQL(바인딩 미포함)과 쿼리 위치로 그룹화되지만, SQL 기준만으로 그룹화할 수도 있습니다.
 
-If you encounter rendering performance issues due to extremely large SQL queries receiving syntax highlighting, you may disable highlighting by adding the `without-highlighting` prop:
+매우 큰 SQL 구문의 구문 강조로 인해 렌더링 성능에 문제가 있다면, `without-highlighting` prop으로 강조를 끌 수 있습니다:
 
 ```blade
 <livewire:pulse.slow-queries without-highlighting />
 ```
 
-See the [slow queries recorder](#slow-queries-recorder) documentation for more information.
+자세한 정보는 [느린 쿼리 레코더](#slow-queries-recorder) 문서를 참고하세요.
 
 <a name="slow-outgoing-requests-card"></a>
-#### Slow Outgoing Requests
+#### 느린 외부 요청
 
-The `<livewire:pulse.slow-outgoing-requests />` card shows outgoing requests made using Laravel's [HTTP client](/docs/{{version}}/http-client) that exceed the configured threshold, which is 1,000ms by default.
+`<livewire:pulse.slow-outgoing-requests />` 카드는 Laravel [HTTP 클라이언트](/docs/{{version}}/http-client)로 이루어진 1,000ms 초과 외부 요청을 보여줍니다.
 
-By default, entries will be grouped by the full URL. However, you may wish to normalize or group similar outgoing requests using regular expressions. See the [slow outgoing requests recorder](#slow-outgoing-requests-recorder) documentation for more information.
+기본적으로 전체 URL별로 그룹화되지만, 정규식을 사용해 유사한 요청을 그룹화할 수도 있습니다. 자세한 내용은 [느린 외부 요청 레코더](#slow-outgoing-requests-recorder) 문서를 참고하세요.
 
 <a name="cache-card"></a>
-#### Cache
+#### 캐시
 
-The `<livewire:pulse.cache />` card shows the cache hit and miss statistics for your application, both globally and for individual keys.
+`<livewire:pulse.cache />` 카드는 애플리케이션의 전체 및 개별 키별 캐시 적중/실패 통계를 보여줍니다.
 
-By default, entries will be grouped by key. However, you may wish to normalize or group similar keys using regular expressions. See the [cache interactions recorder](#cache-interactions-recorder) documentation for more information.
+기본적으로 키별로 그룹화되지만, 비슷한 키를 그룹화하는 정규식 옵션도 있습니다. 자세한 내용은 [캐시 인터랙션 레코더](#cache-interactions-recorder) 문서를 참고하세요.
 
 <a name="capturing-entries"></a>
-## Capturing Entries
+## 엔트리 캡처
 
-Most Pulse recorders will automatically capture entries based on framework events dispatched by Laravel. However, the [servers recorder](#servers-recorder) and some third-party cards must poll for information regularly. To use these cards, you must run the `pulse:check` daemon on all of your individual application servers:
+대부분의 Pulse 레코더는 Laravel에서 발생하는 프레임워크 이벤트를 기반으로 자동으로 엔트리를 캡처합니다. 하지만 [서버 레코더](#servers-recorder) 및 일부 서드파티 카드는 주기적으로 정보를 폴링해야 합니다. 이러한 카드를 사용하려면 모든 애플리케이션 서버에서 `pulse:check` 데몬을 실행해야 합니다:
 
 ```php
 php artisan pulse:check
 ```
 
 > [!NOTE]
-> To keep the `pulse:check` process running permanently in the background, you should use a process monitor such as Supervisor to ensure that the command does not stop running.
+> `pulse:check` 프로세스를 항상 백그라운드에서 실행하려면 Supervisor 등과 같은 프로세스 관리자를 사용해 명령이 중단되지 않도록 하길 권장합니다.
 
-As the `pulse:check` command is a long-lived process, it will not see changes to your codebase without being restarted. You should gracefully restart the command by calling the `pulse:restart` command during your application's deployment process:
+`pulse:check` 명령은 장시간 실행되는 프로세스이므로 코드베이스 변경을 인지하지 못합니다. 배포 과정에서 `pulse:restart` 명령으로 프로세스를 정상적으로 재시작하세요:
 
 ```shell
 php artisan pulse:restart
 ```
 
 > [!NOTE]
-> Pulse uses the [cache](/docs/{{version}}/cache) to store restart signals, so you should verify that a cache driver is properly configured for your application before using this feature.
+> Pulse는 [캐시](/docs/{{version}}/cache)를 사용해 재시작 신호를 저장하므로, 이 기능을 사용하기 전에 애플리케이션에 캐시 드라이버가 제대로 설정되어 있는지 확인하세요.
 
 <a name="recorders"></a>
-### Recorders
+### 레코더
 
-Recorders are responsible for capturing entries from your application to be recorded in the Pulse database. Recorders are registered and configured in the `recorders` section of the [Pulse configuration file](#configuration).
+레코더는 애플리케이션에서 Pulse 데이터베이스에 저장할 엔트리를 캡처하는 역할을 합니다. 레코더는 [Pulse 설정 파일](#configuration) 내 `recorders` 섹션에서 등록하고 설정합니다.
 
 <a name="cache-interactions-recorder"></a>
-#### Cache Interactions
+#### 캐시 인터랙션
 
-The `CacheInteractions` recorder captures information about the [cache](/docs/{{version}}/cache) hits and misses occurring in your application for display on the [Cache](#cache-card) card.
+`CacheInteractions` 레코더는 [캐시](/docs/{{version}}/cache) 히트와 미스를 캡처해 [캐시](#cache-card) 카드에 표시합니다.
 
-You may optionally adjust the [sample rate](#sampling) and ignored key patterns.
+[샘플링 비율](#sampling) 및 무시할 키 패턴을 설정할 수 있습니다.
 
-You may also configure key grouping so that similar keys are grouped as a single entry. For example, you may wish to remove unique IDs from keys caching the same type of information. Groups are configured using a regular expression to "find and replace" parts of the key. An example is included in the configuration file:
+비슷한 캐시 키를 하나의 엔트리로 그룹화하고 싶을 때도 구성할 수 있습니다. 예를 들어, 동일 유형의 캐시 정보이지만 유일한 ID가 포함된 키 등. 그룹은 정규식을 사용해 키 일부를 치환합니다. 설정 예:
 
 ```php
 Recorders\CacheInteractions::class => [
@@ -286,30 +285,28 @@ Recorders\CacheInteractions::class => [
 ],
 ```
 
-The first pattern that matches will be used. If no patterns match, then the key will be captured as-is.
+첫 번째로 일치하는 패턴이 사용되고, 일치하는 패턴이 없으면 키 자체가 사용됩니다.
 
 <a name="exceptions-recorder"></a>
-#### Exceptions
+#### 예외
 
-The `Exceptions` recorder captures information about reportable exceptions occurring in your application for display on the [Exceptions](#exceptions-card) card.
+`Exceptions` 레코더는 애플리케이션에서 발생하는 예외 정보를 캡처하고 [예외](#exceptions-card) 카드에 표시합니다.
 
-You may optionally adjust the [sample rate](#sampling) and ignored exceptions patterns. You may also configure whether to capture the location that the exception originated from. The captured location will be displayed on the Pulse dashboard which can help to track down the exception origin; however, if the same exception occurs in multiple locations then it will appear multiple times for each unique location.
+[샘플링 비율](#sampling) 및 무시할 예외 패턴을 설정할 수 있습니다. 예외 발생 위치 저장 여부도 설정 가능합니다. 위치를 캡처하면 원인 추적에 도움이 되지만, 여러 위치에서 같은 예외가 발생하면 각 위치별로 여러 번 표시됩니다.
 
 <a name="queues-recorder"></a>
-#### Queues
+#### 큐
 
-The `Queues` recorder captures information about your applications queues for display on the [Queues](#queues-card).
-
-You may optionally adjust the [sample rate](#sampling) and ignored jobs patterns.
+`Queues` 레코더는 애플리케이션 큐 관련 정보를 캡처해 [큐](#queues-card) 카드에 표시합니다. [샘플링 비율](#sampling) 및 무시할 작업 패턴도 지정할 수 있습니다.
 
 <a name="slow-jobs-recorder"></a>
-#### Slow Jobs
+#### 느린 작업
 
-The `SlowJobs` recorder captures information about slow jobs occurring in your application for display on the [Slow Jobs](#slow-jobs-recorder) card.
+`SlowJobs` 레코더는 애플리케이션에서 발생하는 느린 작업을 캡처해 [느린 작업](#slow-jobs-recorder) 카드에 표시합니다.
 
-You may optionally adjust the slow job threshold, [sample rate](#sampling), and ignored job patterns.
+느린 작업 임계값, [샘플링 비율](#sampling), 무시할 작업 패턴을 설정할 수 있습니다.
 
-You may have some jobs that you expect to take longer than others. In those cases, you may configure per-job thresholds:
+특정 작업에 대해 더 큰 임계값이 필요하다면 작업별 임계값을 지정할 수 있습니다:
 
 ```php
 Recorders\SlowJobs::class => [
@@ -321,16 +318,16 @@ Recorders\SlowJobs::class => [
 ],
 ```
 
-If no regular expression patterns match the job's classname, then the `'default'` value will be used.
+작업 클래스명과 일치하는 패턴이 없으면 `'default'` 값이 사용됩니다.
 
 <a name="slow-outgoing-requests-recorder"></a>
-#### Slow Outgoing Requests
+#### 느린 외부 요청
 
-The `SlowOutgoingRequests` recorder captures information about outgoing HTTP requests made using Laravel's [HTTP client](/docs/{{version}}/http-client) that exceed the configured threshold for display on the [Slow Outgoing Requests](#slow-outgoing-requests-card) card.
+`SlowOutgoingRequests` 레코더는 Laravel [HTTP 클라이언트](/docs/{{version}}/http-client)로 이루어진, 임계값 초과 외부 HTTP 요청을 캡처해 [느린 외부 요청](#slow-outgoing-requests-card) 카드에 표시합니다.
 
-You may optionally adjust the slow outgoing request threshold, [sample rate](#sampling), and ignored URL patterns.
+느린 외부 요청 임계값, [샘플링 비율](#sampling), 무시할 URL 패턴을 설정할 수 있습니다.
 
-You may have some outgoing requests that you expect to take longer than others. In those cases, you may configure per-request thresholds:
+특정 외부 요청에 대해 더 큰 임계값이 필요한 경우 요청별 임계값을 지정할 수 있습니다:
 
 ```php
 Recorders\SlowOutgoingRequests::class => [
@@ -342,9 +339,9 @@ Recorders\SlowOutgoingRequests::class => [
 ],
 ```
 
-If no regular expression patterns match the request's URL, then the `'default'` value will be used.
+URL과 일치하는 패턴이 없으면 `'default'` 값이 사용됩니다.
 
-You may also configure URL grouping so that similar URLs are grouped as a single entry. For example, you may wish to remove unique IDs from URL paths or group by domain only. Groups are configured using a regular expression to "find and replace" parts of the URL. Some examples are included in the configuration file:
+유사한 URL을 하나의 엔트리로 그룹화하고 싶을 때도 정규식을 사용할 수 있습니다. 예시:
 
 ```php
 Recorders\SlowOutgoingRequests::class => [
@@ -357,16 +354,16 @@ Recorders\SlowOutgoingRequests::class => [
 ],
 ```
 
-The first pattern that matches will be used. If no patterns match, then the URL will be captured as-is.
+일치하는 첫 번째 패턴이 사용되며, 없으면 URL 자체가 사용됩니다.
 
 <a name="slow-queries-recorder"></a>
-#### Slow Queries
+#### 느린 쿼리
 
-The `SlowQueries` recorder captures any database queries in your application that exceed the configured threshold for display on the [Slow Queries](#slow-queries-card) card.
+`SlowQueries` 레코더는 임계값 이상이 소요된 DB 쿼리를 캡처해 [느린 쿼리](#slow-queries-card) 카드에 표시합니다.
 
-You may optionally adjust the slow query threshold, [sample rate](#sampling), and ignored query patterns. You may also configure whether to capture the query location. The captured location will be displayed on the Pulse dashboard which can help to track down the query origin; however, if the same query is made in multiple locations then it will appear multiple times for each unique location.
+느린 쿼리 임계값, [샘플링 비율](#sampling), 무시할 쿼리 패턴, 쿼리 위치 캡처 여부도 설정할 수 있습니다. 위치를 캡처하면 원인 추적에 유용하나, 똑같은 쿼리가 다양한 위치에서 발생하면 각각 여러 번 표시됩니다.
 
-You may have some queries that you expect to take longer than others. In those cases, you may configure per-query thresholds:
+특정 쿼리에 대해 더 긴 임계값을 지정하려면 다음과 같이 설정할 수 있습니다:
 
 ```php
 Recorders\SlowQueries::class => [
@@ -378,16 +375,16 @@ Recorders\SlowQueries::class => [
 ],
 ```
 
-If no regular expression patterns match the query's SQL, then the `'default'` value will be used.
+SQL과 일치하는 패턴이 없으면 `'default'` 값이 사용됩니다.
 
 <a name="slow-requests-recorder"></a>
-#### Slow Requests
+#### 느린 요청
 
-The `Requests` recorder captures information about requests made to your application for display on the [Slow Requests](#slow-requests-card) and [Application Usage](#application-usage-card) cards.
+`Requests` 레코더는 애플리케이션에 발생한 요청 정보를 [느린 요청](#slow-requests-card), [애플리케이션 사용량](#application-usage-card) 카드에 표시합니다.
 
-You may optionally adjust the slow route threshold, [sample rate](#sampling), and ignored paths.
+느린 라우트 임계값, [샘플링 비율](#sampling), 무시할 경로도 설정할 수 있습니다.
 
-You may have some requests that you expect to take longer than others. In those cases, you may configure per-request thresholds:
+특정 요청에 대해 더 큰 임계값이 필요하다면 경로별 임계값을 지정할 수 있습니다:
 
 ```php
 Recorders\SlowRequests::class => [
@@ -399,39 +396,39 @@ Recorders\SlowRequests::class => [
 ],
 ```
 
-If no regular expression patterns match the request's URL, then the `'default'` value will be used.
+URL과 일치하는 패턴이 없으면 `'default'` 값이 사용됩니다.
 
 <a name="servers-recorder"></a>
-#### Servers
+#### 서버
 
-The `Servers` recorder captures CPU, memory, and storage usage of the servers that power your application for display on the [Servers](#servers-card) card. This recorder requires the [pulse:check command](#capturing-entries) to be running on each of the servers you wish to monitor.
+`Servers` 레코더는 모든 모니터링 대상 서버의 CPU, 메모리, 스토리지 사용량을 캡처해 [서버](#servers-card) 카드에 표시합니다. 이 레코더는 [pulse:check 명령](#capturing-entries)을 각 서버에서 실행해야 합니다.
 
-Each reporting server must have a unique name. By default, Pulse will use the value returned by PHP's `gethostname` function. If you wish to customize this, you may set the `PULSE_SERVER_NAME` environment variable:
+각 보고 서버는 고유 이름이 있어야 하며, 기본값은 PHP의 `gethostname` 값을 사용합니다. 직접 지정하려면 `PULSE_SERVER_NAME` 환경변수를 사용할 수 있습니다:
 
 ```env
 PULSE_SERVER_NAME=load-balancer
 ```
 
-The Pulse configuration file also allows you to customize the directories that are monitored.
+Pulse 설정 파일에서 모니터링할 디렉터리도 지정할 수 있습니다.
 
 <a name="user-jobs-recorder"></a>
-#### User Jobs
+#### 사용자 작업
 
-The `UserJobs` recorder captures information about the users dispatching jobs in your application for display on the [Application Usage](#application-usage-card) card.
+`UserJobs` 레코더는 애플리케이션에서 작업을 디스패치하는 사용자 정보를 캡처해 [애플리케이션 사용량](#application-usage-card) 카드에 표시합니다.
 
-You may optionally adjust the [sample rate](#sampling) and ignored job patterns.
+[샘플링 비율](#sampling)과 무시할 작업 패턴도 지정할 수 있습니다.
 
 <a name="user-requests-recorder"></a>
-#### User Requests
+#### 사용자 요청
 
-The `UserRequests` recorder captures information about the users making requests to your application for display on the [Application Usage](#application-usage-card) card.
+`UserRequests` 레코더는 요청을 보내는 사용자 정보를 캡처해 [애플리케이션 사용량](#application-usage-card) 카드에 표시합니다.
 
-You may optionally adjust the [sample rate](#sampling) and ignored URL patterns.
+[샘플링 비율](#sampling)과 무시할 URL 패턴도 지정할 수 있습니다.
 
 <a name="filtering"></a>
-### Filtering
+### 필터링
 
-As we have seen, many [recorders](#recorders) offer the ability to, via configuration, "ignore" incoming entries based on their value, such as a request's URL. But, sometimes it may be useful to filter out records based on other factors, such as the currently authenticated user. To filter out these records, you may pass a closure to Pulse's `filter` method. Typically, the `filter` method should be invoked within the `boot` method of your application's `AppServiceProvider`:
+많은 [레코더](#recorders)는 설정을 통해 값(예: 요청 URL)에 따라 특정 엔트리를 무시할 수 있습니다. 하지만, 인증된 사용자 등 다른 요인 기반으로 엔트리를 필터링하고 싶을 수도 있습니다. 이러한 경우 Pulse의 `filter` 메서드에 클로저를 전달해 필터링할 수 있습니다. 보통 이 메서드는 애플리케이션의 `AppServiceProvider`의 `boot`에서 호출합니다:
 
 ```php
 use Illuminate\Support\Facades\Auth;
@@ -440,7 +437,7 @@ use Laravel\Pulse\Facades\Pulse;
 use Laravel\Pulse\Value;
 
 /**
- * Bootstrap any application services.
+ * 부트스트랩 서비스.
  */
 public function boot(): void
 {
@@ -453,77 +450,77 @@ public function boot(): void
 ```
 
 <a name="performance"></a>
-## Performance
+## 성능
 
-Pulse has been designed to drop into an existing application without requiring any additional infrastructure. However, for high-traffic applications, there are several ways of removing any impact Pulse may have on your application's performance.
+Pulse는 추가적인 인프라 도입 없이 바로 기존 애플리케이션에 적용할 수 있도록 설계되었습니다. 단, 트래픽이 많은 환경에서는 Pulse로 인한 영향 최소화를 위해 여러 방법을 제공하고 있습니다.
 
 <a name="using-a-different-database"></a>
-### Using a Different Database
+### 다른 데이터베이스 사용
 
-For high-traffic applications, you may prefer to use a dedicated database connection for Pulse to avoid impacting your application database.
+트래픽이 많은 환경에서는 Pulse를 위해 별도의 DB 연결을 사용하는 것을 권장합니다.
 
-You may customize the [database connection](/docs/{{version}}/database#configuration) used by Pulse by setting the `PULSE_DB_CONNECTION` environment variable.
+Pulse에서 사용할 [데이터베이스 연결](/docs/{{version}}/database#configuration)은 `PULSE_DB_CONNECTION` 환경변수로 지정할 수 있습니다.
 
 ```env
 PULSE_DB_CONNECTION=pulse
 ```
 
 <a name="ingest"></a>
-### Redis Ingest
+### Redis 인제스트
 
 > [!WARNING]
-> The Redis Ingest requires Redis 6.2 or greater and `phpredis` or `predis` as the application's configured Redis client driver.
+> Redis 인제스트는 Redis 6.2 이상과 `phpredis` 또는 `predis`가 Redis 클라이언트 드라이버로 설정되어 있어야 합니다.
 
-By default, Pulse will store entries directly to the [configured database connection](#using-a-different-database) after the HTTP response has been sent to the client or a job has been processed; however, you may use Pulse's Redis ingest driver to send entries to a Redis stream instead. This can be enabled by configuring the `PULSE_INGEST_DRIVER` environment variable:
+기본적으로 Pulse는 [구성된 데이터베이스 연결](#using-a-different-database)에 HTTP 응답 전송 또는 작업 처리 후 엔트리를 직접 저장합니다. 그러나 Pulse의 Redis 인제스트 드라이버를 이용하면 엔트리를 Redis 스트림으로 보낼 수 있습니다. 이를 사용하려면 `PULSE_INGEST_DRIVER` 환경 변수를 설정하면 됩니다:
 
 ```ini
 PULSE_INGEST_DRIVER=redis
 ```
 
-Pulse will use your default [Redis connection](/docs/{{version}}/redis#configuration) by default, but you may customize this via the `PULSE_REDIS_CONNECTION` environment variable:
+Pulse는 기본 [Redis 연결](/docs/{{version}}/redis#configuration)을 사용하지만, 필요시 `PULSE_REDIS_CONNECTION` 환경변수로 커스터마이즈할 수 있습니다:
 
 ```ini
 PULSE_REDIS_CONNECTION=pulse
 ```
 
-When using the Redis ingest, you will need to run the `pulse:work` command to monitor the stream and move entries from Redis into Pulse's database tables.
+Redis 인제스트 사용 시, 엔트리를 모니터링해 Pulse DB로 이동하는 `pulse:work` 명령을 실행해야 합니다.
 
 ```php
 php artisan pulse:work
 ```
 
 > [!NOTE]
-> To keep the `pulse:work` process running permanently in the background, you should use a process monitor such as Supervisor to ensure that the Pulse worker does not stop running.
+> `pulse:work` 프로세스를 항상 백그라운드에서 실행하려면 Supervisor 등 프로세스 매니저를 활용하세요.
 
-As the `pulse:work` command is a long-lived process, it will not see changes to your codebase without being restarted. You should gracefully restart the command by calling the `pulse:restart` command during your application's deployment process:
+`pulse:work` 명령 또한 장시간 실행되므로 코드 변경사항 반영을 위해서는 배포 후 `pulse:restart` 명령으로 재시작해야 합니다:
 
 ```shell
 php artisan pulse:restart
 ```
 
 > [!NOTE]
-> Pulse uses the [cache](/docs/{{version}}/cache) to store restart signals, so you should verify that a cache driver is properly configured for your application before using this feature.
+> Pulse는 [캐시](/docs/{{version}}/cache)를 통해 재시작 신호를 저장합니다.
 
 <a name="sampling"></a>
-### Sampling
+### 샘플링
 
-By default, Pulse will capture every relevant event that occurs in your application. For high-traffic applications, this can result in needing to aggregate millions of database rows in the dashboard, especially for longer time periods.
+Pulse는 기본적으로 발생하는 모든 이벤트를 캡처합니다. 대규모 트래픽 환경에서는 수백만 건의 DB 행 집계가 발생할 수 있습니다.
 
-You may instead choose to enable "sampling" on certain Pulse data recorders. For example, setting the sample rate to `0.1` on the [User Requests](#user-requests-recorder) recorder will mean that you only record approximately 10% of the requests to your application. In the dashboard, the values will be scaled up and prefixed with a `~` to indicate that they are an approximation.
+따라서 일부 Pulse 데이터 레코더에 대한 "샘플링"을 활성화할 수 있습니다. 예를 들어, [사용자 요청](#user-requests-recorder) 레코더의 샘플 비율을 `0.1`로 설정하면 전체 요청의 10%만 저장합니다. 대시보드에는 값이 `~`로 시작해 근사치임을 나타냅니다.
 
-In general, the more entries you have for a particular metric, the lower you can safely set the sample rate without sacrificing too much accuracy.
+특정 지표의 데이터가 많을수록 낮은 샘플 비율도 정확도를 크게 해치지 않습니다.
 
 <a name="trimming"></a>
-### Trimming
+### 트리밍
 
-Pulse will automatically trim its stored entries once they are outside of the dashboard window. Trimming occurs when ingesting data using a lottery system which may be customized in the Pulse [configuration file](#configuration).
+Pulse는 대시보드에서 벗어난 기간의 데이터를 자동으로 삭제합니다. 트리밍은 로터리(lottery) 시스템으로 데이터가 인제스트될 때 진행되며, Pulse [설정 파일](#configuration)에서 커스터마이즈할 수 있습니다.
 
 <a name="pulse-exceptions"></a>
-### Handling Pulse Exceptions
+### Pulse 예외 처리
 
-If an exception occurs while capturing Pulse data, such as being unable to connect to the storage database, Pulse will silently fail to avoid impacting your application.
+Pulse 데이터 캡처 중(예: 스토리지 DB 연결 실패) 예외가 발생할 경우, Pulse는 애플리케이션 동작에 영향을 주지 않도록 조용히 실패합니다.
 
-If you wish to customize how these exceptions are handled, you may provide a closure to the `handleExceptionsUsing` method:
+이 예외 처리 방식을 커스터마이즈하려면 `handleExceptionsUsing` 메서드에 클로저를 지정할 수 있습니다:
 
 ```php
 use Laravel\Pulse\Facades\Pulse;
@@ -538,14 +535,14 @@ Pulse::handleExceptionsUsing(function ($e) {
 ```
 
 <a name="custom-cards"></a>
-## Custom Cards
+## 커스텀 카드
 
-Pulse allows you to build custom cards to display data relevant to your application's specific needs. Pulse uses [Livewire](https://livewire.laravel.com), so you may want to [review its documentation](https://livewire.laravel.com/docs) before building your first custom card.
+Pulse는 애플리케이션 상황에 맞는 데이터를 표시하기 위해 커스텀 카드를 제작할 수 있습니다. Pulse는 [Livewire](https://livewire.laravel.com)를 사용하므로, 커스텀 카드 제작 전 [관련 문서](https://livewire.laravel.com/docs)를 참고하는 것이 좋습니다.
 
 <a name="custom-card-components"></a>
-### Card Components
+### 카드 컴포넌트
 
-Creating a custom card in Laravel Pulse starts with extending the base `Card` Livewire component and defining a corresponding view:
+Laravel Pulse에서 커스텀 카드를 생성하려면 기본 `Card` Livewire 컴포넌트를 확장하고, 대응되는 뷰를 정의합니다:
 
 ```php
 namespace App\Livewire\Pulse;
@@ -563,9 +560,9 @@ class TopSellers extends Card
 }
 ```
 
-When using Livewire's [lazy loading](https://livewire.laravel.com/docs/lazy) feature, The `Card` component will automatically provide a placeholder that respects the `cols` and `rows` attributes passed to your component.
+Livewire의 [lazy loading](https://livewire.laravel.com/docs/lazy)을 사용할 경우, `Card` 컴포넌트는 자동으로 `cols` 및 `rows` 속성을 반영한 플레이스홀더를 제공합니다.
 
-When writing your Pulse card's corresponding view, you may leverage Pulse's Blade components for a consistent look and feel:
+카드의 뷰 작성 시, Pulse의 Blade 컴포넌트를 활용해 일관된 UI와 UX를 보장할 수 있습니다:
 
 ```blade
 <x-pulse::card :cols="$cols" :rows="$rows" :class="$class" wire:poll.5s="">
@@ -581,9 +578,9 @@ When writing your Pulse card's corresponding view, you may leverage Pulse's Blad
 </x-pulse::card>
 ```
 
-The `$cols`, `$rows`, `$class`, and `$expand` variables should be passed to their respective Blade components so the card layout may be customized from the dashboard view. You may also wish to include the `wire:poll.5s=""` attribute in your view to have the card automatically update.
+`$cols`, `$rows`, `$class`, `$expand` 변수는 각각 Blade 컴포넌트에 전달되어 대시보드에서 레이아웃 커스터마이즈가 가능합니다. 자동 갱신이 필요하다면 `wire:poll.5s=""` 속성을 추가하세요.
 
-Once you have defined your Livewire component and template, the card may be included in your [dashboard view](#dashboard-customization):
+Livewire 컴포넌트와 템플릿을 정의한 후에는 [대시보드 뷰](#dashboard-customization)에 카드를 포함할 수 있습니다:
 
 ```blade
 <x-pulse>
@@ -594,17 +591,17 @@ Once you have defined your Livewire component and template, the card may be incl
 ```
 
 > [!NOTE]
-> If your card is included in a package, you will need to register the component with Livewire using the `Livewire::component` method.
+> 패키지 내부 카드를 사용할 경우, `Livewire::component` 메서드로 컴포넌트 등록이 필요합니다.
 
 <a name="custom-card-styling"></a>
-### Styling
+### 스타일링
 
-If your card requires additional styling beyond the classes and components included with Pulse, there are a few options for including custom CSS for your cards.
+Pulse에서 제공하는 클래스 및 컴포넌트 외에 별도의 스타일이 필요한 경우, 몇 가지 방법으로 커스텀 CSS를 포함할 수 있습니다.
 
 <a name="custom-card-styling-vite"></a>
-#### Laravel Vite Integration
+#### Laravel Vite 연동
 
-If your custom card lives within your application's code base and you are using Laravel's [Vite integration](/docs/{{version}}/vite), you may update your `vite.config.js` file to include a dedicated CSS entry point for your card:
+커스텀 카드가 애플리케이션 코드에 포함되어 있고, Laravel의 [Vite 통합](/docs/{{version}}/vite)을 사용 중이라면, `vite.config.js`에 별도 CSS 엔트리포인트를 추가할 수 있습니다:
 
 ```js
 laravel({
@@ -615,7 +612,7 @@ laravel({
 }),
 ```
 
-You may then use the `@vite` Blade directive in your [dashboard view](#dashboard-customization), specifying the CSS entrypoint for your card:
+이후 [대시보드 뷰](#dashboard-customization)에서 `@vite` Blade 지시자를 사용해 CSS 엔트리포인트를 지정합니다:
 
 ```blade
 <x-pulse>
@@ -626,9 +623,9 @@ You may then use the `@vite` Blade directive in your [dashboard view](#dashboard
 ```
 
 <a name="custom-card-styling-css"></a>
-#### CSS Files
+#### CSS 파일
 
-For other use cases, including Pulse cards contained within a package, you may instruct Pulse to load additional stylesheets by defining a `css` method on your Livewire component that returns the file path to your CSS file:
+패키지 등 별도 환경에서는 Livewire 컴포넌트에 `css` 메서드를 정의해 CSS 파일 경로를 반환하도록 Pulse에 추가 스타일시트를 로딩하도록 할 수 있습니다:
 
 ```php
 class TopSellers extends Card
@@ -642,12 +639,12 @@ class TopSellers extends Card
 }
 ```
 
-When this card is included on the dashboard, Pulse will automatically include the contents of this file within a `<style>` tag so it does not need to be published to the `public` directory.
+이 카드를 대시보드에 포함하면, Pulse가 파일 내용을 `<style>` 태그로 자동 삽입합니다(따라서 public 디렉터리에 파일을 별도 배포할 필요 없음).
 
 <a name="custom-card-styling-tailwind"></a>
 #### Tailwind CSS
 
-When using Tailwind CSS, you should create a dedicated Tailwind configuration file to avoid loading unnecessary CSS or conflicting with Pulse's Tailwind classes:
+Tailwind CSS 사용 시, 불필요한 CSS가 로드되지 않도록 별도 Tailwind 설정 파일을 생성하는 것이 좋습니다:
 
 ```js
 export default {
@@ -662,7 +659,7 @@ export default {
 };
 ```
 
-You may then specify the configuration file in your CSS entrypoint:
+그리고 CSS 엔트리포인트에서 다음과 같이 설정 파일을 지정합니다:
 
 ```css
 @config "../../tailwind.top-sellers.config.js";
@@ -671,7 +668,7 @@ You may then specify the configuration file in your CSS entrypoint:
 @tailwind utilities;
 ```
 
-You will also need to include an `id` or `class` attribute in your card's view that matches the selector passed to Tailwind's [important selector strategy](https://tailwindcss.com/docs/configuration#selector-strategy):
+Tailwind의 [Important 선택자 전략](https://tailwindcss.com/docs/configuration#selector-strategy)에 지정한 셀렉터와 일치하도록 카드 뷰에 `id`나 `class`를 추가하세요:
 
 ```blade
 <x-pulse::card id="top-sellers" :cols="$cols" :rows="$rows" class="$class">
@@ -680,14 +677,14 @@ You will also need to include an `id` or `class` attribute in your card's view t
 ```
 
 <a name="custom-card-data"></a>
-### Data Capture and Aggregation
+### 데이터 캡처 및 집계
 
-Custom cards may fetch and display data from anywhere; however, you may wish to leverage Pulse's powerful and efficient data recording and aggregation system.
+커스텀 카드는 어디에서든 데이터를 가져와 표시할 수 있지만, Pulse의 고성능 데이터 기록/집계 시스템을 활용하는 것이 좋습니다.
 
 <a name="custom-card-data-capture"></a>
-#### Capturing Entries
+#### 엔트리 캡처
 
-Pulse allows you to record "entries" using the `Pulse::record` method:
+Pulse는 `Pulse::record` 메서드로 "엔트리" 기록을 지원합니다:
 
 ```php
 use Laravel\Pulse\Facades\Pulse;
@@ -697,9 +694,9 @@ Pulse::record('user_sale', $user->id, $sale->amount)
     ->count();
 ```
 
-The first argument provided to the `record` method is the `type` for the entry you are recording, while the second argument is the `key` that determines how the aggregated data should be grouped. For most aggregation methods you will also need to specify a `value` to be aggregated. In the example above, the value being aggregated is `$sale->amount`. You may then invoke one or more aggregation methods (such as `sum`) so that Pulse may capture pre-aggregated values into "buckets" for efficient retrieval later.
+첫 번째 인자는 기록 타입, 두 번째 인자는 집계 그룹을 결정하는 키, 대부분의 집계 메서드는 집계할 `value`도 필요합니다. 위 예시에서는 `$sale->amount`가 집계 값입니다. 이후 `sum`, `count` 등 집계 메서드를 연쇄 호출해 미리 집계된 데이터를 효율적으로 저장합니다.
 
-The available aggregation methods are:
+사용 가능한 집계 메서드:
 
 * `avg`
 * `count`
@@ -708,12 +705,12 @@ The available aggregation methods are:
 * `sum`
 
 > [!NOTE]
-> When building a card package that captures the currently authenticated user ID, you should use the `Pulse::resolveAuthenticatedUserId()` method, which respects any [user resolver customizations](#dashboard-resolving-users) made to the application.
+> 인증된 사용자 ID를 키로 저장하는 카드 패키지를 만들 경우, 사용자 해상 커스터마이즈를 반영하는 `Pulse::resolveAuthenticatedUserId()`를 사용하세요.
 
 <a name="custom-card-data-retrieval"></a>
-#### Retrieving Aggregate Data
+#### 집계 데이터 조회
 
-When extending Pulse's `Card` Livewire component, you may use the `aggregate` method to retrieve aggregated data for the period being viewed in the dashboard:
+Pulse의 `Card` Livewire 컴포넌트에서는 대시보드에서 조회 중인 기간의 집계 데이터를 `aggregate` 메서드로 얻을 수 있습니다:
 
 ```php
 class TopSellers extends Card
@@ -727,7 +724,7 @@ class TopSellers extends Card
 }
 ```
 
-The `aggregate` method returns a collection of PHP `stdClass` objects. Each object will contain the `key` property captured earlier, along with keys for each of the requested aggregates:
+`aggregate`는 PHP `stdClass` 객체의 컬렉션을 반환하며, 각 객체에는 집계 시 캡처한 `key`와, 지정한 집계 필드가 포함됩니다:
 
 ```blade
 @foreach ($topSellers as $seller)
@@ -737,18 +734,18 @@ The `aggregate` method returns a collection of PHP `stdClass` objects. Each obje
 @endforeach
 ```
 
-Pulse will primarily retrieve data from the pre-aggregated buckets; therefore, the specified aggregates must have been captured up-front using the `Pulse::record` method. The oldest bucket will typically fall partially outside the period, so Pulse will aggregate the oldest entries to fill the gap and give an accurate value for the entire period, without needing to aggregate the entire period on each poll request.
+Pulse는 원칙적으로 사전 집계된 데이터를 사용하므로, `Pulse::record`에서 해당 집계 정보를 미리 기록해야 합니다. 가장 오래된 버킷은 일부만 기간 내에 포함될 수 있으므로, Pulse가 부족한 구간을 합산해 전체 기간의 정확한 값을 제공합니다.
 
-You may also retrieve a total value for a given type by using the `aggregateTotal` method. For example, the following method would retrieve the total of all user sales instead of grouping them by user.
+특정 타입의 전체합 등 단일 값 조회는 `aggregateTotal` 메서드를 사용하세요. 예시:
 
 ```php
 $total = $this->aggregateTotal('user_sale', 'sum');
 ```
 
 <a name="custom-card-displaying-users"></a>
-#### Displaying Users
+#### 사용자 표시
 
-When working with aggregates that record a user ID as the key, you may resolve the keys to user records using the `Pulse::resolveUsers` method:
+키에 사용자 ID를 기록하는 집계 데이터와 함께 사용할 때, `Pulse::resolveUsers` 메서드로 사용자 레코드를 조회할 수 있습니다:
 
 ```php
 $aggregates = $this->aggregate('user_sale', ['sum', 'count']);
@@ -764,18 +761,18 @@ return view('livewire.pulse.top-sellers', [
 ]);
 ```
 
-The `find` method returns an object containing `name`, `extra`, and `avatar` keys, which you may optionally pass directly to the `<x-pulse::user-card>` Blade component:
+`find` 메서드는 `name`, `extra`, `avatar`가 포함된 객체를 반환하며, 이를 `<x-pulse::user-card>` Blade 컴포넌트에 바로 전달할 수 있습니다:
 
 ```blade
 <x-pulse::user-card :user="{{ $seller->user }}" :stats="{{ $seller->sum }}" />
 ```
 
 <a name="custom-recorders"></a>
-#### Custom Recorders
+#### 커스텀 레코더
 
-Package authors may wish to provide recorder classes to allow users to configure the capturing of data.
+패키지 저자는 사용자가 데이터 캡처 방식을 설정할 수 있도록 레코더 클래스를 제공할 수 있습니다.
 
-Recorders are registered in the `recorders` section of the application's `config/pulse.php` configuration file:
+레코더는 애플리케이션 `config/pulse.php`의 `recorders` 섹션에 등록됩니다:
 
 ```php
 [
@@ -790,7 +787,7 @@ Recorders are registered in the `recorders` section of the application's `config
 ]
 ```
 
-Recorders may listen to events by specifying a `$listen` property. Pulse will automatically register the listeners and call the recorders `record` method:
+레코더는 `$listen` 프로퍼티로 이벤트를 지정할 수 있고, Pulse가 자동으로 리스너 등록 및 `record` 메서드 호출을 처리합니다:
 
 ```php
 <?php
@@ -804,7 +801,7 @@ use Laravel\Pulse\Facades\Pulse;
 class Deployments
 {
     /**
-     * The events to listen for.
+     * 리스닝할 이벤트 목록.
      *
      * @var array<int, class-string>
      */
@@ -813,7 +810,7 @@ class Deployments
     ];
 
     /**
-     * Record the deployment.
+     * 배포 정보 기록.
      */
     public function record(Deployment $event): void
     {

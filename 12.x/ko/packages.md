@@ -1,40 +1,40 @@
-# Package Development
+# 패키지 개발
 
-- [Introduction](#introduction)
-    - [A Note on Facades](#a-note-on-facades)
-- [Package Discovery](#package-discovery)
-- [Service Providers](#service-providers)
-- [Resources](#resources)
-    - [Configuration](#configuration)
-    - [Migrations](#migrations)
-    - [Routes](#routes)
-    - [Language Files](#language-files)
-    - [Views](#views)
-    - [View Components](#view-components)
-    - ["About" Artisan Command](#about-artisan-command)
-- [Commands](#commands)
-    - [Optimize Commands](#optimize-commands)
-- [Public Assets](#public-assets)
-- [Publishing File Groups](#publishing-file-groups)
+- [소개](#introduction)
+    - [파사드(Facade)에 대한 참고 사항](#a-note-on-facades)
+- [패키지 자동 등록(Package Discovery)](#package-discovery)
+- [서비스 프로바이더](#service-providers)
+- [리소스](#resources)
+    - [설정(Configuration)](#configuration)
+    - [마이그레이션(Migrations)](#migrations)
+    - [라우트(Routes)](#routes)
+    - [언어 파일(Language Files)](#language-files)
+    - [뷰(Views)](#views)
+    - [뷰 컴포넌트(View Components)](#view-components)
+    - ["About" Artisan 명령어](#about-artisan-command)
+- [명령어(Commands)](#commands)
+    - [최적화 명령어](#optimize-commands)
+- [퍼블릭 자산(Public Assets)](#public-assets)
+- [파일 그룹 퍼블리싱(Publishing File Groups)](#publishing-file-groups)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Packages are the primary way of adding functionality to Laravel. Packages might be anything from a great way to work with dates like [Carbon](https://github.com/briannesbitt/Carbon) or a package that allows you to associate files with Eloquent models like Spatie's [Laravel Media Library](https://github.com/spatie/laravel-medialibrary).
+패키지는 Laravel에 기능을 추가하는 주요 방법입니다. 패키지는 [Carbon](https://github.com/briannesbitt/Carbon)과 같이 날짜를 다루기 위한 탁월한 도구이거나, Spatie의 [Laravel Media Library](https://github.com/spatie/laravel-medialibrary)처럼 Eloquent 모델에 파일을 연결할 수 있게 해주는 패키지일 수 있습니다.
 
-There are different types of packages. Some packages are stand-alone, meaning they work with any PHP framework. Carbon and Pest are examples of stand-alone packages. Any of these packages may be used with Laravel by requiring them in your `composer.json` file.
+패키지에는 여러 종류가 있습니다. 일부 패키지는 독립형(stand-alone)으로, 어떤 PHP 프레임워크에서도 동작합니다. Carbon과 Pest가 그 예입니다. 이들 패키지는 `composer.json` 파일에 추가하여 Laravel에서 사용할 수 있습니다.
 
-On the other hand, other packages are specifically intended for use with Laravel. These packages may have routes, controllers, views, and configuration specifically intended to enhance a Laravel application. This guide primarily covers the development of those packages that are Laravel specific.
+반면, 어떤 패키지들은 Laravel 전용으로 개발되었습니다. 이러한 패키지는 라우트, 컨트롤러, 뷰, 그리고 Laravel 애플리케이션을 확장하기 위한 설정 등을 포함할 수 있습니다. 이 가이드에서는 주로 Laravel 전용 패키지 개발에 대해 다룹니다.
 
 <a name="a-note-on-facades"></a>
-### A Note on Facades
+### 파사드(Facade)에 대한 참고 사항
 
-When writing a Laravel application, it generally does not matter if you use contracts or facades since both provide essentially equal levels of testability. However, when writing packages, your package will not typically have access to all of Laravel's testing helpers. If you would like to be able to write your package tests as if the package were installed inside a typical Laravel application, you may use the [Orchestral Testbench](https://github.com/orchestral/testbench) package.
+Laravel 애플리케이션을 작성할 때는 컨트랙트(Contracts)나 파사드(Facade)를 사용하는 것이 테스트 용이성 측면에서 거의 동일하므로 특별히 신경 쓸 필요가 없습니다. 하지만 패키지를 개발할 때는 Laravel의 모든 테스트용 헬퍼에 접근하지 못할 수도 있습니다. 패키지 테스트를 실제 Laravel 애플리케이션에 설치된 것처럼 작성하고 싶다면 [Orchestral Testbench](https://github.com/orchestral/testbench) 패키지를 사용할 수 있습니다.
 
 <a name="package-discovery"></a>
-## Package Discovery
+## 패키지 자동 등록(Package Discovery)
 
-A Laravel application's `bootstrap/providers.php` file contains the list of service providers that should be loaded by Laravel. However, instead of requiring users to manually add your service provider to the list, you may define the provider in the `extra` section of your package's `composer.json` file so that it is automatically loaded by Laravel. In addition to service providers, you may also list any [facades](/docs/{{version}}/facades) you would like to be registered:
+Laravel 애플리케이션의 `bootstrap/providers.php` 파일은 로드되어야 할 서비스 프로바이더 목록을 포함하고 있습니다. 그러나 사용자가 직접 서비스 프로바이더를 목록에 추가하도록 요구하지 않고, 패키지의 `composer.json` 파일의 `extra` 섹션에 프로바이더를 정의하면 Laravel이 자동으로 로드할 수 있습니다. 서비스 프로바이더 외에도, 등록하고 싶은 [파사드](/docs/{{version}}/facades)도 함께 정의할 수 있습니다:
 
 ```json
 "extra": {
@@ -49,12 +49,12 @@ A Laravel application's `bootstrap/providers.php` file contains the list of serv
 },
 ```
 
-Once your package has been configured for discovery, Laravel will automatically register its service providers and facades when it is installed, creating a convenient installation experience for your package's users.
+패키지가 디스커버리(discovery) 설정을 마치면, Laravel은 패키지를 설치할 때 자동으로 서비스 프로바이더와 파사드를 등록하여 사용자에게 편리한 설치 경험을 제공합니다.
 
 <a name="opting-out-of-package-discovery"></a>
-#### Opting Out of Package Discovery
+#### 패키지 자동 등록 해제
 
-If you are the consumer of a package and would like to disable package discovery for a package, you may list the package name in the `extra` section of your application's `composer.json` file:
+패키지 사용자가 자동 등록 기능을 비활성화하고 싶을 경우, 애플리케이션의 `composer.json` 파일 `extra` 섹션에 해당 패키지 이름을 추가할 수 있습니다:
 
 ```json
 "extra": {
@@ -66,7 +66,7 @@ If you are the consumer of a package and would like to disable package discovery
 },
 ```
 
-You may disable package discovery for all packages using the `*` character inside of your application's `dont-discover` directive:
+`dont-discover` 지시어에 `*` 문자를 사용하면 모든 패키지의 자동 등록을 비활성화할 수 있습니다:
 
 ```json
 "extra": {
@@ -79,19 +79,19 @@ You may disable package discovery for all packages using the `*` character insid
 ```
 
 <a name="service-providers"></a>
-## Service Providers
+## 서비스 프로바이더
 
-[Service providers](/docs/{{version}}/providers) are the connection point between your package and Laravel. A service provider is responsible for binding things into Laravel's [service container](/docs/{{version}}/container) and informing Laravel where to load package resources such as views, configuration, and language files.
+[서비스 프로바이더](/docs/{{version}}/providers)는 패키지와 Laravel을 연결해주는 지점입니다. 서비스 프로바이더는 Laravel의 [서비스 컨테이너](/docs/{{version}}/container)에 객체를 바인딩하고, 뷰·설정·언어 파일 등의 패키지 리소스를 로드하는 위치를 알려주는 역할을 합니다.
 
-A service provider extends the `Illuminate\Support\ServiceProvider` class and contains two methods: `register` and `boot`. The base `ServiceProvider` class is located in the `illuminate/support` Composer package, which you should add to your own package's dependencies. To learn more about the structure and purpose of service providers, check out [their documentation](/docs/{{version}}/providers).
+서비스 프로바이더는 `Illuminate\Support\ServiceProvider` 클래스를 상속하며, `register`와 `boot`라는 두 메서드를 가집니다. 기본 `ServiceProvider` 클래스는 `illuminate/support` Composer 패키지에 들어 있으므로, 패키지의 의존성에 추가해야 합니다. 구조와 역할에 대해서는 [관련 문서](/docs/{{version}}/providers)를 참고하세요.
 
 <a name="resources"></a>
-## Resources
+## 리소스
 
 <a name="configuration"></a>
-### Configuration
+### 설정(Configuration)
 
-Typically, you will need to publish your package's configuration file to the application's `config` directory. This will allow users of your package to easily override your default configuration options. To allow your configuration files to be published, call the `publishes` method from the `boot` method of your service provider:
+일반적으로 패키지의 설정 파일을 애플리케이션의 `config` 디렉터리에 퍼블리시해야 합니다. 이렇게 하면 사용자들이 기본 설정 값을 쉽게 오버라이드(재정의)할 수 있습니다. 설정 파일을 퍼블리시 가능하게 만들고자 한다면, 서비스 프로바이더의 `boot` 메서드에서 `publishes` 메서드를 호출하세요:
 
 ```php
 /**
@@ -105,21 +105,21 @@ public function boot(): void
 }
 ```
 
-Now, when users of your package execute Laravel's `vendor:publish` command, your file will be copied to the specified publish location. Once your configuration has been published, its values may be accessed like any other configuration file:
+이제 사용자가 Laravel의 `vendor:publish` 명령어를 실행하면, 파일이 지정된 위치로 복사됩니다. 설정이 퍼블리시되고 나면, 다른 설정 파일처럼 값을 참조할 수 있습니다:
 
 ```php
 $value = config('courier.option');
 ```
 
 > [!WARNING]
-> You should not define closures in your configuration files. They cannot be serialized correctly when users execute the `config:cache` Artisan command.
+> 설정 파일에 클로저(Closure)를 정의해서는 안 됩니다. 클로저는 사용자가 `config:cache` Artisan 명령어를 실행할 때 올바르게 직렬화되지 않습니다.
 
 <a name="default-package-configuration"></a>
-#### Default Package Configuration
+#### 기본 패키지 설정
 
-You may also merge your own package configuration file with the application's published copy. This will allow your users to define only the options they actually want to override in the published copy of the configuration file. To merge the configuration file values, use the `mergeConfigFrom` method within your service provider's `register` method.
+패키지의 기본 설정 파일과 애플리케이션의 퍼블리시된 사본을 병합할 수도 있습니다. 이렇게 하면 사용자는 오버라이드가 필요한 옵션만 설정 파일에 정의할 수 있고, 나머지는 기본값이 적용됩니다. 설정 파일 값을 병합하려면, 서비스 프로바이더의 `register` 메서드에서 `mergeConfigFrom` 메서드를 사용하세요.
 
-The `mergeConfigFrom` method accepts the path to your package's configuration file as its first argument and the name of the application's copy of the configuration file as its second argument:
+`mergeConfigFrom` 메서드의 첫 번째 인자는 패키지의 설정 파일 경로, 두 번째 인자는 애플리케이션이 사용하는 설정 파일 이름입니다.
 
 ```php
 /**
@@ -134,12 +134,12 @@ public function register(): void
 ```
 
 > [!WARNING]
-> This method only merges the first level of the configuration array. If your users partially define a multi-dimensional configuration array, the missing options will not be merged.
+> 이 방법은 설정 배열의 1차원만 병합합니다. 사용자가 다차원 설정 배열을 부분적으로 정의하면, 누락된 옵션은 병합되지 않습니다.
 
 <a name="routes"></a>
-### Routes
+### 라우트(Routes)
 
-If your package contains routes, you may load them using the `loadRoutesFrom` method. This method will automatically determine if the application's routes are cached and will not load your routes file if the routes have already been cached:
+패키지에 라우트가 포함되어 있다면, `loadRoutesFrom` 메서드로 로드할 수 있습니다. 이 메서드는 애플리케이션 라우트가 캐시되어 있는지 자동으로 확인하고, 이미 캐시된 경우에는 라우트 파일을 다시 로드하지 않습니다.
 
 ```php
 /**
@@ -152,9 +152,9 @@ public function boot(): void
 ```
 
 <a name="migrations"></a>
-### Migrations
+### 마이그레이션(Migrations)
 
-If your package contains [database migrations](/docs/{{version}}/migrations), you may use the `publishesMigrations` method to inform Laravel that the given directory or file contains migrations. When Laravel publishes the migrations, it will automatically update the timestamp within their filename to reflect the current date and time:
+패키지에 [데이터베이스 마이그레이션](/docs/{{version}}/migrations)이 포함되어 있다면, `publishesMigrations` 메서드를 사용하여 주어진 디렉터리나 파일이 마이그레이션임을 Laravel에 알릴 수 있습니다. 마이그레이션이 퍼블리시될 때, 파일명에 포함된 타임스탬프가 자동으로 현재 일시로 갱신됩니다.
 
 ```php
 /**
@@ -169,9 +169,9 @@ public function boot(): void
 ```
 
 <a name="language-files"></a>
-### Language Files
+### 언어 파일(Language Files)
 
-If your package contains [language files](/docs/{{version}}/localization), you may use the `loadTranslationsFrom` method to inform Laravel how to load them. For example, if your package is named `courier`, you should add the following to your service provider's `boot` method:
+패키지에 [언어 파일](/docs/{{version}}/localization)이 포함되어 있다면, `loadTranslationsFrom` 메서드를 사용해 Laravel에 로드 방법을 알려줄 수 있습니다. 예시로, 패키지 이름이 `courier`라면 서비스 프로바이더의 `boot` 메서드에 아래와 같이 추가하세요:
 
 ```php
 /**
@@ -183,13 +183,13 @@ public function boot(): void
 }
 ```
 
-Package translation lines are referenced using the `package::file.line` syntax convention. So, you may load the `courier` package's `welcome` line from the `messages` file like so:
+패키지 번역 라인은 `package::file.line` 구문을 사용해 참조합니다. 예를 들어 `courier` 패키지의 `messages` 파일에 들어 있는 `welcome` 라인을 불러오려면 아래와 같이 사용할 수 있습니다:
 
 ```php
 echo trans('courier::messages.welcome');
 ```
 
-You can register JSON translation files for your package using the `loadJsonTranslationsFrom` method. This method accepts the path to the directory that contains your package's JSON translation files:
+패키지의 JSON 번역 파일은 `loadJsonTranslationsFrom` 메서드로 등록할 수 있습니다. 이 메서드는 JSON 번역 파일이 들어 있는 디렉터리 경로를 인자로 받습니다.
 
 ```php
 /**
@@ -202,9 +202,9 @@ public function boot(): void
 ```
 
 <a name="publishing-language-files"></a>
-#### Publishing Language Files
+#### 언어 파일 퍼블리싱
 
-If you would like to publish your package's language files to the application's `lang/vendor` directory, you may use the service provider's `publishes` method. The `publishes` method accepts an array of package paths and their desired publish locations. For example, to publish the language files for the `courier` package, you may do the following:
+패키지의 언어 파일을 애플리케이션의 `lang/vendor` 디렉터리에 퍼블리시하려면, 서비스 프로바이더의 `publishes` 메서드를 사용하세요. 이 메서드는 퍼블리시할 패키지 파일 경로와 대상 경로의 배열을 받습니다. 예를 들어, `courier` 패키지의 언어 파일을 퍼블리시하려면 다음과 같이 하면 됩니다:
 
 ```php
 /**
@@ -220,12 +220,12 @@ public function boot(): void
 }
 ```
 
-Now, when users of your package execute Laravel's `vendor:publish` Artisan command, your package's language files will be published to the specified publish location.
+이제 사용자가 Laravel의 `vendor:publish` Artisan 명령어를 실행하면, 언어 파일이 지정된 위치로 퍼블리시됩니다.
 
 <a name="views"></a>
-### Views
+### 뷰(Views)
 
-To register your package's [views](/docs/{{version}}/views) with Laravel, you need to tell Laravel where the views are located. You may do this using the service provider's `loadViewsFrom` method. The `loadViewsFrom` method accepts two arguments: the path to your view templates and your package's name. For example, if your package's name is `courier`, you would add the following to your service provider's `boot` method:
+패키지의 [뷰](/docs/{{version}}/views)를 Laravel에 등록하려면, 뷰가 어디에 있는지 Laravel에 알려주어야 합니다. `loadViewsFrom` 메서드를 사용하며, 첫 번째 인자는 뷰 템플릿 경로, 두 번째 인자는 패키지 이름입니다. 예를 들어, 패키지 이름이 `courier`라면 `boot` 메서드에 아래와 같이 추가합니다:
 
 ```php
 /**
@@ -237,7 +237,7 @@ public function boot(): void
 }
 ```
 
-Package views are referenced using the `package::view` syntax convention. So, once your view path is registered in a service provider, you may load the `dashboard` view from the `courier` package like so:
+패키지 뷰는 `package::view` 구문을 통해 참조됩니다. 즉, 뷰 경로가 등록된 후에는 아래처럼 `courier` 패키지의 `dashboard` 뷰를 로드할 수 있습니다:
 
 ```php
 Route::get('/dashboard', function () {
@@ -246,14 +246,14 @@ Route::get('/dashboard', function () {
 ```
 
 <a name="overriding-package-views"></a>
-#### Overriding Package Views
+#### 패키지 뷰 오버라이드
 
-When you use the `loadViewsFrom` method, Laravel actually registers two locations for your views: the application's `resources/views/vendor` directory and the directory you specify. So, using the `courier` package as an example, Laravel will first check if a custom version of the view has been placed in the `resources/views/vendor/courier` directory by the developer. Then, if the view has not been customized, Laravel will search the package view directory you specified in your call to `loadViewsFrom`. This makes it easy for package users to customize / override your package's views.
+`loadViewsFrom` 메서드는 실제로 두 위치를 등록합니다: 애플리케이션의 `resources/views/vendor` 디렉터리와, 지정한 패키지 뷰 디렉터리입니다. 예를 들어 `courier` 패키지의 경우, Laravel은 먼저 개발자가 `resources/views/vendor/courier` 디렉터리에 커스텀 뷰를 넣었는지 확인합니다. 그렇지 않다면, 지정한 패키지 뷰 디렉터리에서 뷰를 찾습니다. 이 구조는 사용자들이 패키지의 뷰를 쉽게 커스터마이즈/오버라이드할 수 있게 해줍니다.
 
 <a name="publishing-views"></a>
-#### Publishing Views
+#### 뷰 퍼블리싱
 
-If you would like to make your views available for publishing to the application's `resources/views/vendor` directory, you may use the service provider's `publishes` method. The `publishes` method accepts an array of package view paths and their desired publish locations:
+패키지의 뷰를 애플리케이션의 `resources/views/vendor` 디렉터리에 퍼블리시할 수 있습니다. `publishes` 메서드를 사용하여 패키지 뷰 경로와 대상 퍼블리시 경로를 배열로 전달하세요:
 
 ```php
 /**
@@ -269,12 +269,12 @@ public function boot(): void
 }
 ```
 
-Now, when users of your package execute Laravel's `vendor:publish` Artisan command, your package's views will be copied to the specified publish location.
+이제 사용자들이 `vendor:publish` Artisan 명령어를 실행하면, 뷰가 지정된 위치로 복사됩니다.
 
 <a name="view-components"></a>
-### View Components
+### 뷰 컴포넌트(View Components)
 
-If you are building a package that utilizes Blade components or placing components in non-conventional directories, you will need to manually register your component class and its HTML tag alias so that Laravel knows where to find the component. You should typically register your components in the `boot` method of your package's service provider:
+Blade 컴포넌트를 활용하거나 비표준 디렉터리에 컴포넌트를 둘 경우, 컴포넌트 클래스와 HTML 태그 alias를 수동으로 등록해야 Laravel이 컴포넌트를 찾을 수 있습니다. 일반적으로 서비스 프로바이더의 `boot` 메서드에서 등록합니다:
 
 ```php
 use Illuminate\Support\Facades\Blade;
@@ -289,16 +289,16 @@ public function boot(): void
 }
 ```
 
-Once your component has been registered, it may be rendered using its tag alias:
+등록한 후에는 alias로 아래와 같이 렌더할 수 있습니다:
 
 ```blade
 <x-package-alert/>
 ```
 
 <a name="autoloading-package-components"></a>
-#### Autoloading Package Components
+#### 패키지 컴포넌트 자동 로드
 
-Alternatively, you may use the `componentNamespace` method to autoload component classes by convention. For example, a `Nightshade` package might have `Calendar` and `ColorPicker` components that reside within the `Nightshade\Views\Components` namespace:
+또는 `componentNamespace` 메서드를 사용하면 규칙에 따라 컴포넌트 클래스를 자동 로드할 수 있습니다. 예를 들어, `Nightshade` 패키지에 `Nightshade\Views\Components` 네임스페이스에 `Calendar`, `ColorPicker` 컴포넌트가 있다면 아래처럼 등록합니다:
 
 ```php
 use Illuminate\Support\Facades\Blade;
@@ -312,28 +312,28 @@ public function boot(): void
 }
 ```
 
-This will allow the usage of package components by their vendor namespace using the `package-name::` syntax:
+이제 벤더 네임스페이스를 이용하여 아래와 같이 사용할 수 있습니다:
 
 ```blade
 <x-nightshade::calendar />
 <x-nightshade::color-picker />
 ```
 
-Blade will automatically detect the class that's linked to this component by pascal-casing the component name. Subdirectories are also supported using "dot" notation.
+Blade는 컴포넌트 이름을 pascal-case로 변환하여 해당 클래스를 자동으로 찾습니다. "dot" 표기법을 사용하여 서브디렉터리도 지원합니다.
 
 <a name="anonymous-components"></a>
-#### Anonymous Components
+#### 익명(Anonymous) 컴포넌트
 
-If your package contains anonymous components, they must be placed within a `components` directory of your package's "views" directory (as specified by the [loadViewsFrom method](#views)). Then, you may render them by prefixing the component name with the package's view namespace:
+패키지에 익명 컴포넌트가 있다면, 반드시 [loadViewsFrom 메서드](#views)로 지정한 뷰 디렉터리 하위의 `components` 디렉터리 안에 위치해야 합니다. 그런 다음, 컴포넌트 이름 앞에 패키지 뷰 네임스페이스를 붙여 렌더할 수 있습니다:
 
 ```blade
 <x-courier::alert />
 ```
 
 <a name="about-artisan-command"></a>
-### "About" Artisan Command
+### "About" Artisan 명령어
 
-Laravel's built-in `about` Artisan command provides a synopsis of the application's environment and configuration. Packages may push additional information to this command's output via the `AboutCommand` class. Typically, this information may be added from your package service provider's `boot` method:
+Laravel 내장 `about` Artisan 명령어는 애플리케이션의 환경 및 설정 요약 정보를 제공합니다. 패키지는 `AboutCommand` 클래스를 통해 해당 명령어 출력에 정보를 추가할 수 있습니다. 보통 서비스 프로바이더의 `boot` 메서드에서 정보를 추가합니다:
 
 ```php
 use Illuminate\Foundation\Console\AboutCommand;
@@ -348,9 +348,9 @@ public function boot(): void
 ```
 
 <a name="commands"></a>
-## Commands
+## 명령어(Commands)
 
-To register your package's Artisan commands with Laravel, you may use the `commands` method. This method expects an array of command class names. Once the commands have been registered, you may execute them using the [Artisan CLI](/docs/{{version}}/artisan):
+패키지의 Artisan 명령어를 Laravel에 등록하려면, `commands` 메서드를 사용하세요. 이 메서드는 명령어 클래스명 배열을 인자로 받습니다. 명령어 등록이 끝나면 [Artisan CLI](/docs/{{version}}/artisan)에서 사용할 수 있습니다:
 
 ```php
 use Courier\Console\Commands\InstallCommand;
@@ -371,9 +371,9 @@ public function boot(): void
 ```
 
 <a name="optimize-commands"></a>
-### Optimize Commands
+### 최적화 명령어(Optimize Commands)
 
-Laravel's [optimize command](/docs/{{version}}/deployment#optimization) caches the application's configuration, events, routes, and views. Using the `optimizes` method, you may register your package's own Artisan commands that should be invoked when the `optimize` and `optimize:clear` commands are executed:
+Laravel의 [optimize 명령어](/docs/{{version}}/deployment#optimization)는 애플리케이션의 설정·이벤트·라우트·뷰를 캐시합니다. 패키지의 Artisan 명령어도 `optimizes` 메서드로 등록해, `optimize`와 `optimize:clear` 명령이 실행될 때 호출할 수 있습니다:
 
 ```php
 /**
@@ -391,9 +391,9 @@ public function boot(): void
 ```
 
 <a name="public-assets"></a>
-## Public Assets
+## 퍼블릭 자산(Public Assets)
 
-Your package may have assets such as JavaScript, CSS, and images. To publish these assets to the application's `public` directory, use the service provider's `publishes` method. In this example, we will also add a `public` asset group tag, which may be used to easily publish groups of related assets:
+패키지에 JavaScript, CSS, 이미지 등 자산이 있을 수 있습니다. 이러한 퍼블릭 자산을 애플리케이션의 `public` 디렉터리에 퍼블리시하려면 서비스 프로바이더의 `publishes` 메서드를 사용하세요. 아래 예시에서는 관련 자산을 그룹으로 묶는 `public` 태그도 추가합니다:
 
 ```php
 /**
@@ -407,16 +407,16 @@ public function boot(): void
 }
 ```
 
-Now, when your package's users execute the `vendor:publish` command, your assets will be copied to the specified publish location. Since users will typically need to overwrite the assets every time the package is updated, you may use the `--force` flag:
+사용자가 `vendor:publish` 명령을 실행하면 자산이 지정 위치로 복사됩니다. 패키지가 업데이트될 때마다 자산을 덮어써야 하므로, `--force` 플래그를 사용하세요:
 
 ```shell
 php artisan vendor:publish --tag=public --force
 ```
 
 <a name="publishing-file-groups"></a>
-## Publishing File Groups
+## 파일 그룹 퍼블리싱(Publishing File Groups)
 
-You may want to publish groups of package assets and resources separately. For instance, you might want to allow your users to publish your package's configuration files without being forced to publish your package's assets. You may do this by "tagging" them when calling the `publishes` method from a package's service provider. For example, let's use tags to define two publish groups for the `courier` package (`courier-config` and `courier-migrations`) in the `boot` method of the package's service provider:
+패키지 자산과 리소스를 여러 그룹으로 나누어 별도로 퍼블리시하고 싶을 수 있습니다. 예를 들어 설정 파일만, 또는 마이그레이션 파일만 퍼블리시할 수 있도록 태그를 지정할 수 있습니다. `courier` 패키지의 경우, `boot` 메서드에서 `courier-config`와 `courier-migrations` 퍼블리시 그룹을 아래와 같이 정의할 수 있습니다:
 
 ```php
 /**
@@ -434,13 +434,13 @@ public function boot(): void
 }
 ```
 
-Now your users may publish these groups separately by referencing their tag when executing the `vendor:publish` command:
+이제 사용자는 퍼블리시 그룹 태그를 명시해 아래처럼 개별적으로 퍼블리시할 수 있습니다:
 
 ```shell
 php artisan vendor:publish --tag=courier-config
 ```
 
-Your users can also publish all publishable files defined by your package's service provider using the `--provider` flag:
+또는 `--provider` 플래그로 서비스 프로바이더에 정의된 모든 퍼블리시 파일을 한 번에 퍼블리시할 수도 있습니다:
 
 ```shell
 php artisan vendor:publish --provider="Your\Package\ServiceProvider"
