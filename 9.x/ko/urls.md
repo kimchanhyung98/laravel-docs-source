@@ -1,26 +1,26 @@
-# URL Generation
+# URL 생성
 
-- [Introduction](#introduction)
-- [The Basics](#the-basics)
-    - [Generating URLs](#generating-urls)
-    - [Accessing The Current URL](#accessing-the-current-url)
-- [URLs For Named Routes](#urls-for-named-routes)
-    - [Signed URLs](#signed-urls)
-- [URLs For Controller Actions](#urls-for-controller-actions)
-- [Default Values](#default-values)
+- [소개](#introduction)
+- [기본 사용법](#the-basics)
+    - [URL 생성하기](#generating-urls)
+    - [현재 URL 접근하기](#accessing-the-current-url)
+- [이름이 지정된 라우트의 URL](#urls-for-named-routes)
+    - [서명된 URL](#signed-urls)
+- [컨트롤러 액션의 URL](#urls-for-controller-actions)
+- [기본값 설정](#default-values)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel provides several helpers to assist you in generating URLs for your application. These helpers are primarily helpful when building links in your templates and API responses, or when generating redirect responses to another part of your application.
+Laravel은 애플리케이션에서 URL을 생성하는 데 도움을 주는 다양한 헬퍼를 제공합니다. 이러한 헬퍼는 주로 템플릿이나 API 응답에서 링크를 만들거나, 애플리케이션의 다른 부분으로 리디렉션 응답을 생성할 때 유용합니다.
 
 <a name="the-basics"></a>
-## The Basics
+## 기본 사용법
 
 <a name="generating-urls"></a>
-### Generating URLs
+### URL 생성하기
 
-The `url` helper may be used to generate arbitrary URLs for your application. The generated URL will automatically use the scheme (HTTP or HTTPS) and host from the current request being handled by the application:
+`url` 헬퍼를 사용하여 애플리케이션의 임의의 URL을 생성할 수 있습니다. 생성된 URL은 자동으로 현재 처리 중인 요청의 스킴(HTTP 또는 HTTPS)과 호스트를 사용합니다:
 
     $post = App\Models\Post::find(1);
 
@@ -29,41 +29,41 @@ The `url` helper may be used to generate arbitrary URLs for your application. Th
     // http://example.com/posts/1
 
 <a name="accessing-the-current-url"></a>
-### Accessing The Current URL
+### 현재 URL 접근하기
 
-If no path is provided to the `url` helper, an `Illuminate\Routing\UrlGenerator` instance is returned, allowing you to access information about the current URL:
+`url` 헬퍼에 경로를 제공하지 않으면, `Illuminate\Routing\UrlGenerator` 인스턴스가 반환되며, 이를 통해 현재 URL에 대한 정보를 얻을 수 있습니다:
 
-    // Get the current URL without the query string...
+    // 쿼리 문자열을 제외한 현재 URL을 가져옵니다...
     echo url()->current();
 
-    // Get the current URL including the query string...
+    // 쿼리 문자열을 포함한 현재 URL을 가져옵니다...
     echo url()->full();
 
-    // Get the full URL for the previous request...
+    // 이전 요청의 전체 URL을 가져옵니다...
     echo url()->previous();
 
-Each of these methods may also be accessed via the `URL` [facade](/docs/{{version}}/facades):
+이러한 메서드는 `URL` [파사드](/docs/{{version}}/facades)를 통해서도 접근할 수 있습니다:
 
     use Illuminate\Support\Facades\URL;
 
     echo URL::current();
 
 <a name="urls-for-named-routes"></a>
-## URLs For Named Routes
+## 이름이 지정된 라우트의 URL
 
-The `route` helper may be used to generate URLs to [named routes](/docs/{{version}}/routing#named-routes). Named routes allow you to generate URLs without being coupled to the actual URL defined on the route. Therefore, if the route's URL changes, no changes need to be made to your calls to the `route` function. For example, imagine your application contains a route defined like the following:
+`route` 헬퍼를 사용하면 [이름이 지정된 라우트](/docs/{{version}}/routing#named-routes)의 URL을 생성할 수 있습니다. 이름이 지정된 라우트를 사용하면 실제 라우트의 URL에 의존하지 않고 URL을 생성할 수 있습니다. 따라서 라우트의 URL이 변경되어도 `route` 함수 호출 부분을 변경할 필요가 없습니다. 예를 들어, 애플리케이션에 다음과 같이 정의된 라우트가 있다고 가정해보겠습니다:
 
     Route::get('/post/{post}', function (Post $post) {
         //
     })->name('post.show');
 
-To generate a URL to this route, you may use the `route` helper like so:
+이 라우트의 URL을 생성하려면 다음과 같이 `route` 헬퍼를 사용하면 됩니다:
 
     echo route('post.show', ['post' => 1]);
 
     // http://example.com/post/1
 
-Of course, the `route` helper may also be used to generate URLs for routes with multiple parameters:
+물론, `route` 헬퍼는 여러 개의 파라미터를 가진 라우트의 URL도 생성할 수 있습니다:
 
     Route::get('/post/{post}/comment/{comment}', function (Post $post, Comment $comment) {
         //
@@ -73,31 +73,31 @@ Of course, the `route` helper may also be used to generate URLs for routes with 
 
     // http://example.com/post/1/comment/3
 
-Any additional array elements that do not correspond to the route's definition parameters will be added to the URL's query string:
+라우트 정의의 파라미터에 대응하지 않는 추가 배열 요소는 URL 쿼리 문자열로 추가됩니다:
 
     echo route('post.show', ['post' => 1, 'search' => 'rocket']);
 
     // http://example.com/post/1?search=rocket
 
 <a name="eloquent-models"></a>
-#### Eloquent Models
+#### 엘로퀀트 모델
 
-You will often be generating URLs using the route key (typically the primary key) of [Eloquent models](/docs/{{version}}/eloquent). For this reason, you may pass Eloquent models as parameter values. The `route` helper will automatically extract the model's route key:
+대부분의 경우, [엘로퀀트 모델](/docs/{{version}}/eloquent)의 라우트 키(일반적으로 기본 키)를 사용하여 URL을 생성하게 됩니다. 그래서 엘로퀀트 모델을 파라미터 값으로 바로 전달할 수 있습니다. `route` 헬퍼는 모델의 라우트 키를 자동으로 추출합니다:
 
     echo route('post.show', ['post' => $post]);
 
 <a name="signed-urls"></a>
-### Signed URLs
+### 서명된 URL
 
-Laravel allows you to easily create "signed" URLs to named routes. These URLs have a "signature" hash appended to the query string which allows Laravel to verify that the URL has not been modified since it was created. Signed URLs are especially useful for routes that are publicly accessible yet need a layer of protection against URL manipulation.
+Laravel은 이름이 지정된 라우트에 대해 "서명된" URL을 쉽게 생성할 수 있도록 해줍니다. 이러한 URL에는 쿼리 문자열에 "서명" 해시가 추가되어, URL이 생성된 이후로 수정되지 않았는지 Laravel이 검증할 수 있습니다. 서명된 URL은 공개적으로 접근 가능한 라우트이면서도 URL 변조로부터 보호가 필요한 경우에 특히 유용합니다.
 
-For example, you might use signed URLs to implement a public "unsubscribe" link that is emailed to your customers. To create a signed URL to a named route, use the `signedRoute` method of the `URL` facade:
+예를 들어, 고객에게 이메일로 발송되는 공개 "구독 해지" 링크를 구현할 때 서명된 URL을 사용할 수 있습니다. 이름이 지정된 라우트에 대한 서명된 URL을 생성하려면, `URL` 파사드의 `signedRoute` 메서드를 사용하세요:
 
     use Illuminate\Support\Facades\URL;
 
     return URL::signedRoute('unsubscribe', ['user' => 1]);
 
-If you would like to generate a temporary signed route URL that expires after a specified amount of time, you may use the `temporarySignedRoute` method. When Laravel validates a temporary signed route URL, it will ensure that the expiration timestamp that is encoded into the signed URL has not elapsed:
+특정 시간 이후 만료되는 임시 서명 라우트 URL을 생성하고 싶다면, `temporarySignedRoute` 메서드를 사용할 수 있습니다. Laravel이 임시 서명 라우트 URL을 검증할 때는, 서명된 URL에 인코딩된 만료 타임스탬프가 아직 지나지 않았는지 확인합니다:
 
     use Illuminate\Support\Facades\URL;
 
@@ -106,9 +106,9 @@ If you would like to generate a temporary signed route URL that expires after a 
     );
 
 <a name="validating-signed-route-requests"></a>
-#### Validating Signed Route Requests
+#### 서명 라우트 요청 검증
 
-To verify that an incoming request has a valid signature, you should call the `hasValidSignature` method on the incoming `Illuminate\Http\Request` instance:
+들어오는 요청에 유효한 서명이 있는지 확인하려면, 해당 `Illuminate\Http\Request` 인스턴스에서 `hasValidSignature` 메서드를 호출해야 합니다:
 
     use Illuminate\Http\Request;
 
@@ -120,18 +120,18 @@ To verify that an incoming request has a valid signature, you should call the `h
         // ...
     })->name('unsubscribe');
 
-Sometimes, you may need to allow your application's frontend to append data to a signed URL, such as when performing client-side pagination. Therefore, you can specify request query parameters that should be ignored when validating a signed URL using the `hasValidSignatureWhileIgnoring` method. Remember, ignoring parameters allows anyone to modify those parameters on the request:
+경우에 따라, 애플리케이션의 프론트엔드에서 페이징 등으로 서명된 URL에 데이터를 추가해야 할 수 있습니다. 이럴 때는, `hasValidSignatureWhileIgnoring` 메서드를 사용하여, 서명된 URL을 검증할 때 무시할 쿼리 파라미터를 지정할 수 있습니다. 파라미터를 무시하면, 누구나 해당 파라미터를 수정할 수 있다는 점을 유의하세요:
 
     if (! $request->hasValidSignatureWhileIgnoring(['page', 'order'])) {
         abort(401);
     }
 
-Instead of validating signed URLs using the incoming request instance, you may assign the `Illuminate\Routing\Middleware\ValidateSignature` [middleware](/docs/{{version}}/middleware) to the route. If it is not already present, you should assign this middleware a key in your HTTP kernel's `routeMiddleware` array:
+들어오는 요청 인스턴스로 서명된 URL을 검증하는 대신, 해당 라우트에 `Illuminate\Routing\Middleware\ValidateSignature` [미들웨어](/docs/{{version}}/middleware)를 지정할 수도 있습니다. 이 미들웨어가 아직 없으면, HTTP 커널의 `routeMiddleware` 배열에 키를 할당해야 합니다:
 
     /**
-     * The application's route middleware.
+     * 애플리케이션의 라우트 미들웨어.
      *
-     * These middleware may be assigned to groups or used individually.
+     * 이 미들웨어들은 그룹에 할당되거나 개별적으로 사용할 수 있습니다.
      *
      * @var array
      */
@@ -139,21 +139,21 @@ Instead of validating signed URLs using the incoming request instance, you may a
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
     ];
 
-Once you have registered the middleware in your kernel, you may attach it to a route. If the incoming request does not have a valid signature, the middleware will automatically return a `403` HTTP response:
+커널에서 미들웨어를 등록했다면, 라우트에 연결할 수 있습니다. 유효한 서명이 없는 요청이 들어오면, 미들웨어가 자동으로 `403` HTTP 응답을 반환합니다:
 
     Route::post('/unsubscribe/{user}', function (Request $request) {
         // ...
     })->name('unsubscribe')->middleware('signed');
 
 <a name="responding-to-invalid-signed-routes"></a>
-#### Responding To Invalid Signed Routes
+#### 만료된 서명 라우트에 대한 응답
 
-When someone visits a signed URL that has expired, they will receive a generic error page for the `403` HTTP status code. However, you can customize this behavior by defining a custom "renderable" closure for the `InvalidSignatureException` exception in your exception handler. This closure should return an HTTP response:
+누군가 만료된 서명 URL에 접근하면, `403` HTTP 상태 코드의 일반적인 오류 페이지를 받게 됩니다. 하지만, `InvalidSignatureException` 예외에 대해 커스텀 "렌더러블" 클로저를 예외 핸들러에 정의하여 이 동작을 맞춤화할 수 있습니다. 이 클로저는 HTTP 응답을 반환해야 합니다:
 
     use Illuminate\Routing\Exceptions\InvalidSignatureException;
 
     /**
-     * Register the exception handling callbacks for the application.
+     * 애플리케이션의 예외 처리 콜백 등록
      *
      * @return void
      */
@@ -165,28 +165,28 @@ When someone visits a signed URL that has expired, they will receive a generic e
     }
 
 <a name="urls-for-controller-actions"></a>
-## URLs For Controller Actions
+## 컨트롤러 액션의 URL
 
-The `action` function generates a URL for the given controller action:
+`action` 함수는 지정한 컨트롤러 액션의 URL을 생성합니다:
 
     use App\Http\Controllers\HomeController;
 
     $url = action([HomeController::class, 'index']);
 
-If the controller method accepts route parameters, you may pass an associative array of route parameters as the second argument to the function:
+컨트롤러 메서드가 라우트 파라미터를 받는다면, 두 번째 인자로 파라미터의 연관 배열을 전달할 수 있습니다:
 
     $url = action([UserController::class, 'profile'], ['id' => 1]);
 
 <a name="default-values"></a>
-## Default Values
+## 기본값 설정
 
-For some applications, you may wish to specify request-wide default values for certain URL parameters. For example, imagine many of your routes define a `{locale}` parameter:
+일부 애플리케이션에서는 특정 URL 파라미터에 대해 전체 요청에 적용되는 기본값을 지정하고 싶을 수 있습니다. 예를 들어, 많은 라우트가 `{locale}` 파라미터를 정의한다고 가정해봅시다:
 
     Route::get('/{locale}/posts', function () {
         //
     })->name('post.index');
 
-It is cumbersome to always pass the `locale` every time you call the `route` helper. So, you may use the `URL::defaults` method to define a default value for this parameter that will always be applied during the current request. You may wish to call this method from a [route middleware](/docs/{{version}}/middleware#assigning-middleware-to-routes) so that you have access to the current request:
+`route` 헬퍼를 호출할 때마다 매번 `locale`을 전달하는 것은 번거롭습니다. 따라서 `URL::defaults` 메서드를 사용하여 해당 파라미터의 기본값을 현재 요청 동안 항상 적용되도록 할 수 있습니다. 이 메서드는 [라우트 미들웨어](/docs/{{version}}/middleware#assigning-middleware-to-routes)에서 호출하여 현재 요청에 접근하는 것이 좋습니다:
 
     <?php
 
@@ -198,7 +198,7 @@ It is cumbersome to always pass the `locale` every time you call the `route` hel
     class SetDefaultLocaleForUrls
     {
         /**
-         * Handle the incoming request.
+         * 들어오는 요청을 처리합니다.
          *
          * @param  \Illuminate\Http\Request  $request
          * @param  \Closure  $next
@@ -212,19 +212,19 @@ It is cumbersome to always pass the `locale` every time you call the `route` hel
         }
     }
 
-Once the default value for the `locale` parameter has been set, you are no longer required to pass its value when generating URLs via the `route` helper.
+`locale` 파라미터의 기본값이 설정되면, 이제 `route` 헬퍼로 URL을 생성할 때 값을 따로 전달할 필요가 없습니다.
 
 <a name="url-defaults-middleware-priority"></a>
-#### URL Defaults & Middleware Priority
+#### URL 기본값 & 미들웨어 우선순위
 
-Setting URL default values can interfere with Laravel's handling of implicit model bindings. Therefore, you should [prioritize your middleware](/docs/{{version}}/middleware#sorting-middleware) that set URL defaults to be executed before Laravel's own `SubstituteBindings` middleware. You can accomplish this by making sure your middleware occurs before the `SubstituteBindings` middleware within the `$middlewarePriority` property of your application's HTTP kernel.
+URL 기본값을 설정하면, Laravel의 암시적(Implicit) 모델 바인딩 처리와 충돌할 수 있습니다. 따라서 URL 기본값을 설정하는 미들웨어는 Laravel의 `SubstituteBindings` 미들웨어보다 먼저 실행되도록 [미들웨어 우선순위](/docs/{{version}}/middleware#sorting-middleware)를 지정해야 합니다. 이를 위해 애플리케이션 HTTP 커널 내의 `$middlewarePriority` 속성에서 해당 미들웨어가 `SubstituteBindings` 미들웨어보다 먼저 위치하도록 해야 합니다.
 
-The `$middlewarePriority` property is defined in the base `Illuminate\Foundation\Http\Kernel` class. You may copy its definition from that class and overwrite it in your application's HTTP kernel in order to modify it:
+`$middlewarePriority` 속성은 기본 `Illuminate\Foundation\Http\Kernel` 클래스에 정의되어 있습니다. 그 정의를 복사하여 애플리케이션의 HTTP 커널에서 덮어쓸 수 있습니다:
 
     /**
-     * The priority-sorted list of middleware.
+     * 우선순위가 적용된 미들웨어 목록입니다.
      *
-     * This forces non-global middleware to always be in the given order.
+     * 이 설정은 글로벌이 아닌 미들웨어의 순서를 강제합니다.
      *
      * @var array
      */
