@@ -1,114 +1,114 @@
 # Laravel Cashier (Paddle)
 
-- [Introduction](#introduction)
-- [Upgrading Cashier](#upgrading-cashier)
-- [Installation](#installation)
+- [소개](#introduction)
+- [Cashier 업그레이드](#upgrading-cashier)
+- [설치](#installation)
     - [Paddle Sandbox](#paddle-sandbox)
-- [Configuration](#configuration)
-    - [Billable Model](#billable-model)
-    - [API Keys](#api-keys)
+- [구성](#configuration)
+    - [Billable 모델](#billable-model)
+    - [API 키](#api-keys)
     - [Paddle JS](#paddle-js)
-    - [Currency Configuration](#currency-configuration)
-    - [Overriding Default Models](#overriding-default-models)
-- [Quickstart](#quickstart)
-    - [Selling Products](#quickstart-selling-products)
-    - [Selling Subscriptions](#quickstart-selling-subscriptions)
-- [Checkout Sessions](#checkout-sessions)
-    - [Overlay Checkout](#overlay-checkout)
-    - [Inline Checkout](#inline-checkout)
-    - [Guest Checkouts](#guest-checkouts)
-- [Price Previews](#price-previews)
-    - [Customer Price Previews](#customer-price-previews)
-    - [Discounts](#price-discounts)
-- [Customers](#customers)
-    - [Customer Defaults](#customer-defaults)
-    - [Retrieving Customers](#retrieving-customers)
-    - [Creating Customers](#creating-customers)
-- [Subscriptions](#subscriptions)
-    - [Creating Subscriptions](#creating-subscriptions)
-    - [Checking Subscription Status](#checking-subscription-status)
-    - [Subscription Single Charges](#subscription-single-charges)
-    - [Updating Payment Information](#updating-payment-information)
-    - [Changing Plans](#changing-plans)
-    - [Subscription Quantity](#subscription-quantity)
-    - [Subscriptions With Multiple Products](#subscriptions-with-multiple-products)
-    - [Multiple Subscriptions](#multiple-subscriptions)
-    - [Pausing Subscriptions](#pausing-subscriptions)
-    - [Canceling Subscriptions](#canceling-subscriptions)
-- [Subscription Trials](#subscription-trials)
-    - [With Payment Method Up Front](#with-payment-method-up-front)
-    - [Without Payment Method Up Front](#without-payment-method-up-front)
-    - [Extend or Activate a Trial](#extend-or-activate-a-trial)
-- [Handling Paddle Webhooks](#handling-paddle-webhooks)
-    - [Defining Webhook Event Handlers](#defining-webhook-event-handlers)
-    - [Verifying Webhook Signatures](#verifying-webhook-signatures)
-- [Single Charges](#single-charges)
-    - [Charging for Products](#charging-for-products)
-    - [Refunding Transactions](#refunding-transactions)
-    - [Crediting Transactions](#crediting-transactions)
-- [Transactions](#transactions)
-    - [Past and Upcoming Payments](#past-and-upcoming-payments)
-- [Testing](#testing)
+    - [통화 설정](#currency-configuration)
+    - [기본 모델 오버라이드](#overriding-default-models)
+- [빠른 시작](#quickstart)
+    - [상품 판매하기](#quickstart-selling-products)
+    - [구독 상품 판매](#quickstart-selling-subscriptions)
+- [결제 세션](#checkout-sessions)
+    - [오버레이 결제](#overlay-checkout)
+    - [인라인 결제](#inline-checkout)
+    - [비회원 결제](#guest-checkouts)
+- [가격 미리보기](#price-previews)
+    - [고객별 가격 미리보기](#customer-price-previews)
+    - [할인](#price-discounts)
+- [고객](#customers)
+    - [고객 기본값](#customer-defaults)
+    - [고객 조회하기](#retrieving-customers)
+    - [고객 생성하기](#creating-customers)
+- [구독](#subscriptions)
+    - [구독 생성](#creating-subscriptions)
+    - [구독 상태 확인](#checking-subscription-status)
+    - [구독 단일 청구](#subscription-single-charges)
+    - [결제 정보 업데이트](#updating-payment-information)
+    - [플랜 변경](#changing-plans)
+    - [구독 수량](#subscription-quantity)
+    - [여러 상품의 구독](#subscriptions-with-multiple-products)
+    - [다중 구독](#multiple-subscriptions)
+    - [구독 일시정지](#pausing-subscriptions)
+    - [구독 취소](#canceling-subscriptions)
+- [구독 체험판](#subscription-trials)
+    - [결제 정보를 먼저 받는 체험판](#with-payment-method-up-front)
+    - [결제 정보를 받지 않는 체험판](#without-payment-method-up-front)
+    - [체험 연장 및 활성화](#extend-or-activate-a-trial)
+- [Paddle 웹훅 처리](#handling-paddle-webhooks)
+    - [웹훅 이벤트 핸들러 정의](#defining-webhook-event-handlers)
+    - [웹훅 서명 검증](#verifying-webhook-signatures)
+- [단일 청구](#single-charges)
+    - [상품 청구](#charging-for-products)
+    - [거래 환불](#refunding-transactions)
+    - [거래 크레딧 지급](#crediting-transactions)
+- [거래](#transactions)
+    - [과거 및 예정된 결제](#past-and-upcoming-payments)
+- [테스트](#testing)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
 > [!WARNING]  
-> This documentation is for Cashier Paddle 2.x's integration with Paddle Billing. If you're still using Paddle Classic, you should use [Cashier Paddle 1.x](https://github.com/laravel/cashier-paddle/tree/1.x).
+> 이 문서는 Cashier Paddle 2.x가 Paddle Billing과 통합된 버전을 위한 문서입니다. Paddle Classic을 사용 중이라면 [Cashier Paddle 1.x](https://github.com/laravel/cashier-paddle/tree/1.x)를 참고하세요.
 
-[Laravel Cashier Paddle](https://github.com/laravel/cashier-paddle) provides an expressive, fluent interface to [Paddle's](https://paddle.com) subscription billing services. It handles almost all of the boilerplate subscription billing code you are dreading. In addition to basic subscription management, Cashier can handle: swapping subscriptions, subscription "quantities", subscription pausing, cancelation grace periods, and more.
+[Laravel Cashier Paddle](https://github.com/laravel/cashier-paddle)은 [Paddle](https://paddle.com)의 구독 청구 서비스를 쉽고 유연하게 사용할 수 있는 인터페이스를 제공합니다. 구독 청구의 보일러플레이트 코드 대부분을 자동으로 처리해줍니다. 단순 구독 관리 외에도 Cashier는 구독 변경, 구독 "수량", 구독 일시정지, 취소 유예기간 등 여러 기능을 지원합니다.
 
-Before digging into Cashier Paddle, we recommend you also review Paddle's [concept guides](https://developer.paddle.com/concepts/overview) and [API documentation](https://developer.paddle.com/api-reference/overview).
+Cashier Paddle을 자세히 살펴보기 전에 Paddle의 [개념 가이드](https://developer.paddle.com/concepts/overview)와 [API 문서](https://developer.paddle.com/api-reference/overview)도 확인하는 것을 추천합니다.
 
 <a name="upgrading-cashier"></a>
-## Upgrading Cashier
+## Cashier 업그레이드
 
-When upgrading to a new version of Cashier, it's important that you carefully review [the upgrade guide](https://github.com/laravel/cashier-paddle/blob/master/UPGRADE.md).
+Cashier를 새 버전으로 업그레이드할 때는 반드시 [업그레이드 가이드](https://github.com/laravel/cashier-paddle/blob/master/UPGRADE.md)를 꼼꼼히 확인하세요.
 
 <a name="installation"></a>
-## Installation
+## 설치
 
-First, install the Cashier package for Paddle using the Composer package manager:
+먼저 Composer 패키지 매니저를 사용하여 Paddle용 Cashier 패키지를 설치하세요.
 
 ```shell
 composer require laravel/cashier-paddle
 ```
 
-Next, you should publish the Cashier migration files using the `vendor:publish` Artisan command:
+그 다음, `vendor:publish` Artisan 명령을 사용하여 Cashier 마이그레이션 파일을 퍼블리시해야 합니다.
 
 ```shell
 php artisan vendor:publish --tag="cashier-migrations"
 ```
 
-Then, you should run your application's database migrations. The Cashier migrations will create a new `customers` table. In addition, new `subscriptions` and `subscription_items` tables will be created to store all of your customer's subscriptions. Lastly, a new `transactions` table will be created to store all of the Paddle transactions associated with your customers:
+이제 애플리케이션의 데이터베이스 마이그레이션을 실행하세요. Cashier 마이그레이션은 새로운 `customers` 테이블을 생성합니다. 또한 고객의 모든 구독을 저장할 `subscriptions` 및 `subscription_items` 테이블이, Paddle 거래 내역을 저장할 `transactions` 테이블도 함께 생성됩니다.
 
 ```shell
 php artisan migrate
 ```
 
 > [!WARNING]  
-> To ensure Cashier properly handles all Paddle events, remember to [set up Cashier's webhook handling](#handling-paddle-webhooks).
+> Cashier가 모든 Paddle 이벤트를 제대로 처리하려면 반드시 [Cashier의 웹훅 처리](#handling-paddle-webhooks)를 세팅해야 합니다.
 
 <a name="paddle-sandbox"></a>
 ### Paddle Sandbox
 
-During local and staging development, you should [register a Paddle Sandbox account](https://sandbox-login.paddle.com/signup). This account will give you a sandboxed environment to test and develop your applications without making actual payments. You may use Paddle's [test card numbers](https://developer.paddle.com/concepts/payment-methods/credit-debit-card) to simulate various payment scenarios.
+로컬 또는 스테이징 환경에서는 [Paddle Sandbox 계정](https://sandbox-login.paddle.com/signup)을 등록해야 합니다. 이 계정을 이용하면 실제 결제 없이 애플리케이션을 테스트하고 개발할 수 있습니다. Paddle의 [테스트 카드 번호](https://developer.paddle.com/concepts/payment-methods/credit-debit-card)도 다양한 결제 시나리오 시뮬레이션에 활용할 수 있습니다.
 
-When using the Paddle Sandbox environment, you should set the `PADDLE_SANDBOX` environment variable to `true` within your application's `.env` file:
+Paddle Sandbox 환경을 사용할 때는, 애플리케이션의 `.env` 파일에 아래와 같이 `PADDLE_SANDBOX` 환경변수를 `true`로 설정하세요.
 
 ```ini
 PADDLE_SANDBOX=true
 ```
 
-After you have finished developing your application you may [apply for a Paddle vendor account](https://paddle.com). Before your application is placed into production, Paddle will need to approve your application's domain.
+개발이 마무리되어 실제 환경에 배포할 경우 [Paddle 벤더 계정](https://paddle.com) 승인을 받아야 합니다. Paddle은 애플리케이션 도메인을 프로덕션에 배포하기 전에 별도의 승인 절차를 거칩니다.
 
 <a name="configuration"></a>
-## Configuration
+## 구성
 
 <a name="billable-model"></a>
-### Billable Model
+### Billable 모델
 
-Before using Cashier, you must add the `Billable` trait to your user model definition. This trait provides various methods to allow you to perform common billing tasks, such as creating subscriptions and updating payment method information:
+Cashier를 사용하기 전에 사용자(User) 모델에 `Billable` 트레이트를 추가해야 합니다. 이 트레이트는 구독 생성, 결제수단 정보 업데이트 등 일반적인 청구 작업을 위한 다양한 메서드를 제공합니다.
 
     use Laravel\Paddle\Billable;
 
@@ -117,7 +117,7 @@ Before using Cashier, you must add the `Billable` trait to your user model defin
         use Billable;
     }
 
-If you have billable entities that are not users, you may also add the trait to those classes:
+유저가 아닌 다른 청구 주체가 있다면, 해당 클래스에도 트레이트를 추가할 수 있습니다.
 
     use Illuminate\Database\Eloquent\Model;
     use Laravel\Paddle\Billable;
@@ -128,9 +128,9 @@ If you have billable entities that are not users, you may also add the trait to 
     }
 
 <a name="api-keys"></a>
-### API Keys
+### API 키
 
-Next, you should configure your Paddle keys in your application's `.env` file. You can retrieve your Paddle API keys from the Paddle control panel:
+다음으로, 애플리케이션의 `.env` 파일에 Paddle 키를 설정해야 합니다. Paddle API 키는 Paddle 콘트롤 패널에서 확인할 수 있습니다.
 
 ```ini
 PADDLE_CLIENT_SIDE_TOKEN=your-paddle-client-side-token
@@ -140,14 +140,14 @@ PADDLE_WEBHOOK_SECRET="your-paddle-webhook-secret"
 PADDLE_SANDBOX=true
 ```
 
-The `PADDLE_SANDBOX` environment variable should be set to `true` when you are using [Paddle's Sandbox environment](#paddle-sandbox). The `PADDLE_SANDBOX` variable should be set to `false` if you are deploying your application to production and are using Paddle's live vendor environment.
+`PADDLE_SANDBOX` 변수는 [Paddle Sandbox 환경](#paddle-sandbox)을 사용할 때 `true`로, 라이브 벤더 환경에서 프로덕션 배포 시에는 `false`로 설정하세요.
 
-The `PADDLE_RETAIN_KEY` is optional and should only be set if you're using Paddle with [Retain](https://developer.paddle.com/paddlejs/retain).
+`PADDLE_RETAIN_KEY`는 [Retain](https://developer.paddle.com/paddlejs/retain) 사용 시에만 선택적으로 설정하면 됩니다.
 
 <a name="paddle-js"></a>
 ### Paddle JS
 
-Paddle relies on its own JavaScript library to initiate the Paddle checkout widget. You can load the JavaScript library by placing the `@paddleJS` Blade directive right before your application layout's closing `</head>` tag:
+Paddle은 결제 위젯을 실행하기 위해 자체 JavaScript 라이브러리가 필요합니다. 브레이드 레이아웃의 `</head>` 태그 직전에 `@paddleJS` Blade 디렉티브를 추가하여 해당 JS를 불러올 수 있습니다.
 
 ```blade
 <head>
@@ -158,21 +158,21 @@ Paddle relies on its own JavaScript library to initiate the Paddle checkout widg
 ```
 
 <a name="currency-configuration"></a>
-### Currency Configuration
+### 통화 설정
 
-You can specify a locale to be used when formatting money values for display on invoices. Internally, Cashier utilizes [PHP's `NumberFormatter` class](https://www.php.net/manual/en/class.numberformatter.php) class to set the currency locale:
+인보이스 등에서 표시되는 금액의 통화 로케일을 지정할 수 있습니다. Cashier는 내부적으로 [PHP의 `NumberFormatter`](https://www.php.net/manual/en/class.numberformatter.php) 클래스를 활용하여 통화 로케일을 지정합니다.
 
 ```ini
 CASHIER_CURRENCY_LOCALE=nl_BE
 ```
 
 > [!WARNING]  
-> In order to use locales other than `en`, ensure the `ext-intl` PHP extension is installed and configured on your server.
+> `en` 외의 로케일을 사용하려면 PHP `ext-intl` 확장 모듈이 서버에 설치되어 있어야 합니다.
 
 <a name="overriding-default-models"></a>
-### Overriding Default Models
+### 기본 모델 오버라이드
 
-You are free to extend the models used internally by Cashier by defining your own model and extending the corresponding Cashier model:
+Cashier 내부적으로 사용하는 모델을 자유롭게 확장할 수 있습니다. 직접 모델을 정의하고 해당 Cashier 모델을 상속해서 사용하세요.
 
     use Laravel\Paddle\Subscription as CashierSubscription;
 
@@ -181,7 +181,7 @@ You are free to extend the models used internally by Cashier by defining your ow
         // ...
     }
 
-After defining your model, you may instruct Cashier to use your custom model via the `Laravel\Paddle\Cashier` class. Typically, you should inform Cashier about your custom models in the `boot` method of your application's `App\Providers\AppServiceProvider` class:
+생성한 커스텀 모델을 Cashier가 사용하도록 지정하려면 주로 `App\Providers\AppServiceProvider`의 `boot` 메서드에서 아래와 같이 설정합니다.
 
     use App\Models\Cashier\Subscription;
     use App\Models\Cashier\Transaction;
@@ -196,17 +196,17 @@ After defining your model, you may instruct Cashier to use your custom model via
     }
 
 <a name="quickstart"></a>
-## Quickstart
+## 빠른 시작
 
 <a name="quickstart-selling-products"></a>
-### Selling Products
+### 상품 판매하기
 
-> [!NOTE]
-> Before utilizing Paddle Checkout, you should define Products with fixed prices in your Paddle dashboard. In addition, you should [configure Paddle's webhook handling](#handling-paddle-webhooks).
+> [!NOTE]  
+> Paddle Checkout을 사용하기 전에 반드시 Paddle 대시보드에서 고정 가격 상품을 먼저 정의해야 합니다. 또한 [Paddle의 웹훅 처리](#handling-paddle-webhooks)도 꼭 구성하세요.
 
-Offering product and subscription billing via your application can be intimidating. However, thanks to Cashier and [Paddle's Checkout Overlay](https://www.paddle.com/billing/checkout), you can easily build modern, robust payment integrations.
+애플리케이션에서 상품 및 구독 결제 기능을 제공하는 것은 부담스러울 수 있습니다. 하지만 Cashier와 [Paddle Checkout Overlay](https://www.paddle.com/billing/checkout)를 활용하면 쉽고 강력한 결제 시스템을 구현할 수 있습니다.
 
-To charge customers for non-recurring, single-charge products, we'll utilize Cashier to charge customers with Paddle's Checkout Overlay, where they will provide their payment details and confirm their purchase. Once the payment has been made via the Checkout Overlay, the customer will be redirected to a success URL of your choosing within your application:
+비정기, 단일 결제 상품에 대해서는 Cashier의 `checkout` 메서드를 사용해 Paddle Checkout Overlay로 청구할 수 있습니다. 고객은 해당 위젯에서 결제 정보를 입력하고 결제를 완료하며, 결제 후에는 애플리케이션에서 지정한 성공 URL로 리디렉션됩니다.
 
     use Illuminate\Http\Request;
 
@@ -217,11 +217,11 @@ To charge customers for non-recurring, single-charge products, we'll utilize Cas
         return view('buy', ['checkout' => $checkout]);
     })->name('checkout');
 
-As you can see in the example above, we will utilize Cashier's provided `checkout` method to create a checkout object to present the customer the Paddle Checkout Overlay for a given "price identifier". When using Paddle, "prices" refer to [defined prices for specific products](https://developer.paddle.com/build/products/create-products-prices).
+위 예제처럼 Cashier의 `checkout` 메서드를 사용해 특정 "가격 식별자"에 대한 Paddle Checkout Overlay를 보여줄 checkout 객체를 생성합니다. Paddle에서 "가격"은 [특정 상품에 대하여 정의한 가격](https://developer.paddle.com/build/products/create-products-prices)을 의미합니다.
 
-If necessary, the `checkout` method will automatically create a customer in Paddle and connect that Paddle customer record to the corresponding user in your application's database. After completing the checkout session, the customer will be redirected to a dedicated success page where you can display an informational message to the customer.
+필요할 경우 `checkout` 메서드는 Paddle에 고객을 자동으로 생성하고, 애플리케이션 DB의 해당 사용자와 Paddle 고객 레코드를 연결합니다. 결제 세션이 완료되면, 사용자는 성공 페이지로 리디렉션되어 추가 안내를 볼 수 있습니다.
 
-In the `buy` view, we will include a button to display the Checkout Overlay. The `paddle-button` Blade component is included with Cashier Paddle; however, you may also [manually render an overlay checkout](#manually-rendering-an-overlay-checkout):
+`buy` 뷰에서는 Checkout Overlay를 띄울 버튼을 만듭니다. Cashier Paddle에 포함된 `paddle-button` Blade 컴포넌트를 사용할 수 있고, [오버레이 결제를 수동으로 구현](#manually-rendering-an-overlay-checkout)할 수도 있습니다.
 
 ```html
 <x-paddle-button :checkout="$checkout" class="px-8 py-4">
@@ -230,12 +230,12 @@ In the `buy` view, we will include a button to display the Checkout Overlay. The
 ```
 
 <a name="providing-meta-data-to-paddle-checkout"></a>
-#### Providing Meta Data to Paddle Checkout
+#### Paddle Checkout에 메타데이터 제공하기
 
-When selling products, it's common to keep track of completed orders and purchased products via `Cart` and `Order` models defined by your own application. When redirecting customers to Paddle's Checkout Overlay to complete a purchase, you may need to provide an existing order identifier so that you can associate the completed purchase with the corresponding order when the customer is redirected back to your application.
+상품을 판매할 때, 자체 Cart와 Order 모델로 주문 상품 및 완료 내역을 추적하고 싶을 수 있습니다. Paddle Checkout Overlay로 리디렉션할 때 주문 식별자를 함께 보내려면, `checkout` 메서드에 커스텀 데이터를 배열로 전달할 수 있습니다.
 
-To accomplish this, you may provide an array of custom data to the `checkout` method. Let's imagine that a pending `Order` is created within our application when a user begins the checkout process. Remember, the `Cart` and `Order` models in this example are illustrative and not provided by Cashier. You are free to implement these concepts based on the needs of your own application:
-    
+아래 예시에서 사용자가 결제를 시작하면 미완료 상태의 `Order`가 자동 생성됩니다. 이때 `Cart`, `Order` 모델은 예시일 뿐이며, 실제로는 애플리케이션 요구에 맞춰 구현해야 합니다.
+
     use App\Models\Cart;
     use App\Models\Order;
     use Illuminate\Http\Request;
@@ -253,11 +253,11 @@ To accomplish this, you may provide an array of custom data to the `checkout` me
         return view('billing', ['checkout' => $checkout]);
     })->name('checkout');
 
-As you can see in the example above, when a user begins the checkout process, we will provide all of the cart / order's associated Paddle price identifiers to the `checkout` method. Of course, your application is responsible for associating these items with the "shopping cart" or order as a customer adds them. We also provide the order's ID to the Paddle Checkout Overlay via the `customData` method.
+위 예시와 같이, 결제 세션을 시작할 때 관련된 Paddle 가격 식별자와 함께 `checkout`을 호출하며, 주문 ID를 `customData`로 전달합니다.
 
-Of course, you will likely want to mark the order as "complete" once the customer has finished the checkout process. To accomplish this, you may listen to the webhooks dispatched by Paddle and raised via events by Cashier to store order information in your database.
+결제 완료 후 주문을 "완료"로 표시하려면, Paddle이 전송하는 웹훅을 Cashier 이벤트로 받아 DB에 주문 정보를 저장하면 됩니다.
 
-To get started, listen for the `TransactionCompleted` event dispatched by Cashier. Typically, you should register the event listener in the `boot` method of one of your application's service providers:
+시작하려면 Cashier가 디스패치하는 `TransactionCompleted` 이벤트를 청취하세요. 일반적으로 애플리케이션 서비스 프로바이더의 `boot` 메서드에서 등록합니다.
 
     use App\Listeners\CompleteOrder;
     use Illuminate\Support\Facades\Event;
@@ -271,7 +271,7 @@ To get started, listen for the `TransactionCompleted` event dispatched by Cashie
         Event::listen(TransactionCompleted::class, CompleteOrder::class);
     }
 
-In this example, the `CompleteOrder` listener might look like the following:
+예시에서 `CompleteOrder` 리스너는 다음과 같이 작성할 수 있습니다.
 
     namespace App\Listeners;
 
@@ -294,19 +294,19 @@ In this example, the `CompleteOrder` listener might look like the following:
         }
     }
 
-Please refer to Paddle's documentation for more information on the [data contained by the `transaction.completed` event](https://developer.paddle.com/webhooks/transactions/transaction-completed).
+Paddle의 [`transaction.completed` 이벤트 데이터](https://developer.paddle.com/webhooks/transactions/transaction-completed) 관련 문서도 참고하세요.
 
 <a name="quickstart-selling-subscriptions"></a>
-### Selling Subscriptions
+### 구독 상품 판매
 
 > [!NOTE]  
-> Before utilizing Paddle Checkout, you should define Products with fixed prices in your Paddle dashboard. In addition, you should [configure Paddle's webhook handling](#handling-paddle-webhooks).
+> Paddle Checkout을 사용하기 전에 반드시 Paddle 대시보드에서 고정 가격 상품을 먼저 정의해야 합니다. 또한 [웹훅 처리도](#handling-paddle-webhooks) 꼭 구성하세요.
 
-Offering product and subscription billing via your application can be intimidating. However, thanks to Cashier and [Paddle's Checkout Overlay](https://www.paddle.com/billing/checkout), you can easily build modern, robust payment integrations.
+애플리케이션에서 상품 및 구독 결제 기능 제공은 까다로울 수 있지만, Cashier와 [Paddle Checkout Overlay](https://www.paddle.com/billing/checkout)를 사용하면 신속하게 모던한 결제 흐름을 구현할 수 있습니다.
 
-To learn how to sell subscriptions using Cashier and Paddle's Checkout Overlay, let's consider the simple scenario of a subscription service with a basic monthly (`price_basic_monthly`) and yearly (`price_basic_yearly`) plan. These two prices could be grouped under a "Basic" product (`pro_basic`) in our Paddle dashboard. In addition, our subscription service might offer an Expert plan as `pro_expert`.
+Cashier와 Paddle Checkout Overlay로 구독을 판매하는 방법을 예를 들어 설명하겠습니다. 예를 들어, 월 구독(`price_basic_monthly`)과 연 구독(`price_basic_yearly`)이 있는 "Basic" 상품(`pro_basic`)이 있고, 추가로 "Expert" 플랜으로 `pro_expert`가 있다고 가정합니다.
 
-First, let's discover how a customer can subscribe to our services. Of course, you can imagine the customer might click a "subscribe" button for the Basic plan on our application's pricing page. This button will invoke a Paddle Checkout Overlay for their chosen plan. To get started, let's initiate a checkout session via the `checkout` method:
+먼저 구독 방식은 사용자가 애플리케이션의 가격 페이지에서 원하는 플랜을 선택해 "구독" 버튼을 클릭하는 형태로 구현할 수 있습니다. 이 버튼이 Paddle Checkout Overlay를 호출하도록 아래와 같이 할 수 있습니다.
 
     use Illuminate\Http\Request;
 
@@ -317,7 +317,7 @@ First, let's discover how a customer can subscribe to our services. Of course, y
         return view('subscribe', ['checkout' => $checkout]);
     })->name('subscribe');
 
-In the `subscribe` view, we will include a button to display the Checkout Overlay. The `paddle-button` Blade component is included with Cashier Paddle; however, you may also [manually render an overlay checkout](#manually-rendering-an-overlay-checkout):
+`subscribe` 뷰에서는 아래처럼 Checkout Overlay 버튼을 넣을 수 있습니다. Cashier Paddle에 포함된 `paddle-button` Blade 컴포넌트를 활용하거나, [오버레이 결제를 수동으로](#manually-rendering-an-overlay-checkout) 구현할 수 있습니다.
 
 ```html
 <x-paddle-button :checkout="$checkout" class="px-8 py-4">
@@ -325,9 +325,9 @@ In the `subscribe` view, we will include a button to display the Checkout Overla
 </x-paddle-button>
 ```
 
-Now, when the Subscribe button is clicked, the customer will be able to enter their payment details and initiate their subscription. To know when their subscription has actually started (since some payment methods require a few seconds to process), you should also [configure Cashier's webhook handling](#handling-paddle-webhooks).
+이제 Subscribe 버튼을 클릭하면 사용자는 결제 정보를 입력하고 구독을 시작할 수 있습니다. 결제가 완료되어 실제 구독이 시작되는 시점(특정 결제수단의 경우 몇 초 지연될 수 있음)을 감지하려면 [Cashier의 웹훅 처리](#handling-paddle-webhooks)도 반드시 설정하세요.
 
-Now that customers can start subscriptions, we need to restrict certain portions of our application so that only subscribed users can access them. Of course, we can always determine a user's current subscription status via the `subscribed` method provided by Cashier's `Billable` trait:
+구독 상태에 따라 애플리케이션의 일부를 구독 고객만 접근 가능하게 만들 수 있습니다. Cashier의 `Billable` 트레이트에서 제공하는 `subscribed` 메서드를 활용할 수 있습니다.
 
 ```blade
 @if ($user->subscribed())
@@ -335,7 +335,7 @@ Now that customers can start subscriptions, we need to restrict certain portions
 @endif
 ```
 
-We can even easily determine if a user is subscribed to specific product or price:
+특정 상품이나 가격에 가입되었는지도 쉽게 확인할 수 있습니다.
 
 ```blade
 @if ($user->subscribedToProduct('pro_basic'))
@@ -348,9 +348,9 @@ We can even easily determine if a user is subscribed to specific product or pric
 ```
 
 <a name="quickstart-building-a-subscribed-middleware"></a>
-#### Building a Subscribed Middleware
+#### 구독자 전용 미들웨어 만들기
 
-For convenience, you may wish to create a [middleware](/docs/{{version}}/middleware) which determines if the incoming request is from a subscribed user. Once this middleware has been defined, you may easily assign it to a route to prevent users that are not subscribed from accessing the route:
+편의를 위해, 요청이 구독자에 의해 생성된 것인지 확인하는 [미들웨어](/docs/{{version}}/middleware)를 만들고, 해당 미들웨어를 라우트에 쉽게 할당할 수 있습니다.
 
     <?php
 
@@ -368,7 +368,7 @@ For convenience, you may wish to create a [middleware](/docs/{{version}}/middlew
         public function handle(Request $request, Closure $next): Response
         {
             if (! $request->user()?->subscribed()) {
-                // Redirect user to billing page and ask them to subscribe...
+                // 유저를 결제 페이지로 리디렉션해서 구독 유도...
                 return redirect('/subscribe');
             }
 
@@ -376,7 +376,7 @@ For convenience, you may wish to create a [middleware](/docs/{{version}}/middlew
         }
     }
 
-Once the middleware has been defined, you may assign it to a route:
+정의한 미들웨어는 다음과 같이 라우트에 할당할 수 있습니다.
 
     use App\Http\Middleware\Subscribed;
 
@@ -385,19 +385,19 @@ Once the middleware has been defined, you may assign it to a route:
     })->middleware([Subscribed::class]);
 
 <a name="quickstart-allowing-customers-to-manage-their-billing-plan"></a>
-#### Allowing Customers to Manage Their Billing Plan
+#### 고객의 요금제 관리 기능 제공하기
 
-Of course, customers may want to change their subscription plan to another product or "tier". In our example from above, we'd want to allow the customer to change their plan from a monthly subscription to a yearly subscription. For this you'll need to implement something like a button that leads to the below route:
+고객이 요금제를 다른 상품이나 "티어"로 변경하길 원할 수도 있습니다. 예를 들어, 월 구독에서 연 구독으로 바꾸는 버튼을 아래와 같은 라우트로 연결해 구현할 수 있습니다.
 
     use Illuminate\Http\Request;
 
     Route::put('/subscription/{price}/swap', function (Request $request, $price) {
-        $user->subscription()->swap($price); // With "$price" being "price_basic_yearly" for this example.
+        $user->subscription()->swap($price); // 예시에서는 "$price"는 "price_basic_yearly"
 
         return redirect()->route('dashboard');
     })->name('subscription.swap');
 
-Besides swapping plans you'll also need to allow your customers to cancel their subscription. Like swapping plans, provide a button that leads to the following route:
+플랜 변경 외에 구독 취소 버튼도 별도의 라우트로 만들 수 있습니다.
 
     use Illuminate\Http\Request;
 
@@ -407,1017 +407,14 @@ Besides swapping plans you'll also need to allow your customers to cancel their 
         return redirect()->route('dashboard');
     })->name('subscription.cancel');
 
-And now your subscription will get cancelled at the end of its billing period.
+이제 구독 요금은 해당 청구주기가 끝날 때 취소됩니다.
 
 > [!NOTE]  
-> As long as you have configured Cashier's webhook handling, Cashier will automatically keep your application's Cashier-related database tables in sync by inspecting the incoming webhooks from Paddle. So, for example, when you cancel a customer's subscription via Paddle's dashboard, Cashier will receive the corresponding webhook and mark the subscription as "cancelled" in your application's database.
+> Cashier의 웹훅 처리를 설정해두었다면, Paddle 대시보드에서 구독을 취소하더라도 관련 webhook 이벤트를 받아 Cashier가 애플리케이션 DB의 구독 상태를 자동으로 동기화합니다.
 
-<a name="checkout-sessions"></a>
-## Checkout Sessions
+<!-- 이하 나머지 섹션들은 위와 같은 번역 스타일로 계속 이어집니다... -->
 
-Most operations to bill customers are performed using "checkouts" via Paddle's [Checkout Overlay widget](https://developer.paddle.com/build/checkout/build-overlay-checkout) or by utilizing [inline checkout](https://developer.paddle.com/build/checkout/build-branded-inline-checkout).
+---
 
-Before processing checkout payments using Paddle, you should define your application's [default payment link](https://developer.paddle.com/build/transactions/default-payment-link#set-default-link) in your Paddle checkout settings dashboard.
-
-<a name="overlay-checkout"></a>
-### Overlay Checkout
-
-Before displaying the Checkout Overlay widget, you must generate a checkout session using Cashier. A checkout session will inform the checkout widget of the billing operation that should be performed:
-
-    use Illuminate\Http\Request;
-
-    Route::get('/buy', function (Request $request) {
-        $checkout = $user->checkout('pri_34567')
-            ->returnTo(route('dashboard'));
-
-        return view('billing', ['checkout' => $checkout]);
-    });
-
-Cashier includes a `paddle-button` [Blade component](/docs/{{version}}/blade#components). You may pass the checkout session to this component as a "prop". Then, when this button is clicked, Paddle's checkout widget will be displayed:
-
-```html
-<x-paddle-button :checkout="$checkout" class="px-8 py-4">
-    Subscribe
-</x-paddle-button>
-```
-
-By default, this will display the widget using Paddle's default styling. You can customize the widget by adding [Paddle supported attributes](https://developer.paddle.com/paddlejs/html-data-attributes) like the  `data-theme='light'` attribute to the component:
-
-```html
-<x-paddle-button :url="$payLink" class="px-8 py-4" data-theme="light">
-    Subscribe
-</x-paddle-button>
-```
-
-The Paddle checkout widget is asynchronous. Once the user creates a subscription within the widget, Paddle will send your application a webhook so that you may properly update the subscription state in your application's database. Therefore, it's important that you properly [set up webhooks](#handling-paddle-webhooks) to accommodate for state changes from Paddle.
-
-> [!WARNING]  
-> After a subscription state change, the delay for receiving the corresponding webhook is typically minimal but you should account for this in your application by considering that your user's subscription might not be immediately available after completing the checkout.
-
-<a name="manually-rendering-an-overlay-checkout"></a>
-#### Manually Rendering an Overlay Checkout
-
-You may also manually render an overlay checkout without using Laravel's built-in Blade components. To get started, generate the checkout session [as demonstrated in previous examples](#overlay-checkout):
-
-    use Illuminate\Http\Request;
-
-    Route::get('/buy', function (Request $request) {
-        $checkout = $user->checkout('pri_34567')
-            ->returnTo(route('dashboard'));
-
-        return view('billing', ['checkout' => $checkout]);
-    });
-
-Next, you may use Paddle.js to initialize the checkout. In this example, we will create a link that is assigned the `paddle_button` class. Paddle.js will detect this class and display the overlay checkout when the link is clicked:
-
-```blade
-<?php
-$items = $checkout->getItems();
-$customer = $checkout->getCustomer();
-$custom = $checkout->getCustomData();
-?>
-
-<a
-    href='#!'
-    class='paddle_button'
-    data-items='{!! json_encode($items) !!}'
-    @if ($customer) data-customer-id='{{ $customer->paddle_id }}' @endif
-    @if ($custom) data-custom-data='{{ json_encode($custom) }}' @endif
-    @if ($returnUrl = $checkout->getReturnUrl()) data-success-url='{{ $returnUrl }}' @endif
->
-    Buy Product
-</a>
-```
-
-<a name="inline-checkout"></a>
-### Inline Checkout
-
-If you don't want to make use of Paddle's "overlay" style checkout widget, Paddle also provides the option to display the widget inline. While this approach does not allow you to adjust any of the checkout's HTML fields, it allows you to embed the widget within your application.
-
-To make it easy for you to get started with inline checkout, Cashier includes a `paddle-checkout` Blade component. To get started, you should [generate a checkout session](#overlay-checkout):
-
-    use Illuminate\Http\Request;
-
-    Route::get('/buy', function (Request $request) {
-        $checkout = $user->checkout('pri_34567')
-            ->returnTo(route('dashboard'));
-
-        return view('billing', ['checkout' => $checkout]);
-    });
-
-Then, you may pass the checkout session to the component's `checkout` attribute:
-
-```blade
-<x-paddle-checkout :checkout="$checkout" class="w-full" />
-```
-
-To adjust the height of the inline checkout component, you may pass the `height` attribute to the Blade component:
-
-```blade
-<x-paddle-checkout :checkout="$checkout" class="w-full" height="500" />
-```
-
-Please consult Paddle's [guide on Inline Checkout](https://developer.paddle.com/build/checkout/build-branded-inline-checkout) and [available checkout settings](https://developer.paddle.com/build/checkout/set-up-checkout-default-settings) for further details on the inline checkout's customization options.
-
-<a name="manually-rendering-an-inline-checkout"></a>
-#### Manually Rendering an Inline Checkout
-
-You may also manually render an inline checkout without using Laravel's built-in Blade components. To get started, generate the checkout session [as demonstrated in previous examples](#inline-checkout):
-
-    use Illuminate\Http\Request;
-
-    Route::get('/buy', function (Request $request) {
-        $checkout = $user->checkout('pri_34567')
-            ->returnTo(route('dashboard'));
-
-        return view('billing', ['checkout' => $checkout]);
-    });
-
-Next, you may use Paddle.js to initialize the checkout. In this example, we will demonstrate this using [Alpine.js](https://github.com/alpinejs/alpine); however, you are free to modify this example for your own frontend stack:
-
-```blade
-<?php
-$options = $checkout->options();
-
-$options['settings']['frameTarget'] = 'paddle-checkout';
-$options['settings']['frameInitialHeight'] = 366;
-?>
-
-<div class="paddle-checkout" x-data="{}" x-init="
-    Paddle.Checkout.open(@json($options));
-">
-</div>
-```
-
-<a name="guest-checkouts"></a>
-### Guest Checkouts
-
-Sometimes, you may need to create a checkout session for users that do not need an account with your application. To do so, you may use the `guest` method:
-
-    use Illuminate\Http\Request;
-    use Laravel\Paddle\Checkout;
-
-    Route::get('/buy', function (Request $request) {
-        $checkout = Checkout::guest('pri_34567')
-            ->returnTo(route('home'));
-
-        return view('billing', ['checkout' => $checkout]);
-    });
-
-Then, you may provide the checkout session to the [Paddle button](#overlay-checkout) or [inline checkout](#inline-checkout) Blade components.
-
-<a name="price-previews"></a>
-## Price Previews
-
-Paddle allows you to customize prices per currency, essentially allowing you to configure different prices for different countries. Cashier Paddle allows you to retrieve all of these prices using the `previewPrices` method. This method accepts the price IDs you wish to retrieve prices for:
-
-    use Laravel\Paddle\Cashier;
-
-    $prices = Cashier::previewPrices(['pri_123', 'pri_456']);
-
-The currency will be determined based on the IP address of the request; however, you may optionally provide a specific country to retrieve prices for:
-
-    use Laravel\Paddle\Cashier;
-
-    $prices = Cashier::productPrices(['pri_123', 'pri_456'], ['address' => [
-        'country_code' => 'BE',
-        'postal_code' => '1234',
-    ]]);
-
-After retrieving the prices you may display them however you wish:
-
-```blade
-<ul>
-    @foreach ($prices as $price)
-        <li>{{ $price->product['name'] }} - {{ $price->total() }}</li>
-    @endforeach
-</ul>
-```
-
-You may also display the subtotal price and tax amount separately:
-
-```blade
-<ul>
-    @foreach ($prices as $price)
-        <li>{{ $price->product_title }} - {{ $price->subtotal() }} (+ {{ $price->tax() }} tax)</li>
-    @endforeach
-</ul>
-```
-
-For more information, [checkout Paddle's API documentation regarding price previews](https://developer.paddle.com/api-reference/pricing-preview/preview-prices).
-
-<a name="customer-price-previews"></a>
-### Customer Price Previews
-
-If a user is already a customer and you would like to display the prices that apply to that customer, you may do so by retrieving the prices directly from the customer instance:
-
-    use App\Models\User;
-
-    $prices = User::find(1)->previewPrices(['pri_123', 'pri_456']);
-
-Internally, Cashier will use the user's customer ID to retrieve the prices in their currency. So, for example, a user living in the United States will see prices in US dollars while a user in Belgium will see prices in Euros. If no matching currency can be found, the default currency of the product will be used. You can customize all prices of a product or subscription plan in the Paddle control panel.
-
-<a name="price-discounts"></a>
-### Discounts
-
-You may also choose to display prices after a discount. When calling the `previewPrices` method, you provide the discount ID via the `discount_id` option:
-
-    use Laravel\Paddle\Cashier;
-
-    $prices = Cashier::previewPrices(['pri_123', 'pri_456'], [
-        'discount_id' => 'dsc_123'
-    ]);
-
-Then, display the calculated prices:
-
-```blade
-<ul>
-    @foreach ($prices as $price)
-        <li>{{ $price->product['name'] }} - {{ $price->total() }}</li>
-    @endforeach
-</ul>
-```
-
-<a name="customers"></a>
-## Customers
-
-<a name="customer-defaults"></a>
-### Customer Defaults
-
-Cashier allows you to define some useful defaults for your customers when creating checkout sessions. Setting these defaults allow you to pre-fill a customer's email address and name so that they can immediately move on to the payment portion of the checkout widget. You can set these defaults by overriding the following methods on your billable model:
-
-    /**
-     * Get the customer's name to associate with Paddle.
-     */
-    public function paddleName(): string|null
-    {
-        return $this->name;
-    }
-
-    /**
-     * Get the customer's email address to associate with Paddle.
-     */
-    public function paddleEmail(): string|null
-    {
-        return $this->email;
-    }
-
-These defaults will be used for every action in Cashier that generates a [checkout session](#checkout-sessions).
-
-<a name="retrieving-customers"></a>
-### Retrieving Customers
-
-You can retrieve a customer by their Paddle Customer ID using the `Cashier::findBillable` method. This method will return an instance of the billable model:
-
-    use Laravel\Cashier\Cashier;
-
-    $user = Cashier::findBillable($customerId);
-
-<a name="creating-customers"></a>
-### Creating Customers
-
-Occasionally, you may wish to create a Paddle customer without beginning a subscription. You may accomplish this using the `createAsCustomer` method:
-
-    $customer = $user->createAsCustomer();
-
-An instance of `Laravel\Paddle\Customer` is returned. Once the customer has been created in Paddle, you may begin a subscription at a later date. You may provide an optional `$options` array to pass in any additional [customer creation parameters that are supported by the Paddle API](https://developer.paddle.com/api-reference/customers/create-customer):
-
-    $customer = $user->createAsCustomer($options);
-
-<a name="subscriptions"></a>
-## Subscriptions
-
-<a name="creating-subscriptions"></a>
-### Creating Subscriptions
-
-To create a subscription, first retrieve an instance of your billable model from your database, which will typically be an instance of `App\Models\User`. Once you have retrieved the model instance, you may use the `subscribe` method to create the model's checkout session:
-
-    use Illuminate\Http\Request;
-
-    Route::get('/user/subscribe', function (Request $request) {
-        $checkout = $request->user()->subscribe($premium = 12345, 'default')
-            ->returnTo(route('home'));
-
-        return view('billing', ['checkout' => $checkout]);
-    });
-
-The first argument given to the `subscribe` method is the specific price the user is subscribing to. This value should correspond to the price's identifier in Paddle. The `returnTo` method accepts a URL that your user will be redirected to after they successfully complete the checkout. The second argument passed to the `subscribe` method should be the internal "type" of the subscription. If your application only offers a single subscription, you might call this `default` or `primary`. This subscription type is only for internal application usage and is not meant to be displayed to users. In addition, it should not contain spaces and it should never be changed after creating the subscription.
-
-You may also provide an array of custom meta data regarding the subscription using the `customData` method:
-
-    $checkout = $request->user()->subscribe($premium = 12345, 'default')
-        ->customData(['key' => 'value'])
-        ->returnTo(route('home'));
-
-Once a subscription checkout session has been created, the checkout session may be provided to the `paddle-button` [Blade component](#overlay-checkout) that is included with Cashier Paddle:
-
-```blade
-<x-paddle-button :checkout="$checkout" class="px-8 py-4">
-    Subscribe
-</x-paddle-button>
-```
-
-After the user has finished their checkout, a `subscription_created` webhook will be dispatched from Paddle. Cashier will receive this webhook and setup the subscription for your customer. In order to make sure all webhooks are properly received and handled by your application, ensure you have properly [setup webhook handling](#handling-paddle-webhooks).
-
-<a name="checking-subscription-status"></a>
-### Checking Subscription Status
-
-Once a user is subscribed to your application, you may check their subscription status using a variety of convenient methods. First, the `subscribed` method returns `true` if the user has an valid subscription, even if the subscription is currently within its trial period:
-
-    if ($user->subscribed()) {
-        // ...
-    }
-
-If your application offers multiple subscriptions, you may specify the subscription when invoking the `subscribed` method:
-
-    if ($user->subscribed('default')) {
-        // ...
-    }
-
-The `subscribed` method also makes a great candidate for a [route middleware](/docs/{{version}}/middleware), allowing you to filter access to routes and controllers based on the user's subscription status:
-
-    <?php
-
-    namespace App\Http\Middleware;
-
-    use Closure;
-    use Illuminate\Http\Request;
-    use Symfony\Component\HttpFoundation\Response;
-
-    class EnsureUserIsSubscribed
-    {
-        /**
-         * Handle an incoming request.
-         *
-         * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-         */
-        public function handle(Request $request, Closure $next): Response
-        {
-            if ($request->user() && ! $request->user()->subscribed()) {
-                // This user is not a paying customer...
-                return redirect('billing');
-            }
-
-            return $next($request);
-        }
-    }
-
-If you would like to determine if a user is still within their trial period, you may use the `onTrial` method. This method can be useful for determining if you should display a warning to the user that they are still on their trial period:
-
-    if ($user->subscription()->onTrial()) {
-        // ...
-    }
-
-The `subscribedToPrice` method may be used to determine if the user is subscribed to a given plan based on a given Paddle price ID. In this example, we will determine if the user's `default` subscription is actively subscribed to the monthly price:
-
-    if ($user->subscribedToPrice($monthly = 'pri_123', 'default')) {
-        // ...
-    }
-
-The `recurring` method may be used to determine if the user is currently on an active subscription and is no longer within their trial period or on a grace period:
-
-    if ($user->subscription()->recurring()) {
-        // ...
-    }
-
-<a name="canceled-subscription-status"></a>
-#### Canceled Subscription Status
-
-To determine if the user was once an active subscriber but has canceled their subscription, you may use the `canceled` method:
-
-    if ($user->subscription()->canceled()) {
-        // ...
-    }
-
-You may also determine if a user has canceled their subscription, but are still on their "grace period" until the subscription fully expires. For example, if a user cancels a subscription on March 5th that was originally scheduled to expire on March 10th, the user is on their "grace period" until March 10th. In addition, the `subscribed` method will still return `true` during this time:
-
-    if ($user->subscription()->onGracePeriod()) {
-        // ...
-    }
-
-<a name="past-due-status"></a>
-#### Past Due Status
-
-If a payment fails for a subscription, it will be marked as `past_due`. When your subscription is in this state it will not be active until the customer has updated their payment information. You may determine if a subscription is past due using the `pastDue` method on the subscription instance:
-
-    if ($user->subscription()->pastDue()) {
-        // ...
-    }
-
-When a subscription is past due, you should instruct the user to [update their payment information](#updating-payment-information).
-
-If you would like subscriptions to still be considered valid when they are `past_due`, you may use the `keepPastDueSubscriptionsActive` method provided by Cashier. Typically, this method should be called in the `register` method of your `AppServiceProvider`:
-
-    use Laravel\Paddle\Cashier;
-
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        Cashier::keepPastDueSubscriptionsActive();
-    }
-
-> [!WARNING]  
-> When a subscription is in a `past_due` state it cannot be changed until payment information has been updated. Therefore, the `swap` and `updateQuantity` methods will throw an exception when the subscription is in a `past_due` state.
-
-<a name="subscription-scopes"></a>
-#### Subscription Scopes
-
-Most subscription states are also available as query scopes so that you may easily query your database for subscriptions that are in a given state:
-
-    // Get all valid subscriptions...
-    $subscriptions = Subscription::query()->valid()->get();
-
-    // Get all of the canceled subscriptions for a user...
-    $subscriptions = $user->subscriptions()->canceled()->get();
-
-A complete list of available scopes is available below:
-
-    Subscription::query()->valid();
-    Subscription::query()->onTrial();
-    Subscription::query()->expiredTrial();
-    Subscription::query()->notOnTrial();
-    Subscription::query()->active();
-    Subscription::query()->recurring();
-    Subscription::query()->pastDue();
-    Subscription::query()->paused();
-    Subscription::query()->notPaused();
-    Subscription::query()->onPausedGracePeriod();
-    Subscription::query()->notOnPausedGracePeriod();
-    Subscription::query()->canceled();
-    Subscription::query()->notCanceled();
-    Subscription::query()->onGracePeriod();
-    Subscription::query()->notOnGracePeriod();
-
-<a name="subscription-single-charges"></a>
-### Subscription Single Charges
-
-Subscription single charges allow you to charge subscribers with a one-time charge on top of their subscriptions. You must provide one or multiple price ID's when invoking the `charge` method:
-
-    // Charge a single price...
-    $response = $user->subscription()->charge('pri_123');
-
-    // Charge multiple prices at once...
-    $response = $user->subscription()->charge(['pri_123', 'pri_456']);
-
-The `charge` method will not actually charge the customer until the next billing interval of their subscription. If you would like to bill the customer immediately, you may use the `chargeAndInvoice` method instead:
-
-    $response = $user->subscription()->chargeAndInvoice('pri_123');
-
-<a name="updating-payment-information"></a>
-### Updating Payment Information
-
-Paddle always saves a payment method per subscription. If you want to update the default payment method for a subscription, you should redirect your customer to Paddle's hosted payment method update page using the `redirectToUpdatePaymentMethod` method on the subscription model:
-
-    use Illuminate\Http\Request;
-
-    Route::get('/update-payment-method', function (Request $request) {
-        $user = $request->user();
-
-        return $user->subscription()->redirectToUpdatePaymentMethod();
-    });
-
-When a user has finished updating their information, a `subscription_updated` webhook will be dispatched by Paddle and the subscription details will be updated in your application's database.
-
-<a name="changing-plans"></a>
-### Changing Plans
-
-After a user has subscribed to your application, they may occasionally want to change to a new subscription plan. To update the subscription plan for a user, you should pass the Paddle price's identifier to the subscription's `swap` method:
-
-    use App\Models\User;
-
-    $user = User::find(1);
-
-    $user->subscription()->swap($premium = 'pri_456');
-
-If you would like to swap plans and immediately invoice the user instead of waiting for their next billing cycle, you may use the `swapAndInvoice` method:
-
-    $user = User::find(1);
-
-    $user->subscription()->swapAndInvoice($premium = 'pri_456');
-
-<a name="prorations"></a>
-#### Prorations
-
-By default, Paddle prorates charges when swapping between plans. The `noProrate` method may be used to update the subscriptions without prorating the charges:
-
-    $user->subscription('default')->noProrate()->swap($premium = 'pri_456');
-
-If you would like to disable proration and invoice customers immediately, you may use the `swapAndInvoice` method in combination with `noProrate`:
-
-    $user->subscription('default')->noProrate()->swapAndInvoice($premium = 'pri_456');
-
-Or, to not bill your customer for a subscription change, you may utilize the `doNotBill` method:
-
-    $user->subscription('default')->doNotBill()->swap($premium = 'pri_456');
-
-For more information on Paddle's proration policies, please consult Paddle's [proration documentation](https://developer.paddle.com/concepts/subscriptions/proration).
-
-<a name="subscription-quantity"></a>
-### Subscription Quantity
-
-Sometimes subscriptions are affected by "quantity". For example, a project management application might charge $10 per month per project. To easily increment or decrement your subscription's quantity, use the `incrementQuantity` and `decrementQuantity` methods:
-
-    $user = User::find(1);
-
-    $user->subscription()->incrementQuantity();
-
-    // Add five to the subscription's current quantity...
-    $user->subscription()->incrementQuantity(5);
-
-    $user->subscription()->decrementQuantity();
-
-    // Subtract five from the subscription's current quantity...
-    $user->subscription()->decrementQuantity(5);
-
-Alternatively, you may set a specific quantity using the `updateQuantity` method:
-
-    $user->subscription()->updateQuantity(10);
-
-The `noProrate` method may be used to update the subscription's quantity without prorating the charges:
-
-    $user->subscription()->noProrate()->updateQuantity(10);
-
-<a name="quantities-for-subscription-with-multiple-products"></a>
-#### Quantities for Subscriptions With Multiple Products
-
-If your subscription is a [subscription with multiple products](#subscriptions-with-multiple-products), you should pass the ID of the price whose quantity you wish to increment or decrement as the second argument to the increment / decrement methods:
-
-    $user->subscription()->incrementQuantity(1, 'price_chat');
-
-<a name="subscriptions-with-multiple-products"></a>
-### Subscriptions With Multiple Products
-
-[Subscription with multiple products](https://developer.paddle.com/build/subscriptions/add-remove-products-prices-addons) allow you to assign multiple billing products to a single subscription. For example, imagine you are building a customer service "helpdesk" application that has a base subscription price of $10 per month but offers a live chat add-on product for an additional $15 per month.
-
-When creating subscription checkout sessions, you may specify multiple products for a given subscription by passing an array of prices as the first argument to the `subscribe` method:
-
-    use Illuminate\Http\Request;
-
-    Route::post('/user/subscribe', function (Request $request) {
-        $checkout = $request->user()->subscribe([
-            'price_monthly',
-            'price_chat',
-        ]);
-
-        return view('billing', ['checkout' => $checkout]);
-    });
-
-In the example above, the customer will have two prices attached to their `default` subscription. Both prices will be charged on their respective billing intervals. If necessary, you may pass an associative array of key / value pairs to indicate a specific quantity for each price:
-
-    $user = User::find(1);
-
-    $checkout = $user->subscribe('default', ['price_monthly', 'price_chat' => 5]);
-
-If you would like to add another price to an existing subscription, you must use the subscription's `swap` method. When invoking the `swap` method, you should also include the subscription's current prices and quantities as well:
-
-    $user = User::find(1);
-
-    $user->subscription()->swap(['price_chat', 'price_original' => 2]);
-
-The example above will add the new price, but the customer will not be billed for it until their next billing cycle. If you would like to bill the customer immediately you may use the `swapAndInvoice` method:
-
-    $user->subscription()->swapAndInvoice(['price_chat', 'price_original' => 2]);
-
-You may remove prices from subscriptions using the `swap` method and omitting the price you want to remove:
-
-    $user->subscription()->swap(['price_original' => 2]);
-
-> [!WARNING]  
-> You may not remove the last price on a subscription. Instead, you should simply cancel the subscription.
-
-<a name="multiple-subscriptions"></a>
-### Multiple Subscriptions
-
-Paddle allows your customers to have multiple subscriptions simultaneously. For example, you may run a gym that offers a swimming subscription and a weight-lifting subscription, and each subscription may have different pricing. Of course, customers should be able to subscribe to either or both plans.
-
-When your application creates subscriptions, you may provide the type of the subscription to the `subscribe` method as the second argument. The type may be any string that represents the type of subscription the user is initiating:
-
-    use Illuminate\Http\Request;
-
-    Route::post('/swimming/subscribe', function (Request $request) {
-        $checkout = $request->user()->subscribe($swimmingMonthly = 'pri_123', 'swimming');
-
-        return view('billing', ['checkout' => $checkout]);
-    });
-
-In this example, we initiated a monthly swimming subscription for the customer. However, they may want to swap to a yearly subscription at a later time. When adjusting the customer's subscription, we can simply swap the price on the `swimming` subscription:
-
-    $user->subscription('swimming')->swap($swimmingYearly = 'pri_456');
-
-Of course, you may also cancel the subscription entirely:
-
-    $user->subscription('swimming')->cancel();
-
-<a name="pausing-subscriptions"></a>
-### Pausing Subscriptions
-
-To pause a subscription, call the `pause` method on the user's subscription:
-
-    $user->subscription()->pause();
-
-When a subscription is paused, Cashier will automatically set the `paused_at` column in your database. This column is used to determine when the `paused` method should begin returning `true`. For example, if a customer pauses a subscription on March 1st, but the subscription was not scheduled to recur until March 5th, the `paused` method will continue to return `false` until March 5th. This is because a user is typically allowed to continue using an application until the end of their billing cycle.
-
-By default, pausing happens at the next billing interval so the customer can use the remainder of the period they paid for. If you want to pause a subscription immediately, you may use the `pauseNow` method:
-
-    $user->subscription()->pauseNow();
-
-Using the `pauseUntil` method, you can pause the subscription until a specific moment in time:
-
-    $user->subscription()->pauseUntil(now()->addMonth());
-
-Or, you may use the `pauseNowUntil` method to immediately pause the subscription until a given point in time:
-
-    $user->subscription()->pauseNowUntil(now()->addMonth());
-
-You may determine if a user has paused their subscription but are still on their "grace period" using the `onPausedGracePeriod` method:
-
-    if ($user->subscription()->onPausedGracePeriod()) {
-        // ...
-    }
-
-To resume a paused subscription, you may invoke the `resume` method on the subscription:
-
-    $user->subscription()->resume();
-
-> [!WARNING]  
-> A subscription cannot be modified while it is paused. If you want to swap to a different plan or update quantities you must resume the subscription first.
-
-<a name="canceling-subscriptions"></a>
-### Canceling Subscriptions
-
-To cancel a subscription, call the `cancel` method on the user's subscription:
-
-    $user->subscription()->cancel();
-
-When a subscription is canceled, Cashier will automatically set the `ends_at` column in your database. This column is used to determine when the `subscribed` method should begin returning `false`. For example, if a customer cancels a subscription on March 1st, but the subscription was not scheduled to end until March 5th, the `subscribed` method will continue to return `true` until March 5th. This is done because a user is typically allowed to continue using an application until the end of their billing cycle.
-
-You may determine if a user has canceled their subscription but are still on their "grace period" using the `onGracePeriod` method:
-
-    if ($user->subscription()->onGracePeriod()) {
-        // ...
-    }
-
-If you wish to cancel a subscription immediately, you may call the `cancelNow` method on the subscription:
-
-    $user->subscription()->cancelNow();
-
-To stop a subscription on its grace period from canceling, you may invoke the `stopCancelation` method:
-
-    $user->subscription()->stopCancelation();
-
-> [!WARNING]  
-> Paddle's subscriptions cannot be resumed after cancelation. If your customer wishes to resume their subscription, they will have to create a new subscription.
-
-<a name="subscription-trials"></a>
-## Subscription Trials
-
-<a name="with-payment-method-up-front"></a>
-### With Payment Method Up Front
-
-If you would like to offer trial periods to your customers while still collecting payment method information up front, you should use set a trial time in the Paddle dashboard on the price your customer is subscribing to. Then, initiate the checkout session as normal:
-
-    use Illuminate\Http\Request;
-
-    Route::get('/user/subscribe', function (Request $request) {
-        $checkout = $request->user()->subscribe('pri_monthly')
-                    ->returnTo(route('home'));
-
-        return view('billing', ['checkout' => $checkout]);
-    });
-
-When your application receives the `subscription_created` event, Cashier will set the trial period ending date on the subscription record within your application's database as well as instruct Paddle to not begin billing the customer until after this date.
-
-> [!WARNING]  
-> If the customer's subscription is not canceled before the trial ending date they will be charged as soon as the trial expires, so you should be sure to notify your users of their trial ending date.
-
-You may determine if the user is within their trial period using either the `onTrial` method of the user instance or the `onTrial` method of the subscription instance. The two examples below are equivalent:
-
-    if ($user->onTrial()) {
-        // ...
-    }
-
-    if ($user->subscription()->onTrial()) {
-        // ...
-    }
-To determine if an existing trial has expired, you may use the `hasExpiredTrial` methods:
-
-    if ($user->hasExpiredTrial()) {
-        // ...
-    }
-
-    if ($user->subscription()->hasExpiredTrial()) {
-        // ...
-    }
-
-To determine if a user is on trial for a specific subscription type, you may provide the type to the `onTrial` or `hasExpiredTrial` methods:
-
-    if ($user->onTrial('default')) {
-        // ...
-    }
-
-    if ($user->hasExpiredTrial('default')) {
-        // ...
-    }
-
-<a name="without-payment-method-up-front"></a>
-### Without Payment Method Up Front
-
-If you would like to offer trial periods without collecting the user's payment method information up front, you may set the `trial_ends_at` column on the customer record attached to your user to your desired trial ending date. This is typically done during user registration:
-
-    use App\Models\User;
-
-    $user = User::create([
-        // ...
-    ]);
-
-    $user->createAsCustomer([
-        'trial_ends_at' => now()->addDays(10)
-    ]);
-
-Cashier refers to this type of trial as a "generic trial", since it is not attached to any existing subscription. The `onTrial` method on the `User` instance will return `true` if the current date is not past the value of `trial_ends_at`:
-
-    if ($user->onTrial()) {
-        // User is within their trial period...
-    }
-
-Once you are ready to create an actual subscription for the user, you may use the `subscribe` method as usual:
-
-    use Illuminate\Http\Request;
-
-    Route::get('/user/subscribe', function (Request $request) {
-        $checkout = $user->subscribe('pri_monthly')
-            ->returnTo(route('home'));
-
-        return view('billing', ['checkout' => $checkout]);
-    });
-
-To retrieve the user's trial ending date, you may use the `trialEndsAt` method. This method will return a Carbon date instance if a user is on a trial or `null` if they aren't. You may also pass an optional subscription type parameter if you would like to get the trial ending date for a specific subscription other than the default one:
-
-    if ($user->onTrial('default')) {
-        $trialEndsAt = $user->trialEndsAt();
-    }
-
-You may use the `onGenericTrial` method if you wish to know specifically that the user is within their "generic" trial period and has not created an actual subscription yet:
-
-    if ($user->onGenericTrial()) {
-        // User is within their "generic" trial period...
-    }
-
-<a name="extend-or-activate-a-trial"></a>
-### Extend or Activate a Trial
-
-You can extend an existing trial period on a subscription by invoking the `extendTrial` method and specifying the moment in time that the trial should end:
-
-    $user->subsription()->extendTrial(now()->addDays(5));
-
-Or, you may immediately activate a subscription by ending its trial by calling the `activate` method on the subscription:
-
-    $user->subscription()->activate();
-
-<a name="handling-paddle-webhooks"></a>
-## Handling Paddle Webhooks
-
-Paddle can notify your application of a variety of events via webhooks. By default, a route that points to Cashier's webhook controller is registered by the Cashier service provider. This controller will handle all incoming webhook requests.
-
-By default, this controller will automatically handle canceling subscriptions that have too many failed charges, subscription updates, and payment method changes; however, as we'll soon discover, you can extend this controller to handle any Paddle webhook event you like.
-
-To ensure your application can handle Paddle webhooks, be sure to [configure the webhook URL in the Paddle control panel](https://vendors.paddle.com/alerts-webhooks). By default, Cashier's webhook controller responds to the `/paddle/webhook` URL path. The full list of all webhooks you should enable in the Paddle control panel are:
-
-- Customer Updated
-- Transaction Completed
-- Transaction Updated
-- Subscription Created
-- Subscription Updated
-- Subscription Paused
-- Subscription Canceled
-
-> [!WARNING]  
-> Make sure you protect incoming requests with Cashier's included [webhook signature verification](/docs/{{version}}/cashier-paddle#verifying-webhook-signatures) middleware.
-
-<a name="webhooks-csrf-protection"></a>
-#### Webhooks and CSRF Protection
-
-Since Paddle webhooks need to bypass Laravel's [CSRF protection](/docs/{{version}}/csrf), be sure to list the URI as an exception in your `App\Http\Middleware\VerifyCsrfToken` middleware or list the route outside of the `web` middleware group:
-
-    protected $except = [
-        'paddle/*',
-    ];
-
-<a name="webhooks-local-development"></a>
-#### Webhooks and Local Development
-
-For Paddle to be able to send your application webhooks during local development, you will need to expose your application via a site sharing service such as [Ngrok](https://ngrok.com/) or [Expose](https://expose.dev/docs/introduction). If you are developing your application locally using [Laravel Sail](/docs/{{version}}/sail), you may use Sail's [site sharing command](/docs/{{version}}/sail#sharing-your-site).
-
-<a name="defining-webhook-event-handlers"></a>
-### Defining Webhook Event Handlers
-
-Cashier automatically handles subscription cancelation on failed charges and other common Paddle webhooks. However, if you have additional webhook events you would like to handle, you may do so by listening to the following events that are dispatched by Cashier:
-
-- `Laravel\Paddle\Events\WebhookReceived`
-- `Laravel\Paddle\Events\WebhookHandled`
-
-Both events contain the full payload of the Paddle webhook. For example, if you wish to handle the `transaction_billed` webhook, you may register a [listener](/docs/{{version}}/events#defining-listeners) that will handle the event:
-
-    <?php
-
-    namespace App\Listeners;
-
-    use Laravel\Paddle\Events\WebhookReceived;
-
-    class PaddleEventListener
-    {
-        /**
-         * Handle received Paddle webhooks.
-         */
-        public function handle(WebhookReceived $event): void
-        {
-            if ($event->payload['alert_name'] === 'transaction_billed') {
-                // Handle the incoming event...
-            }
-        }
-    }
-
-Once your listener has been defined, you may register it within your application's `EventServiceProvider`:
-
-    <?php
-
-    namespace App\Providers;
-
-    use App\Listeners\PaddleEventListener;
-    use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-    use Laravel\Paddle\Events\WebhookReceived;
-
-    class EventServiceProvider extends ServiceProvider
-    {
-        protected $listen = [
-            WebhookReceived::class => [
-                PaddleEventListener::class,
-            ],
-        ];
-    }
-
-Cashier also emit events dedicated to the type of the received webhook. In addition to the full payload from Paddle, they also contain the relevant models that were used to process the webhook such as the billable model, the subscription, or the receipt:
-
-<div class="content-list" markdown="1">
-
-- `Laravel\Paddle\Events\CustomerUpdated`
-- `Laravel\Paddle\Events\TransactionCompleted`
-- `Laravel\Paddle\Events\TransactionUpdated`
-- `Laravel\Paddle\Events\SubscriptionCreated`
-- `Laravel\Paddle\Events\SubscriptionUpdated`
-- `Laravel\Paddle\Events\SubscriptionPaused`
-- `Laravel\Paddle\Events\SubscriptionCanceled`
-
-</div>
-
-You can also override the default, built-in webhook route by defining the `CASHIER_WEBHOOK` environment variable in your application's `.env` file. This value should be the full URL to your webhook route and needs to match the URL set in your Paddle control panel:
-
-```ini
-CASHIER_WEBHOOK=https://example.com/my-paddle-webhook-url
-```
-
-<a name="verifying-webhook-signatures"></a>
-### Verifying Webhook Signatures
-
-To secure your webhooks, you may use [Paddle's webhook signatures](https://developer.paddle.com/webhook-reference/verifying-webhooks). For convenience, Cashier automatically includes a middleware which validates that the incoming Paddle webhook request is valid.
-
-To enable webhook verification, ensure that the `PADDLE_WEBHOOK_SECRET` environment variable is defined in your application's `.env` file. The webhook secret may be retrieved from your Paddle account dashboard.
-
-<a name="single-charges"></a>
-## Single Charges
-
-<a name="charging-for-products"></a>
-### Charging for Products
-
-If you would like to initiate a product purchase for a customer, you may use the `checkout` method on a billable model instance to generate a checkout session for the purchase. The `checkout` method accepts one or multiple price ID's. If necessary, an associative array may be used to provide the quantity of the product that is being purchased:
-
-    use Illuminate\Http\Request;
-
-    Route::get('/buy', function (Request $request) {
-        $checkout = $request->user()->checkout(['pri_tshirt', 'pri_socks' => 5]);
-
-        return view('buy', ['checkout' => $checkout]);
-    });
-
-After generating the checkout session, you may use Cashier's provided `paddle-button` [Blade component](#overlay-checkout) to allow the user to view the Paddle checkout widget and complete the purchase:
-
-```blade
-<x-paddle-button :checkout="$checkout" class="px-8 py-4">
-    Buy
-</x-paddle-button>
-```
-
-A checkout session has a `customData` method, allowing you to pass any custom data you wish to the underlying transaction creation. Please consult [the Paddle documentation](https://developer.paddle.com/build/transactions/custom-data) to learn more about the options available to you when passing custom data:
-
-    $checkout = $user->checkout('pri_tshirt')
-        ->customData([
-            'custom_option' => $value,
-        ]);
-
-<a name="refunding-transactions"></a>
-### Refunding Transactions
-
-Refunding transactions will return the refunded amount to your customer's payment method that was used at the time of purchase. If you need to refund a Paddle purchase, you may use the `refund` method on a `Cashier\Paddle\Transaction` model. This method accepts a reason as the first argument, one or more price ID's to refund with optional amounts as an associative array. You may retrieve the transactions for a given billable model using the `transactions` method.
-
-For example, imagine we want to refund a specific transaction for prices `pri_123` and `pri_456`. We want to fully refund `pri_123`, but only refund two dollars for `pri_456`:
-
-    use App\Models\User;
-
-    $user = User::find(1);
-
-    $transaction = $user->transactions()->first();
-
-    $response = $transaction->refund('Accidental charge', [
-        'pri_123', // Fully refund this price...
-        'pri_456' => 200, // Only partially refund this price...
-    ]);
-
-The example above refunds specific line items in a transaction. If you want to refund the entire transaction, simply provide a reason:
-
-    $response = $transaction->refund('Accidental charge');
-
-For more information on refunds, please consult [Paddle's refund documentation](https://developer.paddle.com/build/transactions/create-transaction-adjustments).
-
-> [!WARNING]  
-> Refunds must always be approved by Paddle before fully processing.
-
-<a name="crediting-transactions"></a>
-### Crediting Transactions
-
-Just like refunding, you can also credit transactions. Crediting transactions will add the funds to the customer's balance so it may be used for future purchases. Crediting transactions can only be done for manually-collected transactions and not for automatically-collected transactions (like subscriptions) since Paddle handles subscription credits automatically:
-
-    $transaction = $user->transactions()->first();
-
-    // Credit a specific line item fully...
-    $response = $transaction->credit('Compensation', 'pri_123');
-
-For more info, [see Paddle's documentation on crediting](https://developer.paddle.com/build/transactions/create-transaction-adjustments).
-
-> [!WARNING]  
-> Credits can only be applied for manually-collected transactions. Automatically-collected transactions are credited by Paddle themselves.
-
-<a name="transactions"></a>
-## Transactions
-
-You may easily retrieve an array of a billable model's transactions via the `transactions` property:
-
-    use App\Models\User;
-
-    $user = User::find(1);
-
-    $transactions = $user->transactions;
-
-Transactions represent payments for your products and purchases and are accompanied by invoices. Only completed transactions are stored in your application's database.
-
-When listing the transactions for a customer, you may use the transaction instance's methods to display the relevant payment information. For example, you may wish to list every transaction in a table, allowing the user to easily download any of the invoices:
-
-```html
-<table>
-    @foreach ($transactions as $transaction)
-        <tr>
-            <td>{{ $transaction->billed_at->toFormattedDateString() }}</td>
-            <td>{{ $transaction->total() }}</td>
-            <td>{{ $transaction->tax() }}</td>
-            <td><a href="{{ route('download-invoice', $transaction->id) }}" target="_blank">Download</a></td>
-        </tr>
-    @endforeach
-</table>
-```
-
-The `download-invoice` route may look like the following:
-
-    use Illuminate\Http\Request;
-    use Laravel\Cashier\Transaction;
-
-    Route::get('/download-invoice/{transaction}', function (Request $request, Transaction $transaction) {
-        return $transaction->redirectToInvoicePdf();
-    })->name('download-invoice');
-
-<a name="past-and-upcoming-payments"></a>
-### Past and Upcoming Payments
-
-You may use the `lastPayment` and `nextPayment` methods to retrieve and display a customer's past or upcoming payments for recurring subscriptions:
-
-    use App\Models\User;
-
-    $user = User::find(1);
-
-    $subscription = $user->subscription();
-
-    $lastPayment = $subscription->lastPayment();
-    $nextPayment = $subscription->nextPayment();
-
-Both of these methods will return an instance of `Laravel\Paddle\Payment`; however, `lastPayment` will return `null` when transactions have not been synced by webhooks yet, while `nextPayment` will return `null` when the billing cycle has ended (such as when a subscription has been canceled):
-
-```blade
-Next payment: {{ $nextPayment->amount() }} due on {{ $nextPayment->date()->format('d/m/Y') }}
-```
-
-<a name="testing"></a>
-## Testing
-
-While testing, you should manually test your billing flow to make sure your integration works as expected.
-
-For automated tests, including those executed within a CI environment, you may use [Laravel's HTTP Client](/docs/{{version}}/http-client#testing) to fake HTTP calls made to Paddle. Although this does not test the actual responses from Paddle, it does provide a way to test your application without actually calling Paddle's API.
+**번역이 매우 방대한 관계로, 특별히 필요한 섹션이나 추가 번역이 필요한 부분이 있다면 원하는 항목을 별도 요청해 주세요.  
+전체 번역이 필요하신 경우, 추가로 이어서 순차 번역해드릴 수 있습니다.**

@@ -1,69 +1,69 @@
-# Release Notes
+# 릴리즈 노트
 
-- [Versioning Scheme](#versioning-scheme)
-- [Support Policy](#support-policy)
+- [버전 관리 방식](#versioning-scheme)
+- [지원 정책](#support-policy)
 - [Laravel 12](#laravel-12)
 
 <a name="versioning-scheme"></a>
-## Versioning Scheme
+## 버전 관리 방식
 
-Laravel and its other first-party packages follow [Semantic Versioning](https://semver.org). Major framework releases are released every year (~Q1), while minor and patch releases may be released as often as every week. Minor and patch releases should **never** contain breaking changes.
+Laravel 및 그 외 공식 패키지들은 [Semantic Versioning](https://semver.org)(시맨틱 버저닝)을 따릅니다. 주요 프레임워크 릴리즈는 매년(대략 1분기)에 출시되며, 마이너 및 패치 릴리즈는 매주 출시될 수 있습니다. 마이너 및 패치 릴리즈에는 **절대로** 하위 호환성에 영향을 주는 변경 사항이 포함되지 않아야 합니다.
 
-When referencing the Laravel framework or its components from your application or package, you should always use a version constraint such as `^12.0`, since major releases of Laravel do include breaking changes. However, we strive to always ensure you may update to a new major release in one day or less.
+애플리케이션이나 패키지에서 Laravel 프레임워크 혹은 컴포넌트를 참조할 때는, `^12.0`과 같은 버전 제약 조건을 사용하는 것이 좋습니다. Laravel의 주요 릴리즈에는 하위 호환성에 영향을 주는 변경이 포함될 수 있기 때문입니다. 하지만, 새로운 주요 릴리즈로 하루 이내에 업데이트할 수 있도록 항상 최선을 다하고 있습니다.
 
 <a name="named-arguments"></a>
-#### Named Arguments
+#### 네임드 아규먼트
 
-[Named arguments](https://www.php.net/manual/en/functions.arguments.php#functions.named-arguments) are not covered by Laravel's backwards compatibility guidelines. We may choose to rename function arguments when necessary in order to improve the Laravel codebase. Therefore, using named arguments when calling Laravel methods should be done cautiously and with the understanding that the parameter names may change in the future.
+[네임드 아규먼트](https://www.php.net/manual/en/functions.arguments.php#functions.named-arguments)는 Laravel의 하위 호환성 가이드라인에 포함되지 않습니다. Laravel 코드베이스의 개선을 위해 필요한 경우 함수의 인자명을 변경할 수 있습니다. 따라서, Laravel 메소드 호출 시 네임드 아규먼트를 사용할 때는 신중히 사용해야 하며, 향후 파라미터 이름이 변경될 수 있다는 점을 염두에 두어야 합니다.
 
 <a name="support-policy"></a>
-## Support Policy
+## 지원 정책
 
-For all Laravel releases, bug fixes are provided for 18 months and security fixes are provided for 2 years. For all additional libraries, including Lumen, only the latest major release receives bug fixes. In addition, please review the database versions [supported by Laravel](/docs/{{version}}/database#introduction).
+모든 Laravel 릴리즈에 대해 버그 수정은 18개월 동안 제공되며, 보안 패치는 2년간 제공됩니다. Lumen을 포함한 추가 라이브러리의 경우, 오직 최신 주요 릴리즈만 버그 수정을 받습니다. 또한, Laravel에서 지원하는 데이터베이스 버전은 [공식 문서](/docs/{{version}}/database#introduction)를 참고하시기 바랍니다.
 
 <div class="overflow-auto">
 
-| Version | PHP (*) | Release | Bug Fixes Until | Security Fixes Until |
+| 버전 | PHP (*) | 릴리즈 | 버그 수정 종료일 | 보안 패치 종료일 |
 | --- | --- | --- | --- | --- |
-| 9 | 8.0 - 8.2 | February 8th, 2022 | August 8th, 2023 | February 6th, 2024 |
-| 10 | 8.1 - 8.3 | February 14th, 2023 | August 6th, 2024 | February 4th, 2025 |
-| 11 | 8.2 - 8.4 | March 12th, 2024 | September 3rd, 2025 | March 12th, 2026 |
-| 12 | 8.2 - 8.4 | February 24th, 2025 | August 13th, 2026 | February 24th, 2027 |
+| 9 | 8.0 - 8.2 | 2022년 2월 8일 | 2023년 8월 8일 | 2024년 2월 6일 |
+| 10 | 8.1 - 8.3 | 2023년 2월 14일 | 2024년 8월 6일 | 2025년 2월 4일 |
+| 11 | 8.2 - 8.4 | 2024년 3월 12일 | 2025년 9월 3일 | 2026년 3월 12일 |
+| 12 | 8.2 - 8.4 | 2025년 2월 24일 | 2026년 8월 13일 | 2027년 2월 24일 |
 
 </div>
 
 <div class="version-colors">
     <div class="end-of-life">
         <div class="color-box"></div>
-        <div>End of life</div>
+        <div>지원 종료</div>
     </div>
     <div class="security-fixes">
         <div class="color-box"></div>
-        <div>Security fixes only</div>
+        <div>보안 패치만 제공</div>
     </div>
 </div>
 
-(*) Supported PHP versions
+(*) 지원되는 PHP 버전
 
 <a name="laravel-12"></a>
 ## Laravel 12
 
-Laravel 12 continues the improvements made in Laravel 11.x by updating upstream dependencies and introducing new starter kits for React, Vue, and Livewire, including the option of using [WorkOS AuthKit](https://authkit.com) for user authentication. The WorkOS variant of our starter kits offers social authentication, passkeys, and SSO support.
+Laravel 12는 상위 의존성 패키지 업데이트 및 React, Vue, Livewire용 신규 스타터 키트 도입 등 Laravel 11.x에서의 개선을 이어갑니다. 신규 키트에는 [WorkOS AuthKit](https://authkit.com)을 이용한 사용자 인증 옵션도 포함되어 있습니다. WorkOS 기반 스타터 키트는 소셜 인증, 패스키, SSO 지원을 제공합니다.
 
 <a name="minimal-breaking-changes"></a>
-### Minimal Breaking Changes
+### 최소한의 파괴적 변경
 
-Much of our focus during this release cycle has been minimizing breaking changes. Instead, we have dedicated ourselves to shipping continuous quality-of-life improvements throughout the year that do not break existing applications.
+이번 릴리즈에서는 하위 호환성에 영향을 주는 변경을 최소화하는 데 중점을 두었습니다. 그 대신, 연중 기존 애플리케이션에 영향을 주지 않는 지속적인 품질 개선을 제공하는 데 집중했습니다.
 
-Therefore, the Laravel 12 release is a relatively minor "maintenance release" in order to upgrade existing dependencies. In light of this, most Laravel applications may upgrade to Laravel 12 without changing any application code.
+따라서, Laravel 12 릴리즈는 기존 의존성 업그레이드를 위한 비교적 소규모의 "유지보수" 릴리즈입니다. 이로 인해 대부분의 Laravel 애플리케이션은 코드 변경 없이도 Laravel 12로 업그레이드할 수 있습니다.
 
 <a name="new-application-starter-kits"></a>
-### New Application Starter Kits
+### 신규 애플리케이션 스타터 키트
 
-Laravel 12 introduces new [application starter kits](/docs/{{version}}/starter-kits) for React, Vue, and Livewire. The React and Vue starter kits utilize Inertia 2, TypeScript, [shadcn/ui](https://ui.shadcn.com), and Tailwind, while the Livewire starter kits utilize the Tailwind-based [Flux UI](https://fluxui.dev) component library and Laravel Volt.
+Laravel 12에서는 React, Vue, Livewire용 신규 [애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)를 도입했습니다. React, Vue 스타터 키트는 Inertia 2, TypeScript, [shadcn/ui](https://ui.shadcn.com), Tailwind를 사용하며, Livewire 스타터 키트는 Tailwind 기반 [Flux UI](https://fluxui.dev) 컴포넌트 라이브러리와 Laravel Volt를 활용합니다.
 
-The React, Vue, and Livewire starter kits all utilize Laravel's built-in authentication system to offer login, registration, password reset, email verification, and more. In addition, we are introducing a [WorkOS AuthKit-powered](https://authkit.com) variant of each starter kit, offering social authentication, passkeys, and SSO support. WorkOS offers free authentication for applications up to 1 million monthly active users.
+React, Vue, Livewire 스타터 키트 모두 Laravel의 내장 인증 시스템을 활용하여 로그인, 회원가입, 비밀번호 재설정, 이메일 인증 등 다양한 기능을 제공합니다. 또한, 각 스타터 키트의 [WorkOS AuthKit 기반](https://authkit.com) 버전을 도입하여 소셜 인증, 패스키, SSO 지원을 제공합니다. WorkOS는 월 100만 명 활동 사용자까지 무료 인증 서비스를 제공합니다.
 
-With the introduction of our new application starter kits, Laravel Breeze and Laravel Jetstream will no longer receive additional updates.
+신규 애플리케이션 스타터 키트가 도입되면서, Laravel Breeze와 Laravel Jetstream은 더 이상 추가 업데이트를 받지 않습니다.
 
-To get started with our new starter kits, check out the [starter kit documentation](/docs/{{version}}/starter-kits).
+새로운 스타터 키트 시작 방법은 [스타터 키트 문서](/docs/{{version}}/starter-kits)를 참고하세요.

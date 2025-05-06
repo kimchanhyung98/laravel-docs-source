@@ -1,74 +1,74 @@
-# Request Lifecycle
+# 요청 수명 주기
 
-- [Introduction](#introduction)
-- [Lifecycle Overview](#lifecycle-overview)
-    - [First Steps](#first-steps)
-    - [HTTP / Console Kernels](#http-console-kernels)
-    - [Service Providers](#service-providers)
-    - [Routing](#routing)
-    - [Finishing Up](#finishing-up)
-- [Focus On Service Providers](#focus-on-service-providers)
+- [소개](#introduction)
+- [수명 주기 개요](#lifecycle-overview)
+    - [첫 단계](#first-steps)
+    - [HTTP / 콘솔 커널](#http-console-kernels)
+    - [서비스 프로바이더](#service-providers)
+    - [라우팅](#routing)
+    - [마무리](#finishing-up)
+- [서비스 프로바이더에 집중하기](#focus-on-service-providers)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-When using any tool in the "real world", you feel more confident if you understand how that tool works. Application development is no different. When you understand how your development tools function, you feel more comfortable and confident using them.
+"실제 세계"에서 어떤 도구를 사용할 때, 그 도구가 어떻게 작동하는지 이해하면 더 자신감이 생깁니다. 애플리케이션 개발도 마찬가지입니다. 개발 도구가 어떻게 동작하는지 이해하면, 더 편안하고 자신 있게 사용할 수 있습니다.
 
-The goal of this document is to give you a good, high-level overview of how the Laravel framework works. By getting to know the overall framework better, everything feels less "magical" and you will be more confident building your applications. If you don't understand all of the terms right away, don't lose heart! Just try to get a basic grasp of what is going on, and your knowledge will grow as you explore other sections of the documentation.
+이 문서의 목적은 Laravel 프레임워크가 어떻게 동작하는지에 대한 고수준의 전반적인 개요를 제공하는 것입니다. 전체적인 프레임워크의 구조를 이해하면, 모든 것이 덜 "마법"처럼 느껴지고 애플리케이션 개발에 더 자신감을 가질 수 있습니다. 모든 용어를 바로 이해하지 못해도 걱정하지 마세요! 전체적인 흐름을 기본적으로 파악하는 데 집중하면, 문서의 다른 부분들을 탐색하면서 자연스럽게 지식이 늘어날 것입니다.
 
 <a name="lifecycle-overview"></a>
-## Lifecycle Overview
+## 수명 주기 개요
 
 <a name="first-steps"></a>
-### First Steps
+### 첫 단계
 
-The entry point for all requests to a Laravel application is the `public/index.php` file. All requests are directed to this file by your web server (Apache / Nginx) configuration. The `index.php` file doesn't contain much code. Rather, it is a starting point for loading the rest of the framework.
+Laravel 애플리케이션으로 들어오는 모든 요청의 진입점은 `public/index.php` 파일입니다. 모든 요청은 웹 서버(Apache / Nginx) 설정에 의해 이 파일로 전달됩니다. `index.php` 파일에는 사실상 많은 코드가 들어있지 않습니다. 오히려, 프레임워크의 나머지 부분을 불러오는 시작점 역할을 합니다.
 
-The `index.php` file loads the Composer generated autoloader definition, and then retrieves an instance of the Laravel application from `bootstrap/app.php`. The first action taken by Laravel itself is to create an instance of the application / [service container](/docs/{{version}}/container).
+`index.php` 파일은 Composer가 생성한 오토로더 정의를 불러오고, `bootstrap/app.php`에서 Laravel 애플리케이션 인스턴스를 가져옵니다. Laravel이 처음으로 수행하는 작업은 애플리케이션 인스턴스(또는 [서비스 컨테이너](/docs/{{version}}/container))를 생성하는 것입니다.
 
 <a name="http-console-kernels"></a>
-### HTTP / Console Kernels
+### HTTP / 콘솔 커널
 
-Next, the incoming request is sent to either the HTTP kernel or the console kernel, depending on the type of request that is entering the application. These two kernels serve as the central location that all requests flow through. For now, let's just focus on the HTTP kernel, which is located in `app/Http/Kernel.php`.
+다음으로, 들어온 요청은 요청의 종류에 따라 HTTP 커널 혹은 콘솔 커널로 전달됩니다. 이 두 커널은 모든 요청의 중심 경로 역할을 합니다. 지금은 `app/Http/Kernel.php`에 위치한 HTTP 커널에 집중해봅시다.
 
-The HTTP kernel extends the `Illuminate\Foundation\Http\Kernel` class, which defines an array of `bootstrappers` that will be run before the request is executed. These bootstrappers configure error handling, configure logging, [detect the application environment](/docs/{{version}}/configuration#environment-configuration), and perform other tasks that need to be done before the request is actually handled. Typically, these classes handle internal Laravel configuration that you do not need to worry about.
+HTTP 커널은 `Illuminate\Foundation\Http\Kernel` 클래스를 확장하며, 이 클래스는 요청이 처리되기 전에 실행될 `bootstrappers` 배열을 정의합니다. 부트스트래퍼는 에러 핸들링, 로깅 설정, [애플리케이션 환경 감지](/docs/{{version}}/configuration#environment-configuration), 기타 요청이 실제로 처리되기 전에 필요한 작업들을 수행합니다. 일반적으로, 이들 클래스는 내부적인 Laravel 설정을 다루며, 따로 신경 쓸 필요가 없는 부분입니다.
 
-The HTTP kernel also defines a list of HTTP [middleware](/docs/{{version}}/middleware) that all requests must pass through before being handled by the application. These middleware handle reading and writing the [HTTP session](/docs/{{version}}/session), determining if the application is in maintenance mode, [verifying the CSRF token](/docs/{{version}}/csrf), and more. We'll talk more about these soon.
+HTTP 커널은 또한 모든 요청이 애플리케이션에 의해 처리되기 전에 반드시 거쳐야 하는 HTTP [미들웨어](/docs/{{version}}/middleware) 목록을 정의합니다. 이 미들웨어들은 [HTTP 세션](/docs/{{version}}/session) 읽기/쓰기, 애플리케이션의 유지보수 모드 확인, [CSRF 토큰 검증](/docs/{{version}}/csrf) 등 다양한 역할을 담당합니다. 이 미들웨어들에 대해서는 곧 더 자세히 알아보겠습니다.
 
-The method signature for the HTTP kernel's `handle` method is quite simple: it receives a `Request` and returns a `Response`. Think of the kernel as being a big black box that represents your entire application. Feed it HTTP requests and it will return HTTP responses.
+HTTP 커널의 `handle` 메소드는 매우 단순한 시그니처를 가집니다: `Request` 객체를 받아 `Response` 객체를 반환합니다. 커널을 여러분의 전체 애플리케이션을 나타내는 큰 블랙박스로 생각해보세요. HTTP 요청을 넣으면 HTTP 응답이 나옵니다.
 
 <a name="service-providers"></a>
-### Service Providers
+### 서비스 프로바이더
 
-One of the most important kernel bootstrapping actions is loading the [service providers](/docs/{{version}}/providers) for your application. Service providers are responsible for bootstrapping all of the framework's various components, such as the database, queue, validation, and routing components. All of the service providers for the application are configured in the `config/app.php` configuration file's `providers` array.
+커널 부트스트래핑 작업 중 가장 중요한 것 중 하나는 애플리케이션의 [서비스 프로바이더](/docs/{{version}}/providers)를 불러오는 작업입니다. 서비스 프로바이더는 데이터베이스, 큐, 검증, 라우팅 등 프레임워크의 다양한 컴포넌트들이 부트스트랩되는 역할을 담당합니다. 애플리케이션의 모든 서비스 프로바이더는 `config/app.php` 설정 파일의 `providers` 배열에 정의되어 있습니다.
 
-Laravel will iterate through this list of providers and instantiate each of them. After instantiating the providers, the `register` method will be called on all of the providers. Then, once all of the providers have been registered, the `boot` method will be called on each provider. This is so service providers may depend on every container binding being registered and available by the time their `boot` method is executed.
+Laravel은 이 프로바이더 목록을 순회하며 각각을 인스턴스화합니다. 프로바이더를 인스턴스화한 뒤에는 모든 프로바이더에서 `register` 메소드가 가장 먼저 호출됩니다. 그리고 모든 프로바이더의 등록이 끝나면, 각 프로바이더의 `boot` 메소드가 호출됩니다. 이렇게 하는 이유는, `boot` 메소드가 실행될 시점에는 모든 컨테이너 바인딩이 등록되어 사용할 수 있게 하기 위함입니다.
 
-Essentially every major feature offered by Laravel is bootstrapped and configured by a service provider. Since they bootstrap and configure so many features offered by the framework, service providers are the most important aspect of the entire Laravel bootstrap process.
+Laravel이 제공하는 거의 모든 주요 기능은 서비스 프로바이더에 의해 부트스트랩되고 설정됩니다. 프레임워크에서 제공하는 다양한 기능을 부트스트랩하고 설정하기 때문에, 서비스 프로바이더는 Laravel 부트스트랩 프로세스에서 가장 중요한 요소입니다.
 
 <a name="routing"></a>
-### Routing
+### 라우팅
 
-One of the most important service providers in your application is the `App\Providers\RouteServiceProvider`. This service provider loads the route files contained within your application's `routes` directory. Go ahead, crack open the `RouteServiceProvider` code and take a look at how it works!
+애플리케이션 내에서 가장 중요한 서비스 프로바이더 중 하나가 `App\Providers\RouteServiceProvider`입니다. 이 서비스 프로바이더는 애플리케이션의 `routes` 디렉터리 내 라우트 파일들을 불러옵니다. 실제로 `RouteServiceProvider` 코드를 열어보고, 내부가 어떻게 동작하는지 살펴보세요!
 
-Once the application has been bootstrapped and all service providers have been registered, the `Request` will be handed off to the router for dispatching. The router will dispatch the request to a route or controller, as well as run any route specific middleware.
+애플리케이션이 부트스트랩되고 모든 서비스 프로바이더가 등록되면, `Request` 객체는 라우터로 전달되어 분기 처리(dispatch)가 이루어집니다. 라우터는 요청을 특정 라우트 또는 컨트롤러로 분기하고, 해당 라우트에 지정된 미들웨어도 함께 실행합니다.
 
-Middleware provide a convenient mechanism for filtering or examining HTTP requests entering your application. For example, Laravel includes a middleware that verifies if the user of your application is authenticated. If the user is not authenticated, the middleware will redirect the user to the login screen. However, if the user is authenticated, the middleware will allow the request to proceed further into the application. Some middleware are assigned to all routes within the application, like those defined in the `$middleware` property of your HTTP kernel, while some are only assigned to specific routes or route groups. You can learn more about middleware by reading the complete [middleware documentation](/docs/{{version}}/middleware).
+미들웨어는 애플리케이션에 들어오는 HTTP 요청을 필터링하거나 검사할 수 있는 편리한 메커니즘을 제공합니다. 예를 들어, Laravel은 사용자가 인증되었는지 확인하는 미들웨어를 제공합니다. 사용자가 인증되지 않았다면, 이 미들웨어는 사용자를 로그인 화면으로 리디렉션합니다. 반대로 사용자가 인증되었다면, 요청이 애플리케이션의 다음 단계로 진행될 수 있게 합니다. HTTP 커널의 `$middleware` 속성에 정의된 미들웨어처럼, 애플리케이션의 모든 라우트에 적용되는 미들웨어도 있고, 특정 라우트나 라우트 그룹에만 적용되는 미들웨어도 있습니다. 미들웨어에 대해 더 알고 싶다면 [미들웨어 공식 문서](/docs/{{version}}/middleware)를 참고하세요.
 
-If the request passes through all of the matched route's assigned middleware, the route or controller method will be executed and the response returned by the route or controller method will be sent back through the route's chain of middleware.
+요청이 해당 라우트에 할당된 모든 미들웨어를 통과하면, 라우트 또는 컨트롤러 메소드가 실행되고, 이 메소드가 반환하는 응답이 라우트의 미들웨어 체인을 거쳐 다시 반환됩니다.
 
 <a name="finishing-up"></a>
-### Finishing Up
+### 마무리
 
-Once the route or controller method returns a response, the response will travel back outward through the route's middleware, giving the application a chance to modify or examine the outgoing response.
+라우트 또는 컨트롤러 메소드가 응답을 반환하면, 이 응답은 라우트 미들웨어를 거치며 애플리케이션은 최종적으로 나가는 응답을 수정하거나 검사할 수 있습니다.
 
-Finally, once the response travels back through the middleware, the HTTP kernel's `handle` method returns the response object and the `index.php` file calls the `send` method on the returned response. The `send` method sends the response content to the user's web browser. We've finished our journey through the entire Laravel request lifecycle!
+마지막으로, 응답이 모든 미들웨어를 거쳐 나오면 HTTP 커널의 `handle` 메소드는 응답 객체를 반환하고, `index.php` 파일이 반환된 응답에서 `send` 메소드를 호출합니다. `send` 메소드는 응답 내용을 사용자의 웹 브라우저로 보냅니다. 이제 Laravel 요청 수명 주기 전체를 모두 따라가 보았습니다!
 
 <a name="focus-on-service-providers"></a>
-## Focus On Service Providers
+## 서비스 프로바이더에 집중하기
 
-Service providers are truly the key to bootstrapping a Laravel application. The application instance is created, the service providers are registered, and the request is handed to the bootstrapped application. It's really that simple!
+서비스 프로바이더는 Laravel 애플리케이션 부트스트래핑의 핵심입니다. 애플리케이션 인스턴스가 생성되고, 서비스 프로바이더가 등록된 후, 요청이 부트스트랩된 애플리케이션에 전달됩니다. 정말 그만큼 간단합니다!
 
-Having a firm grasp of how a Laravel application is built and bootstrapped via service providers is very valuable. Your application's default service providers are stored in the `app/Providers` directory.
+서비스 프로바이더를 통해 Laravel 애플리케이션이 어떻게 생성되고 어떻게 부트스트랩되는지 탄탄하게 이해하는 것은 매우 가치 있는 일입니다. 애플리케이션의 기본 서비스 프로바이더는 `app/Providers` 디렉터리에 저장되어 있습니다.
 
-By default, the `AppServiceProvider` is fairly empty. This provider is a great place to add your application's own bootstrapping and service container bindings. For large applications, you may wish to create several service providers, each with more granular bootstrapping for specific services used by your application.
+기본적으로 `AppServiceProvider`는 거의 비어 있습니다. 이 프로바이더는 애플리케이션 고유의 부트스트래핑 및 서비스 컨테이너 바인딩을 추가하기에 아주 좋은 장소입니다. 대규모 애플리케이션의 경우, 애플리케이션에서 사용하는 특정 서비스별로 더 세분화된 부트스트래핑을 위해 여러 개의 서비스 프로바이더를 생성할 수도 있습니다.

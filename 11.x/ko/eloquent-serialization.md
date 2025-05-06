@@ -1,213 +1,245 @@
-# Eloquent: Serialization
+# Eloquent: 직렬화
 
-- [Introduction](#introduction)
-- [Serializing Models and Collections](#serializing-models-and-collections)
-    - [Serializing to Arrays](#serializing-to-arrays)
-    - [Serializing to JSON](#serializing-to-json)
-- [Hiding Attributes From JSON](#hiding-attributes-from-json)
-- [Appending Values to JSON](#appending-values-to-json)
-- [Date Serialization](#date-serialization)
+- [소개](#introduction)
+- [모델 및 컬렉션 직렬화](#serializing-models-and-collections)
+    - [배열로 직렬화](#serializing-to-arrays)
+    - [JSON으로 직렬화](#serializing-to-json)
+- [JSON에서 속성 숨기기](#hiding-attributes-from-json)
+- [JSON에 값 추가하기](#appending-values-to-json)
+- [날짜 직렬화](#date-serialization)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-When building APIs using Laravel, you will often need to convert your models and relationships to arrays or JSON. Eloquent includes convenient methods for making these conversions, as well as controlling which attributes are included in the serialized representation of your models.
+Laravel로 API를 개발할 때, 종종 모델과 관계를 배열이나 JSON으로 변환해야 할 필요가 있습니다. Eloquent는 이러한 변환을 간편하게 해주는 메서드와 함께, 직렬화된 모델 표현에 포함할 속성을 제어할 수 있는 방법도 제공합니다.
 
 > [!NOTE]  
-> For an even more robust way of handling Eloquent model and collection JSON serialization, check out the documentation on [Eloquent API resources](/docs/{{version}}/eloquent-resources).
+> Eloquent 모델 및 컬렉션의 JSON 직렬화를 보다 견고하게 처리하려면 [Eloquent API 리소스](/docs/{{version}}/eloquent-resources) 문서를 참고하세요.
 
 <a name="serializing-models-and-collections"></a>
-## Serializing Models and Collections
+## 모델 및 컬렉션 직렬화
 
 <a name="serializing-to-arrays"></a>
-### Serializing to Arrays
+### 배열로 직렬화
 
-To convert a model and its loaded [relationships](/docs/{{version}}/eloquent-relationships) to an array, you should use the `toArray` method. This method is recursive, so all attributes and all relations (including the relations of relations) will be converted to arrays:
+모델과 로드된 [관계](/docs/{{version}}/eloquent-relationships)를 배열로 변환하려면 `toArray` 메서드를 사용하면 됩니다. 이 메서드는 재귀적으로 동작하여, 모든 속성과 모든 관계(관계의 관계까지 포함)까지 배열로 변환됩니다:
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::with('roles')->first();
+$user = User::with('roles')->first();
 
-    return $user->toArray();
+return $user->toArray();
+```
 
-The `attributesToArray` method may be used to convert a model's attributes to an array but not its relationships:
+`attributesToArray` 메서드는 관계를 제외하고 모델의 속성만 배열로 변환할 때 사용할 수 있습니다:
 
-    $user = User::first();
+```php
+$user = User::first();
 
-    return $user->attributesToArray();
+return $user->attributesToArray();
+```
 
-You may also convert entire [collections](/docs/{{version}}/eloquent-collections) of models to arrays by calling the `toArray` method on the collection instance:
+전체 [컬렉션](/docs/{{version}}/eloquent-collections)의 모델을 배열로 변환하려면 컬렉션 인스턴스에서 `toArray` 메서드를 호출하면 됩니다:
 
-    $users = User::all();
+```php
+$users = User::all();
 
-    return $users->toArray();
+return $users->toArray();
+```
 
 <a name="serializing-to-json"></a>
-### Serializing to JSON
+### JSON으로 직렬화
 
-To convert a model to JSON, you should use the `toJson` method. Like `toArray`, the `toJson` method is recursive, so all attributes and relations will be converted to JSON. You may also specify any JSON encoding options that are [supported by PHP](https://secure.php.net/manual/en/function.json-encode.php):
+모델을 JSON으로 변환하려면 `toJson` 메서드를 사용하면 됩니다. `toArray`와 마찬가지로, `toJson` 메서드도 재귀적으로 모든 속성과 관계를 JSON으로 직렬화합니다. 또한, [PHP에서 지원하는](https://secure.php.net/manual/en/function.json-encode.php) JSON 인코딩 옵션을 지정할 수도 있습니다:
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    $user = User::find(1);
+$user = User::find(1);
 
-    return $user->toJson();
+return $user->toJson();
 
-    return $user->toJson(JSON_PRETTY_PRINT);
+return $user->toJson(JSON_PRETTY_PRINT);
+```
 
-Alternatively, you may cast a model or collection to a string, which will automatically call the `toJson` method on the model or collection:
+또는, 모델이나 컬렉션을 문자열로 캐스팅하면 내부적으로 `toJson` 메서드가 자동 호출됩니다:
 
-    return (string) User::find(1);
+```php
+return (string) User::find(1);
+```
 
-Since models and collections are converted to JSON when cast to a string, you can return Eloquent objects directly from your application's routes or controllers. Laravel will automatically serialize your Eloquent models and collections to JSON when they are returned from routes or controllers:
+모델과 컬렉션은 문자열로 캐스팅될 때 자동으로 JSON으로 변환되므로, 애플리케이션의 라우트나 컨트롤러에서 Eloquent 객체를 직접 반환할 수 있습니다. Laravel은 라우트나 컨트롤러에서 반환되는 Eloquent 모델과 컬렉션을 자동으로 JSON으로 직렬화합니다:
 
-    Route::get('/users', function () {
-        return User::all();
-    });
+```php
+Route::get('/users', function () {
+    return User::all();
+});
+```
 
 <a name="relationships"></a>
-#### Relationships
+#### 관계
 
-When an Eloquent model is converted to JSON, its loaded relationships will automatically be included as attributes on the JSON object. Also, though Eloquent relationship methods are defined using "camel case" method names, a relationship's JSON attribute will be "snake case".
+Eloquent 모델이 JSON으로 변환될 때, 로드된 관계는 JSON 객체의 속성으로 자동 포함됩니다. 또한, Eloquent 관계 메서드는 카멜케이스로 정의되어 있지만, 관계의 JSON 속성은 스네이크케이스로 표현됩니다.
 
 <a name="hiding-attributes-from-json"></a>
-## Hiding Attributes From JSON
+## JSON에서 속성 숨기기
 
-Sometimes you may wish to limit the attributes, such as passwords, that are included in your model's array or JSON representation. To do so, add a `$hidden` property to your model. Attributes that are listed in the `$hidden` property's array will not be included in the serialized representation of your model:
+때때로 비밀번호와 같이 모델의 배열 또는 JSON 표현에서 특정 속성을 제외하고 싶을 수 있습니다. 이럴 때는 모델에 `$hidden` 속성을 추가하면 됩니다. `$hidden` 배열에 명시된 속성은 모델 직렬화 결과에 포함되지 않습니다:
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-    class User extends Model
-    {
-        /**
-         * The attributes that should be hidden for serialization.
-         *
-         * @var array<string>
-         */
-        protected $hidden = ['password'];
-    }
+class User extends Model
+{
+    /**
+     * 직렬화 시 숨겨야 할 속성
+     *
+     * @var array<string>
+     */
+    protected $hidden = ['password'];
+}
+```
 
 > [!NOTE]  
-> To hide relationships, add the relationship's method name to your Eloquent model's `$hidden` property.
+> 관계를 숨기려면 관계의 메서드명을 `$hidden` 속성에 추가하세요.
 
-Alternatively, you may use the `visible` property to define an "allow list" of attributes that should be included in your model's array and JSON representation. All attributes that are not present in the `$visible` array will be hidden when the model is converted to an array or JSON:
+반대로, 모델의 배열 및 JSON 표현에서 포함할 속성을 "허용 목록"으로 지정하고 싶을 때는 `visible` 속성을 사용할 수 있습니다. `$visible` 배열에 없는 속성은 모델을 배열 또는 JSON으로 변환할 때 숨겨집니다:
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-    class User extends Model
-    {
-        /**
-         * The attributes that should be visible in arrays.
-         *
-         * @var array
-         */
-        protected $visible = ['first_name', 'last_name'];
-    }
+class User extends Model
+{
+    /**
+     * 배열에서 보여질 속성
+     *
+     * @var array
+     */
+    protected $visible = ['first_name', 'last_name'];
+}
+```
 
 <a name="temporarily-modifying-attribute-visibility"></a>
-#### Temporarily Modifying Attribute Visibility
+#### 속성 가시성 임시 변경
 
-If you would like to make some typically hidden attributes visible on a given model instance, you may use the `makeVisible` method. The `makeVisible` method returns the model instance:
+평소에 숨겨져 있던 속성을 특정 모델 인스턴스에서만 임시로 보이게 하고 싶다면, `makeVisible` 메서드를 사용할 수 있습니다. 이 메서드는 모델 인스턴스를 반환합니다:
 
-    return $user->makeVisible('attribute')->toArray();
+```php
+return $user->makeVisible('attribute')->toArray();
+```
 
-Likewise, if you would like to hide some attributes that are typically visible, you may use the `makeHidden` method.
+반대로, 기본적으로 보이는 속성을 임시로 숨기고자 한다면 `makeHidden` 메서드를 사용하세요.
 
-    return $user->makeHidden('attribute')->toArray();
+```php
+return $user->makeHidden('attribute')->toArray();
+```
 
-If you wish to temporarily override all of the visible or hidden attributes, you may use the `setVisible` and `setHidden` methods respectively:
+모든 visible 또는 hidden 속성을 임시로 오버라이드하려면 `setVisible` 및 `setHidden` 메서드를 각각 사용할 수 있습니다:
 
-    return $user->setVisible(['id', 'name'])->toArray();
+```php
+return $user->setVisible(['id', 'name'])->toArray();
 
-    return $user->setHidden(['email', 'password', 'remember_token'])->toArray();
+return $user->setHidden(['email', 'password', 'remember_token'])->toArray();
+```
 
 <a name="appending-values-to-json"></a>
-## Appending Values to JSON
+## JSON에 값 추가하기
 
-Occasionally, when converting models to arrays or JSON, you may wish to add attributes that do not have a corresponding column in your database. To do so, first define an [accessor](/docs/{{version}}/eloquent-mutators) for the value:
+모델을 배열이나 JSON으로 변환할 때, 데이터베이스 컬럼에 직접 대응하지 않는 임의의 속성을 추가하고 싶을 수도 있습니다. 이 경우 먼저 해당 값을 위한 [Accessor](/docs/{{version}}/eloquent-mutators)를 정의하세요:
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Casts\Attribute;
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 
-    class User extends Model
+class User extends Model
+{
+    /**
+     * 사용자가 관리자인지 여부를 결정합니다.
+     */
+    protected function isAdmin(): Attribute
     {
-        /**
-         * Determine if the user is an administrator.
-         */
-        protected function isAdmin(): Attribute
-        {
-            return new Attribute(
-                get: fn () => 'yes',
-            );
-        }
+        return new Attribute(
+            get: fn () => 'yes',
+        );
     }
+}
+```
 
-If you would like the accessor to always be appended to your model's array and JSON representations, you may add the attribute name to the `appends` property of your model. Note that attribute names are typically referenced using their "snake case" serialized representation, even though the accessor's PHP method is defined using "camel case":
+이 Accessor가 모델의 배열 및 JSON 표현에 항상 추가되게 하려면, 모델의 `appends` 속성에 속성 이름을 추가하세요. Accessor의 PHP 메서드명이 카멜케이스여도, 속성 이름은 주로 "스네이크케이스"로 참조합니다:
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-    class User extends Model
-    {
-        /**
-         * The accessors to append to the model's array form.
-         *
-         * @var array
-         */
-        protected $appends = ['is_admin'];
-    }
+class User extends Model
+{
+    /**
+     * 배열 형태로 변환 시 추가할 Accessor
+     *
+     * @var array
+     */
+    protected $appends = ['is_admin'];
+}
+```
 
-Once the attribute has been added to the `appends` list, it will be included in both the model's array and JSON representations. Attributes in the `appends` array will also respect the `visible` and `hidden` settings configured on the model.
+속성이 `appends` 리스트에 추가되면, 이 속성은 모델의 배열 및 JSON 표현 모두에 포함됩니다. 또한 `appends` 배열에 포함된 속성도 모델에 설정된 `visible` 및 `hidden` 설정을 따릅니다.
 
 <a name="appending-at-run-time"></a>
-#### Appending at Run Time
+#### 런타임에 추가하기
 
-At runtime, you may instruct a model instance to append additional attributes using the `append` method. Or, you may use the `setAppends` method to override the entire array of appended properties for a given model instance:
+실행 중에 특정 모델 인스턴스에 추가 속성을 동적으로 추가하려면 `append` 메서드를 사용할 수 있습니다. 또는 `setAppends` 메서드를 사용해 추가된 속성 배열 전체를 덮어쓸 수도 있습니다:
 
-    return $user->append('is_admin')->toArray();
+```php
+return $user->append('is_admin')->toArray();
 
-    return $user->setAppends(['is_admin'])->toArray();
+return $user->setAppends(['is_admin'])->toArray();
+```
 
 <a name="date-serialization"></a>
-## Date Serialization
+## 날짜 직렬화
 
 <a name="customizing-the-default-date-format"></a>
-#### Customizing the Default Date Format
+#### 기본 날짜 포맷 커스터마이징
 
-You may customize the default serialization format by overriding the `serializeDate` method. This method does not affect how your dates are formatted for storage in the database:
+기본 직렬화 포맷을 커스터마이징하려면 `serializeDate` 메서드를 오버라이드하면 됩니다. 이 메서드는 데이터베이스에 날짜가 저장되는 방식에는 영향을 미치지 않습니다:
 
-    /**
-     * Prepare a date for array / JSON serialization.
-     */
-    protected function serializeDate(DateTimeInterface $date): string
-    {
-        return $date->format('Y-m-d');
-    }
+```php
+/**
+ * 배열/JSON 직렬화를 위한 날짜 준비
+ */
+protected function serializeDate(DateTimeInterface $date): string
+{
+    return $date->format('Y-m-d');
+}
+```
 
 <a name="customizing-the-date-format-per-attribute"></a>
-#### Customizing the Date Format per Attribute
+#### 속성별 날짜 포맷 커스터마이징
 
-You may customize the serialization format of individual Eloquent date attributes by specifying the date format in the model's [cast declarations](/docs/{{version}}/eloquent-mutators#attribute-casting):
+개별 Eloquent 날짜 속성의 직렬화 포맷을 지정하려면, 모델의 [캐스트 선언](/docs/{{version}}/eloquent-mutators#attribute-casting)에 날짜 포맷을 지정하세요:
 
-    protected function casts(): array
-    {
-        return [
-            'birthday' => 'date:Y-m-d',
-            'joined_at' => 'datetime:Y-m-d H:00',
-        ];
-    }
+```php
+protected function casts(): array
+{
+    return [
+        'birthday' => 'date:Y-m-d',
+        'joined_at' => 'datetime:Y-m-d H:00',
+    ];
+}
+```

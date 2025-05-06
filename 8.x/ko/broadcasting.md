@@ -1,153 +1,153 @@
-# Broadcasting
+# 브로드캐스팅
 
-- [Introduction](#introduction)
-- [Server Side Installation](#server-side-installation)
-    - [Configuration](#configuration)
+- [소개](#introduction)
+- [서버 사이드 설치](#server-side-installation)
+    - [설정](#configuration)
     - [Pusher Channels](#pusher-channels)
     - [Ably](#ably)
-    - [Open Source Alternatives](#open-source-alternatives)
-- [Client Side Installation](#client-side-installation)
+    - [오픈소스 대안](#open-source-alternatives)
+- [클라이언트 사이드 설치](#client-side-installation)
     - [Pusher Channels](#client-pusher-channels)
     - [Ably](#client-ably)
-- [Concept Overview](#concept-overview)
-    - [Using An Example Application](#using-example-application)
-- [Defining Broadcast Events](#defining-broadcast-events)
-    - [Broadcast Name](#broadcast-name)
-    - [Broadcast Data](#broadcast-data)
-    - [Broadcast Queue](#broadcast-queue)
-    - [Broadcast Conditions](#broadcast-conditions)
-    - [Broadcasting & Database Transactions](#broadcasting-and-database-transactions)
-- [Authorizing Channels](#authorizing-channels)
-    - [Defining Authorization Routes](#defining-authorization-routes)
-    - [Defining Authorization Callbacks](#defining-authorization-callbacks)
-    - [Defining Channel Classes](#defining-channel-classes)
-- [Broadcasting Events](#broadcasting-events)
-    - [Only To Others](#only-to-others)
-    - [Customizing The Connection](#customizing-the-connection)
-- [Receiving Broadcasts](#receiving-broadcasts)
-    - [Listening For Events](#listening-for-events)
-    - [Leaving A Channel](#leaving-a-channel)
-    - [Namespaces](#namespaces)
-- [Presence Channels](#presence-channels)
-    - [Authorizing Presence Channels](#authorizing-presence-channels)
-    - [Joining Presence Channels](#joining-presence-channels)
-    - [Broadcasting To Presence Channels](#broadcasting-to-presence-channels)
-- [Model Broadcasting](#model-broadcasting)
-    - [Model Broadcasting Conventions](#model-broadcasting-conventions)
-    - [Listening For Model Broadcasts](#listening-for-model-broadcasts)
-- [Client Events](#client-events)
-- [Notifications](#notifications)
+- [개념 개요](#concept-overview)
+    - [예제 애플리케이션 사용하기](#using-example-application)
+- [브로드캐스트 이벤트 정의](#defining-broadcast-events)
+    - [브로드캐스트 이름](#broadcast-name)
+    - [브로드캐스트 데이터](#broadcast-data)
+    - [브로드캐스트 큐](#broadcast-queue)
+    - [브로드캐스트 조건](#broadcast-conditions)
+    - [브로드캐스팅 & 데이터베이스 트랜잭션](#broadcasting-and-database-transactions)
+- [채널 인증](#authorizing-channels)
+    - [인증 라우트 정의](#defining-authorization-routes)
+    - [인증 콜백 정의](#defining-authorization-callbacks)
+    - [채널 클래스 정의](#defining-channel-classes)
+- [이벤트 브로드캐스팅](#broadcasting-events)
+    - [다른 사용자에게만 브로드캐스트](#only-to-others)
+    - [커넥션 커스터마이징](#customizing-the-connection)
+- [브로드캐스트 수신](#receiving-broadcasts)
+    - [이벤트 리스닝](#listening-for-events)
+    - [채널 나가기](#leaving-a-channel)
+    - [네임스페이스](#namespaces)
+- [프리즌스 채널(Presence Channels)](#presence-channels)
+    - [프리즌스 채널 인증](#authorizing-presence-channels)
+    - [프리즌스 채널 가입](#joining-presence-channels)
+    - [프리즌스 채널 브로드캐스팅](#broadcasting-to-presence-channels)
+- [모델 브로드캐스팅](#model-broadcasting)
+    - [모델 브로드캐스팅 규칙](#model-broadcasting-conventions)
+    - [모델 브로드캐스트 리스닝](#listening-for-model-broadcasts)
+- [클라이언트 이벤트](#client-events)
+- [알림](#notifications)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-In many modern web applications, WebSockets are used to implement realtime, live-updating user interfaces. When some data is updated on the server, a message is typically sent over a WebSocket connection to be handled by the client. WebSockets provide a more efficient alternative to continually polling your application's server for data changes that should be reflected in your UI.
+많은 현대 웹 애플리케이션에서는 WebSocket을 이용해 실시간 라이브 UI를 구현합니다. 서버에서 데이터가 업데이트되면, 일반적으로 메시지가 WebSocket을 통해 클라이언트로 전송되어 처리됩니다. WebSocket은 UI에 반영할 데이터의 변경을 지속적으로 폴링하는 것보다 효율적인 대안을 제공합니다.
 
-For example, imagine your application is able to export a user's data to a CSV file and email it to them. However, creating this CSV file takes several minutes so you choose to create and mail the CSV within a [queued job](/docs/{{version}}/queues). When the CSV has been created and mailed to the user, we can use event broadcasting to dispatch a `App\Events\UserDataExported` event that is received by our application's JavaScript. Once the event is received, we can display a message to the user that their CSV has been emailed to them without them ever needing to refresh the page.
+예를 들어, 애플리케이션이 사용자의 데이터를 CSV 파일로 내보내어 이메일로 전송하는 기능이 있다고 가정해봅시다. CSV 파일 생성에는 몇 분이 걸릴 수 있으므로, [큐 작업](/docs/{{version}}/queues)에서 파일을 생성하여 메일로 전송하기로 결정할 수 있습니다. CSV 파일이 생성되어 사용자에게 메일로 전송되면, `App\Events\UserDataExported` 이벤트를 브로드캐스팅하여 애플리케이션의 JavaScript가 이벤트를 수신할 수 있습니다. 이벤트가 수신되면, 사용자는 새로고침 없이도 "CSV가 메일로 전송되었다"는 메시지를 볼 수 있습니다.
 
-To assist you in building these types of features, Laravel makes it easy to "broadcast" your server-side Laravel [events](/docs/{{version}}/events) over a WebSocket connection. Broadcasting your Laravel events allows you to share the same event names and data between your server-side Laravel application and your client-side JavaScript application.
+이러한 기능 구축을 돕기 위해 Laravel은 서버 사이드 이벤트([이벤트](/docs/{{version}}/events))를 WebSocket을 통해 쉽게 "브로드캐스트"할 수 있게 해줍니다. Laravel 이벤트를 브로드캐스트하면, 서버 사이드와 클라이언트 사이드(JavaScript) 애플리케이션에서 동일한 이벤트 이름과 데이터를 공유할 수 있습니다.
 
-The core concepts behind broadcasting are simple: clients connect to named channels on the frontend, while your Laravel application broadcasts events to these channels on the backend. These events can contain any additional data you wish to make available to the frontend.
+브로드캐스팅의 핵심 개념은 단순합니다. 클라이언트는 프론트엔드의 이름이 지정된 채널에 연결하고, Laravel 애플리케이션은 백엔드에서 이 채널로 이벤트를 브로드캐스트합니다. 이 이벤트에는 프론트엔드에 제공하고 싶은 모든 추가 데이터를 포함할 수 있습니다.
 
 <a name="supported-drivers"></a>
-#### Supported Drivers
+#### 지원 드라이버
 
-By default, Laravel includes two server-side broadcasting drivers for you to choose from: [Pusher Channels](https://pusher.com/channels) and [Ably](https://ably.io). However, community driven packages such as [laravel-websockets](https://beyondco.de/docs/laravel-websockets/getting-started/introduction) and [soketi](https://docs.soketi.app/) provide additional broadcasting drivers that do not require commercial broadcasting providers.
+기본적으로 Laravel은 두 가지 서버 사이드 브로드캐스트 드라이버를 제공합니다: [Pusher Channels](https://pusher.com/channels), [Ably](https://ably.io). 또한, [laravel-websockets](https://beyondco.de/docs/laravel-websockets/getting-started/introduction), [soketi](https://docs.soketi.app/)와 같은 커뮤니티 패키지를 통해 상용 브로드캐스트 제공자가 필요하지 않은 추가 드라이버를 사용할 수 있습니다.
 
-> {tip} Before diving into event broadcasting, make sure you have read Laravel's documentation on [events and listeners](/docs/{{version}}/events).
+> {tip} 이벤트 브로드캐스팅을 시작하기 전에 반드시 [이벤트와 리스너](/docs/{{version}}/events) 문서를 먼저 읽으세요.
 
 <a name="server-side-installation"></a>
-## Server Side Installation
+## 서버 사이드 설치
 
-To get started using Laravel's event broadcasting, we need to do some configuration within the Laravel application as well as install a few packages.
+Laravel의 이벤트 브로드캐스팅을 사용하려면, Laravel 애플리케이션에서 일부 설정을 하고 몇 가지 패키지를 설치해야 합니다.
 
-Event broadcasting is accomplished by a server-side broadcasting driver that broadcasts your Laravel events so that Laravel Echo (a JavaScript library) can receive them within the browser client. Don't worry - we'll walk through each part of the installation process step-by-step.
+이벤트 브로드캐스팅은 서버 사이드 브로드캐스트 드라이버를 사용하여 Laravel 이벤트를 브라우저의 Laravel Echo(JavaScript 라이브러리)가 수신할 수 있도록 브로드캐스트합니다. 걱정하지 마세요. 설치 과정을 단계적으로 안내합니다.
 
 <a name="configuration"></a>
-### Configuration
+### 설정
 
-All of your application's event broadcasting configuration is stored in the `config/broadcasting.php` configuration file. Laravel supports several broadcast drivers out of the box: [Pusher Channels](https://pusher.com/channels), [Redis](/docs/{{version}}/redis), and a `log` driver for local development and debugging. Additionally, a `null` driver is included which allows you to totally disable broadcasting during testing. A configuration example is included for each of these drivers in the `config/broadcasting.php` configuration file.
+애플리케이션의 모든 이벤트 브로드캐스트 설정은 `config/broadcasting.php` 파일에 저장되어 있습니다. Laravel은 기본적으로 [Pusher Channels](https://pusher.com/channels), [Redis](/docs/{{version}}/redis), 그리고 로컬 개발/디버깅을 위한 `log` 드라이버를 지원합니다. 또한, 테스트 중 브로드캐스팅을 완전히 비활성화할 수 있는 `null` 드라이버도 포함되어 있습니다. 각 드라이버에 대한 설정 예제가 `config/broadcasting.php` 파일에 포함되어 있습니다.
 
 <a name="broadcast-service-provider"></a>
-#### Broadcast Service Provider
+#### 브로드캐스트 서비스 프로바이더
 
-Before broadcasting any events, you will first need to register the `App\Providers\BroadcastServiceProvider`. In new Laravel applications, you only need to uncomment this provider in the `providers` array of your `config/app.php` configuration file. This `BroadcastServiceProvider` contains the code necessary to register the broadcast authorization routes and callbacks.
+이벤트를 브로드캐스트하기 전에, 먼저 `App\Providers\BroadcastServiceProvider`를 등록해야 합니다. 새로운 Laravel 애플리케이션에서는 `config/app.php` 파일의 `providers` 배열에서 이 프로바이더의 주석만 해제하면 됩니다. 이 서비스 프로바이더는 브로드캐스트 인증 라우트와 콜백을 등록하는 데 필요한 코드가 포함되어 있습니다.
 
 <a name="queue-configuration"></a>
-#### Queue Configuration
+#### 큐 설정
 
-You will also need to configure and run a [queue worker](/docs/{{version}}/queues). All event broadcasting is done via queued jobs so that the response time of your application is not seriously affected by events being broadcast.
+[큐 워커](/docs/{{version}}/queues)도 설정하고 실행해야 합니다. 모든 이벤트 브로드캐스팅은 큐 작업으로 처리되므로, 브로드캐스트로 인해 애플리케이션의 응답 속도가 크게 영향을 받지 않습니다.
 
 <a name="pusher-channels"></a>
 ### Pusher Channels
 
-If you plan to broadcast your events using [Pusher Channels](https://pusher.com/channels), you should install the Pusher Channels PHP SDK using the Composer package manager:
+[Pusher Channels](https://pusher.com/channels)를 통해 이벤트를 브로드캐스트하려면 Composer 패키지 관리자를 사용하여 Pusher Channels PHP SDK를 설치해야 합니다:
 
     composer require pusher/pusher-php-server
 
-Next, you should configure your Pusher Channels credentials in the `config/broadcasting.php` configuration file. An example Pusher Channels configuration is already included in this file, allowing you to quickly specify your key, secret, and application ID. Typically, these values should be set via the `PUSHER_APP_KEY`, `PUSHER_APP_SECRET`, and `PUSHER_APP_ID` [environment variables](/docs/{{version}}/configuration#environment-configuration):
+그 다음, `config/broadcasting.php` 파일에서 Pusher Channels 인증 정보를 설정하면 됩니다. 이 파일에는 이미 Pusher Channels 설정 예제가 포함되어 있으므로 키, 시크릿, 앱 ID만 빠르게 지정하면 됩니다. 일반적으로 이 값들은 `PUSHER_APP_KEY`, `PUSHER_APP_SECRET`, `PUSHER_APP_ID` [환경 변수](/docs/{{version}}/configuration#environment-configuration)로 설정합니다:
 
     PUSHER_APP_ID=your-pusher-app-id
     PUSHER_APP_KEY=your-pusher-key
     PUSHER_APP_SECRET=your-pusher-secret
     PUSHER_APP_CLUSTER=mt1
 
-The `config/broadcasting.php` file's `pusher` configuration also allows you to specify additional `options` that are supported by Channels, such as the cluster.
+`config/broadcasting.php`의 `pusher` 설정에서는 클러스터 등 Channels에서 지원하는 추가 `options`도 지정할 수 있습니다.
 
-Next, you will need to change your broadcast driver to `pusher` in your `.env` file:
+다음으로, `.env` 파일에서 브로드캐스트 드라이버를 `pusher`로 변경하세요:
 
     BROADCAST_DRIVER=pusher
 
-Finally, you are ready to install and configure [Laravel Echo](#client-side-installation), which will receive the broadcast events on the client-side.
+이제 [Laravel Echo](#client-side-installation)를 설치 및 설정하면 클라이언트에서 브로드캐스트 이벤트를 수신할 준비가 됩니다.
 
 <a name="pusher-compatible-open-source-alternatives"></a>
-#### Open Source Pusher Alternatives
+#### 오픈소스 Pusher 대안
 
-The [laravel-websockets](https://github.com/beyondcode/laravel-websockets) and [soketi](https://docs.soketi.app/) packages provide Pusher compatible WebSocket servers for Laravel. These packages allow you to leverage the full power of Laravel broadcasting without a commercial WebSocket provider. For more information on installing and using these packages, please consult our documentation on [open source alternatives](#open-source-alternatives).
+[laravel-websockets](https://github.com/beyondcode/laravel-websockets)와 [soketi](https://docs.soketi.app/) 패키지는 Laravel을 위한 Pusher 호환 WebSocket 서버를 제공합니다. 이 패키지들을 이용하면 상용 WebSocket 제공자 없이도 Laravel 브로드캐스팅의 모든 기능을 활용할 수 있습니다. 설치 및 사용에 대한 자세한 정보는 [오픈소스 대안](#open-source-alternatives) 문서를 참고하세요.
 
 <a name="ably"></a>
 ### Ably
 
-If you plan to broadcast your events using [Ably](https://ably.io), you should install the Ably PHP SDK using the Composer package manager:
+[Ably](https://ably.io)를 통해 이벤트를 브로드캐스트하려면 Composer로 Ably PHP SDK를 설치하세요:
 
     composer require ably/ably-php
 
-Next, you should configure your Ably credentials in the `config/broadcasting.php` configuration file. An example Ably configuration is already included in this file, allowing you to quickly specify your key. Typically, this value should be set via the `ABLY_KEY` [environment variable](/docs/{{version}}/configuration#environment-configuration):
+그 다음, `config/broadcasting.php`에서 Ably 인증 정보를 설정합니다. 이 파일에는 Ably 설정 예제도 포함되어 있으므로 키만 지정하면 됩니다. 보통 이 값은 `ABLY_KEY` [환경 변수](/docs/{{version}}/configuration#environment-configuration)로 설정합니다:
 
     ABLY_KEY=your-ably-key
 
-Next, you will need to change your broadcast driver to `ably` in your `.env` file:
+이제 `.env` 파일에서 브로드캐스트 드라이버를 `ably`로 변경하세요:
 
     BROADCAST_DRIVER=ably
 
-Finally, you are ready to install and configure [Laravel Echo](#client-side-installation), which will receive the broadcast events on the client-side.
+[Laravel Echo](#client-side-installation)를 설치 및 설정하여 클라이언트에서 브로드캐스트 이벤트를 수신하세요.
 
 <a name="open-source-alternatives"></a>
-### Open Source Alternatives
+### 오픈소스 대안
 
 <a name="open-source-alternatives-php"></a>
 #### PHP
 
-The [laravel-websockets](https://github.com/beyondcode/laravel-websockets) package is a pure PHP, Pusher compatible WebSocket package for Laravel. This package allows you to leverage the full power of Laravel broadcasting without a commercial WebSocket provider. For more information on installing and using this package, please consult its [official documentation](https://beyondco.de/docs/laravel-websockets).
+[laravel-websockets](https://github.com/beyondcode/laravel-websockets) 패키지는 Laravel을 위한 순수 PHP 기반의 Pusher 호환 WebSocket 패키지입니다. 이 패키지를 사용하면 상용 WebSocket 제공자 없이도 브로드캐스팅 기능을 모두 사용할 수 있습니다. 설치 및 사용에 관한 자세한 내용은 [공식 문서](https://beyondco.de/docs/laravel-websockets)를 참조하세요.
 
 <a name="open-source-alternatives-node"></a>
 #### Node
 
-[Soketi](https://github.com/soketi/soketi) is a Node based, Pusher compatible WebSocket server for Laravel. Under the hood, Soketi utilizes µWebSockets.js for extreme scalability and speed. This package allows you to leverage the full power of Laravel broadcasting without a commercial WebSocket provider. For more information on installing and using this package, please consult its [official documentation](https://docs.soketi.app/).
+[Soketi](https://github.com/soketi/soketi)는 Node 기반의 Laravel용 Pusher 호환 WebSocket 서버입니다. 내부적으로 Soketi는 고성능과 확장성을 위해 µWebSockets.js를 사용합니다. 이 패키지는 상용 WebSocket 제공자 없이도 Laravel 브로드캐스팅 기능을 이용할 수 있게 해줍니다. 설치 및 사용법은 [공식 문서](https://docs.soketi.app/)를 참고하세요.
 
 <a name="client-side-installation"></a>
-## Client Side Installation
+## 클라이언트 사이드 설치
 
 <a name="client-pusher-channels"></a>
 ### Pusher Channels
 
-[Laravel Echo](https://github.com/laravel/echo) is a JavaScript library that makes it painless to subscribe to channels and listen for events broadcast by your server-side broadcasting driver. You may install Echo via the NPM package manager. In this example, we will also install the `pusher-js` package since we will be using the Pusher Channels broadcaster:
+[Laravel Echo](https://github.com/laravel/echo)는 서버 사이드 브로드캐스트 드라이버가 브로드캐스트하는 채널에 구독하고 이벤트를 듣는 것을 쉽게 해주는 JavaScript 라이브러리입니다. Echo는 NPM 패키지 관리자로 설치할 수 있습니다. 이 예제에서는 Pusher Channels 브로드캐스터를 사용할 것이므로 `pusher-js` 패키지도 함께 설치합니다:
 
 ```bash
 npm install --save-dev laravel-echo pusher-js
 ```
 
-Once Echo is installed, you are ready to create a fresh Echo instance in your application's JavaScript. A great place to do this is at the bottom of the `resources/js/bootstrap.js` file that is included with the Laravel framework. By default, an example Echo configuration is already included in this file - you simply need to uncomment it:
+Echo 설치가 완료되면, 애플리케이션 JavaScript에서 새로운 Echo 인스턴스를 만들 준비가 끝납니다. 좋은 위치는 Laravel 프레임워크에 기본 포함된 `resources/js/bootstrap.js` 파일의 하단입니다. 기본적으로 이 파일에는 Echo 설정 예제가 포함되어 있으며, 주석 처리를 해제해서 사용하면 됩니다:
 
 ```js
 import Echo from 'laravel-echo';
@@ -162,16 +162,16 @@ window.Echo = new Echo({
 });
 ```
 
-Once you have uncommented and adjusted the Echo configuration according to your needs, you may compile your application's assets:
+설정을 본인 상황에 맞게 수정한 후, 애플리케이션의 에셋을 컴파일하세요:
 
     npm run dev
 
-> {tip} To learn more about compiling your application's JavaScript assets, please consult the documentation on [Laravel Mix](/docs/{{version}}/mix).
+> {tip} 애플리케이션의 JavaScript 에셋을 컴파일하는 방법은 [Laravel Mix](/docs/{{version}}/mix) 문서를 참고하세요.
 
 <a name="using-an-existing-client-instance"></a>
-#### Using An Existing Client Instance
+#### 기존 클라이언트 인스턴스 사용하기
 
-If you already have a pre-configured Pusher Channels client instance that you would like Echo to utilize, you may pass it to Echo via the `client` configuration option:
+미리 구성된 Pusher Channels 클라이언트 인스턴스가 있다면, Echo의 `client` 옵션을 통해 사용할 수 있습니다:
 
 ```js
 import Echo from 'laravel-echo';
@@ -188,17 +188,17 @@ window.Echo = new Echo({
 <a name="client-ably"></a>
 ### Ably
 
-[Laravel Echo](https://github.com/laravel/echo) is a JavaScript library that makes it painless to subscribe to channels and listen for events broadcast by your server-side broadcasting driver. You may install Echo via the NPM package manager. In this example, we will also install the `pusher-js` package.
+[Laravel Echo](https://github.com/laravel/echo)는 서버 사이드 브로드캐스트 드라이버가 브로드캐스트하는 이벤트를 듣고 채널에 구독하는 것을 손쉽게 해주는 JavaScript 라이브러리입니다. Echo는 NPM 패키지로 설치할 수 있으며, 이 예제에서도 `pusher-js` 패키지를 함께 설치합니다.
 
-You may wonder why we would install the `pusher-js` JavaScript library even though we are using Ably to broadcast our events. Thankfully, Ably includes a Pusher compatibility mode which lets us use the Pusher protocol when listening for events in our client-side application:
+Ably로 브로드캐스트하더라도 `pusher-js` JavaScript 라이브러리를 설치하는 이유가 궁금할 수 있습니다. Ably는 Pusher 프로토콜 호환 모드를 제공하므로, 클라이언트 앱에서 이벤트를 들을 때 Pusher 프로토콜을 사용할 수 있습니다:
 
 ```bash
 npm install --save-dev laravel-echo pusher-js
 ```
 
-**Before continuing, you should enable Pusher protocol support in your Ably application settings. You may enable this feature within the "Protocol Adapter Settings" portion of your Ably application's settings dashboard.**
+**계속 진행하기 전, Ably 앱 설정 대시보드의 'Protocol Adapter Settings' 섹션에서 Pusher 프로토콜 지원을 활성화해야 합니다.**
 
-Once Echo is installed, you are ready to create a fresh Echo instance in your application's JavaScript. A great place to do this is at the bottom of the `resources/js/bootstrap.js` file that is included with the Laravel framework. By default, an example Echo configuration is already included in this file; however, the default configuration in the `bootstrap.js` file is intended for Pusher. You may copy the configuration below to transition your configuration to Ably:
+Echo를 설치 완료하면, 새 Echo 인스턴스를 애플리케이션의 JavaScript에서 생성하세요. 추천 위치는 Laravel 프레임워크의 `resources/js/bootstrap.js` 파일 하단입니다. 이 파일에는 이미 Echo 설정 예제가 포함되어 있으나, 기본 설정은 Pusher용입니다. 아래 설정 예제로 Ably로 전환할 수 있습니다:
 
 ```js
 import Echo from 'laravel-echo';
@@ -215,38 +215,38 @@ window.Echo = new Echo({
 });
 ```
 
-Note that our Ably Echo configuration references a `MIX_ABLY_PUBLIC_KEY` environment variable. This variable's value should be your Ably public key. Your public key is the portion of your Ably key that occurs before the `:` character.
+Ably Echo 설정의 `MIX_ABLY_PUBLIC_KEY` 환경 변수는 Ably 퍼블릭 키여야 합니다. 퍼블릭 키는 Ably 키에서 `:` 앞 부분입니다.
 
-Once you have uncommented and adjusted the Echo configuration according to your needs, you may compile your application's assets:
+설정을 적용하고 저장한 뒤, 애플리케이션의 에셋을 컴파일하세요:
 
     npm run dev
 
-> {tip} To learn more about compiling your application's JavaScript assets, please consult the documentation on [Laravel Mix](/docs/{{version}}/mix).
+> {tip} 애플리케이션의 JavaScript 에셋 빌드 방법은 [Laravel Mix](/docs/{{version}}/mix) 문서를 참고하세요.
 
 <a name="concept-overview"></a>
-## Concept Overview
+## 개념 개요
 
-Laravel's event broadcasting allows you to broadcast your server-side Laravel events to your client-side JavaScript application using a driver-based approach to WebSockets. Currently, Laravel ships with [Pusher Channels](https://pusher.com/channels) and [Ably](https://ably.io) drivers. The events may be easily consumed on the client-side using the [Laravel Echo](#client-side-installation) JavaScript package.
+Laravel의 이벤트 브로드캐스팅은 드라이버 기반 WebSocket 접근 방식으로 서버 사이드 이벤트를 클라이언트 사이드 JavaScript에 브로드캐스트할 수 있게 해줍니다. 현재, Laravel은 [Pusher Channels](https://pusher.com/channels)와 [Ably](https://ably.io) 드라이버를 지원합니다. 이벤트는 [Laravel Echo](#client-side-installation) JavaScript 패키지로 클라이언트에서 간편하게 수신할 수 있습니다.
 
-Events are broadcast over "channels", which may be specified as public or private. Any visitor to your application may subscribe to a public channel without any authentication or authorization; however, in order to subscribe to a private channel, a user must be authenticated and authorized to listen on that channel.
+이벤트는 "채널"을 통해 브로드캐스트 됩니다. 이 채널은 공개 또는 비공개로 지정할 수 있습니다. 애플리케이션의 모든 방문자는 인증/인가 없이 공개 채널을 구독할 수 있지만, 비공개 채널을 구독하려면 해당 채널을 수신할 권한이 있어야 합니다.
 
-> {tip} If you would like to explore open source alternatives to Pusher, check out the [open source alternatives](#open-source-alternatives).
+> {tip} Pusher의 오픈소스 대안을 탐색하고 싶다면 [오픈소스 대안](#open-source-alternatives) 문서를 확인하세요.
 
 <a name="using-example-application"></a>
-### Using An Example Application
+### 예제 애플리케이션 사용하기
 
-Before diving into each component of event broadcasting, let's take a high level overview using an e-commerce store as an example.
+이벤트 브로드캐스팅의 각 컴포넌트로 들어가기 전에, 전반적인 흐름을 전자상거래 스토어 예시로 개략적으로 살펴봅시다.
 
-In our application, let's assume we have a page that allows users to view the shipping status for their orders. Let's also assume that a `OrderShipmentStatusUpdated` event is fired when a shipping status update is processed by the application:
+애플리케이션에 사용자가 자신 주문의 배송 상태를 볼 수 있는 페이지가 있다고 가정합시다. 또한, 배송 상태가 업데이트되면 `OrderShipmentStatusUpdated` 이벤트가 발생합니다:
 
     use App\Events\OrderShipmentStatusUpdated;
 
     OrderShipmentStatusUpdated::dispatch($order);
 
 <a name="the-shouldbroadcast-interface"></a>
-#### The `ShouldBroadcast` Interface
+#### `ShouldBroadcast` 인터페이스
 
-When a user is viewing one of their orders, we don't want them to have to refresh the page to view status updates. Instead, we want to broadcast the updates to the application as they are created. So, we need to mark the `OrderShipmentStatusUpdated` event with the `ShouldBroadcast` interface. This will instruct Laravel to broadcast the event when it is fired:
+사용자가 자신 주문을 볼 때, 상태 업데이트를 확인하려고 새로고침하지 않도록, 업데이트 발생 시 애플리케이션에 직접 전달하고 싶습니다. 그러려면 `OrderShipmentStatusUpdated` 이벤트에 `ShouldBroadcast` 인터페이스를 구현해야 합니다. 그러면 이벤트가 발생할 때마다 Laravel이 브로드캐스트하게 됩니다:
 
     <?php
 
@@ -263,17 +263,17 @@ When a user is viewing one of their orders, we don't want them to have to refres
     class OrderShipmentStatusUpdated implements ShouldBroadcast
     {
         /**
-         * The order instance.
+         * 주문 객체 인스턴스.
          *
          * @var \App\Order
          */
         public $order;
     }
 
-The `ShouldBroadcast` interface requires our event to define a `broadcastOn` method. This method is responsible for returning the channels that the event should broadcast on. An empty stub of this method is already defined on generated event classes, so we only need to fill in its details. We only want the creator of the order to be able to view status updates, so we will broadcast the event on a private channel that is tied to the order:
+`ShouldBroadcast` 인터페이스는 이벤트에 `broadcastOn` 메소드 정의를 요구합니다. 이 메소드는 이벤트가 브로드캐스트될 채널을 반환하는 역할을 합니다. 이 메소드의 빈 스텁은 자동 생성된 이벤트 클래스에 이미 포함되어 있으므로, 상세 구현만 넣으면 됩니다. 주문을 생성한 사용자만 상태를 볼 수 있으면 좋으니, 주문에 연결된 비공개 채널에 브로드캐스트합니다:
 
     /**
-     * Get the channels the event should broadcast on.
+     * 이벤트가 브로드캐스트될 채널 반환
      *
      * @return \Illuminate\Broadcasting\PrivateChannel
      */
@@ -283,9 +283,9 @@ The `ShouldBroadcast` interface requires our event to define a `broadcastOn` met
     }
 
 <a name="example-application-authorizing-channels"></a>
-#### Authorizing Channels
+#### 채널 인증
 
-Remember, users must be authorized to listen on private channels. We may define our channel authorization rules in our application's `routes/channels.php` file. In this example, we need to verify that any user attempting to listen on the private `orders.1` channel is actually the creator of the order:
+비공개 채널을 듣기 위해서는 사용자의 인증이 필요합니다. 애플리케이션의 `routes/channels.php` 파일에 인증 로직을 정의할 수 있습니다. 예제에서는 비공개 `orders.1` 채널을 구독하려는 사용자가 실제로 그 주문의 생성자인지 확인합니다:
 
     use App\Models\Order;
 
@@ -293,14 +293,14 @@ Remember, users must be authorized to listen on private channels. We may define 
         return $user->id === Order::findOrNew($orderId)->user_id;
     });
 
-The `channel` method accepts two arguments: the name of the channel and a callback which returns `true` or `false` indicating whether the user is authorized to listen on the channel.
+`channel` 메소드는 두 개의 인자를 받습니다: 채널명, 그리고 사용자가 구독 권한이 있는지 true/false를 반환하는 콜백 함수입니다.
 
-All authorization callbacks receive the currently authenticated user as their first argument and any additional wildcard parameters as their subsequent arguments. In this example, we are using the `{orderId}` placeholder to indicate that the "ID" portion of the channel name is a wildcard.
+모든 인증 콜백은 현재 인증된 사용자가 첫 번째 파라미터로, 와일드카드 파라미터가 두 번째부터 전달됩니다. 이 예제에서는 `{orderId}` 플레이스홀더를 사용해 채널명 일부가 와일드카드임을 표시합니다.
 
 <a name="listening-for-event-broadcasts"></a>
-#### Listening For Event Broadcasts
+#### 이벤트 브로드캐스트 수신
 
-Next, all that remains is to listen for the event in our JavaScript application. We can do this using [Laravel Echo](#client-side-installation). First, we'll use the `private` method to subscribe to the private channel. Then, we may use the `listen` method to listen for the `OrderShipmentStatusUpdated` event. By default, all of the event's public properties will be included on the broadcast event:
+마지막으로, JavaScript 애플리케이션에서 이벤트를 수신만 하면 됩니다. [Laravel Echo](#client-side-installation)를 사용하여 다음과 같이 구현할 수 있습니다. 먼저 `private` 메소드로 비공개 채널에 구독한 후, `listen` 메소드로 `OrderShipmentStatusUpdated` 이벤트를 감지합니다. 이벤트의 모든 public 속성은 브로드캐스트 페이로드로 자동 포함됩니다.
 
 ```js
 Echo.private(`orders.${orderId}`)
@@ -310,11 +310,11 @@ Echo.private(`orders.${orderId}`)
 ```
 
 <a name="defining-broadcast-events"></a>
-## Defining Broadcast Events
+## 브로드캐스트 이벤트 정의
 
-To inform Laravel that a given event should be broadcast, you must implement the `Illuminate\Contracts\Broadcasting\ShouldBroadcast` interface on the event class. This interface is already imported into all event classes generated by the framework so you may easily add it to any of your events.
+Laravel에 특정 이벤트를 브로드캐스트해야 한다고 알리려면 이벤트 클래스에 `Illuminate\Contracts\Broadcasting\ShouldBroadcast` 인터페이스를 구현해야 합니다. 이 인터페이스는 프레임워크가 생성하는 모든 이벤트 클래스에 이미 import되어 있어, 쉽게 사용할 수 있습니다.
 
-The `ShouldBroadcast` interface requires you to implement a single method: `broadcastOn`. The `broadcastOn` method should return a channel or array of channels that the event should broadcast on. The channels should be instances of `Channel`, `PrivateChannel`, or `PresenceChannel`. Instances of `Channel` represent public channels that any user may subscribe to, while `PrivateChannels` and `PresenceChannels` represent private channels that require [channel authorization](#authorizing-channels):
+`ShouldBroadcast` 인터페이스는 `broadcastOn` 메소드 하나만 구현하면 됩니다. 이 메소드는 이벤트가 브로드캐스트될 하나 또는 여러 채널을 반환해야 하고, 채널은 `Channel`, `PrivateChannel`, `PresenceChannel`의 인스턴스여야 합니다. `Channel`은 모든 사용자가 구독 가능한 공개 채널, `PrivateChannel`과 `PresenceChannel`은 인증이 필요한 비공개 채널입니다.
 
     <?php
 
@@ -333,14 +333,14 @@ The `ShouldBroadcast` interface requires you to implement a single method: `broa
         use SerializesModels;
 
         /**
-         * The user that created the server.
+         * 서버를 생성한 사용자
          *
          * @var \App\Models\User
          */
         public $user;
 
         /**
-         * Create a new event instance.
+         * 새 이벤트 인스턴스 생성
          *
          * @param  \App\Models\User  $user
          * @return void
@@ -351,7 +351,7 @@ The `ShouldBroadcast` interface requires you to implement a single method: `broa
         }
 
         /**
-         * Get the channels the event should broadcast on.
+         * 이벤트가 브로드캐스트될 채널 반환
          *
          * @return Channel|array
          */
@@ -361,15 +361,15 @@ The `ShouldBroadcast` interface requires you to implement a single method: `broa
         }
     }
 
-After implementing the `ShouldBroadcast` interface, you only need to [fire the event](/docs/{{version}}/events) as you normally would. Once the event has been fired, a [queued job](/docs/{{version}}/queues) will automatically broadcast the event using your specified broadcast driver.
+이제 `ShouldBroadcast` 인터페이스를 구현했다면, [이벤트를 발생시키는](/docs/{{version}}/events) 것만으로 브로드캐스트가 동작합니다. 이벤트가 발생하면, [큐 작업](/docs/{{version}}/queues)을 통해 지정한 드라이버로 브로드캐스트됩니다.
 
 <a name="broadcast-name"></a>
-### Broadcast Name
+### 브로드캐스트 이름
 
-By default, Laravel will broadcast the event using the event's class name. However, you may customize the broadcast name by defining a `broadcastAs` method on the event:
+기본적으로 Laravel은 이벤트 클래스명의 이름으로 브로드캐스트합니다. 하지만, `broadcastAs` 메소드를 정의해서 이름을 커스터마이징 할 수 있습니다:
 
     /**
-     * The event's broadcast name.
+     * 이벤트의 브로드캐스트 이름
      *
      * @return string
      */
@@ -378,16 +378,16 @@ By default, Laravel will broadcast the event using the event's class name. Howev
         return 'server.created';
     }
 
-If you customize the broadcast name using the `broadcastAs` method, you should make sure to register your listener with a leading `.` character. This will instruct Echo to not prepend the application's namespace to the event:
+이 경우, 리스너를 등록할 때 이벤트 이름 앞에 `.`을 붙여야 Echo가 애플리케이션 네임스페이스를 붙이지 않도록 합니다:
 
     .listen('.server.created', function (e) {
         ....
     });
 
 <a name="broadcast-data"></a>
-### Broadcast Data
+### 브로드캐스트 데이터
 
-When an event is broadcast, all of its `public` properties are automatically serialized and broadcast as the event's payload, allowing you to access any of its public data from your JavaScript application. So, for example, if your event has a single public `$user` property that contains an Eloquent model, the event's broadcast payload would be:
+이벤트가 브로드캐스트될 때, 모든 `public` 속성은 자동으로 직렬화되어 페이로드에 포함되어 JavaScript 애플리케이션에서 사용할 수 있습니다. 예를 들어, `$user` 속성이 포함된 이벤트라면 페이로드는 다음과 같습니다:
 
     {
         "user": {
@@ -397,10 +397,10 @@ When an event is broadcast, all of its `public` properties are automatically ser
         }
     }
 
-However, if you wish to have more fine-grained control over your broadcast payload, you may add a `broadcastWith` method to your event. This method should return the array of data that you wish to broadcast as the event payload:
+브로드캐스트 페이로드를 세밀하게 제어하고 싶으면, `broadcastWith` 메소드를 추가하고 반환 값을 배열로 지정하면 됩니다:
 
     /**
-     * Get the data to broadcast.
+     * 브로드캐스팅할 데이터 반환
      *
      * @return array
      */
@@ -410,28 +410,28 @@ However, if you wish to have more fine-grained control over your broadcast paylo
     }
 
 <a name="broadcast-queue"></a>
-### Broadcast Queue
+### 브로드캐스트 큐
 
-By default, each broadcast event is placed on the default queue for the default queue connection specified in your `queue.php` configuration file. You may customize the queue connection and name used by the broadcaster by defining `connection` and `queue` properties on your event class:
+각 브로드캐스트 이벤트는 기본적으로 `queue.php` 설정 파일의 기본 큐 및 커넥션에 배치됩니다. 이벤트 클래스에 `connection` 및 `queue` 속성을 정의하면, 사용할 큐 커넥션과 큐명을 직접 지정할 수 있습니다:
 
     /**
-     * The name of the queue connection to use when broadcasting the event.
+     * 브로드캐스트 시 사용할 큐 커넥션 이름
      *
      * @var string
      */
     public $connection = 'redis';
 
     /**
-     * The name of the queue on which to place the broadcasting job.
+     * 브로드캐스트 작업이 할당될 큐 이름
      *
      * @var string
      */
     public $queue = 'default';
 
-Alternatively, you may customize the queue name by defining a `broadcastQueue` method on your event:
+아니면, `broadcastQueue` 메소드를 정의해 큐명을 직접 반환할 수도 있습니다:
 
     /**
-     * The name of the queue on which to place the broadcasting job.
+     * 브로드캐스트 작업의 큐 이름 반환
      *
      * @return string
      */
@@ -440,7 +440,7 @@ Alternatively, you may customize the queue name by defining a `broadcastQueue` m
         return 'default';
     }
 
-If you would like to broadcast your event using the `sync` queue instead of the default queue driver, you can implement the `ShouldBroadcastNow` interface instead of `ShouldBroadcast`:
+`ShouldBroadcast` 대신 `ShouldBroadcastNow` 인터페이스를 구현하면, 기본적으로 `sync` 큐로 이벤트를 브로드캐스트합니다:
 
     <?php
 
@@ -452,12 +452,12 @@ If you would like to broadcast your event using the `sync` queue instead of the 
     }
 
 <a name="broadcast-conditions"></a>
-### Broadcast Conditions
+### 브로드캐스트 조건
 
-Sometimes you want to broadcast your event only if a given condition is true. You may define these conditions by adding a `broadcastWhen` method to your event class:
+특정 조건이 true일 때만 이벤트를 브로드캐스트하고 싶을 때는, 이벤트 클래스에 `broadcastWhen` 메소드를 추가하세요:
 
     /**
-     * Determine if this event should broadcast.
+     * 이 이벤트를 브로드캐스트할지 결정
      *
      * @return bool
      */
@@ -467,11 +467,11 @@ Sometimes you want to broadcast your event only if a given condition is true. Yo
     }
 
 <a name="broadcasting-and-database-transactions"></a>
-#### Broadcasting & Database Transactions
+#### 브로드캐스팅 & 데이터베이스 트랜잭션
 
-When broadcast events are dispatched within database transactions, they may be processed by the queue before the database transaction has committed. When this happens, any updates you have made to models or database records during the database transaction may not yet be reflected in the database. In addition, any models or database records created within the transaction may not exist in the database. If your event depends on these models, unexpected errors can occur when the job that broadcasts the event is processed.
+브로드캐스트 이벤트가 데이터베이스 트랜잭션 내에서 디스패치될 때, 큐가 DB 트랜잭션 커밋 전에 작업을 처리할 수 있습니다. 이 경우, 트랜잭션 중 변경된 모델/레코드가 아직 DB에 반영되지 않았을 수 있습니다. 이벤트가 이런 모델에 의존한다면, 예상치 못한 오류가 발생할 수 있습니다.
 
-If your queue connection's `after_commit` configuration option is set to `false`, you may still indicate that a particular broadcast event should be dispatched after all open database transactions have been committed by defining an `$afterCommit` property on the event class:
+큐 커넥션의 `after_commit` 설정이 `false`라면, 이벤트 클래스에 `$afterCommit` 속성을 `true`로 정의하여 모든 열려있는 DB 트랜잭션 커밋 이후에 이벤트가 디스패치되게 할 수 있습니다:
 
     <?php
 
@@ -487,28 +487,28 @@ If your queue connection's `after_commit` configuration option is set to `false`
         public $afterCommit = true;
     }
 
-> {tip} To learn more about working around these issues, please review the documentation regarding [queued jobs and database transactions](/docs/{{version}}/queues#jobs-and-database-transactions).
+> {tip} 이 문제의 우회 방법은 [큐 작업과 데이터베이스 트랜잭션](/docs/{{version}}/queues#jobs-and-database-transactions) 문서를 참고하세요.
 
 <a name="authorizing-channels"></a>
-## Authorizing Channels
+## 채널 인증
 
-Private channels require you to authorize that the currently authenticated user can actually listen on the channel. This is accomplished by making an HTTP request to your Laravel application with the channel name and allowing your application to determine if the user can listen on that channel. When using [Laravel Echo](#client-side-installation), the HTTP request to authorize subscriptions to private channels will be made automatically; however, you do need to define the proper routes to respond to these requests.
+비공개 채널은, 현재 인증된 사용자가 해당 채널을 들을 수 있는지 인증해야 합니다. 이는 채널 이름을 포함한 HTTP 요청을 Laravel 애플리케이션으로 보내고, Laravel이 요청 사용자가 채널을 수신할 수 있는지 판단하여 처리합니다. [Laravel Echo](#client-side-installation)를 사용할 때는 자동으로 인증 요청을 보내지만, 응답할 적절한 라우트는 직접 정의해야 합니다.
 
 <a name="defining-authorization-routes"></a>
-### Defining Authorization Routes
+### 인증 라우트 정의
 
-Thankfully, Laravel makes it easy to define the routes to respond to channel authorization requests. In the `App\Providers\BroadcastServiceProvider` included with your Laravel application, you will see a call to the `Broadcast::routes` method. This method will register the `/broadcasting/auth` route to handle authorization requests:
+Laravel은 인증 요청에 응답할 라우트를 쉽게 정의할 수 있도록 해줍니다. Laravel에 기본 포함된 `App\Providers\BroadcastServiceProvider`에는 `Broadcast::routes` 메소드가 호출되어 있으며, 이는 `/broadcasting/auth` 엔드포인트 라우트를 자동 등록합니다:
 
     Broadcast::routes();
 
-The `Broadcast::routes` method will automatically place its routes within the `web` middleware group; however, you may pass an array of route attributes to the method if you would like to customize the assigned attributes:
+`Broadcast::routes`는 기본적으로 라우트를 `web` 미들웨어 그룹에 넣지만, 배열 형태로 라우트 속성을 전달해 커스터마이징할 수 있습니다:
 
     Broadcast::routes($attributes);
 
 <a name="customizing-the-authorization-endpoint"></a>
-#### Customizing The Authorization Endpoint
+#### 인증 엔드포인트 커스터마이징
 
-By default, Echo will use the `/broadcasting/auth` endpoint to authorize channel access. However, you may specify your own authorization endpoint by passing the `authEndpoint` configuration option to your Echo instance:
+기본적으로 Echo는 `/broadcasting/auth` 엔드포인트로 채널 인증을 요청합니다. 하지만 Echo 인스턴스의 `authEndpoint` 설정 옵션을 사용하면 원하는 엔드포인트를 사용할 수 있습니다:
 
     window.Echo = new Echo({
         broadcaster: 'pusher',
@@ -517,9 +517,9 @@ By default, Echo will use the `/broadcasting/auth` endpoint to authorize channel
     });
 
 <a name="customizing-the-authorization-request"></a>
-#### Customizing The Authorization Request
+#### 인증 요청 커스터마이징
 
-You can customize how Laravel Echo performs authorization requests by providing a custom authorizer when initializing Echo:
+Echo를 초기화할 때 `authorizer` 옵션을 제공해서 인증 요청 방식을 직접 지정할 수도 있습니다:
 
     window.Echo = new Echo({
         // ...
@@ -542,22 +542,20 @@ You can customize how Laravel Echo performs authorization requests by providing 
     })
 
 <a name="defining-authorization-callbacks"></a>
-### Defining Authorization Callbacks
+### 인증 콜백 정의
 
-Next, we need to define the logic that will actually determine if the currently authenticated user can listen to a given channel. This is done in the `routes/channels.php` file that is included with your application. In this file, you may use the `Broadcast::channel` method to register channel authorization callbacks:
+이제 실제로 인증된 사용자가 주어진 채널을 들을 수 있는지 판단하는 로직을 정의해야 합니다. 이 로직은 기본적으로 포함된 `routes/channels.php` 파일에 정의합니다. 여기서 `Broadcast::channel` 메소드를 통해 채널 인증 콜백을 등록할 수 있습니다:
 
     Broadcast::channel('orders.{orderId}', function ($user, $orderId) {
         return $user->id === Order::findOrNew($orderId)->user_id;
     });
 
-The `channel` method accepts two arguments: the name of the channel and a callback which returns `true` or `false` indicating whether the user is authorized to listen on the channel.
-
-All authorization callbacks receive the currently authenticated user as their first argument and any additional wildcard parameters as their subsequent arguments. In this example, we are using the `{orderId}` placeholder to indicate that the "ID" portion of the channel name is a wildcard.
+모든 인증 콜백은 현재 인증된 사용자와 추가 와일드카드 파라미터를 받습니다. 예제에서는 `{orderId}`를 사용하여 채널 명에 와일드카드를 사용하는 것을 볼 수 있습니다.
 
 <a name="authorization-callback-model-binding"></a>
-#### Authorization Callback Model Binding
+#### 인증 콜백 모델 바인딩
 
-Just like HTTP routes, channel routes may also take advantage of implicit and explicit [route model binding](/docs/{{version}}/routing#route-model-binding). For example, instead of receiving a string or numeric order ID, you may request an actual `Order` model instance:
+HTTP 라우트와 마찬가지로, 채널 라우트도 암시적/명시적 [라우트 모델 바인딩](/docs/{{version}}/routing#route-model-binding)을 활용할 수 있습니다. 예를 들어 문자열이 아닌 실제 `Order` 모델 인스턴스를 받을 수 있습니다:
 
     use App\Models\Order;
 
@@ -565,31 +563,31 @@ Just like HTTP routes, channel routes may also take advantage of implicit and ex
         return $user->id === $order->user_id;
     });
 
-> {note} Unlike HTTP route model binding, channel model binding does not support automatic [implicit model binding scoping](/docs/{{version}}/routing#implicit-model-binding-scoping). However, this is rarely a problem because most channels can be scoped based on a single model's unique, primary key.
+> {note} HTTP 라우트 모델 바인딩과 달리, 채널 모델 바인딩은 [자동 암시적 스코핑](/docs/{{version}}/routing#implicit-model-binding-scoping)을 지원하지 않습니다. 그러나 대부분의 경우 단일 모델의 primary key로 스코프 하면 충분합니다.
 
 <a name="authorization-callback-authentication"></a>
-#### Authorization Callback Authentication
+#### 인증 콜백에서의 인증
 
-Private and presence broadcast channels authenticate the current user via your application's default authentication guard. If the user is not authenticated, channel authorization is automatically denied and the authorization callback is never executed. However, you may assign multiple, custom guards that should authenticate the incoming request if necessary:
+비공개/프리즌스 브로드캐스트 채널은 애플리케이션의 기본 인증 가드로 현재 사용자를 인증합니다. 인증되지 않은 경우, 인증 콜백이 실행되지 않고 인증은 자동 거부됩니다. 필요하다면 여러 개의 커스텀 가드를 지정해서 인증 요청을 허용할 수 있습니다:
 
     Broadcast::channel('channel', function () {
         // ...
     }, ['guards' => ['web', 'admin']]);
 
 <a name="defining-channel-classes"></a>
-### Defining Channel Classes
+### 채널 클래스 정의
 
-If your application is consuming many different channels, your `routes/channels.php` file could become bulky. So, instead of using closures to authorize channels, you may use channel classes. To generate a channel class, use the `make:channel` Artisan command. This command will place a new channel class in the `App/Broadcasting` directory.
+여러 채널을 사용하는 경우 `routes/channels.php` 파일이 커질 수 있습니다. 이때 클로저 대신 채널 클래스를 생성해서 인증 로직을 분리 운영할 수 있습니다. `make:channel` 아티즌 명령어로 채널 클래스를 만들 수 있습니다. 이 클래스는 `App/Broadcasting` 디렉터리에 생성됩니다.
 
     php artisan make:channel OrderChannel
 
-Next, register your channel in your `routes/channels.php` file:
+이제 `routes/channels.php` 파일에서 채널을 클래스에 연결하세요:
 
     use App\Broadcasting\OrderChannel;
 
     Broadcast::channel('orders.{order}', OrderChannel::class);
 
-Finally, you may place the authorization logic for your channel in the channel class' `join` method. This `join` method will house the same logic you would have typically placed in your channel authorization closure. You may also take advantage of channel model binding:
+채널 클래스의 `join` 메소드에서 인증 로직을 구현하면 됩니다. 이 메소드 안에서도 모델 바인딩을 사용할 수 있습니다:
 
     <?php
 
@@ -600,18 +598,13 @@ Finally, you may place the authorization logic for your channel in the channel c
 
     class OrderChannel
     {
-        /**
-         * Create a new channel instance.
-         *
-         * @return void
-         */
         public function __construct()
         {
             //
         }
 
         /**
-         * Authenticate the user's access to the channel.
+         * 사용자의 채널 접근을 인증합니다.
          *
          * @param  \App\Models\User  $user
          * @param  \App\Models\Order  $order
@@ -623,56 +616,56 @@ Finally, you may place the authorization logic for your channel in the channel c
         }
     }
 
-> {tip} Like many other classes in Laravel, channel classes will automatically be resolved by the [service container](/docs/{{version}}/container). So, you may type-hint any dependencies required by your channel in its constructor.
+> {tip} Laravel의 많은 클래스와 마찬가지로, 채널 클래스도 [서비스 컨테이너](/docs/{{version}}/container)에서 자동 해결됩니다. 따라서 생성자에 필요한 의존성은 타입힌트로 명시하면 됩니다.
 
 <a name="broadcasting-events"></a>
-## Broadcasting Events
+## 이벤트 브로드캐스팅
 
-Once you have defined an event and marked it with the `ShouldBroadcast` interface, you only need to fire the event using the event's dispatch method. The event dispatcher will notice that the event is marked with the `ShouldBroadcast` interface and will queue the event for broadcasting:
+이벤트를 정의하고 `ShouldBroadcast` 인터페이스를 구현했다면, 이벤트의 dispatch 메소드를 사용해 이벤트를 발생시키기만 하면 됩니다. 이벤트 디스패처가 이 인터페이스가 구현된 이벤트임을 인식하고, 브로드캐스트 큐로 자동 등록합니다:
 
     use App\Events\OrderShipmentStatusUpdated;
 
     OrderShipmentStatusUpdated::dispatch($order);
 
 <a name="only-to-others"></a>
-### Only To Others
+### 다른 사용자에게만 브로드캐스트
 
-When building an application that utilizes event broadcasting, you may occasionally need to broadcast an event to all subscribers to a given channel except for the current user. You may accomplish this using the `broadcast` helper and the `toOthers` method:
+브로드캐스팅을 활용할 때, 현재 사용자 자신을 제외한 구독자들에게만 이벤트를 브로드캐스트할 필요가 있을 수 있습니다. `broadcast` 헬퍼와 `toOthers` 메소드를 사용하여 이를 구현할 수 있습니다:
 
     use App\Events\OrderShipmentStatusUpdated;
 
     broadcast(new OrderShipmentStatusUpdated($update))->toOthers();
 
-To better understand when you may want to use the `toOthers` method, let's imagine a task list application where a user may create a new task by entering a task name. To create a task, your application might make a request to a `/task` URL which broadcasts the task's creation and returns a JSON representation of the new task. When your JavaScript application receives the response from the end-point, it might directly insert the new task into its task list like so:
+예를 들어, 할 일 목록 애플리케이션을 가정해 봅시다. 사용자가 새 할 일을 추가하면, `/task` 엔드포인트에 요청해서 할 일이 생성됐다면 JSON을 바로 tasks 배열에 푸시할 수 있습니다:
 
     axios.post('/task', task)
         .then((response) => {
             this.tasks.push(response.data);
         });
 
-However, remember that we also broadcast the task's creation. If your JavaScript application is also listening for this event in order to add tasks to the task list, you will have duplicate tasks in your list: one from the end-point and one from the broadcast. You may solve this by using the `toOthers` method to instruct the broadcaster to not broadcast the event to the current user.
+하지만 이벤트도 브로드캐스트하기 때문에, 리스닝할 때 tasks 배열에 같은 할 일이 반복 추가될 수 있습니다. 이럴 때 `toOthers` 메소드를 사용해 브로드캐스트가 본인에게는 발생하지 않게 설정합니다.
 
-> {note} Your event must use the `Illuminate\Broadcasting\InteractsWithSockets` trait in order to call the `toOthers` method.
+> {note} `toOthers` 메소드 사용을 위해서는 이벤트에서 `Illuminate\Broadcasting\InteractsWithSockets` 트레이트를 사용해야 합니다.
 
 <a name="only-to-others-configuration"></a>
-#### Configuration
+#### 설정
 
-When you initialize a Laravel Echo instance, a socket ID is assigned to the connection. If you are using a global [Axios](https://github.com/mzabriskie/axios) instance to make HTTP requests from your JavaScript application, the socket ID will automatically be attached to every outgoing request as a `X-Socket-ID` header. Then, when you call the `toOthers` method, Laravel will extract the socket ID from the header and instruct the broadcaster to not broadcast to any connections with that socket ID.
+Laravel Echo 인스턴스가 초기화되면 소켓 ID가 커넥션에 할당됩니다. 전역 [Axios](https://github.com/mzabriskie/axios)를 사용하면 요청마다 자동으로 `X-Socket-ID` 헤더가 포함됩니다. `toOthers` 메소드를 호출하면 Laravel이 해당 헤더에서 소켓 ID를 읽어, 브로드캐스트 받을 수신자를 제한할 수 있습니다.
 
-If you are not using a global Axios instance, you will need to manually configure your JavaScript application to send the `X-Socket-ID` header with all outgoing requests. You may retrieve the socket ID using the `Echo.socketId` method:
+전역 Axios를 사용하지 않는 경우, JS 애플리케이션에서 모든 요청 헤더에 `X-Socket-ID`를 수동으로 추가해야 합니다. 소켓 ID는 `Echo.socketId()`로 가져올 수 있습니다:
 
     var socketId = Echo.socketId();
 
 <a name="customizing-the-connection"></a>
-### Customizing The Connection
+### 커넥션 커스터마이징
 
-If your application interacts with multiple broadcast connections and you want to broadcast an event using a broadcaster other than your default, you may specify which connection to push an event to using the `via` method:
+한 애플리케이션에서 여러 브로드캐스트 커넥션을 사용할 때, 기본 커넥션이 아닌 다른 커넥션을 통해 이벤트를 브로드캐스트하고 싶다면, `via` 메소드를 사용해 어떤 커넥션을 사용할지 지정할 수 있습니다:
 
     use App\Events\OrderShipmentStatusUpdated;
 
     broadcast(new OrderShipmentStatusUpdated($update))->via('pusher');
 
-Alternatively, you may specify the event's broadcast connection by calling the `broadcastVia` method within the event's constructor. However, before doing so, you should ensure that the event class uses the `InteractsWithBroadcasting` trait:
+이벤트 생성자에서 `broadcastVia` 메소드를 호출해 이벤트의 브로드캐스트 커넥션을 직접 지정할 수도 있습니다. 이때는 이벤트 클래스가 `InteractsWithBroadcasting` 트레이트를 사용해야 합니다:
 
     <?php
 
@@ -690,11 +683,6 @@ Alternatively, you may specify the event's broadcast connection by calling the `
     {
         use InteractsWithBroadcasting;
 
-        /**
-         * Create a new event instance.
-         *
-         * @return void
-         */
         public function __construct()
         {
             $this->broadcastVia('pusher');
@@ -702,12 +690,12 @@ Alternatively, you may specify the event's broadcast connection by calling the `
     }
 
 <a name="receiving-broadcasts"></a>
-## Receiving Broadcasts
+## 브로드캐스트 수신
 
 <a name="listening-for-events"></a>
-### Listening For Events
+### 이벤트 리스닝
 
-Once you have [installed and instantiated Laravel Echo](#client-side-installation), you are ready to start listening for events that are broadcast from your Laravel application. First, use the `channel` method to retrieve an instance of a channel, then call the `listen` method to listen for a specified event:
+[Laravel Echo 설치 및 인스턴스화](#client-side-installation)를 끝냈다면, 이제 Laravel에서 브로드캐스트한 이벤트를 수신할 준비가 된 것입니다. 먼저 `channel` 메소드로 채널 인스턴스를 얻고, `listen` 메소드로 특정 이벤트를 감지합니다:
 
 ```js
 Echo.channel(`orders.${this.order.id}`)
@@ -716,7 +704,7 @@ Echo.channel(`orders.${this.order.id}`)
     });
 ```
 
-If you would like to listen for events on a private channel, use the `private` method instead. You may continue to chain calls to the `listen` method to listen for multiple events on a single channel:
+비공개 채널의 이벤트를 감지하려면 `private` 메소드를 사용하세요. 하나의 채널에서 여러 이벤트를 연속해서 감지하려면 `listen` 메소드를 체이닝할 수 있습니다:
 
 ```js
 Echo.private(`orders.${this.order.id}`)
@@ -726,9 +714,9 @@ Echo.private(`orders.${this.order.id}`)
 ```
 
 <a name="stop-listening-for-events"></a>
-#### Stop Listening For Events
+#### 이벤트 리스닝 중지
 
-If you would like to stop listening to a given event without [leaving the channel](#leaving-a-channel), you may use the `stopListening` method:
+채널에서 [아예 나가지 않아도](#leaving-a-channel) 특정 이벤트만 리스닝을 중지하고 싶다면, `stopListening` 메소드를 사용하세요:
 
 ```js
 Echo.private(`orders.${this.order.id}`)
@@ -736,23 +724,24 @@ Echo.private(`orders.${this.order.id}`)
 ```
 
 <a name="leaving-a-channel"></a>
-### Leaving A Channel
+### 채널 나가기
 
-To leave a channel, you may call the `leaveChannel` method on your Echo instance:
+채널을 나가려면 Echo 인스턴스의 `leaveChannel` 메소드를 호출합니다:
 
 ```js
 Echo.leaveChannel(`orders.${this.order.id}`);
 ```
 
-If you would like to leave a channel and also its associated private and presence channels, you may call the `leave` method:
+채널과 연관된 비공개/프리즌스 채널 모두 떠나고 싶다면 `leave` 메소드를 사용하세요:
 
 ```js
 Echo.leave(`orders.${this.order.id}`);
 ```
-<a name="namespaces"></a>
-### Namespaces
 
-You may have noticed in the examples above that we did not specify the full `App\Events` namespace for the event classes. This is because Echo will automatically assume the events are located in the `App\Events` namespace. However, you may configure the root namespace when you instantiate Echo by passing a `namespace` configuration option:
+<a name="namespaces"></a>
+### 네임스페이스
+
+위의 예시에서 이벤트 클래스의 전체 네임스페이스(`App\Events`)를 명시하지 않은 것을 눈치챘을 것입니다. 이는 Echo가 기본적으로 이벤트가 `App\Events`에 있다고 가정하기 때문입니다. Echo를 인스턴스화하면서 `namespace` 설정 옵션으로 루트 네임스페이스를 조정할 수도 있습니다:
 
 ```js
 window.Echo = new Echo({
@@ -762,7 +751,7 @@ window.Echo = new Echo({
 });
 ```
 
-Alternatively, you may prefix event classes with a `.` when subscribing to them using Echo. This will allow you to always specify the fully-qualified class name:
+또는 이벤트 클래스 앞에 `.`을 붙여 Echo로 구독할 때마다 완전한 네임스페이스명을 명시할 수도 있습니다:
 
 ```js
 Echo.channel('orders')
@@ -772,16 +761,16 @@ Echo.channel('orders')
 ```
 
 <a name="presence-channels"></a>
-## Presence Channels
+## 프리즌스 채널(Presence Channels)
 
-Presence channels build on the security of private channels while exposing the additional feature of awareness of who is subscribed to the channel. This makes it easy to build powerful, collaborative application features such as notifying users when another user is viewing the same page or listing the inhabitants of a chat room.
+프리즌스 채널은 비공개 채널의 보안성을 유지하면서, 누가 채널에 구독 중인지도 알 수 있게 해줍니다. 이를 통해 특정 사용자가 같은 페이지를 보고 있다거나, 채팅방 참여자 목록 등 강력한 협업형 기능을 만들 수 있습니다.
 
 <a name="authorizing-presence-channels"></a>
-### Authorizing Presence Channels
+### 프리즌스 채널 인증
 
-All presence channels are also private channels; therefore, users must be [authorized to access them](#authorizing-channels). However, when defining authorization callbacks for presence channels, you will not return `true` if the user is authorized to join the channel. Instead, you should return an array of data about the user.
+프리즌스 채널은 비공개 채널과 동일하게 [인증](#authorizing-channels)이 필요합니다. 다만, 사용자가 인증에 성공한 경우 `true`를 반환하는 대신, 사용자의 정보를 담은 배열을 반환해야 합니다.
 
-The data returned by the authorization callback will be made available to the presence channel event listeners in your JavaScript application. If the user is not authorized to join the presence channel, you should return `false` or `null`:
+이렇게 반환된 데이터는 JavaScript 애플리케이션에서 프리즌스 채널 이벤트 리스너가 사용할 수 있습니다. 인증에 실패하면 `false` 또는 `null`을 반환하세요:
 
     Broadcast::channel('chat.{roomId}', function ($user, $roomId) {
         if ($user->canJoinRoom($roomId)) {
@@ -790,9 +779,9 @@ The data returned by the authorization callback will be made available to the pr
     });
 
 <a name="joining-presence-channels"></a>
-### Joining Presence Channels
+### 프리즌스 채널 가입
 
-To join a presence channel, you may use Echo's `join` method. The `join` method will return a `PresenceChannel` implementation which, along with exposing the `listen` method, allows you to subscribe to the `here`, `joining`, and `leaving` events.
+Presence 채널에 가입하려면 Echo의 `join` 메소드를 사용합니다. 이 메소드는 `here`, `joining`, `leaving` 이벤트에 대응하며, 채널을 성공적으로 구독하면 `here` 콜백이 즉시 실행되고 현재 구독 중인 사용자의 정보를 배열로 제공합니다. `joining`은 새 사용자가 채널에 입장할 때, `leaving`은 사용자가 떠날 때, `error`는 인증 실패나 JSON 파싱 문제 시 실행됩니다.
 
     Echo.join(`chat.${roomId}`)
         .here((users) => {
@@ -808,15 +797,13 @@ To join a presence channel, you may use Echo's `join` method. The `join` method 
             console.error(error);
         });
 
-The `here` callback will be executed immediately once the channel is joined successfully, and will receive an array containing the user information for all of the other users currently subscribed to the channel. The `joining` method will be executed when a new user joins a channel, while the `leaving` method will be executed when a user leaves the channel. The `error` method will be executed when the authentication endpoint returns a HTTP status code other than 200 or if there is a problem parsing the returned JSON.
-
 <a name="broadcasting-to-presence-channels"></a>
-### Broadcasting To Presence Channels
+### 프리즌스 채널 브로드캐스팅
 
-Presence channels may receive events just like public or private channels. Using the example of a chatroom, we may want to broadcast `NewMessage` events to the room's presence channel. To do so, we'll return an instance of `PresenceChannel` from the event's `broadcastOn` method:
+프리즌스 채널도 공개/비공개 채널처럼 이벤트를 받을 수 있습니다. 예를 들어 채팅방에서 `NewMessage` 이벤트를 프리즌스 채널로 브로드캐스트하려면, 이벤트의 `broadcastOn` 메소드에서 `PresenceChannel` 인스턴스를 반환하면 됩니다:
 
     /**
-     * Get the channels the event should broadcast on.
+     * 이벤트가 브로드캐스트될 채널 반환
      *
      * @return Channel|array
      */
@@ -825,13 +812,13 @@ Presence channels may receive events just like public or private channels. Using
         return new PresenceChannel('room.'.$this->message->room_id);
     }
 
-As with other events, you may use the `broadcast` helper and the `toOthers` method to exclude the current user from receiving the broadcast:
+다른 이벤트와 마찬가지로, `broadcast` 헬퍼와 `toOthers` 메소드를 활용해 본인에겐 브로드캐스트되지 않도록 할 수 있습니다:
 
     broadcast(new NewMessage($message));
 
     broadcast(new NewMessage($message))->toOthers();
 
-As typical of other types of events, you may listen for events sent to presence channels using Echo's `listen` method:
+또한, Echo의 `listen` 메소드로 프리즌스 채널의 이벤트를 감지할 수 있습니다:
 
     Echo.join(`chat.${roomId}`)
         .here(...)
@@ -842,15 +829,15 @@ As typical of other types of events, you may listen for events sent to presence 
         });
 
 <a name="model-broadcasting"></a>
-## Model Broadcasting
+## 모델 브로드캐스팅
 
-> {note} Before reading the following documentation about model broadcasting, we recommend you become familiar with the general concepts of Laravel's model broadcasting services as well as how to manually create and listen to broadcast events.
+> {note} 모델 브로드캐스팅에 대해 읽기 전에, Laravel의 모델 브로드캐스팅 서비스 일반 개념과 수동 이벤트 생성, 브로드캐스트에 익숙해지시길 권장합니다.
 
-It is common to broadcast events when your application's [Eloquent models](/docs/{{version}}/eloquent) are created, updated, or deleted. Of course, this can easily be accomplished by manually [defining custom events for Eloquent model state changes](/docs/{{version}}/eloquent#events) and marking those events with the `ShouldBroadcast` interface.
+애플리케이션의 [Eloquent 모델](/docs/{{version}}/eloquent)이 생성, 수정, 삭제될 때마다 이벤트를 브로드캐스트하는 것은 흔한 일입니다. 물론, 상태 변화 시마다 직접 커스텀 이벤트 클래스를 만들어 `ShouldBroadcast` 인터페이스를 구현해도 됩니다.
 
-However, if you are not using these events for any other purposes in your application, it can be cumbersome to create event classes for the sole purpose of broadcasting them. To remedy this, Laravel allows you to indicate that an Eloquent model should automatically broadcast its state changes.
+하지만, 이런 이벤트를 다른 용도로 사용하지 않는다면 단순 브로드캐스트만을 위해 이벤트 클래스를 만드는 것은 번거로울 수 있습니다. 이 문제를 해결하기 위해, Laravel은 Eloquent 모델이 상태 변경 시 자동으로 브로드캐스트되도록 지원합니다.
 
-To get started, your Eloquent model should use the `Illuminate\Database\Eloquent\BroadcastsEvents` trait. In addition, the model should define a `broadcastsOn` method, which will return an array of channels that the model's events should broadcast on:
+시작하려면, 모델에 `Illuminate\Database\Eloquent\BroadcastsEvents` 트레이트를 추가하고, 브로드캐스트할 채널을 반환하는 `broadcastsOn` 메소드를 정의하면 됩니다:
 
 ```php
 <?php
@@ -867,7 +854,7 @@ class Post extends Model
     use BroadcastsEvents, HasFactory;
 
     /**
-     * Get the user that the post belongs to.
+     * 이 포스트가 소속된 유저를 반환합니다.
      */
     public function user()
     {
@@ -875,7 +862,7 @@ class Post extends Model
     }
 
     /**
-     * Get the channels that model events should broadcast on.
+     * 모델 이벤트가 브로드캐스트될 채널을 반환합니다.
      *
      * @param  string  $event
      * @return \Illuminate\Broadcasting\Channel|array
@@ -887,13 +874,13 @@ class Post extends Model
 }
 ```
 
-Once your model includes this trait and defines its broadcast channels, it will begin automatically broadcasting events when a model instance is created, updated, deleted, trashed, or restored.
+이 트레이트를 추가하고 채널을 정의하면, 모델 인스턴스가 생성, 수정, 삭제, 휴지통 이동, 복구될 때마다 자동으로 이벤트가 브로드캐스트됩니다.
 
-In addition, you may have noticed that the `broadcastOn` method receives a string `$event` argument. This argument contains the type of event that has occurred on the model and will have a value of `created`, `updated`, `deleted`, `trashed`, or `restored`. By inspecting the value of this variable, you may determine which channels (if any) the model should broadcast to for a particular event:
+또한, `broadcastOn` 메소드는 `$event`라는 문자열 매개변수를 받습니다. 이 값은 모델에서 발생한 이벤트 유형이고, `created`, `updated`, `deleted`, `trashed`, `restored` 중 하나입니다. 이를 검사해 특정 이벤트에서만 브로드캐스트할 채널을 지정할 수 있습니다:
 
 ```php
 /**
- * Get the channels that model events should broadcast on.
+ * 모델 이벤트가 브로드캐스트될 채널을 반환합니다.
  *
  * @param  string  $event
  * @return \Illuminate\Broadcasting\Channel|array
@@ -908,15 +895,15 @@ public function broadcastOn($event)
 ```
 
 <a name="customizing-model-broadcasting-event-creation"></a>
-#### Customizing Model Broadcasting Event Creation
+#### 모델 브로드캐스트 이벤트 생성 커스터마이징
 
-Occasionally, you may wish to customize how Laravel creates the underlying model broadcasting event. You may accomplish this by defining a `newBroadcastableEvent` method on your Eloquent model. This method should return an `Illuminate\Database\Eloquent\BroadcastableModelEventOccurred` instance:
+Laravel에서 기본적으로 생성되는 모델 브로드캐스트 이벤트를 커스터마이징하고 싶을 경우, Eloquent 모델에 `newBroadcastableEvent` 메소드를 정의하면 됩니다. 이 메소드는 `Illuminate\Database\Eloquent\BroadcastableModelEventOccurred` 인스턴스를 반환해야 합니다:
 
 ```php
 use Illuminate\Database\Eloquent\BroadcastableModelEventOccurred
 
 /**
- * Create a new broadcastable model event for the model.
+ * 모델용 새 브로드캐스트 이벤트 생성
  *
  * @param  string  $event
  * @return \Illuminate\Database\Eloquent\BroadcastableModelEventOccurred
@@ -930,20 +917,20 @@ protected function newBroadcastableEvent($event)
 ```
 
 <a name="model-broadcasting-conventions"></a>
-### Model Broadcasting Conventions
+### 모델 브로드캐스팅 규칙
 
 <a name="model-broadcasting-channel-conventions"></a>
-#### Channel Conventions
+#### 채널 규칙
 
-As you may have noticed, the `broadcastOn` method in the model example above did not return `Channel` instances. Instead, Eloquent models were returned directly. If an Eloquent model instance is returned by your model's `broadcastOn` method (or is contained in an array returned by the method), Laravel will automatically instantiate a private channel instance for the model using the model's class name and primary key identifier as the channel name.
+모델 예제의 `broadcastOn` 메소드가 `Channel` 인스턴스를 반환하지 않고, Eloquent 모델 인스턴스를 직접 반환한 것을 볼 수 있습니다. 만약 모델 인스턴스가 반환되면, Laravel은 모델의 클래스명과 primary key로 `PrivateChannel` 인스턴스를 자동 생성합니다.
 
-So, an `App\Models\User` model with an `id` of `1` would be converted into a `Illuminate\Broadcasting\PrivateChannel` instance with a name of `App.Models.User.1`. Of course, in addition to returning Eloquent model instances from your model's `broadcastOn` method, you may return complete `Channel` instances in order to have full control over the model's channel names:
+예를 들면, `App\Models\User` 모델의 `id`가 1이면 채널명은 `App.Models.User.1`입니다. 물론 완전한 제어가 필요하면 `broadcastOn` 메소드에서 `Channel` 인스턴스를 직접 반환할 수도 있습니다:
 
 ```php
 use Illuminate\Broadcasting\PrivateChannel;
 
 /**
- * Get the channels that model events should broadcast on.
+ * 모델 이벤트가 브로드캐스트될 채널 반환
  *
  * @param  string  $event
  * @return \Illuminate\Broadcasting\Channel|array
@@ -954,24 +941,24 @@ public function broadcastOn($event)
 }
 ```
 
-If you plan to explicitly return a channel instance from your model's `broadcastOn` method, you may pass an Eloquent model instance to the channel's constructor. When doing so, Laravel will use the model channel conventions discussed above to convert the Eloquent model into a channel name string:
+채널 생성자에 모델 인스턴스를 직접 넘겨도, 위에서 설명한 채널명 규칙이 적용됩니다:
 
 ```php
 return [new Channel($this->user)];
 ```
 
-If you need to determine the channel name of a model, you may call the `broadcastChannel` method on any model instance. For example, this method returns the string `App.Models.User.1` for a `App\Models\User` model with an `id` of `1`:
+모델의 채널명을 직접 확인하려면 인스턴스에서 `broadcastChannel` 메소드를 호출하세요. 예를 들어, `App\Models\User` 모델에 `id`가 1이면 `App.Models.User.1`을 반환합니다:
 
 ```php
 $user->broadcastChannel()
 ```
 
 <a name="model-broadcasting-event-conventions"></a>
-#### Event Conventions
+#### 이벤트 규칙
 
-Since model broadcast events are not associated with an "actual" event within your application's `App\Events` directory, they are assigned a name and a payload based on conventions. Laravel's convention is to broadcast the event using the class name of the model (not including the namespace) and the name of the model event that triggered the broadcast.
+모델 브로드캐스트 이벤트는 `App\Events` 디렉터리 내의 실제 이벤트와 연관되어 있지 않기 때문에, 이름과 페이로드는 규칙에 따라 자동 지정됩니다. Laravel은 모델의 클래스명(네임스페이스 제외)과 해당 모델 이벤트명으로 이벤트를 브로드캐스트합니다.
 
-So, for example, an update to the `App\Models\Post` model would broadcast an event to your client-side application as `PostUpdated` with the following payload:
+예를 들어 `App\Models\Post` 모델이 업데이트되면, 클라이언트에서는 `PostUpdated`라는 이름의 이벤트가 다음과 같은 페이로드로 수신됩니다:
 
     {
         "model": {
@@ -983,13 +970,13 @@ So, for example, an update to the `App\Models\Post` model would broadcast an eve
         "socket": "someSocketId",
     }
 
-The deletion of the `App\Models\User` model would broadcast an event named `UserDeleted`.
+`App\Models\User` 모델 삭제는 `UserDeleted` 이벤트명으로 브로드캐스트 됩니다.
 
-If you would like, you may define a custom broadcast name and payload by adding a `broadcastAs` and `broadcastWith` method to your model. These methods receive the name of the model event / operation that is occurring, allowing you to customize the event's name and payload for each model operation. If `null` is returned from the `broadcastAs` method, Laravel will use the model broadcasting event name conventions discussed above when broadcasting the event:
+직접 커스텀 브로드캐스트 이름/페이로드가 필요하다면, 모델에 `broadcastAs`/`broadcastWith` 메소드를 추가할 수 있습니다. 두 메소드 모두 모델 이벤트명을 파라미터로 받아 상황에 맞게 이름과 페이로드를 커스터마이징할 수 있습니다. 만약 `broadcastAs`에서 null을 반환하면, 위의 규칙이 적용됩니다:
 
 ```php
 /**
- * The model event's broadcast name.
+ * 모델 이벤트 브로드캐스트 이름 반환
  *
  * @param  string  $event
  * @return string|null
@@ -1003,7 +990,7 @@ public function broadcastAs($event)
 }
 
 /**
- * Get the data to broadcast for the model.
+ * 모델 브로드캐스트 데이터 반환
  *
  * @param  string  $event
  * @return array
@@ -1018,13 +1005,13 @@ public function broadcastWith($event)
 ```
 
 <a name="listening-for-model-broadcasts"></a>
-### Listening For Model Broadcasts
+### 모델 브로드캐스트 리스닝
 
-Once you have added the `BroadcastsEvents` trait to your model and defined your model's `broadcastOn` method, you are ready to start listening for broadcasted model events within your client-side application. Before getting started, you may wish to consult the complete documentation on [listening for events](#listening-for-events).
+`BroadcastsEvents` 트레이트를 모델에 추가하고 `broadcastOn` 메소드를 정의했다면, 이제 클라이언트에서 브로드캐스트된 모델 이벤트를 수신할 수 있습니다. 시작 전에 [이벤트 수신 방법](#listening-for-events) 전체 문서를 참고하세요.
 
-First, use the `private` method to retrieve an instance of a channel, then call the `listen` method to listen for a specified event. Typically, the channel name given to the `private` method should correspond to Laravel's [model broadcasting conventions](#model-broadcasting-conventions).
+먼저 `private` 메소드로 채널 인스턴스를 얻고, `listen`으로 이벤트를 수신하면 됩니다. 일반적으로 채널명은 [모델 브로드캐스팅 규칙](#model-broadcasting-conventions)을 따릅니다.
 
-Once you have obtained a channel instance, you may use the `listen` method to listen for a particular event. Since model broadcast events are not associated with an "actual" event within your application's `App\Events` directory, the [event name](#model-broadcasting-event-conventions) must be prefixed with a `.` to indicate it does not belong to a particular namespace. Each model broadcast event has a `model` property which contains all of the broadcastable properties of the model:
+이벤트는 `App\Events` 네임스페이스와 별개로 동작하므로, [이벤트명](#model-broadcasting-event-conventions) 앞에는 `.`을 붙여 네임스페이스가 없음을 표시해야 합니다. 각 모델 브로드캐스트 이벤트의 페이로드에는 `model` 속성이 포함되어 있습니다:
 
 ```js
 Echo.private(`App.Models.User.${this.user.id}`)
@@ -1034,20 +1021,20 @@ Echo.private(`App.Models.User.${this.user.id}`)
 ```
 
 <a name="client-events"></a>
-## Client Events
+## 클라이언트 이벤트
 
-> {tip} When using [Pusher Channels](https://pusher.com/channels), you must enable the "Client Events" option in the "App Settings" section of your [application dashboard](https://dashboard.pusher.com/) in order to send client events.
+> {tip} [Pusher Channels](https://pusher.com/channels)를 사용할 때는 [애플리케이션 대시보드](https://dashboard.pusher.com/)의 "App Settings"에서 "Client Events" 옵션을 활성화해야 클라이언트 이벤트를 전송할 수 있습니다.
 
-Sometimes you may wish to broadcast an event to other connected clients without hitting your Laravel application at all. This can be particularly useful for things like "typing" notifications, where you want to alert users of your application that another user is typing a message on a given screen.
+종종, Laravel 애플리케이션으로 요청을 보내지 않고도 다른 연결된 클라이언트에게만 이벤트를 브로드캐스트하고 싶을 때가 있습니다. 이는, 예를 들어 사용자가 "입력 중"임을 알릴 때 유용합니다(입력 중 알림 등).
 
-To broadcast client events, you may use Echo's `whisper` method:
+클라이언트 이벤트를 브로드캐스트하려면 Echo의 `whisper` 메소드를 사용하세요:
 
     Echo.private(`chat.${roomId}`)
         .whisper('typing', {
             name: this.user.name
         });
 
-To listen for client events, you may use the `listenForWhisper` method:
+클라이언트 이벤트 리스닝은 `listenForWhisper` 메소드를 사용합니다:
 
     Echo.private(`chat.${roomId}`)
         .listenForWhisper('typing', (e) => {
@@ -1055,15 +1042,15 @@ To listen for client events, you may use the `listenForWhisper` method:
         });
 
 <a name="notifications"></a>
-## Notifications
+## 알림
 
-By pairing event broadcasting with [notifications](/docs/{{version}}/notifications), your JavaScript application may receive new notifications as they occur without needing to refresh the page. Before getting started, be sure to read over the documentation on using [the broadcast notification channel](/docs/{{version}}/notifications#broadcast-notifications).
+이벤트 브로드캐스팅과 [알림](/docs/{{version}}/notifications)을 결합하면, JavaScript 애플리케이션이 페이지 새로고침 없이 실시간으로 새 알림을 받을 수 있습니다. 시작 전 [브로드캐스트 알림 채널](/docs/{{version}}/notifications#broadcast-notifications) 사용법을 꼭 읽어보세요.
 
-Once you have configured a notification to use the broadcast channel, you may listen for the broadcast events using Echo's `notification` method. Remember, the channel name should match the class name of the entity receiving the notifications:
+브로드캐스트 채널로 알림을 설정했다면, Echo의 `notification` 메소드로 브로드캐스트 이벤트를 수신할 수 있습니다. 이때 채널명은 알림을 받는 엔터티의 클래스명과 일치해야 합니다:
 
     Echo.private(`App.Models.User.${userId}`)
         .notification((notification) => {
             console.log(notification.type);
         });
 
-In this example, all notifications sent to `App\Models\User` instances via the `broadcast` channel would be received by the callback. A channel authorization callback for the `App.Models.User.{id}` channel is included in the default `BroadcastServiceProvider` that ships with the Laravel framework.
+이 예제처럼, `App\Models\User` 인스턴스에 브로드캐스트 채널로 전송된 모든 알림은 콜백에서 수신됩니다. `App.Models.User.{id}` 채널에 대한 인증 콜백은 Laravel 프레임워크에 기본 포함된 `BroadcastServiceProvider`에 정의되어 있습니다.

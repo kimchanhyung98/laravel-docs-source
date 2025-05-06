@@ -1,550 +1,629 @@
-# Routing
+# 라우팅(Routing)
 
-- [Basic Routing](#basic-routing)
-    - [Redirect Routes](#redirect-routes)
-    - [View Routes](#view-routes)
-    - [The Route List](#the-route-list)
-- [Route Parameters](#route-parameters)
-    - [Required Parameters](#required-parameters)
-    - [Optional Parameters](#parameters-optional-parameters)
-    - [Regular Expression Constraints](#parameters-regular-expression-constraints)
-- [Named Routes](#named-routes)
-- [Route Groups](#route-groups)
-    - [Middleware](#route-group-middleware)
-    - [Controllers](#route-group-controllers)
-    - [Subdomain Routing](#route-group-subdomain-routing)
-    - [Route Prefixes](#route-group-prefixes)
-    - [Route Name Prefixes](#route-group-name-prefixes)
-- [Route Model Binding](#route-model-binding)
-    - [Implicit Binding](#implicit-binding)
-    - [Implicit Enum Binding](#implicit-enum-binding)
-    - [Explicit Binding](#explicit-binding)
-- [Fallback Routes](#fallback-routes)
-- [Rate Limiting](#rate-limiting)
-    - [Defining Rate Limiters](#defining-rate-limiters)
-    - [Attaching Rate Limiters To Routes](#attaching-rate-limiters-to-routes)
+- [기본 라우팅](#basic-routing)
+    - [리디렉션 라우트](#redirect-routes)
+    - [뷰 라우트](#view-routes)
+    - [라우트 목록](#the-route-list)
+- [라우트 파라미터](#route-parameters)
+    - [필수 파라미터](#required-parameters)
+    - [선택적 파라미터](#parameters-optional-parameters)
+    - [정규식 제약 조건](#parameters-regular-expression-constraints)
+- [이름 있는 라우트](#named-routes)
+- [라우트 그룹](#route-groups)
+    - [미들웨어](#route-group-middleware)
+    - [컨트롤러](#route-group-controllers)
+    - [서브도메인 라우팅](#route-group-subdomain-routing)
+    - [라우트 프리픽스(Prefixes)](#route-group-prefixes)
+    - [라우트 이름 프리픽스](#route-group-name-prefixes)
+- [라우트 모델 바인딩](#route-model-binding)
+    - [암시적 바인딩](#implicit-binding)
+    - [암시적 Enum 바인딩](#implicit-enum-binding)
+    - [명시적 바인딩](#explicit-binding)
+- [폴백 라우트](#fallback-routes)
+- [Rate Limiting(요청 제한)](#rate-limiting)
+    - [요청 제한 정의하기](#defining-rate-limiters)
+    - [라우트에 요청 제한 적용하기](#attaching-rate-limiters-to-routes)
 - [Form Method Spoofing](#form-method-spoofing)
-- [Accessing The Current Route](#accessing-the-current-route)
-- [Cross-Origin Resource Sharing (CORS)](#cors)
-- [Route Caching](#route-caching)
+- [현재 라우트 정보 접근](#accessing-the-current-route)
+- [CORS(교차 출처 리소스 공유)](#cors)
+- [라우트 캐싱](#route-caching)
 
 <a name="basic-routing"></a>
-## Basic Routing
+## 기본 라우팅
 
-The most basic Laravel routes accept a URI and a closure, providing a very simple and expressive method of defining routes and behavior without complicated routing configuration files:
+가장 기본적인 라라벨 라우트는 URI와 클로저를 받아 복잡한 라우팅 설정 파일 없이도 라우트와 동작을 매우 간단하고 표현력 있게 정의할 수 있게 해줍니다:
 
-    use Illuminate\Support\Facades\Route;
+```php
+use Illuminate\Support\Facades\Route;
 
-    Route::get('/greeting', function () {
-        return 'Hello World';
-    });
+Route::get('/greeting', function () {
+    return 'Hello World';
+});
+```
 
 <a name="the-default-route-files"></a>
-#### The Default Route Files
+#### 기본 라우트 파일
 
-All Laravel routes are defined in your route files, which are located in the `routes` directory. These files are automatically loaded by your application's `App\Providers\RouteServiceProvider`. The `routes/web.php` file defines routes that are for your web interface. These routes are assigned the `web` middleware group, which provides features like session state and CSRF protection. The routes in `routes/api.php` are stateless and are assigned the `api` middleware group.
+모든 라라벨 라우트는 `routes` 디렉터리 내에 위치한 라우트 파일에 정의되어 있습니다. 이 파일들은 애플리케이션의 `App\Providers\RouteServiceProvider`에 의해 자동으로 로드됩니다. `routes/web.php` 파일은 웹 인터페이스용 라우트를 정의합니다. 이 라우트들은 세션 상태 및 CSRF 보호와 같은 기능을 제공하는 `web` 미들웨어 그룹이 할당됩니다. `routes/api.php`의 라우트는 상태가 없으며 `api` 미들웨어 그룹이 할당됩니다.
 
-For most applications, you will begin by defining routes in your `routes/web.php` file. The routes defined in `routes/web.php` may be accessed by entering the defined route's URL in your browser. For example, you may access the following route by navigating to `http://example.com/user` in your browser:
+대부분의 애플리케이션에서는 `routes/web.php` 파일에서 라우트 정의를 시작하게 됩니다. `routes/web.php`에 정의된 라우트는 브라우저에서 해당 URL로 접근할 수 있습니다. 예를 들어, 아래와 같은 라우트를 `http://example.com/user`로 접속하여 사용할 수 있습니다:
 
-    use App\Http\Controllers\UserController;
+```php
+use App\Http\Controllers\UserController;
 
-    Route::get('/user', [UserController::class, 'index']);
+Route::get('/user', [UserController::class, 'index']);
+```
 
-Routes defined in the `routes/api.php` file are nested within a route group by the `RouteServiceProvider`. Within this group, the `/api` URI prefix is automatically applied so you do not need to manually apply it to every route in the file. You may modify the prefix and other route group options by modifying your `RouteServiceProvider` class.
+`routes/api.php` 파일에 정의된 라우트는 `RouteServiceProvider`에 의해 라우트 그룹 안에 중첩되어 있습니다. 이 그룹 내에서는 `/api` URI 프리픽스가 자동으로 적용되므로, 파일의 모든 라우트에 수동으로 프리픽스를 추가할 필요가 없습니다. 프리픽스나 기타 라우트 그룹 옵션은 `RouteServiceProvider` 클래스를 수정하여 변경할 수 있습니다.
 
 <a name="available-router-methods"></a>
-#### Available Router Methods
+#### 사용 가능한 라우터 메소드
 
-The router allows you to register routes that respond to any HTTP verb:
+라우터는 모든 HTTP 메소드에 대한 라우트 등록을 지원합니다:
 
-    Route::get($uri, $callback);
-    Route::post($uri, $callback);
-    Route::put($uri, $callback);
-    Route::patch($uri, $callback);
-    Route::delete($uri, $callback);
-    Route::options($uri, $callback);
+```php
+Route::get($uri, $callback);
+Route::post($uri, $callback);
+Route::put($uri, $callback);
+Route::patch($uri, $callback);
+Route::delete($uri, $callback);
+Route::options($uri, $callback);
+```
 
-Sometimes you may need to register a route that responds to multiple HTTP verbs. You may do so using the `match` method. Or, you may even register a route that responds to all HTTP verbs using the `any` method:
+여러 HTTP 메소드에 응답하는 라우트가 필요할 때는 `match` 메소드를 사용할 수 있습니다. 또는, 모든 HTTP 메소드에 응답하는 라우트를 `any` 메소드로 등록할 수 있습니다:
 
-    Route::match(['get', 'post'], '/', function () {
-        //
-    });
+```php
+Route::match(['get', 'post'], '/', function () {
+    //
+});
 
-    Route::any('/', function () {
-        //
-    });
+Route::any('/', function () {
+    //
+});
+```
 
-> **Note**  
-> When defining multiple routes that share the same URI, routes using the `get`, `post`, `put`, `patch`, `delete`, and `options` methods should be defined before routes using the `any`, `match`, and `redirect` methods. This ensures the incoming request is matched with the correct route.
+> **참고**
+> 동일한 URI를 공유하는 여러 라우트를 정의할 때는 `get`, `post`, `put`, `patch`, `delete`, `options` 메소드로 정의한 라우트를 `any`, `match`, `redirect` 메소드로 정의한 라우트보다 먼저 등록해야 합니다. 이것은 요청이 올바른 라우트와 매칭되도록 보장합니다.
 
 <a name="dependency-injection"></a>
-#### Dependency Injection
+#### 의존성 주입
 
-You may type-hint any dependencies required by your route in your route's callback signature. The declared dependencies will automatically be resolved and injected into the callback by the Laravel [service container](/docs/{{version}}/container). For example, you may type-hint the `Illuminate\Http\Request` class to have the current HTTP request automatically injected into your route callback:
+라우트의 콜백 시그니처에 필요한 의존성을 타입힌트로 선언할 수 있습니다. 라라벨 [서비스 컨테이너](/docs/{{version}}/container)가 이 의존성을 자동으로 주입해줍니다. 예를 들어, 현재 HTTP 요청을 자동으로 주입받고 싶다면 `Illuminate\Http\Request` 클래스를 타입힌트로 사용할 수 있습니다:
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/users', function (Request $request) {
-        // ...
-    });
+Route::get('/users', function (Request $request) {
+    // ...
+});
+```
 
 <a name="csrf-protection"></a>
-#### CSRF Protection
+#### CSRF 보호
 
-Remember, any HTML forms pointing to `POST`, `PUT`, `PATCH`, or `DELETE` routes that are defined in the `web` routes file should include a CSRF token field. Otherwise, the request will be rejected. You can read more about CSRF protection in the [CSRF documentation](/docs/{{version}}/csrf):
+`web` 라우트 파일에서 정의된 `POST`, `PUT`, `PATCH`, `DELETE` 라우트로 향하는 모든 HTML 폼에는 CSRF 토큰 필드를 반드시 포함해야 합니다. 그렇지 않으면 요청이 거부됩니다. [CSRF 문서](/docs/{{version}}/csrf)를 참고하세요:
 
-    <form method="POST" action="/profile">
-        @csrf
-        ...
-    </form>
+```html
+<form method="POST" action="/profile">
+    @csrf
+    ...
+</form>
+```
 
 <a name="redirect-routes"></a>
-### Redirect Routes
+### 리디렉션 라우트
 
-If you are defining a route that redirects to another URI, you may use the `Route::redirect` method. This method provides a convenient shortcut so that you do not have to define a full route or controller for performing a simple redirect:
+다른 URI로 리디렉션하는 라우트를 정의할 때는 `Route::redirect` 메소드를 사용할 수 있습니다. 이 메소드는 간단한 리디렉션 처리를 위해 전체 라우트나 컨트롤러를 따로 정의할 필요 없이 사용할 수 있는 편리한 단축키입니다:
 
-    Route::redirect('/here', '/there');
+```php
+Route::redirect('/here', '/there');
+```
 
-By default, `Route::redirect` returns a `302` status code. You may customize the status code using the optional third parameter:
+기본적으로 `Route::redirect`는 `302` 상태 코드를 반환합니다. 선택적 세 번째 파라미터를 사용해 상태 코드를 변경할 수 있습니다:
 
-    Route::redirect('/here', '/there', 301);
+```php
+Route::redirect('/here', '/there', 301);
+```
 
-Or, you may use the `Route::permanentRedirect` method to return a `301` status code:
+또는, `Route::permanentRedirect`로 `301` 상태 코드를 반환할 수도 있습니다:
 
-    Route::permanentRedirect('/here', '/there');
+```php
+Route::permanentRedirect('/here', '/there');
+```
 
-> **Warning**  
-> When using route parameters in redirect routes, the following parameters are reserved by Laravel and cannot be used: `destination` and `status`.
+> **경고**
+> 리디렉션 라우트에서 라우트 파라미터를 사용할 때, `destination`과 `status` 파라미터는 라라벨에서 예약되어 있으니 사용할 수 없습니다.
 
 <a name="view-routes"></a>
-### View Routes
+### 뷰 라우트
 
-If your route only needs to return a [view](/docs/{{version}}/views), you may use the `Route::view` method. Like the `redirect` method, this method provides a simple shortcut so that you do not have to define a full route or controller. The `view` method accepts a URI as its first argument and a view name as its second argument. In addition, you may provide an array of data to pass to the view as an optional third argument:
+라우트가 단순히 [뷰](/docs/{{version}}/views)를 반환해야 할 때는 `Route::view` 메소드를 사용할 수 있습니다. 이 메소드는 `redirect`와 마찬가지로 전체 라우트나 컨트롤러를 정의하지 않아도 되며, 첫 번째 인수로 URI, 두 번째 인수로 뷰 이름, 그리고 세 번째 인수(선택적)로 뷰에 전달할 데이터를 배열로 넘길 수 있습니다:
 
-    Route::view('/welcome', 'welcome');
+```php
+Route::view('/welcome', 'welcome');
 
-    Route::view('/welcome', 'welcome', ['name' => 'Taylor']);
+Route::view('/welcome', 'welcome', ['name' => 'Taylor']);
+```
 
-> **Warning**  
-> When using route parameters in view routes, the following parameters are reserved by Laravel and cannot be used: `view`, `data`, `status`, and `headers`.
+> **경고**
+> 뷰 라우트에서 라우트 파라미터를 사용할 때, `view`, `data`, `status`, `headers` 파라미터는 라라벨에서 예약되어 있으므로 사용할 수 없습니다.
 
 <a name="the-route-list"></a>
-### The Route List
+### 라우트 목록
 
-The `route:list` Artisan command can easily provide an overview of all of the routes that are defined by your application:
+`route:list` Artisan 명령어를 통해 애플리케이션에 정의된 모든 라우트를 쉽게 확인할 수 있습니다:
 
 ```shell
 php artisan route:list
 ```
 
-By default, the route middleware that are assigned to each route will not be displayed in the `route:list` output; however, you can instruct Laravel to display the route middleware by adding the `-v` option to the command:
+기본적으로 각 라우트에 할당된 미들웨어는 출력에 표시되지 않지만, `-v` 옵션을 추가하면 미들웨어도 표시할 수 있습니다:
 
 ```shell
 php artisan route:list -v
 ```
 
-You may also instruct Laravel to only show routes that begin with a given URI:
+특정 URI로 시작하는 라우트만 보고 싶다면 아래처럼 사용할 수 있습니다:
 
 ```shell
 php artisan route:list --path=api
 ```
 
-In addition, you may instruct Laravel to hide any routes that are defined by third-party packages by providing the `--except-vendor` option when executing the `route:list` command:
+제3자 패키지에서 정의된 라우트를 숨기고 싶을 때는 `--except-vendor` 옵션을 사용합니다:
 
 ```shell
 php artisan route:list --except-vendor
 ```
 
-Likewise, you may also instruct Laravel to only show routes that are defined by third-party packages by providing the `--only-vendor` option when executing the `route:list` command:
+반대로, 제3자 패키지가 정의한 라우트만 표시하려면 `--only-vendor` 옵션을 사용할 수 있습니다:
 
 ```shell
 php artisan route:list --only-vendor
 ```
 
 <a name="route-parameters"></a>
-## Route Parameters
+## 라우트 파라미터
 
 <a name="required-parameters"></a>
-### Required Parameters
+### 필수 파라미터
 
-Sometimes you will need to capture segments of the URI within your route. For example, you may need to capture a user's ID from the URL. You may do so by defining route parameters:
+때때로 URI의 일부 구간을 라우트 내에서 받아와야 할 수 있습니다. 예를 들어, URL에서 사용자의 ID 값을 받아와야 할 때 아래와 같이 라우트 파라미터를 정의합니다:
 
-    Route::get('/user/{id}', function ($id) {
-        return 'User '.$id;
-    });
+```php
+Route::get('/user/{id}', function ($id) {
+    return 'User ' . $id;
+});
+```
 
-You may define as many route parameters as required by your route:
+필요에 따라 여러 개의 라우트 파라미터도 정의할 수 있습니다:
 
-    Route::get('/posts/{post}/comments/{comment}', function ($postId, $commentId) {
-        //
-    });
+```php
+Route::get('/posts/{post}/comments/{comment}', function ($postId, $commentId) {
+    //
+});
+```
 
-Route parameters are always encased within `{}` braces and should consist of alphabetic characters. Underscores (`_`) are also acceptable within route parameter names. Route parameters are injected into route callbacks / controllers based on their order - the names of the route callback / controller arguments do not matter.
+라우트 파라미터는 항상 `{}` 중괄호로 감싸주며, 알파벳 또는 언더스코어(`_`)를 포함할 수 있습니다. 파라미터는 정의한 순서대로 라우트 콜백/컨트롤러에 주입되며, 변수의 이름은 큰 상관이 없습니다.
 
 <a name="parameters-and-dependency-injection"></a>
-#### Parameters & Dependency Injection
+#### 파라미터 & 의존성 주입
 
-If your route has dependencies that you would like the Laravel service container to automatically inject into your route's callback, you should list your route parameters after your dependencies:
+라우트가 의존성을 필요로 하고 서비스를 주입받아야 한다면, 라우트 파라미터를 의존성 뒤에 선언하면 됩니다:
 
-    use Illuminate\Http\Request;
+```php
+use Illuminate\Http\Request;
 
-    Route::get('/user/{id}', function (Request $request, $id) {
-        return 'User '.$id;
-    });
+Route::get('/user/{id}', function (Request $request, $id) {
+    return 'User ' . $id;
+});
+```
 
 <a name="parameters-optional-parameters"></a>
-### Optional Parameters
+### 선택적 파라미터
 
-Occasionally you may need to specify a route parameter that may not always be present in the URI. You may do so by placing a `?` mark after the parameter name. Make sure to give the route's corresponding variable a default value:
+경우에 따라 URI 내 라우트 파라미터가 항상 존재하지 않을 수도 있습니다. 파라미터명 뒤에 `?`를 붙이고, 해당 변수에 기본값을 지정해 주면 됩니다:
 
-    Route::get('/user/{name?}', function ($name = null) {
-        return $name;
-    });
+```php
+Route::get('/user/{name?}', function ($name = null) {
+    return $name;
+});
 
-    Route::get('/user/{name?}', function ($name = 'John') {
-        return $name;
-    });
+Route::get('/user/{name?}', function ($name = 'John') {
+    return $name;
+});
+```
 
 <a name="parameters-regular-expression-constraints"></a>
-### Regular Expression Constraints
+### 정규식 제약 조건
 
-You may constrain the format of your route parameters using the `where` method on a route instance. The `where` method accepts the name of the parameter and a regular expression defining how the parameter should be constrained:
+`where` 메소드를 사용해 라우트 파라미터의 형식을 정규식으로 제한할 수 있습니다. 파라미터명과 해당 제약 조건을 넘기면 됩니다:
 
-    Route::get('/user/{name}', function ($name) {
-        //
-    })->where('name', '[A-Za-z]+');
+```php
+Route::get('/user/{name}', function ($name) {
+    //
+})->where('name', '[A-Za-z]+');
 
-    Route::get('/user/{id}', function ($id) {
-        //
-    })->where('id', '[0-9]+');
+Route::get('/user/{id}', function ($id) {
+    //
+})->where('id', '[0-9]+');
 
-    Route::get('/user/{id}/{name}', function ($id, $name) {
-        //
-    })->where(['id' => '[0-9]+', 'name' => '[a-z]+']);
+Route::get('/user/{id}/{name}', function ($id, $name) {
+    //
+})->where(['id' => '[0-9]+', 'name' => '[a-z]+']);
+```
 
-For convenience, some commonly used regular expression patterns have helper methods that allow you to quickly add pattern constraints to your routes:
+자주 사용하는 정규식 패턴은 아래와 같은 헬퍼 메소드로 추가할 수 있습니다:
 
-    Route::get('/user/{id}/{name}', function ($id, $name) {
-        //
-    })->whereNumber('id')->whereAlpha('name');
+```php
+Route::get('/user/{id}/{name}', function ($id, $name) {
+    //
+})->whereNumber('id')->whereAlpha('name');
 
-    Route::get('/user/{name}', function ($name) {
-        //
-    })->whereAlphaNumeric('name');
+Route::get('/user/{name}', function ($name) {
+    //
+})->whereAlphaNumeric('name');
 
-    Route::get('/user/{id}', function ($id) {
-        //
-    })->whereUuid('id');
+Route::get('/user/{id}', function ($id) {
+    //
+})->whereUuid('id');
 
-    Route::get('/user/{id}', function ($id) {
-        //
-    })->whereUlid('id');
+Route::get('/user/{id}', function ($id) {
+    //
+})->whereUlid('id');
 
-    Route::get('/category/{category}', function ($category) {
-        //
-    })->whereIn('category', ['movie', 'song', 'painting']);
+Route::get('/category/{category}', function ($category) {
+    //
+})->whereIn('category', ['movie', 'song', 'painting']);
+```
 
-If the incoming request does not match the route pattern constraints, a 404 HTTP response will be returned.
+요청이 라우트 패턴 제약 조건을 충족하지 않으면 404 HTTP 응답이 반환됩니다.
 
 <a name="parameters-global-constraints"></a>
-#### Global Constraints
+#### 글로벌 제약
 
-If you would like a route parameter to always be constrained by a given regular expression, you may use the `pattern` method. You should define these patterns in the `boot` method of your `App\Providers\RouteServiceProvider` class:
+특정 라우트 파라미터가 항상 동일한 정규식에 의해 제한되기를 원한다면, `RouteServiceProvider` 클래스의 `boot` 메소드에서 `pattern` 메소드를 사용하세요:
 
-    /**
-     * Define your route model bindings, pattern filters, etc.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        Route::pattern('id', '[0-9]+');
-    }
+```php
+/**
+ * Define your route model bindings, pattern filters, etc.
+ *
+ * @return void
+ */
+public function boot()
+{
+    Route::pattern('id', '[0-9]+');
+}
+```
 
-Once the pattern has been defined, it is automatically applied to all routes using that parameter name:
+이렇게 패턴이 정의되면 해당 파라미터명을 사용하는 모든 라우트에 자동으로 적용됩니다:
 
-    Route::get('/user/{id}', function ($id) {
-        // Only executed if {id} is numeric...
-    });
+```php
+Route::get('/user/{id}', function ($id) {
+    // {id}가 숫자일 때만 실행됩니다...
+});
+```
 
 <a name="parameters-encoded-forward-slashes"></a>
-#### Encoded Forward Slashes
+#### 인코딩된 슬래시(/) 허용
 
-The Laravel routing component allows all characters except `/` to be present within route parameter values. You must explicitly allow `/` to be part of your placeholder using a `where` condition regular expression:
+라라벨 라우팅 컴포넌트는 라우트 파라미터 값으로 `/`을 제외한 모든 문자를 허용합니다. 프레이스홀더에 `/`이 포함되도록 하려면 정규식을 명시적으로 추가해야 합니다:
 
-    Route::get('/search/{search}', function ($search) {
-        return $search;
-    })->where('search', '.*');
+```php
+Route::get('/search/{search}', function ($search) {
+    return $search;
+})->where('search', '.*');
+```
 
-> **Warning**  
-> Encoded forward slashes are only supported within the last route segment.
+> **경고**
+> 인코딩된 슬래시는 반드시 마지막 라우트 구간에서만 허용됩니다.
 
 <a name="named-routes"></a>
-## Named Routes
+## 이름 있는 라우트
 
-Named routes allow the convenient generation of URLs or redirects for specific routes. You may specify a name for a route by chaining the `name` method onto the route definition:
+이름 있는 라우트(named route)는 특정 라우트에 대한 URL이나 리디렉션을 편리하게 생성할 수 있도록 합니다. `name` 메소드를 체이닝하여 라우트에 이름을 지정할 수 있습니다:
 
-    Route::get('/user/profile', function () {
-        //
-    })->name('profile');
+```php
+Route::get('/user/profile', function () {
+    //
+})->name('profile');
+```
 
-You may also specify route names for controller actions:
+컨트롤러 액션에도 라우트 이름을 지정할 수 있습니다:
 
-    Route::get(
-        '/user/profile',
-        [UserProfileController::class, 'show']
-    )->name('profile');
+```php
+Route::get(
+    '/user/profile',
+    [UserProfileController::class, 'show']
+)->name('profile');
+```
 
-> **Warning**  
-> Route names should always be unique.
+> **경고**
+> 라우트 이름은 반드시 고유해야 합니다.
 
 <a name="generating-urls-to-named-routes"></a>
-#### Generating URLs To Named Routes
+#### 이름 있는 라우트의 URL 생성
 
-Once you have assigned a name to a given route, you may use the route's name when generating URLs or redirects via Laravel's `route` and `redirect` helper functions:
+특정 라우트에 이름을 지정했다면, 이 이름을 이용하여 `route` 및 `redirect` 헬퍼 함수로 URL이나 리디렉션을 생성할 수 있습니다:
 
-    // Generating URLs...
-    $url = route('profile');
+```php
+// URL 생성
+$url = route('profile');
 
-    // Generating Redirects...
-    return redirect()->route('profile');
+// 리디렉션 생성
+return redirect()->route('profile');
 
-    return to_route('profile');
+return to_route('profile');
+```
 
-If the named route defines parameters, you may pass the parameters as the second argument to the `route` function. The given parameters will automatically be inserted into the generated URL in their correct positions:
+이름 있는 라우트가 파라미터를 요구한다면, 두 번째 인수로 파라미터 배열을 전달할 수 있습니다. 전달된 파라미터 값은 생성된 URL의 올바른 위치에 삽입됩니다:
 
-    Route::get('/user/{id}/profile', function ($id) {
-        //
-    })->name('profile');
+```php
+Route::get('/user/{id}/profile', function ($id) {
+    //
+})->name('profile');
 
-    $url = route('profile', ['id' => 1]);
+$url = route('profile', ['id' => 1]);
+```
 
-If you pass additional parameters in the array, those key / value pairs will automatically be added to the generated URL's query string:
+또한, 추가적인 파라미터를 배열로 넘기면 자동으로 URL 쿼리 스트링에 추가됩니다:
 
-    Route::get('/user/{id}/profile', function ($id) {
-        //
-    })->name('profile');
+```php
+Route::get('/user/{id}/profile', function ($id) {
+    //
+})->name('profile');
 
-    $url = route('profile', ['id' => 1, 'photos' => 'yes']);
+$url = route('profile', ['id' => 1, 'photos' => 'yes']);
+// /user/1/profile?photos=yes
+```
 
-    // /user/1/profile?photos=yes
-
-> **Note**  
-> Sometimes, you may wish to specify request-wide default values for URL parameters, such as the current locale. To accomplish this, you may use the [`URL::defaults` method](/docs/{{version}}/urls#default-values).
+> **참고**
+> 요청 전체에 대해 URL 파라미터의 기본값(예: 현재 언어)을 지정하고 싶을 때는 [`URL::defaults` 메소드](/docs/{{version}}/urls#default-values)를 사용할 수 있습니다.
 
 <a name="inspecting-the-current-route"></a>
-#### Inspecting The Current Route
+#### 현재 라우트 검사
 
-If you would like to determine if the current request was routed to a given named route, you may use the `named` method on a Route instance. For example, you may check the current route name from a route middleware:
+현재 요청이 주어진 이름의 라우트로 라우팅되었는지 확인하려면 Route 인스턴스의 `named` 메소드를 사용할 수 있습니다. 예를 들어, 미들웨어에서 현재 라우트 이름을 확인하려면 다음과 같이 할 수 있습니다:
 
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
-    public function handle($request, Closure $next)
-    {
-        if ($request->route()->named('profile')) {
-            //
-        }
-
-        return $next($request);
+```php
+/**
+ * Handle an incoming request.
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @param  \Closure  $next
+ * @return mixed
+ */
+public function handle($request, Closure $next)
+{
+    if ($request->route()->named('profile')) {
+        //
     }
+
+    return $next($request);
+}
+```
 
 <a name="route-groups"></a>
-## Route Groups
+## 라우트 그룹
 
-Route groups allow you to share route attributes, such as middleware, across a large number of routes without needing to define those attributes on each individual route.
+라우트 그룹을 사용하면 동일한 미들웨어 등의 속성을 다수의 라우트에 반복해서 정의할 필요 없이 한 번에 공유할 수 있습니다.
 
-Nested groups attempt to intelligently "merge" attributes with their parent group. Middleware and `where` conditions are merged while names and prefixes are appended. Namespace delimiters and slashes in URI prefixes are automatically added where appropriate.
+중첩 그룹은 부모 그룹과 속성을 "지능적으로 병합"합니다. 미들웨어와 `where` 조건은 병합되고, 이름과 프리픽스는 덧붙여집니다. 네임스페이스 구분자나 URI 슬래시 프리픽스도 자동으로 추가됩니다.
 
 <a name="route-group-middleware"></a>
-### Middleware
+### 미들웨어
 
-To assign [middleware](/docs/{{version}}/middleware) to all routes within a group, you may use the `middleware` method before defining the group. Middleware are executed in the order they are listed in the array:
+라우트 그룹 내 모든 라우트에 [미들웨어](/docs/{{version}}/middleware)를 할당하려면, `middleware` 메소드를 사용해 그룹을 정의합니다. 배열 내에 있는 순서대로 미들웨어가 실행됩니다:
 
-    Route::middleware(['first', 'second'])->group(function () {
-        Route::get('/', function () {
-            // Uses first & second middleware...
-        });
-
-        Route::get('/user/profile', function () {
-            // Uses first & second middleware...
-        });
+```php
+Route::middleware(['first', 'second'])->group(function () {
+    Route::get('/', function () {
+        // first, second 미들웨어 사용
     });
+
+    Route::get('/user/profile', function () {
+        // first, second 미들웨어 사용
+    });
+});
+```
 
 <a name="route-group-controllers"></a>
-### Controllers
+### 컨트롤러
 
-If a group of routes all utilize the same [controller](/docs/{{version}}/controllers), you may use the `controller` method to define the common controller for all of the routes within the group. Then, when defining the routes, you only need to provide the controller method that they invoke:
+같은 [컨트롤러](/docs/{{version}}/controllers)를 사용하는 라우트 그룹이 있다면, `controller` 메소드로 공통 컨트롤러를 지정하고 라우트 정의에서는 메소드명만 적으면 됩니다:
 
-    use App\Http\Controllers\OrderController;
+```php
+use App\Http\Controllers\OrderController;
 
-    Route::controller(OrderController::class)->group(function () {
-        Route::get('/orders/{id}', 'show');
-        Route::post('/orders', 'store');
-    });
+Route::controller(OrderController::class)->group(function () {
+    Route::get('/orders/{id}', 'show');
+    Route::post('/orders', 'store');
+});
+```
 
 <a name="route-group-subdomain-routing"></a>
-### Subdomain Routing
+### 서브도메인 라우팅
 
-Route groups may also be used to handle subdomain routing. Subdomains may be assigned route parameters just like route URIs, allowing you to capture a portion of the subdomain for usage in your route or controller. The subdomain may be specified by calling the `domain` method before defining the group:
+라우트 그룹은 서브도메인 라우팅에도 사용할 수 있습니다. 서브도메인도 URI처럼 파라미터를 받아올 수 있으며, 이는 라우트 또는 컨트롤러에서 사용됩니다. 서브도메인은 `domain` 메소드를 사용해 지정합니다:
 
-    Route::domain('{account}.example.com')->group(function () {
-        Route::get('user/{id}', function ($account, $id) {
-            //
-        });
+```php
+Route::domain('{account}.example.com')->group(function () {
+    Route::get('user/{id}', function ($account, $id) {
+        //
     });
+});
+```
 
-> **Warning**  
-> In order to ensure your subdomain routes are reachable, you should register subdomain routes before registering root domain routes. This will prevent root domain routes from overwriting subdomain routes which have the same URI path.
+> **경고**
+> 서브도메인 라우트가 접근 가능하려면, 반드시 루트 도메인 라우트보다 먼저 등록해야 합니다. 그렇지 않으면 동일한 URI 경로가 겹칠 때 루트 도메인 라우트가 서브도메인 라우트를 덮어쓸 수 있습니다.
 
 <a name="route-group-prefixes"></a>
-### Route Prefixes
+### 라우트 프리픽스(Prefix)
 
-The `prefix` method may be used to prefix each route in the group with a given URI. For example, you may want to prefix all route URIs within the group with `admin`:
+`prefix` 메소드를 이용해 그룹 내 모든 라우트의 URI 앞에 특정 프리픽스를 붙일 수 있습니다. 예를 들어, `admin`으로 프리픽스할 때는 아래와 같습니다:
 
-    Route::prefix('admin')->group(function () {
-        Route::get('/users', function () {
-            // Matches The "/admin/users" URL
-        });
+```php
+Route::prefix('admin')->group(function () {
+    Route::get('/users', function () {
+        // "/admin/users" URL과 매칭
     });
+});
+```
 
 <a name="route-group-name-prefixes"></a>
-### Route Name Prefixes
+### 라우트 이름 프리픽스
 
-The `name` method may be used to prefix each route name in the group with a given string. For example, you may want to prefix all of the grouped route's names with `admin`. The given string is prefixed to the route name exactly as it is specified, so we will be sure to provide the trailing `.` character in the prefix:
+`name` 메소드는 그룹의 모든 라우트 이름 앞에 특정 문자열을 붙일 때 사용합니다. 예를 들어, 모든 라우트의 이름 앞에 `admin`을 붙이고 싶다면 아래처럼 할 수 있습니다. 프리픽스에 후행 점(`.`)을 포함시키는 것이 중요합니다:
 
-    Route::name('admin.')->group(function () {
-        Route::get('/users', function () {
-            // Route assigned name "admin.users"...
-        })->name('users');
-    });
+```php
+Route::name('admin.')->group(function () {
+    Route::get('/users', function () {
+        // "admin.users"로 지정됨
+    })->name('users');
+});
+```
 
 <a name="route-model-binding"></a>
-## Route Model Binding
+## 라우트 모델 바인딩
 
-When injecting a model ID to a route or controller action, you will often query the database to retrieve the model that corresponds to that ID. Laravel route model binding provides a convenient way to automatically inject the model instances directly into your routes. For example, instead of injecting a user's ID, you can inject the entire `User` model instance that matches the given ID.
+모델 ID를 라우트나 컨트롤러 액션에 주입할 때, 데이터베이스에서 해당 모델을 직접 쿼리하는 대신, 라라벨의 라우트 모델 바인딩 기능을 통해 모델 인스턴스를 자동으로 주입받을 수 있습니다. 예를 들어, 사용자 ID 대신 해당 ID에 일치하는 전체 `User` 모델 인스턴스를 받을 수 있습니다.
 
 <a name="implicit-binding"></a>
-### Implicit Binding
+### 암시적 바인딩
 
-Laravel automatically resolves Eloquent models defined in routes or controller actions whose type-hinted variable names match a route segment name. For example:
+라우트 또는 컨트롤러 액션에서 타입힌트된 변수명이 라우트 세그먼트명과 같으면 라라벨이 `Eloquent` 모델을 자동으로 주입해 줍니다:
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    Route::get('/users/{user}', function (User $user) {
-        return $user->email;
-    });
+Route::get('/users/{user}', function (User $user) {
+    return $user->email;
+});
+```
 
-Since the `$user` variable is type-hinted as the `App\Models\User` Eloquent model and the variable name matches the `{user}` URI segment, Laravel will automatically inject the model instance that has an ID matching the corresponding value from the request URI. If a matching model instance is not found in the database, a 404 HTTP response will automatically be generated.
+`$user` 변수명이 `App\Models\User`이고, 변수명이 `{user}` URI 세그먼트와 일치하므로, 라라벨이 요청 URI 값과 일치하는 모델을 주입합니다. 일치하는 모델 인스턴스가 없으면 자동으로 404 HTTP 응답을 반환합니다.
 
-Of course, implicit binding is also possible when using controller methods. Again, note the `{user}` URI segment matches the `$user` variable in the controller which contains an `App\Models\User` type-hint:
+암시적 바인딩은 컨트롤러 사용 시에도 가능합니다. `{user}` URI 세그먼트가 컨트롤러 메소드의 `$user` 변수와 매칭되어 아래와 같이 타입힌트된 모델이 전달됩니다:
 
-    use App\Http\Controllers\UserController;
-    use App\Models\User;
+```php
+use App\Http\Controllers\UserController;
+use App\Models\User;
 
-    // Route definition...
-    Route::get('/users/{user}', [UserController::class, 'show']);
+// 라우트 정의
+Route::get('/users/{user}', [UserController::class, 'show']);
 
-    // Controller method definition...
-    public function show(User $user)
-    {
-        return view('user.profile', ['user' => $user]);
-    }
+// 컨트롤러 메소드
+public function show(User $user)
+{
+    return view('user.profile', ['user' => $user]);
+}
+```
 
 <a name="implicit-soft-deleted-models"></a>
-#### Soft Deleted Models
+#### 소프트 삭제된 모델
 
-Typically, implicit model binding will not retrieve models that have been [soft deleted](/docs/{{version}}/eloquent#soft-deleting). However, you may instruct the implicit binding to retrieve these models by chaining the `withTrashed` method onto your route's definition:
+일반적으로 암시적 모델 바인딩은 [소프트 삭제](/docs/{{version}}/eloquent#soft-deleting)된 모델을 가져오지 않습니다. 소프트 삭제된 모델도 포함하려면 라우트 정의에 `withTrashed` 메소드를 체이닝하세요:
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    Route::get('/users/{user}', function (User $user) {
-        return $user->email;
-    })->withTrashed();
+Route::get('/users/{user}', function (User $user) {
+    return $user->email;
+})->withTrashed();
+```
 
 <a name="customizing-the-default-key-name"></a>
-#### Customizing The Key
+#### 기본 키 커스터마이징
 
-Sometimes you may wish to resolve Eloquent models using a column other than `id`. To do so, you may specify the column in the route parameter definition:
+Eloquent 모델을 `id` 칼럼 대신 다른 칼럼으로 조회하고 싶을 땐, 라우트 파라미터 정의 시 컬럼명을 지정할 수 있습니다:
 
-    use App\Models\Post;
+```php
+use App\Models\Post;
 
-    Route::get('/posts/{post:slug}', function (Post $post) {
-        return $post;
-    });
+Route::get('/posts/{post:slug}', function (Post $post) {
+    return $post;
+});
+```
 
-If you would like model binding to always use a database column other than `id` when retrieving a given model class, you may override the `getRouteKeyName` method on the Eloquent model:
+항상 특정 컬럼으로 모델을 조회하려면 모델의 `getRouteKeyName` 메소드를 오버라이드하세요:
 
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
+```php
+/**
+ * Get the route key for the model.
+ *
+ * @return string
+ */
+public function getRouteKeyName()
+{
+    return 'slug';
+}
+```
 
 <a name="implicit-model-binding-scoping"></a>
-#### Custom Keys & Scoping
+#### 사용자 지정 키 & 스코핑(Scoping)
 
-When implicitly binding multiple Eloquent models in a single route definition, you may wish to scope the second Eloquent model such that it must be a child of the previous Eloquent model. For example, consider this route definition that retrieves a blog post by slug for a specific user:
+단일 라우트에서 여러 Eloquent 모델을 암시적으로 바인딩할 때, 두 번째 모델이 첫 번째 모델의 하위(자식)임을 보장하고 싶다면 스코핑을 활용할 수 있습니다. 예를 들어, 특정 사용자의 블로그 포스트를 슬러그로 가져올 때:
 
-    use App\Models\Post;
-    use App\Models\User;
+```php
+use App\Models\Post;
+use App\Models\User;
 
-    Route::get('/users/{user}/posts/{post:slug}', function (User $user, Post $post) {
-        return $post;
-    });
+Route::get('/users/{user}/posts/{post:slug}', function (User $user, Post $post) {
+    return $post;
+});
+```
 
-When using a custom keyed implicit binding as a nested route parameter, Laravel will automatically scope the query to retrieve the nested model by its parent using conventions to guess the relationship name on the parent. In this case, it will be assumed that the `User` model has a relationship named `posts` (the plural form of the route parameter name) which can be used to retrieve the `Post` model.
+커스텀 키드 암시적 바인딩을 중첩 라우트 파라미터로 사용할 때, 라라벨은 부모 모델을 기준으로 자식 모델을 쿼리하도록 자동 스코프됩니다. 위 예시는 `User` 모델이 `posts`(복수형 파라미터명) 관계를 가지는 것으로 간주합니다.
 
-If you wish, you may instruct Laravel to scope "child" bindings even when a custom key is not provided. To do so, you may invoke the `scopeBindings` method when defining your route:
+커스텀 키 없이도 항상 자식 바인딩을 스코프하려면 `scopeBindings` 메소드를 사용하세요:
 
-    use App\Models\Post;
-    use App\Models\User;
+```php
+use App\Models\Post;
+use App\Models\User;
 
+Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
+    return $post;
+})->scopeBindings();
+```
+
+또는 그룹 전체를 스코프 바인딩하도록 설정할 수도 있습니다:
+
+```php
+Route::scopeBindings()->group(function () {
     Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
         return $post;
-    })->scopeBindings();
-
-Or, you may instruct an entire group of route definitions to use scoped bindings:
-
-    Route::scopeBindings()->group(function () {
-        Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
-            return $post;
-        });
     });
+});
+```
 
-Similarly, you may explicitly instruct Laravel to not scope bindings by invoking the `withoutScopedBindings` method:
+반대로 바인딩 스코프를 하지 않으려면 `withoutScopedBindings` 메소드를 사용하세요:
 
-    Route::get('/users/{user}/posts/{post:slug}', function (User $user, Post $post) {
-        return $post;
-    })->withoutScopedBindings();
+```php
+Route::get('/users/{user}/posts/{post:slug}', function (User $user, Post $post) {
+    return $post;
+})->withoutScopedBindings();
+```
 
 <a name="customizing-missing-model-behavior"></a>
-#### Customizing Missing Model Behavior
+#### 바인딩 실패 시 동작 커스터마이징
 
-Typically, a 404 HTTP response will be generated if an implicitly bound model is not found. However, you may customize this behavior by calling the `missing` method when defining your route. The `missing` method accepts a closure that will be invoked if an implicitly bound model can not be found:
+일반적으로 바인딩된 모델을 찾지 못하면 404 응답이 반환됩니다. `missing` 메소드를 이용해 이 동작을 커스터마이징할 수 있습니다. 이 메소드는 모델을 찾지 못했을 때 호출될 클로저를 받습니다:
 
-    use App\Http\Controllers\LocationsController;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Redirect;
+```php
+use App\Http\Controllers\LocationsController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
-    Route::get('/locations/{location:slug}', [LocationsController::class, 'show'])
-            ->name('locations.view')
-            ->missing(function (Request $request) {
-                return Redirect::route('locations.index');
-            });
+Route::get('/locations/{location:slug}', [LocationsController::class, 'show'])
+    ->name('locations.view')
+    ->missing(function (Request $request) {
+        return Redirect::route('locations.index');
+    });
+```
 
 <a name="implicit-enum-binding"></a>
-### Implicit Enum Binding
+### 암시적 Enum 바인딩
 
-PHP 8.1 introduced support for [Enums](https://www.php.net/manual/en/language.enumerations.backed.php). To compliment this feature, Laravel allows you to type-hint a [string-backed Enum](https://www.php.net/manual/en/language.enumerations.backed.php) on your route definition and Laravel will only invoke the route if that route segment corresponds to a valid Enum value. Otherwise, a 404 HTTP response will be returned automatically. For example, given the following Enum:
+PHP 8.1부터는 [Enums](https://www.php.net/manual/en/language.enumerations.backed.php)를 사용할 수 있습니다. 라라벨에서는 라우트 세그먼트에 [string-backed Enum](https://www.php.net/manual/en/language.enumerations.backed.php)을 타입힌트하면, 해당 값이 유효한 Enum일 때만 라우트가 실행됩니다. 아니라면 404 응답을 반환합니다. 예:
 
 ```php
 <?php
@@ -558,7 +637,7 @@ enum Category: string
 }
 ```
 
-You may define a route that will only be invoked if the `{category}` route segment is `fruits` or `people`. Otherwise, Laravel will return a 404 HTTP response:
+아래와 같이 `{category}`가 `fruits` 또는 `people`일 때만 라우트가 실행됩니다:
 
 ```php
 use App\Enums\Category;
@@ -570,107 +649,117 @@ Route::get('/categories/{category}', function (Category $category) {
 ```
 
 <a name="explicit-binding"></a>
-### Explicit Binding
+### 명시적 바인딩
 
-You are not required to use Laravel's implicit, convention based model resolution in order to use model binding. You can also explicitly define how route parameters correspond to models. To register an explicit binding, use the router's `model` method to specify the class for a given parameter. You should define your explicit model bindings at the beginning of the `boot` method of your `RouteServiceProvider` class:
+라라벨의 암시적, 관례 기반의 모델 바인딩을 사용하지 않고도 사용할 수 있으며, 명시적으로 라우트 파라미터가 어떤 모델과 매핑될지 정의할 수 있습니다. 명시적 바인딩은 라우터의 `model` 메소드로 등록하며, `RouteServiceProvider` 클래스의 `boot` 메소드 초기에 정의해야 합니다:
 
-    use App\Models\User;
-    use Illuminate\Support\Facades\Route;
+```php
+use App\Models\User;
+use Illuminate\Support\Facades\Route;
 
-    /**
-     * Define your route model bindings, pattern filters, etc.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        Route::model('user', User::class);
+/**
+ * Define your route model bindings, pattern filters, etc.
+ *
+ * @return void
+ */
+public function boot()
+{
+    Route::model('user', User::class);
 
-        // ...
-    }
+    // ...
+}
+```
 
-Next, define a route that contains a `{user}` parameter:
+다음은 `{user}` 파라미터를 포함하는 라우트입니다:
 
-    use App\Models\User;
+```php
+use App\Models\User;
 
-    Route::get('/users/{user}', function (User $user) {
-        //
-    });
+Route::get('/users/{user}', function (User $user) {
+    //
+});
+```
 
-Since we have bound all `{user}` parameters to the `App\Models\User` model, an instance of that class will be injected into the route. So, for example, a request to `users/1` will inject the `User` instance from the database which has an ID of `1`.
-
-If a matching model instance is not found in the database, a 404 HTTP response will be automatically generated.
+이렇게 바인딩하면 `users/1` 요청이 데이터베이스의 `id`가 1인 `User` 인스턴스로 자동 주입됩니다. 일치 모델이 없으면 404 응답을 반환합니다.
 
 <a name="customizing-the-resolution-logic"></a>
-#### Customizing The Resolution Logic
+#### 바인딩 해석 논리(Resolve Logic) 커스터마이징
 
-If you wish to define your own model binding resolution logic, you may use the `Route::bind` method. The closure you pass to the `bind` method will receive the value of the URI segment and should return the instance of the class that should be injected into the route. Again, this customization should take place in the `boot` method of your application's `RouteServiceProvider`:
+바인딩 해석을 커스터마이징하고 싶다면 `Route::bind` 메소드를 사용할 수 있습니다. 이때 전달한 클로저는 URI 세그먼트 값을 받아, 주입하고자 하는 모델 인스턴스를 반환해야 합니다. 역시 `RouteServiceProvider`의 `boot` 메소드에서 설정하는 것이 좋습니다:
 
-    use App\Models\User;
-    use Illuminate\Support\Facades\Route;
+```php
+use App\Models\User;
+use Illuminate\Support\Facades\Route;
 
-    /**
-     * Define your route model bindings, pattern filters, etc.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        Route::bind('user', function ($value) {
-            return User::where('name', $value)->firstOrFail();
-        });
-
-        // ...
-    }
-
-Alternatively, you may override the `resolveRouteBinding` method on your Eloquent model. This method will receive the value of the URI segment and should return the instance of the class that should be injected into the route:
-
-    /**
-     * Retrieve the model for a bound value.
-     *
-     * @param  mixed  $value
-     * @param  string|null  $field
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function resolveRouteBinding($value, $field = null)
-    {
-        return $this->where('name', $value)->firstOrFail();
-    }
-
-If a route is utilizing [implicit binding scoping](#implicit-model-binding-scoping), the `resolveChildRouteBinding` method will be used to resolve the child binding of the parent model:
-
-    /**
-     * Retrieve the child model for a bound value.
-     *
-     * @param  string  $childType
-     * @param  mixed  $value
-     * @param  string|null  $field
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function resolveChildRouteBinding($childType, $value, $field)
-    {
-        return parent::resolveChildRouteBinding($childType, $value, $field);
-    }
-
-<a name="fallback-routes"></a>
-## Fallback Routes
-
-Using the `Route::fallback` method, you may define a route that will be executed when no other route matches the incoming request. Typically, unhandled requests will automatically render a "404" page via your application's exception handler. However, since you would typically define the `fallback` route within your `routes/web.php` file, all middleware in the `web` middleware group will apply to the route. You are free to add additional middleware to this route as needed:
-
-    Route::fallback(function () {
-        //
+/**
+ * Define your route model bindings, pattern filters, etc.
+ *
+ * @return void
+ */
+public function boot()
+{
+    Route::bind('user', function ($value) {
+        return User::where('name', $value)->firstOrFail();
     });
 
-> **Warning**  
-> The fallback route should always be the last route registered by your application.
+    // ...
+}
+```
+
+또는, 모델의 `resolveRouteBinding` 메소드를 오버라이드할 수도 있습니다:
+
+```php
+/**
+ * Retrieve the model for a bound value.
+ *
+ * @param  mixed  $value
+ * @param  string|null  $field
+ * @return \Illuminate\Database\Eloquent\Model|null
+ */
+public function resolveRouteBinding($value, $field = null)
+{
+    return $this->where('name', $value)->firstOrFail();
+}
+```
+
+라우트가 [암시적 바인딩 스코프](#implicit-model-binding-scoping)를 사용할 때는 `resolveChildRouteBinding` 메소드가 부모 모델의 자식 바인딩 해석에 사용됩니다:
+
+```php
+/**
+ * Retrieve the child model for a bound value.
+ *
+ * @param  string  $childType
+ * @param  mixed  $value
+ * @param  string|null  $field
+ * @return \Illuminate\Database\Eloquent\Model|null
+ */
+public function resolveChildRouteBinding($childType, $value, $field)
+{
+    return parent::resolveChildRouteBinding($childType, $value, $field);
+}
+```
+
+<a name="fallback-routes"></a>
+## 폴백 라우트
+
+`Route::fallback` 메소드를 사용하면, 다른 어떤 라우트와도 일치하지 않는 요청이 들어왔을 때 실행되는 라우트를 정의할 수 있습니다. 보통 처리가 안 된 요청은 예외 핸들러를 통해 자동으로 "404" 페이지가 표시됩니다. 그러나 일반적으로 폴백 라우트는 `routes/web.php`에 등록하며, 이때는 `web` 미들웨어 그룹이 적용됩니다. 필요하다면 추가 미들웨어도 자유롭게 추가할 수 있습니다:
+
+```php
+Route::fallback(function () {
+    //
+});
+```
+
+> **경고**
+> 폴백 라우트는 반드시 애플리케이션에서 마지막으로 등록해야 합니다.
 
 <a name="rate-limiting"></a>
-## Rate Limiting
+## Rate Limiting(요청 제한)
 
 <a name="defining-rate-limiters"></a>
-### Defining Rate Limiters
+### 요청 제한 정의하기
 
-Laravel includes powerful and customizable rate limiting services that you may utilize to restrict the amount of traffic for a given route or group of routes. To get started, you should define rate limiter configurations that meet your application's needs. Typically, this should be done within the `configureRateLimiting` method of your application's `App\Providers\RouteServiceProvider` class, which already includes a rate limiter definition that is applied to the routes in your application's `routes/api.php` file:
+라라벨은 강력하고 유연한 요청 제한 서비스를 내장하고 있어, 특정 라우트 또는 라우트 그룹의 트래픽을 제한할 수 있습니다. 설정은 보통 애플리케이션의 `App\Providers\RouteServiceProvider` 클래스 내 `configureRateLimiting` 메소드에서 합니다. 이 메소드에는 이미 `routes/api.php` 라우트에 적용되는 기본 요청 제한이 정의되어 있습니다:
 
 ```php
 use Illuminate\Cache\RateLimiting\Limit;
@@ -688,143 +777,165 @@ protected function configureRateLimiting(): void
 }
 ```
 
-Rate limiters are defined using the `RateLimiter` facade's `for` method. The `for` method accepts a rate limiter name and a closure that returns the limit configuration that should apply to routes that are assigned to the rate limiter. Limit configuration are instances of the `Illuminate\Cache\RateLimiting\Limit` class. This class contains helpful "builder" methods so that you can quickly define your limit. The rate limiter name may be any string you wish:
+요청 제한 설정은 `RateLimiter` 퍼사드의 `for` 메소드에 정의합니다. 이 메소드는 제한 이름(name)과 제한 규칙(closure)을 받으며, 제한 규칙은 `Illuminate\Cache\RateLimiting\Limit` 클래스의 인스턴스를 반환합니다. 제한 이름은 원하는 아무 문자열이나 사용할 수 있습니다:
 
-    use Illuminate\Cache\RateLimiting\Limit;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\RateLimiter;
+```php
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 
-    /**
-     * Configure the rate limiters for the application.
-     *
-     * @return void
-     */
-    protected function configureRateLimiting()
-    {
-        RateLimiter::for('global', function (Request $request) {
-            return Limit::perMinute(1000);
-        });
-    }
-
-If the incoming request exceeds the specified rate limit, a response with a 429 HTTP status code will automatically be returned by Laravel. If you would like to define your own response that should be returned by a rate limit, you may use the `response` method:
-
+/**
+ * Configure the rate limiters for the application.
+ *
+ * @return void
+ */
+protected function configureRateLimiting()
+{
     RateLimiter::for('global', function (Request $request) {
-        return Limit::perMinute(1000)->response(function (Request $request, array $headers) {
-            return response('Custom response...', 429, $headers);
-        });
+        return Limit::perMinute(1000);
     });
+}
+```
 
-Since rate limiter callbacks receive the incoming HTTP request instance, you may build the appropriate rate limit dynamically based on the incoming request or authenticated user:
+요청이 지정된 제한을 초과하면, 라라벨은 자동으로 429 상태 코드를 반환합니다. 원하는 응답을 정의하려면 `response` 메소드를 사용할 수 있습니다:
 
-    RateLimiter::for('uploads', function (Request $request) {
-        return $request->user()->vipCustomer()
-                    ? Limit::none()
-                    : Limit::perMinute(100);
+```php
+RateLimiter::for('global', function (Request $request) {
+    return Limit::perMinute(1000)->response(function (Request $request, array $headers) {
+        return response('Custom response...', 429, $headers);
     });
+});
+```
+
+요청 제한 콜백이 HTTP 요청 인스턴스를 받으므로, 인증된 사용자나 요청 정보에 따라 동적으로 제한 규칙을 만들 수도 있습니다:
+
+```php
+RateLimiter::for('uploads', function (Request $request) {
+    return $request->user()->vipCustomer()
+                ? Limit::none()
+                : Limit::perMinute(100);
+});
+```
 
 <a name="segmenting-rate-limits"></a>
-#### Segmenting Rate Limits
+#### 요청 제한 세분화
 
-Sometimes you may wish to segment rate limits by some arbitrary value. For example, you may wish to allow users to access a given route 100 times per minute per IP address. To accomplish this, you may use the `by` method when building your rate limit:
+때로는 임의 값에 따라 제한을 세분화하고 싶을 수 있습니다. 예를 들어, IP별로 분당 100회씩 요청을 허용하려면 `by` 메소드를 사용하세요:
 
-    RateLimiter::for('uploads', function (Request $request) {
-        return $request->user()->vipCustomer()
-                    ? Limit::none()
-                    : Limit::perMinute(100)->by($request->ip());
-    });
+```php
+RateLimiter::for('uploads', function (Request $request) {
+    return $request->user()->vipCustomer()
+                ? Limit::none()
+                : Limit::perMinute(100)->by($request->ip());
+});
+```
 
-To illustrate this feature using another example, we can limit access to the route to 100 times per minute per authenticated user ID or 10 times per minute per IP address for guests:
+또 다른 예로, 인증된 사용자는 분당 100회, 비회원은 IP별로 분당 10회로 제한할 수 있습니다:
 
-    RateLimiter::for('uploads', function (Request $request) {
-        return $request->user()
-                    ? Limit::perMinute(100)->by($request->user()->id)
-                    : Limit::perMinute(10)->by($request->ip());
-    });
+```php
+RateLimiter::for('uploads', function (Request $request) {
+    return $request->user()
+                ? Limit::perMinute(100)->by($request->user()->id)
+                : Limit::perMinute(10)->by($request->ip());
+});
+```
 
 <a name="multiple-rate-limits"></a>
-#### Multiple Rate Limits
+#### 복수 요청 제한
 
-If needed, you may return an array of rate limits for a given rate limiter configuration. Each rate limit will be evaluated for the route based on the order they are placed within the array:
+필요하다면 하나의 요청 제한 규칙에 여러 제한 값을 배열로 반환할 수 있습니다. 배열에 정의된 순서대로 각각의 제한이 적용됩니다:
 
-    RateLimiter::for('login', function (Request $request) {
-        return [
-            Limit::perMinute(500),
-            Limit::perMinute(3)->by($request->input('email')),
-        ];
-    });
+```php
+RateLimiter::for('login', function (Request $request) {
+    return [
+        Limit::perMinute(500),
+        Limit::perMinute(3)->by($request->input('email')),
+    ];
+});
+```
 
 <a name="attaching-rate-limiters-to-routes"></a>
-### Attaching Rate Limiters To Routes
+### 라우트에 요청 제한 적용하기
 
-Rate limiters may be attached to routes or route groups using the `throttle` [middleware](/docs/{{version}}/middleware). The throttle middleware accepts the name of the rate limiter you wish to assign to the route:
+요청 제한은 `throttle` [미들웨어](/docs/{{version}}/middleware)를 통해 라우트 또는 라우트 그룹에 적용할 수 있습니다. 미들웨어 파라미터로 요청 제한 이름을 전달하세요:
 
-    Route::middleware(['throttle:uploads'])->group(function () {
-        Route::post('/audio', function () {
-            //
-        });
-
-        Route::post('/video', function () {
-            //
-        });
+```php
+Route::middleware(['throttle:uploads'])->group(function () {
+    Route::post('/audio', function () {
+        //
     });
 
+    Route::post('/video', function () {
+        //
+    });
+});
+```
+
 <a name="throttling-with-redis"></a>
-#### Throttling With Redis
+#### Redis 기반 요청 제한
 
-Typically, the `throttle` middleware is mapped to the `Illuminate\Routing\Middleware\ThrottleRequests` class. This mapping is defined in your application's HTTP kernel (`App\Http\Kernel`). However, if you are using Redis as your application's cache driver, you may wish to change this mapping to use the `Illuminate\Routing\Middleware\ThrottleRequestsWithRedis` class. This class is more efficient at managing rate limiting using Redis:
+기본적으로 `throttle` 미들웨어는 `Illuminate\Routing\Middleware\ThrottleRequests` 클래스에 매핑됩니다. 이 매핑은 `App\Http\Kernel`에 정의되어 있습니다. 만약 애플리케이션에서 Redis를 캐시 드라이버로 사용한다면, 이 매핑을 `Illuminate\Routing\Middleware\ThrottleRequestsWithRedis` 클래스로 변경하면 Redis 기반 요청 제한이 더 효율적으로 동작합니다:
 
-    'throttle' => \Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
+```php
+'throttle' => \Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
+```
 
 <a name="form-method-spoofing"></a>
 ## Form Method Spoofing
 
-HTML forms do not support `PUT`, `PATCH`, or `DELETE` actions. So, when defining `PUT`, `PATCH`, or `DELETE` routes that are called from an HTML form, you will need to add a hidden `_method` field to the form. The value sent with the `_method` field will be used as the HTTP request method:
+HTML 폼은 `PUT`, `PATCH`, `DELETE` 동작을 지원하지 않습니다. 따라서 HTML 폼에서 위의 메소드로 라우트를 호출하려면, 숨겨진 `_method` 필드를 폼에 추가해야 하며, 여기에 전송하고자 하는 HTTP 메소드 값을 지정합니다:
 
-    <form action="/example" method="POST">
-        <input type="hidden" name="_method" value="PUT">
-        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-    </form>
+```html
+<form action="/example" method="POST">
+    <input type="hidden" name="_method" value="PUT">
+    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+</form>
+```
 
-For convenience, you may use the `@method` [Blade directive](/docs/{{version}}/blade) to generate the `_method` input field:
+편의상 [`@method`](docs/{{version}}/blade) Blade 지시어를 이용해 `_method` 입력 필드를 만들 수도 있습니다:
 
-    <form action="/example" method="POST">
-        @method('PUT')
-        @csrf
-    </form>
+```html
+<form action="/example" method="POST">
+    @method('PUT')
+    @csrf
+</form>
+```
 
 <a name="accessing-the-current-route"></a>
-## Accessing The Current Route
+## 현재 라우트 정보 접근
 
-You may use the `current`, `currentRouteName`, and `currentRouteAction` methods on the `Route` facade to access information about the route handling the incoming request:
+`Route` 퍼사드의 `current`, `currentRouteName`, `currentRouteAction` 메소드를 사용해 현재 요청을 처리하는 라우트 정보를 얻을 수 있습니다:
 
-    use Illuminate\Support\Facades\Route;
+```php
+use Illuminate\Support\Facades\Route;
 
-    $route = Route::current(); // Illuminate\Routing\Route
-    $name = Route::currentRouteName(); // string
-    $action = Route::currentRouteAction(); // string
+$route = Route::current(); // Illuminate\Routing\Route
+$name = Route::currentRouteName(); // string
+$action = Route::currentRouteAction(); // string
+```
 
-You may refer to the API documentation for both the [underlying class of the Route facade](https://laravel.com/api/{{version}}/Illuminate/Routing/Router.html) and [Route instance](https://laravel.com/api/{{version}}/Illuminate/Routing/Route.html) to review all of the methods that are available on the router and route classes.
+[Route 퍼사드의 기반 클래스](https://laravel.com/api/{{version}}/Illuminate/Routing/Router.html)와 [Route 인스턴스](https://laravel.com/api/{{version}}/Illuminate/Routing/Route.html) API 문서를 참조하시면 라우터 및 라우트 클래스에서 사용할 수 있는 모든 메소드를 확인할 수 있습니다.
 
 <a name="cors"></a>
-## Cross-Origin Resource Sharing (CORS)
+## 교차 출처 리소스 공유(CORS)
 
-Laravel can automatically respond to CORS `OPTIONS` HTTP requests with values that you configure. All CORS settings may be configured in your application's `config/cors.php` configuration file. The `OPTIONS` requests will automatically be handled by the `HandleCors` [middleware](/docs/{{version}}/middleware) that is included by default in your global middleware stack. Your global middleware stack is located in your application's HTTP kernel (`App\Http\Kernel`).
+라라벨은 옵션(OPTIONS) HTTP 요청에 대해 자동으로 CORS 응답을 설정할 수 있습니다. 모든 CORS 설정은 애플리케이션의 `config/cors.php`에서 구성할 수 있습니다. `OPTIONS` 요청은 기본적으로 전역 미들웨어 스택에 포함된 `HandleCors` [미들웨어](/docs/{{version}}/middleware)에 의해 자동으로 처리됩니다. 전역 미들웨어 스택은 `App\Http\Kernel`에 위치합니다.
 
-> **Note**  
-> For more information on CORS and CORS headers, please consult the [MDN web documentation on CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#The_HTTP_response_headers).
+> **참고**
+> CORS와 CORS 헤더에 대해 더 알고 싶으시다면 [MDN 웹 문서의 CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#The_HTTP_response_headers)를 참고하세요.
 
 <a name="route-caching"></a>
-## Route Caching
+## 라우트 캐싱
 
-When deploying your application to production, you should take advantage of Laravel's route cache. Using the route cache will drastically decrease the amount of time it takes to register all of your application's routes. To generate a route cache, execute the `route:cache` Artisan command:
+프로덕션(운영) 환경에서 애플리케이션을 배포할 때, 라라벨의 라우트 캐시를 사용하면 라우트 등록 속도를 크게 향상시킬 수 있습니다. 라우트 캐시 생성은 아래 Artisan 명령어로 수행합니다:
 
 ```shell
 php artisan route:cache
 ```
 
-After running this command, your cached routes file will be loaded on every request. Remember, if you add any new routes you will need to generate a fresh route cache. Because of this, you should only run the `route:cache` command during your project's deployment.
+이 명령 실행 후에는 모든 요청마다 캐시된 라우트 파일이 로드됩니다. 새로운 라우트를 추가하는 경우에는 반드시 캐시를 새로 생성해야 합니다. 따라서 프로젝트 배포 중에만 `route:cache` 명령을 사용하는 것이 좋습니다.
 
-You may use the `route:clear` command to clear the route cache:
+라우트 캐시를 지우려면 다음 명령을 사용합니다:
 
 ```shell
 php artisan route:clear

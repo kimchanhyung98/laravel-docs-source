@@ -1,51 +1,51 @@
-# Deployment
+# 배포
 
-- [Introduction](#introduction)
-- [Server Requirements](#server-requirements)
-- [Server Configuration](#server-configuration)
+- [소개](#introduction)
+- [서버 요구 사항](#server-requirements)
+- [서버 설정](#server-configuration)
     - [Nginx](#nginx)
-- [Optimization](#optimization)
-    - [Autoloader Optimization](#autoloader-optimization)
-    - [Optimizing Configuration Loading](#optimizing-configuration-loading)
-    - [Optimizing Route Loading](#optimizing-route-loading)
-    - [Optimizing View Loading](#optimizing-view-loading)
-- [Debug Mode](#debug-mode)
-- [Deploying With Forge / Vapor](#deploying-with-forge-or-vapor)
+- [최적화](#optimization)
+    - [오토로더 최적화](#autoloader-optimization)
+    - [설정 로딩 최적화](#optimizing-configuration-loading)
+    - [라우트 로딩 최적화](#optimizing-route-loading)
+    - [뷰 로딩 최적화](#optimizing-view-loading)
+- [디버그 모드](#debug-mode)
+- [Forge 또는 Vapor로 배포하기](#deploying-with-forge-or-vapor)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-When you're ready to deploy your Laravel application to production, there are some important things you can do to make sure your application is running as efficiently as possible. In this document, we'll cover some great starting points for making sure your Laravel application is deployed properly.
+Laravel 애플리케이션을 프로덕션 환경에 배포할 준비가 되면, 애플리케이션이 최대한 효율적으로 동작하도록 할 수 있는 몇 가지 중요한 사항이 있습니다. 이 문서에서는 Laravel 애플리케이션이 올바르게 배포되었는지 확인할 수 있는 좋은 시작점을 다룹니다.
 
 <a name="server-requirements"></a>
-## Server Requirements
+## 서버 요구 사항
 
-The Laravel framework has a few system requirements. You should ensure that your web server has the following minimum PHP version and extensions:
+Laravel 프레임워크에는 몇 가지 시스템 요구 사항이 있습니다. 웹 서버에 다음 최소 PHP 버전 및 확장 기능이 설치되어 있는지 확인해야 합니다:
 
 <div class="content-list" markdown="1">
 
 - PHP >= 7.3
-- BCMath PHP Extension
-- Ctype PHP Extension
-- Fileinfo PHP Extension
-- JSON PHP Extension
-- Mbstring PHP Extension
-- OpenSSL PHP Extension
-- PDO PHP Extension
-- Tokenizer PHP Extension
-- XML PHP Extension
+- BCMath PHP 확장
+- Ctype PHP 확장
+- Fileinfo PHP 확장
+- JSON PHP 확장
+- Mbstring PHP 확장
+- OpenSSL PHP 확장
+- PDO PHP 확장
+- Tokenizer PHP 확장
+- XML PHP 확장
 
 </div>
 
 <a name="server-configuration"></a>
-## Server Configuration
+## 서버 설정
 
 <a name="nginx"></a>
 ### Nginx
 
-If you are deploying your application to a server that is running Nginx, you may use the following configuration file as a starting point for configuring your web server. Most likely, this file will need to be customized depending on your server's configuration. **If you would like assistance in managing your server, consider using a first-party Laravel server management and deployment service such as [Laravel Forge](https://forge.laravel.com).**
+Nginx가 실행 중인 서버에 애플리케이션을 배포하는 경우, 다음의 설정 파일을 참고하여 웹 서버를 구성할 수 있습니다. 대부분의 경우, 이 파일은 서버의 환경에 맞게 커스텀해야 합니다. **서버 관리가 필요하다면, [Laravel Forge](https://forge.laravel.com)와 같은 Laravel의 공식 서버 관리 및 배포 서비스를 사용하는 것도 고려해 볼 수 있습니다.**
 
-Please ensure, like the configuration below, your web server directs all requests to your application's `public/index.php` file. You should never attempt to move the `index.php` file to your project's root, as serving the application from the project root will expose many sensitive configuration files to the public Internet:
+아래 설정처럼, 웹 서버가 모든 요청을 애플리케이션의 `public/index.php` 파일로 전달하도록 구성되어 있는지 확인하세요. 절대 `index.php` 파일을 프로젝트 루트로 옮겨서 애플리케이션을 서비스하면 안 됩니다. 프로젝트 루트에서 애플리케이션을 서비스하면, 많은 중요한 설정 파일들이 외부에 노출될 수 있습니다.
 
     server {
         listen 80;
@@ -81,64 +81,64 @@ Please ensure, like the configuration below, your web server directs all request
     }
 
 <a name="optimization"></a>
-## Optimization
+## 최적화
 
 <a name="autoloader-optimization"></a>
-### Autoloader Optimization
+### 오토로더 최적화
 
-When deploying to production, make sure that you are optimizing Composer's class autoloader map so Composer can quickly find the proper file to load for a given class:
+프로덕션 환경에 배포할 때는 Composer의 클래스 오토로더 맵을 최적화하여, Composer가 클래스에 맞는 파일을 더 빠르게 찾을 수 있도록 해야 합니다:
 
     composer install --optimize-autoloader --no-dev
 
-> {tip} In addition to optimizing the autoloader, you should always be sure to include a `composer.lock` file in your project's source control repository. Your project's dependencies can be installed much faster when a `composer.lock` file is present.
+> {tip} 오토로더 최적화 외에도, `composer.lock` 파일을 프로젝트의 소스 제어 저장소에 반드시 포함해야 합니다. `composer.lock` 파일이 있으면 프로젝트의 종속성을 훨씬 더 빠르게 설치할 수 있습니다.
 
 <a name="optimizing-configuration-loading"></a>
-### Optimizing Configuration Loading
+### 설정 로딩 최적화
 
-When deploying your application to production, you should make sure that you run the `config:cache` Artisan command during your deployment process:
+애플리케이션을 프로덕션에 배포할 때는, 배포 과정에서 반드시 `config:cache` Artisan 명령어를 실행해야 합니다:
 
     php artisan config:cache
 
-This command will combine all of Laravel's configuration files into a single, cached file, which greatly reduces the number of trips the framework must make to the filesystem when loading your configuration values.
+이 명령어는 Laravel의 모든 설정 파일을 하나의 캐시 파일로 통합하여, 설정 값을 불러올 때 프레임워크가 파일 시스템을 참조하는 횟수를 대폭 줄여줍니다.
 
-> {note} If you execute the `config:cache` command during your deployment process, you should be sure that you are only calling the `env` function from within your configuration files. Once the configuration has been cached, the `.env` file will not be loaded and all calls to the `env` function for `.env` variables will return `null`.
+> {note} 배포 과정에서 `config:cache` 명령어를 실행하면, 설정 파일 내에서만 `env` 함수를 호출하도록 해야 합니다. 설정이 캐시된 이후에는 `.env` 파일이 로드되지 않으며, `.env` 변수를 위한 `env` 함수 호출은 모두 `null`을 반환합니다.
 
 <a name="optimizing-route-loading"></a>
-### Optimizing Route Loading
+### 라우트 로딩 최적화
 
-If you are building a large application with many routes, you should make sure that you are running the `route:cache` Artisan command during your deployment process:
+라우트가 많은 대형 애플리케이션을 개발 중이라면, 배포 과정에서 반드시 `route:cache` Artisan 명령을 실행해야 합니다:
 
     php artisan route:cache
 
-This command reduces all of your route registrations into a single method call within a cached file, improving the performance of route registration when registering hundreds of routes.
+이 명령어는 모든 라우트 등록을 하나의 캐시 파일 내의 단일 메서드 호출로 줄여, 수백 개의 라우트를 등록할 때의 성능을 향상시켜 줍니다.
 
 <a name="optimizing-view-loading"></a>
-### Optimizing View Loading
+### 뷰 로딩 최적화
 
-When deploying your application to production, you should make sure that you run the `view:cache` Artisan command during your deployment process:
+애플리케이션을 프로덕션에 배포할 때는, 배포 과정에서 반드시 `view:cache` Artisan 명령어를 실행해야 합니다:
 
     php artisan view:cache
 
-This command precompiles all your Blade views so they are not compiled on demand, improving the performance of each request that returns a view.
+이 명령어는 Blade 뷰 전체를 미리 컴파일하여, 각각의 요청 시 뷰가 필요할 때마다 컴파일하지 않도록 하여 성능을 개선합니다.
 
 <a name="debug-mode"></a>
-## Debug Mode
+## 디버그 모드
 
-The debug option in your config/app.php configuration file determines how much information about an error is actually displayed to the user. By default, this option is set to respect the value of the APP_DEBUG environment variable, which is stored in your .env file.
+`config/app.php` 설정 파일의 debug 옵션은 에러에 대한 정보가 사용자에게 얼마나 표시되는지를 결정합니다. 기본적으로 이 옵션은 `.env` 파일에 저장되어 있는 APP_DEBUG 환경 변수 값을 따릅니다.
 
-**In your production environment, this value should always be `false`. If the `APP_DEBUG` variable is set to `true` in production, you risk exposing sensitive configuration values to your application's end users.**
+**프로덕션 환경에서는 이 값이 항상 `false`가 되어야 합니다. 만약 프로덕션 환경에서 `APP_DEBUG` 변수가 `true`로 설정되어 있다면, 애플리케이션의 최종 사용자에게 중요한 설정 값들이 노출될 위험이 있습니다.**
 
 <a name="deploying-with-forge-or-vapor"></a>
-## Deploying With Forge / Vapor
+## Forge 또는 Vapor로 배포하기
 
 <a name="laravel-forge"></a>
 #### Laravel Forge
 
-If you aren't quite ready to manage your own server configuration or aren't comfortable configuring all of the various services needed to run a robust Laravel application, [Laravel Forge](https://forge.laravel.com) is a wonderful alternative.
+서버 설정을 직접 관리할 준비가 되어 있지 않거나, 강력한 Laravel 애플리케이션을 운영하는 데 필요한 다양한 서비스를 직접 설정하는 것이 어렵다면 [Laravel Forge](https://forge.laravel.com)를 훌륭한 대안으로 사용할 수 있습니다.
 
-Laravel Forge can create servers on various infrastructure providers such as DigitalOcean, Linode, AWS, and more. In addition, Forge installs and manages all of the tools needed to build robust Laravel applications, such as Nginx, MySQL, Redis, Memcached, Beanstalk, and more.
+Laravel Forge는 DigitalOcean, Linode, AWS 등 다양한 인프라 제공업체에서 서버를 생성할 수 있습니다. 또한, Forge는 Nginx, MySQL, Redis, Memcached, Beanstalk 등 robust한 Laravel 애플리케이션 구축에 필요한 모든 도구를 설치하고 관리해줍니다.
 
 <a name="laravel-vapor"></a>
 #### Laravel Vapor
 
-If you would like a totally serverless, auto-scaling deployment platform tuned for Laravel, check out [Laravel Vapor](https://vapor.laravel.com). Laravel Vapor is a serverless deployment platform for Laravel, powered by AWS. Launch your Laravel infrastructure on Vapor and fall in love with the scalable simplicity of serverless. Laravel Vapor is fine-tuned by Laravel's creators to work seamlessly with the framework so you can keep writing your Laravel applications exactly like you're used to.
+서버리스와 오토스케일링이 적용된 Laravel 전용 배포 플랫폼이 필요하다면 [Laravel Vapor](https://vapor.laravel.com)를 확인해 보세요. Laravel Vapor는 AWS 기반의 Laravel 서버리스 배포 플랫폼입니다. Vapor에서 Laravel 인프라를 실행하고, 서버리스의 확장 가능성과 간편함을 경험해 보세요. Vapor는 Laravel 제작진의 손길로 Laravel 프레임워크와 완벽하게 연동되도록 설계되어 있으므로, 지금까지 하던 대로 Laravel 애플리케이션을 작성할 수 있습니다.

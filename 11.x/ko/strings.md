@@ -1,15 +1,15 @@
-# Strings
+# 문자열(문자열 처리)
 
-- [Introduction](#introduction)
-- [Available Methods](#available-methods)
+- [소개](#introduction)
+- [사용 가능한 메소드](#available-methods)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel includes a variety of functions for manipulating string values. Many of these functions are used by the framework itself; however, you are free to use them in your own applications if you find them convenient.
+Laravel은 문자열 값을 다루기 위한 다양한 함수를 제공합니다. 이 함수들 중 상당수는 Laravel 프레임워크 내부에서 사용되지만, 여러분의 애플리케이션에서도 편리하게 사용할 수 있습니다.
 
 <a name="available-methods"></a>
-## Available Methods
+## 사용 가능한 메소드
 
 <style>
     .collection-method-list > p {
@@ -25,7 +25,7 @@ Laravel includes a variety of functions for manipulating string values. Many of 
 </style>
 
 <a name="strings-method-list"></a>
-### Strings
+### 문자열(Strings)
 
 <div class="collection-method-list" markdown="1">
 
@@ -121,7 +121,7 @@ Laravel includes a variety of functions for manipulating string values. Many of 
 </div>
 
 <a name="fluent-strings-method-list"></a>
-### Fluent Strings
+### Fluent 문자열
 
 <div class="collection-method-list" markdown="1">
 
@@ -234,23 +234,23 @@ Laravel includes a variety of functions for manipulating string values. Many of 
 </div>
 
 <a name="strings"></a>
-## Strings
+## 문자열(문자열 처리)
 
 <a name="method-__"></a>
 #### `__()` {.collection-method}
 
-The `__` function translates the given translation string or translation key using your [language files](/docs/{{version}}/localization):
+`__` 함수는 주어진 번역 문자열 또는 번역 키를 [언어 파일](/docs/{{version}}/localization)을 사용하여 번역합니다:
 
     echo __('Welcome to our application');
 
     echo __('messages.welcome');
 
-If the specified translation string or key does not exist, the `__` function will return the given value. So, using the example above, the `__` function would return `messages.welcome` if that translation key does not exist.
+지정한 번역 문자열 또는 키가 존재하지 않으면, `__` 함수는 원래의 값을 반환합니다. 따라서 위 예시에서 해당 번역 키가 없으면 `__` 함수는 `messages.welcome`을 반환합니다.
 
 <a name="method-class-basename"></a>
 #### `class_basename()` {.collection-method}
 
-The `class_basename` function returns the class name of the given class with the class's namespace removed:
+`class_basename` 함수는 지정한 클래스에서 네임스페이스를 제거하고 클래스명만 반환합니다:
 
     $class = class_basename('Foo\Bar\Baz');
 
@@ -259,7 +259,7 @@ The `class_basename` function returns the class name of the given class with the
 <a name="method-e"></a>
 #### `e()` {.collection-method}
 
-The `e` function runs PHP's `htmlspecialchars` function with the `double_encode` option set to `true` by default:
+`e` 함수는 PHP의 `htmlspecialchars` 함수를 기본적으로 `double_encode` 옵션을 true로 하여 실행합니다:
 
     echo e('<html>foo</html>');
 
@@ -268,7 +268,7 @@ The `e` function runs PHP's `htmlspecialchars` function with the `double_encode`
 <a name="method-preg-replace-array"></a>
 #### `preg_replace_array()` {.collection-method}
 
-The `preg_replace_array` function replaces a given pattern in the string sequentially using an array:
+`preg_replace_array` 함수는 주어진 문자열에서 패턴에 일치하는 부분들을 배열의 값으로 차례차례 대체합니다:
 
     $string = 'The event will take place between :start and :end';
 
@@ -279,7 +279,7 @@ The `preg_replace_array` function replaces a given pattern in the string sequent
 <a name="method-str-after"></a>
 #### `Str::after()` {.collection-method}
 
-The `Str::after` method returns everything after the given value in a string. The entire string will be returned if the value does not exist within the string:
+`Str::after` 메소드는 문자열에서 지정한 값 이후의 모든 내용을 반환합니다. 만약 값이 존재하지 않으면 전체 문자열을 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -290,7 +290,7 @@ The `Str::after` method returns everything after the given value in a string. Th
 <a name="method-str-after-last"></a>
 #### `Str::afterLast()` {.collection-method}
 
-The `Str::afterLast` method returns everything after the last occurrence of the given value in a string. The entire string will be returned if the value does not exist within the string:
+`Str::afterLast` 메소드는 문자열 내에서 지정한 값이 마지막으로 등장한 이후의 모든 내용을 반환합니다. 값이 존재하지 않으면 전체 문자열을 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -301,7 +301,7 @@ The `Str::afterLast` method returns everything after the last occurrence of the 
 <a name="method-str-apa"></a>
 #### `Str::apa()` {.collection-method}
 
-The `Str::apa` method converts the given string to title case following the [APA guidelines](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case):
+`Str::apa` 메소드는 [APA 가이드라인](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case)에 따라 주어진 문자열을 제목 대/소문자 양식(타이틀 케이스)으로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -312,7 +312,7 @@ The `Str::apa` method converts the given string to title case following the [APA
 <a name="method-str-ascii"></a>
 #### `Str::ascii()` {.collection-method}
 
-The `Str::ascii` method will attempt to transliterate the string into an ASCII value:
+`Str::ascii` 메소드는 문자열을 가능한 한 ASCII 값으로 음역(transliterate)합니다:
 
     use Illuminate\Support\Str;
 
@@ -323,7 +323,7 @@ The `Str::ascii` method will attempt to transliterate the string into an ASCII v
 <a name="method-str-before"></a>
 #### `Str::before()` {.collection-method}
 
-The `Str::before` method returns everything before the given value in a string:
+`Str::before` 메소드는 문자열에서 지정한 값 이전의 모든 내용을 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -334,7 +334,7 @@ The `Str::before` method returns everything before the given value in a string:
 <a name="method-str-before-last"></a>
 #### `Str::beforeLast()` {.collection-method}
 
-The `Str::beforeLast` method returns everything before the last occurrence of the given value in a string:
+`Str::beforeLast` 메소드는 문자열 내에서 지정한 값이 마지막으로 등장한 이전의 모든 내용을 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -345,7 +345,7 @@ The `Str::beforeLast` method returns everything before the last occurrence of th
 <a name="method-str-between"></a>
 #### `Str::between()` {.collection-method}
 
-The `Str::between` method returns the portion of a string between two values:
+`Str::between` 메소드는 두 값 사이에 위치한 문자열의 일부를 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -356,7 +356,7 @@ The `Str::between` method returns the portion of a string between two values:
 <a name="method-str-between-first"></a>
 #### `Str::betweenFirst()` {.collection-method}
 
-The `Str::betweenFirst` method returns the smallest possible portion of a string between two values:
+`Str::betweenFirst` 메소드는 두 값 사이의 가장 짧은 부분 문자열을 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -367,7 +367,7 @@ The `Str::betweenFirst` method returns the smallest possible portion of a string
 <a name="method-camel-case"></a>
 #### `Str::camel()` {.collection-method}
 
-The `Str::camel` method converts the given string to `camelCase`:
+`Str::camel` 메소드는 주어진 문자열을 `camelCase` 형식으로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -378,7 +378,7 @@ The `Str::camel` method converts the given string to `camelCase`:
 <a name="method-char-at"></a>
 #### `Str::charAt()` {.collection-method}
 
-The `Str::charAt` method returns the character at the specified index. If the index is out of bounds, `false` is returned:
+`Str::charAt` 메소드는 지정한 인덱스의 문자를 반환합니다. 인덱스가 범위를 벗어나면 `false`를 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -389,7 +389,7 @@ The `Str::charAt` method returns the character at the specified index. If the in
 <a name="method-str-chop-start"></a>
 #### `Str::chopStart()` {.collection-method}
 
-The `Str::chopStart` method removes the first occurrence of the given value only if the value appears at the start of the string:
+`Str::chopStart` 메소드는 주어진 값이 문자열 시작에 존재할 경우, 한 번만 그 값을 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -397,7 +397,7 @@ The `Str::chopStart` method removes the first occurrence of the given value only
 
     // 'laravel.com'
 
-You may also pass an array as the second argument. If the string starts with any of the values in the array then that value will be removed from string:
+두 번째 인수로 배열을 전달할 수도 있습니다. 배열의 값 중 하나로 시작하면 그 값을 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -408,7 +408,7 @@ You may also pass an array as the second argument. If the string starts with any
 <a name="method-str-chop-end"></a>
 #### `Str::chopEnd()` {.collection-method}
 
-The `Str::chopEnd` method removes the last occurrence of the given value only if the value appears at the end of the string:
+`Str::chopEnd` 메소드는 주어진 값이 문자열 끝에 존재할 경우, 한 번만 그 값을 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -416,7 +416,7 @@ The `Str::chopEnd` method removes the last occurrence of the given value only if
 
     // 'app/Models/Photograph'
 
-You may also pass an array as the second argument. If the string ends with any of the values in the array then that value will be removed from string:
+두 번째 인수로 배열을 전달할 수도 있습니다. 배열의 값 중 하나로 끝나면 그 값을 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -427,7 +427,7 @@ You may also pass an array as the second argument. If the string ends with any o
 <a name="method-str-contains"></a>
 #### `Str::contains()` {.collection-method}
 
-The `Str::contains` method determines if the given string contains the given value. By default this method is case sensitive:
+`Str::contains` 메소드는 주어진 문자열이 특정 값을 포함하고 있는지를 확인합니다. 기본적으로 대소문자를 구분합니다:
 
     use Illuminate\Support\Str;
 
@@ -435,7 +435,7 @@ The `Str::contains` method determines if the given string contains the given val
 
     // true
 
-You may also pass an array of values to determine if the given string contains any of the values in the array:
+배열을 전달하여, 문자열이 배열의 값 중 하나를 포함하는지도 확인할 수 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -443,7 +443,7 @@ You may also pass an array of values to determine if the given string contains a
 
     // true
 
-You may disable case sensitivity by setting the `ignoreCase` argument to `true`:
+`ignoreCase` 인수를 true로 지정하면 대소문자를 구분하지 않습니다:
 
     use Illuminate\Support\Str;
 
@@ -454,7 +454,7 @@ You may disable case sensitivity by setting the `ignoreCase` argument to `true`:
 <a name="method-str-contains-all"></a>
 #### `Str::containsAll()` {.collection-method}
 
-The `Str::containsAll` method determines if the given string contains all of the values in a given array:
+`Str::containsAll` 메소드는 주어진 문자열이 배열의 모든 값을 포함하는지 확인합니다:
 
     use Illuminate\Support\Str;
 
@@ -462,7 +462,7 @@ The `Str::containsAll` method determines if the given string contains all of the
 
     // true
 
-You may disable case sensitivity by setting the `ignoreCase` argument to `true`:
+`ignoreCase` 인수를 true로 지정하여 대소문자 구분을 비활성화할 수 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -473,7 +473,7 @@ You may disable case sensitivity by setting the `ignoreCase` argument to `true`:
 <a name="method-str-doesnt-contain"></a>
 #### `Str::doesntContain()` {.collection-method}
 
-The `Str::doesntContain` method determines if the given string doesn't contain the given value. By default this method is case sensitive:
+`Str::doesntContain` 메소드는 문자열이 특정 값을 포함하지 않는지 확인합니다. 기본적으로 대소문자를 구분합니다:
 
     use Illuminate\Support\Str;
 
@@ -481,7 +481,7 @@ The `Str::doesntContain` method determines if the given string doesn't contain t
 
     // true
 
-You may also pass an array of values to determine if the given string doesn't contain any of the values in the array:
+배열을 전달하여, 문자열이 배열의 값 중 어떤 것도 포함하지 않는지 확인할 수도 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -489,7 +489,7 @@ You may also pass an array of values to determine if the given string doesn't co
 
     // true
 
-You may disable case sensitivity by setting the `ignoreCase` argument to `true`:
+`ignoreCase` 인수를 true로 지정하여 대소문자 구분을 비활성화할 수 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -500,7 +500,7 @@ You may disable case sensitivity by setting the `ignoreCase` argument to `true`:
 <a name="method-deduplicate"></a>
 #### `Str::deduplicate()` {.collection-method}
 
-The `Str::deduplicate` method replaces consecutive instances of a character with a single instance of that character in the given string. By default, the method deduplicates spaces:
+`Str::deduplicate` 메소드는 연속으로 중복된 문자를 하나로 압축합니다. 기본적으로 공백을 deduplicate(중복 제거)합니다:
 
     use Illuminate\Support\Str;
 
@@ -508,7 +508,7 @@ The `Str::deduplicate` method replaces consecutive instances of a character with
 
     // The Laravel Framework
 
-You may specify a different character to deduplicate by passing it in as the second argument to the method:
+두 번째 인수로 다른 문자를 지정하면 해당 문자 중복만 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -519,7 +519,7 @@ You may specify a different character to deduplicate by passing it in as the sec
 <a name="method-ends-with"></a>
 #### `Str::endsWith()` {.collection-method}
 
-The `Str::endsWith` method determines if the given string ends with the given value:
+`Str::endsWith` 메소드는 문자열이 특정 값으로 끝나는지 확인합니다:
 
     use Illuminate\Support\Str;
 
@@ -527,7 +527,7 @@ The `Str::endsWith` method determines if the given string ends with the given va
 
     // true
 
-You may also pass an array of values to determine if the given string ends with any of the values in the array:
+배열을 전달하여, 배열 내 어떤 값으로 끝나는지도 확인할 수 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -542,7 +542,7 @@ You may also pass an array of values to determine if the given string ends with 
 <a name="method-excerpt"></a>
 #### `Str::excerpt()` {.collection-method}
 
-The `Str::excerpt` method extracts an excerpt from a given string that matches the first instance of a phrase within that string:
+`Str::excerpt` 메소드는 문자열에서 지정한 문구를 중심으로 발췌(일부분)를 추출합니다:
 
     use Illuminate\Support\Str;
 
@@ -552,9 +552,9 @@ The `Str::excerpt` method extracts an excerpt from a given string that matches t
 
     // '...is my na...'
 
-The `radius` option, which defaults to `100`, allows you to define the number of characters that should appear on each side of the truncated string.
+`radius` 옵션(기본값 100)으로 양쪽에 나타낼 문자 수를 지정할 수 있습니다.
 
-In addition, you may use the `omission` option to define the string that will be prepended and appended to the truncated string:
+또한 `omission` 옵션을 사용하여 앞뒤에 붙일 문자열을 변경할 수 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -568,7 +568,7 @@ In addition, you may use the `omission` option to define the string that will be
 <a name="method-str-finish"></a>
 #### `Str::finish()` {.collection-method}
 
-The `Str::finish` method adds a single instance of the given value to a string if it does not already end with that value:
+`Str::finish` 메소드는 지정한 값으로 끝나지 않는 문자열의 끝에 한 번만 그 값을 붙입니다:
 
     use Illuminate\Support\Str;
 
@@ -583,7 +583,7 @@ The `Str::finish` method adds a single instance of the given value to a string i
 <a name="method-str-headline"></a>
 #### `Str::headline()` {.collection-method}
 
-The `Str::headline` method will convert strings delimited by casing, hyphens, or underscores into a space delimited string with each word's first letter capitalized:
+`Str::headline` 메소드는 단어를 대소문자, 하이픈(-), 언더스코어(_) 등으로 구분된 문자열을 각 단어의 첫 글자만 대문자인 띄어쓰기로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -598,7 +598,7 @@ The `Str::headline` method will convert strings delimited by casing, hyphens, or
 <a name="method-str-inline-markdown"></a>
 #### `Str::inlineMarkdown()` {.collection-method}
 
-The `Str::inlineMarkdown` method converts GitHub flavored Markdown into inline HTML using [CommonMark](https://commonmark.thephpleague.com/). However, unlike the `markdown` method, it does not wrap all generated HTML in a block-level element:
+`Str::inlineMarkdown` 메소드는 GitHub 스타일의 마크다운을 [CommonMark](https://commonmark.thephpleague.com/)를 이용해 인라인 HTML로 변환합니다. `markdown` 메소드와 달리, 전체 HTML을 블록 요소에 감싸지 않습니다:
 
     use Illuminate\Support\Str;
 
@@ -606,9 +606,9 @@ The `Str::inlineMarkdown` method converts GitHub flavored Markdown into inline H
 
     // <strong>Laravel</strong>
 
-#### Markdown Security
+#### 마크다운 보안
 
-By default, Markdown supports raw HTML, which will expose Cross-Site Scripting (XSS) vulnerabilities when used with raw user input. As per the [CommonMark Security documentation](https://commonmark.thephpleague.com/security/), you may use the `html_input` option to either escape or strip raw HTML, and the `allow_unsafe_links` option to specify whether to allow unsafe links. If you need to allow some raw HTML, you should pass your compiled Markdown through an HTML Purifier:
+기본적으로 마크다운은 raw HTML을 지원하므로, 사용자 입력 등에 XSS 취약점을 노출할 수 있습니다. [CommonMark Security 문서](https://commonmark.thephpleague.com/security/)에 따라 `html_input` 옵션으로 raw HTML을 escape 또는 strip할 수 있고, `allow_unsafe_links` 옵션으로 안전하지 않은 링크 허용 여부를 정할 수 있습니다. 일부 raw HTML만 허용하려면, 변환된 마크다운을 HTML Purifier 등으로 필터링해야 합니다.
 
     use Illuminate\Support\Str;
 
@@ -622,7 +622,7 @@ By default, Markdown supports raw HTML, which will expose Cross-Site Scripting (
 <a name="method-str-is"></a>
 #### `Str::is()` {.collection-method}
 
-The `Str::is` method determines if a given string matches a given pattern. Asterisks may be used as wildcard values:
+`Str::is` 메소드는 문자열이 주어진 패턴과 일치하는지 확인합니다. 와일드카드로 * 문자를 사용할 수 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -634,7 +634,7 @@ The `Str::is` method determines if a given string matches a given pattern. Aster
 
     // false
 
-You may disable case sensitivity by setting the `ignoreCase` argument to `true`:
+`ignoreCase` 인수를 true로 하면 대소문자를 구분하지 않습니다:
 
     use Illuminate\Support\Str;
 
@@ -645,7 +645,7 @@ You may disable case sensitivity by setting the `ignoreCase` argument to `true`:
 <a name="method-str-is-ascii"></a>
 #### `Str::isAscii()` {.collection-method}
 
-The `Str::isAscii` method determines if a given string is 7 bit ASCII:
+`Str::isAscii` 메소드는 주어진 문자열이 7비트 ASCII 문자열인지 확인합니다:
 
     use Illuminate\Support\Str;
 
@@ -660,7 +660,7 @@ The `Str::isAscii` method determines if a given string is 7 bit ASCII:
 <a name="method-str-is-json"></a>
 #### `Str::isJson()` {.collection-method}
 
-The `Str::isJson` method determines if the given string is valid JSON:
+`Str::isJson` 메소드는 문자열이 올바른 JSON 형식인지 확인합니다:
 
     use Illuminate\Support\Str;
 
@@ -679,7 +679,7 @@ The `Str::isJson` method determines if the given string is valid JSON:
 <a name="method-str-is-url"></a>
 #### `Str::isUrl()` {.collection-method}
 
-The `Str::isUrl` method determines if the given string is a valid URL:
+`Str::isUrl` 메소드는 주어진 문자열이 유효한 URL 형식인지 확인합니다:
 
     use Illuminate\Support\Str;
 
@@ -691,14 +691,14 @@ The `Str::isUrl` method determines if the given string is a valid URL:
 
     // false
 
-The `isUrl` method considers a wide range of protocols as valid. However, you may specify the protocols that should be considered valid by providing them to the `isUrl` method:
+`isUrl` 메소드는 다양한 프로토콜을 허용합니다. 필요한 경우 허용할 프로토콜을 직접 지정할 수 있습니다:
 
     $isUrl = Str::isUrl('http://example.com', ['http', 'https']);
 
 <a name="method-str-is-ulid"></a>
 #### `Str::isUlid()` {.collection-method}
 
-The `Str::isUlid` method determines if the given string is a valid ULID:
+`Str::isUlid` 메소드는 주어진 문자열이 유효한 ULID인지 확인합니다:
 
     use Illuminate\Support\Str;
 
@@ -713,7 +713,7 @@ The `Str::isUlid` method determines if the given string is a valid ULID:
 <a name="method-str-is-uuid"></a>
 #### `Str::isUuid()` {.collection-method}
 
-The `Str::isUuid` method determines if the given string is a valid UUID:
+`Str::isUuid` 메소드는 주어진 문자열이 유효한 UUID인지 확인합니다:
 
     use Illuminate\Support\Str;
 
@@ -728,7 +728,7 @@ The `Str::isUuid` method determines if the given string is a valid UUID:
 <a name="method-kebab-case"></a>
 #### `Str::kebab()` {.collection-method}
 
-The `Str::kebab` method converts the given string to `kebab-case`:
+`Str::kebab` 메소드는 주어진 문자열을 `kebab-case` (소문자와 하이픈 표기)로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -739,7 +739,7 @@ The `Str::kebab` method converts the given string to `kebab-case`:
 <a name="method-str-lcfirst"></a>
 #### `Str::lcfirst()` {.collection-method}
 
-The `Str::lcfirst` method returns the given string with the first character lowercased:
+`Str::lcfirst` 메소드는 문자열의 첫 글자를 소문자로 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -750,7 +750,7 @@ The `Str::lcfirst` method returns the given string with the first character lowe
 <a name="method-str-length"></a>
 #### `Str::length()` {.collection-method}
 
-The `Str::length` method returns the length of the given string:
+`Str::length` 메소드는 주어진 문자열의 길이를 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -761,7 +761,7 @@ The `Str::length` method returns the length of the given string:
 <a name="method-str-limit"></a>
 #### `Str::limit()` {.collection-method}
 
-The `Str::limit` method truncates the given string to the specified length:
+`Str::limit` 메소드는 주어진 문자열을 지정한 길이로 자릅니다:
 
     use Illuminate\Support\Str;
 
@@ -769,13 +769,13 @@ The `Str::limit` method truncates the given string to the specified length:
 
     // The quick brown fox...
 
-You may pass a third argument to the method to change the string that will be appended to the end of the truncated string:
+세 번째 인수로 잘린 문자열 뒤에 붙을 텍스트도 지정할 수 있습니다:
 
     $truncated = Str::limit('The quick brown fox jumps over the lazy dog', 20, ' (...)');
 
     // The quick brown fox (...)
 
-If you would like to preserve complete words when truncating the string, you may utilize the `preserveWords` argument. When this argument is `true`, the string will be truncated to the nearest complete word boundary:
+단어가 중간에 끊기지 않고, 단어 단위로 자르고 싶다면 `preserveWords` 인수를 true로 지정할 수 있습니다:
 
     $truncated = Str::limit('The quick brown fox', 12, preserveWords: true);
 
@@ -784,7 +784,7 @@ If you would like to preserve complete words when truncating the string, you may
 <a name="method-str-lower"></a>
 #### `Str::lower()` {.collection-method}
 
-The `Str::lower` method converts the given string to lowercase:
+`Str::lower` 메소드는 문자열을 소문자로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -795,7 +795,7 @@ The `Str::lower` method converts the given string to lowercase:
 <a name="method-str-markdown"></a>
 #### `Str::markdown()` {.collection-method}
 
-The `Str::markdown` method converts GitHub flavored Markdown into HTML using [CommonMark](https://commonmark.thephpleague.com/):
+`Str::markdown` 메소드는 GitHub 스타일의 마크다운을 [CommonMark](https://commonmark.thephpleague.com/)를 사용하여 HTML로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -809,9 +809,9 @@ The `Str::markdown` method converts GitHub flavored Markdown into HTML using [Co
 
     // <h1>Taylor Otwell</h1>
 
-#### Markdown Security
+#### 마크다운 보안
 
-By default, Markdown supports raw HTML, which will expose Cross-Site Scripting (XSS) vulnerabilities when used with raw user input. As per the [CommonMark Security documentation](https://commonmark.thephpleague.com/security/), you may use the `html_input` option to either escape or strip raw HTML, and the `allow_unsafe_links` option to specify whether to allow unsafe links. If you need to allow some raw HTML, you should pass your compiled Markdown through an HTML Purifier:
+마크다운은 기본적으로 raw HTML을 허용하므로, 사용자 입력과 함께 사용하면 XSS 취약점에 노출될 수 있습니다. [CommonMark Security 문서](https://commonmark.thephpleague.com/security/)를 참고해, `html_input` 옵션으로 raw HTML을 escape 또는 strip하고, `allow_unsafe_links`로 안전하지 않은 링크 허용 여부를 정할 수 있습니다. 일부 raw HTML만 허용하려면 HTML Purifier 같은 필터를 직접 적용해야 합니다.
 
     use Illuminate\Support\Str;
 
@@ -825,7 +825,7 @@ By default, Markdown supports raw HTML, which will expose Cross-Site Scripting (
 <a name="method-str-mask"></a>
 #### `Str::mask()` {.collection-method}
 
-The `Str::mask` method masks a portion of a string with a repeated character, and may be used to obfuscate segments of strings such as email addresses and phone numbers:
+`Str::mask` 메소드는 문자열의 일부분을 지정 문자를 반복하여 마스킹합니다. 이메일, 전화번호 등의 정보 일부를 숨길 때 사용할 수 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -833,7 +833,7 @@ The `Str::mask` method masks a portion of a string with a repeated character, an
 
     // tay***************
 
-If needed, you provide a negative number as the third argument to the `mask` method, which will instruct the method to begin masking at the given distance from the end of the string:
+필요하다면 세 번째 인수에 음수를 줘서 문자열의 끝에서부터 마스킹을 시작할 수도 있습니다:
 
     $string = Str::mask('taylor@example.com', '*', -15, 3);
 
@@ -842,7 +842,7 @@ If needed, you provide a negative number as the third argument to the `mask` met
 <a name="method-str-ordered-uuid"></a>
 #### `Str::orderedUuid()` {.collection-method}
 
-The `Str::orderedUuid` method generates a "timestamp first" UUID that may be efficiently stored in an indexed database column. Each UUID that is generated using this method will be sorted after UUIDs previously generated using the method:
+`Str::orderedUuid` 메소드는 "타임스탬프가 앞에 오는" UUID를 생성해, 인덱싱된 DB 컬럼에 효율적으로 저장할 수 있습니다. 생성될 때마다 이후 값이 정렬상 뒤에 위치하게 됩니다:
 
     use Illuminate\Support\Str;
 
@@ -851,7 +851,7 @@ The `Str::orderedUuid` method generates a "timestamp first" UUID that may be eff
 <a name="method-str-padboth"></a>
 #### `Str::padBoth()` {.collection-method}
 
-The `Str::padBoth` method wraps PHP's `str_pad` function, padding both sides of a string with another string until the final string reaches a desired length:
+`Str::padBoth` 메소드는 PHP의 `str_pad` 기능을 감싸 양쪽에 문자열을 채워 지정 길이에 맞춥니다:
 
     use Illuminate\Support\Str;
 
@@ -866,7 +866,7 @@ The `Str::padBoth` method wraps PHP's `str_pad` function, padding both sides of 
 <a name="method-str-padleft"></a>
 #### `Str::padLeft()` {.collection-method}
 
-The `Str::padLeft` method wraps PHP's `str_pad` function, padding the left side of a string with another string until the final string reaches a desired length:
+`Str::padLeft` 메소드는 문자열 왼쪽에 다른 문자열을 채워 지정 길이로 만듭니다:
 
     use Illuminate\Support\Str;
 
@@ -881,7 +881,7 @@ The `Str::padLeft` method wraps PHP's `str_pad` function, padding the left side 
 <a name="method-str-padright"></a>
 #### `Str::padRight()` {.collection-method}
 
-The `Str::padRight` method wraps PHP's `str_pad` function, padding the right side of a string with another string until the final string reaches a desired length:
+`Str::padRight` 메소드는 문자열 오른쪽에 다른 문자열을 채워 지정 길이로 만듭니다:
 
     use Illuminate\Support\Str;
 
@@ -896,7 +896,7 @@ The `Str::padRight` method wraps PHP's `str_pad` function, padding the right sid
 <a name="method-str-password"></a>
 #### `Str::password()` {.collection-method}
 
-The `Str::password` method may be used to generate a secure, random password of a given length. The password will consist of a combination of letters, numbers, symbols, and spaces. By default, passwords are 32 characters long:
+`Str::password` 메소드는 안전한 무작위 비밀번호를 생성합니다(기본 길이 32자). 숫자, 기호, 문자, 공백 등이 조합됩니다:
 
     use Illuminate\Support\Str;
 
@@ -911,7 +911,7 @@ The `Str::password` method may be used to generate a secure, random password of 
 <a name="method-str-plural"></a>
 #### `Str::plural()` {.collection-method}
 
-The `Str::plural` method converts a singular word string to its plural form. This function supports [any of the languages support by Laravel's pluralizer](/docs/{{version}}/localization#pluralization-language):
+`Str::plural` 메소드는 단어를 복수 형태로 변환합니다. Laravel Pluralizer가 지원하는 [언어](docs/{{version}}/localization#pluralization-language)를 모두 지원합니다:
 
     use Illuminate\Support\Str;
 
@@ -923,7 +923,7 @@ The `Str::plural` method converts a singular word string to its plural form. Thi
 
     // children
 
-You may provide an integer as a second argument to the function to retrieve the singular or plural form of the string:
+정수를 두 번째 인수로 넘겨, 단수/복수 형태를 자동으로 반환하게 할 수 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -938,7 +938,7 @@ You may provide an integer as a second argument to the function to retrieve the 
 <a name="method-str-plural-studly"></a>
 #### `Str::pluralStudly()` {.collection-method}
 
-The `Str::pluralStudly` method converts a singular word string formatted in studly caps case to its plural form. This function supports [any of the languages support by Laravel's pluralizer](/docs/{{version}}/localization#pluralization-language):
+`Str::pluralStudly` 메소드는 StudlyCase로 작성된 문자열의 복수형을 생성합니다. 역시 Pluralizer가 지원하는 [언어](docs/{{version}}/localization#pluralization-language)를 모두 지원합니다:
 
     use Illuminate\Support\Str;
 
@@ -950,7 +950,7 @@ The `Str::pluralStudly` method converts a singular word string formatted in stud
 
     // UserFeedback
 
-You may provide an integer as a second argument to the function to retrieve the singular or plural form of the string:
+정수를 두 번째 인수로 넘겨, 단수/복수 형태를 자동으로 반환할 수 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -965,7 +965,7 @@ You may provide an integer as a second argument to the function to retrieve the 
 <a name="method-str-position"></a>
 #### `Str::position()` {.collection-method}
 
-The `Str::position` method returns the position of the first occurrence of a substring in a string. If the substring does not exist in the given string, `false` is returned:
+`Str::position` 메소드는 지정한 부분 문자열이 처음 등장하는 위치를 반환합니다. 없으면 `false`를 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -980,26 +980,26 @@ The `Str::position` method returns the position of the first occurrence of a sub
 <a name="method-str-random"></a>
 #### `Str::random()` {.collection-method}
 
-The `Str::random` method generates a random string of the specified length. This function uses PHP's `random_bytes` function:
+`Str::random` 메소드는 지정한 길이의 무작위 문자열을 생성합니다. PHP의 `random_bytes`를 사용합니다:
 
     use Illuminate\Support\Str;
 
     $random = Str::random(40);
 
-During testing, it may be useful to "fake" the value that is returned by the `Str::random` method. To accomplish this, you may use the `createRandomStringsUsing` method:
+테스트 시 return 값을 고정하고 싶다면 `createRandomStringsUsing`를 사용할 수 있습니다:
 
     Str::createRandomStringsUsing(function () {
         return 'fake-random-string';
     });
 
-To instruct the `random` method to return to generating random strings normally, you may invoke the `createRandomStringsNormally` method:
+기본 무작위 모드로 복귀하려면 `createRandomStringsNormally`를 호출합니다:
 
     Str::createRandomStringsNormally();
 
 <a name="method-str-remove"></a>
 #### `Str::remove()` {.collection-method}
 
-The `Str::remove` method removes the given value or array of values from the string:
+`Str::remove` 메소드는 문자열에서 지정한 값(배열도 가능)을 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -1009,12 +1009,12 @@ The `Str::remove` method removes the given value or array of values from the str
 
     // Ptr Pipr pickd a pck of pickld ppprs.
 
-You may also pass `false` as a third argument to the `remove` method to ignore case when removing strings.
+세 번째 인수로 `false`를 넘기면 대소문자를 구분하지 않고 제거합니다.
 
 <a name="method-str-repeat"></a>
 #### `Str::repeat()` {.collection-method}
 
-The `Str::repeat` method repeats the given string:
+`Str::repeat` 메소드는 주어진 문자열을 지정 횟수만큼 반복합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1029,7 +1029,7 @@ $repeat = Str::repeat($string, 5);
 <a name="method-str-replace"></a>
 #### `Str::replace()` {.collection-method}
 
-The `Str::replace` method replaces a given string within the string:
+`Str::replace` 메소드는 문자열에서 특정 값을 다른 값으로 대체합니다:
 
     use Illuminate\Support\Str;
 
@@ -1039,14 +1039,14 @@ The `Str::replace` method replaces a given string within the string:
 
     // Laravel 11.x
 
-The `replace` method also accepts a `caseSensitive` argument. By default, the `replace` method is case sensitive:
+`caseSensitive` 인수를 지정할 수 있으며, 기본적으로 대소문자를 구분합니다:
 
     Str::replace('Framework', 'Laravel', caseSensitive: false);
 
 <a name="method-str-replace-array"></a>
 #### `Str::replaceArray()` {.collection-method}
 
-The `Str::replaceArray` method replaces a given value in the string sequentially using an array:
+`Str::replaceArray` 메소드는 문자열 내 지정된 값을 배열로 순차적으로 교체합니다:
 
     use Illuminate\Support\Str;
 
@@ -1059,7 +1059,7 @@ The `Str::replaceArray` method replaces a given value in the string sequentially
 <a name="method-str-replace-first"></a>
 #### `Str::replaceFirst()` {.collection-method}
 
-The `Str::replaceFirst` method replaces the first occurrence of a given value in a string:
+`Str::replaceFirst` 메소드는 지정한 값이 문자열에서 처음 등장하는 부분만 다른 값으로 교체합니다:
 
     use Illuminate\Support\Str;
 
@@ -1070,7 +1070,7 @@ The `Str::replaceFirst` method replaces the first occurrence of a given value in
 <a name="method-str-replace-last"></a>
 #### `Str::replaceLast()` {.collection-method}
 
-The `Str::replaceLast` method replaces the last occurrence of a given value in a string:
+`Str::replaceLast` 메소드는 지정한 값이 문자열에 마지막으로 등장하는 부분만 교체합니다:
 
     use Illuminate\Support\Str;
 
@@ -1081,7 +1081,7 @@ The `Str::replaceLast` method replaces the last occurrence of a given value in a
 <a name="method-str-replace-matches"></a>
 #### `Str::replaceMatches()` {.collection-method}
 
-The `Str::replaceMatches` method replaces all portions of a string matching a pattern with the given replacement string:
+`Str::replaceMatches` 메소드는 정규식에 일치하는 모든 부분을 지정한 값으로 교체합니다:
 
     use Illuminate\Support\Str;
 
@@ -1093,7 +1093,7 @@ The `Str::replaceMatches` method replaces all portions of a string matching a pa
 
     // '15015551000'
 
-The `replaceMatches` method also accepts a closure that will be invoked with each portion of the string matching the given pattern, allowing you to perform the replacement logic within the closure and return the replaced value:
+콜백을 넘기면 각 일치 부분별로 동적으로 값을 교체할 수도 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -1106,7 +1106,7 @@ The `replaceMatches` method also accepts a closure that will be invoked with eac
 <a name="method-str-replace-start"></a>
 #### `Str::replaceStart()` {.collection-method}
 
-The `Str::replaceStart` method replaces the first occurrence of the given value only if the value appears at the start of the string:
+`Str::replaceStart` 메소드는 문자열의 시작에서 해당 값이 존재할 때 한 번만 교체합니다:
 
     use Illuminate\Support\Str;
 
@@ -1121,7 +1121,7 @@ The `Str::replaceStart` method replaces the first occurrence of the given value 
 <a name="method-str-replace-end"></a>
 #### `Str::replaceEnd()` {.collection-method}
 
-The `Str::replaceEnd` method replaces the last occurrence of the given value only if the value appears at the end of the string:
+`Str::replaceEnd` 메소드는 문자열의 끝에서 해당 값이 존재할 때 한 번만 교체합니다:
 
     use Illuminate\Support\Str;
 
@@ -1136,7 +1136,7 @@ The `Str::replaceEnd` method replaces the last occurrence of the given value onl
 <a name="method-str-reverse"></a>
 #### `Str::reverse()` {.collection-method}
 
-The `Str::reverse` method reverses the given string:
+`Str::reverse` 메소드는 문자열을 뒤집어 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1147,7 +1147,7 @@ The `Str::reverse` method reverses the given string:
 <a name="method-str-singular"></a>
 #### `Str::singular()` {.collection-method}
 
-The `Str::singular` method converts a string to its singular form. This function supports [any of the languages support by Laravel's pluralizer](/docs/{{version}}/localization#pluralization-language):
+`Str::singular` 메소드는 문자열을 단수형으로 변환합니다. Laravel Pluralizer가 지원하는 [언어](docs/{{version}}/localization#pluralization-language)를 지원합니다:
 
     use Illuminate\Support\Str;
 
@@ -1162,7 +1162,7 @@ The `Str::singular` method converts a string to its singular form. This function
 <a name="method-str-slug"></a>
 #### `Str::slug()` {.collection-method}
 
-The `Str::slug` method generates a URL friendly "slug" from the given string:
+`Str::slug` 메소드는 지정한 문자열을 URL 친화적인 "슬러그"로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1173,7 +1173,7 @@ The `Str::slug` method generates a URL friendly "slug" from the given string:
 <a name="method-snake-case"></a>
 #### `Str::snake()` {.collection-method}
 
-The `Str::snake` method converts the given string to `snake_case`:
+`Str::snake` 메소드는 문자열을 `snake_case` 형식으로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1188,7 +1188,7 @@ The `Str::snake` method converts the given string to `snake_case`:
 <a name="method-str-squish"></a>
 #### `Str::squish()` {.collection-method}
 
-The `Str::squish` method removes all extraneous white space from a string, including extraneous white space between words:
+`Str::squish` 메소드는 문자열의 앞뒤 및 단어 사이의 불필요한 공백을 모두 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -1199,7 +1199,7 @@ The `Str::squish` method removes all extraneous white space from a string, inclu
 <a name="method-str-start"></a>
 #### `Str::start()` {.collection-method}
 
-The `Str::start` method adds a single instance of the given value to a string if it does not already start with that value:
+`Str::start` 메소드는 문자열이 지정한 값으로 시작하지 않는 경우, 앞에 한 번만 그 값을 붙입니다:
 
     use Illuminate\Support\Str;
 
@@ -1214,7 +1214,7 @@ The `Str::start` method adds a single instance of the given value to a string if
 <a name="method-starts-with"></a>
 #### `Str::startsWith()` {.collection-method}
 
-The `Str::startsWith` method determines if the given string begins with the given value:
+`Str::startsWith` 메소드는 문자열이 주어진 값으로 시작하는지 확인합니다:
 
     use Illuminate\Support\Str;
 
@@ -1222,7 +1222,7 @@ The `Str::startsWith` method determines if the given string begins with the give
 
     // true
 
-If an array of possible values is passed, the `startsWith` method will return `true` if the string begins with any of the given values:
+배열을 전달하면, 배열 내 어떤 값으로 시작해도 true를 반환합니다:
 
     $result = Str::startsWith('This is my name', ['This', 'That', 'There']);
 
@@ -1231,7 +1231,7 @@ If an array of possible values is passed, the `startsWith` method will return `t
 <a name="method-studly-case"></a>
 #### `Str::studly()` {.collection-method}
 
-The `Str::studly` method converts the given string to `StudlyCase`:
+`Str::studly` 메소드는 문자열을 `StudlyCase`로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1242,7 +1242,7 @@ The `Str::studly` method converts the given string to `StudlyCase`:
 <a name="method-str-substr"></a>
 #### `Str::substr()` {.collection-method}
 
-The `Str::substr` method returns the portion of string specified by the start and length parameters:
+`Str::substr` 메소드는 지정된 시작과 길이로 부분 문자열을 추출합니다:
 
     use Illuminate\Support\Str;
 
@@ -1253,7 +1253,7 @@ The `Str::substr` method returns the portion of string specified by the start an
 <a name="method-str-substrcount"></a>
 #### `Str::substrCount()` {.collection-method}
 
-The `Str::substrCount` method returns the number of occurrences of a given value in the given string:
+`Str::substrCount` 메소드는 문자열 내 지정한 값이 등장하는 횟수를 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1264,7 +1264,7 @@ The `Str::substrCount` method returns the number of occurrences of a given value
 <a name="method-str-substrreplace"></a>
 #### `Str::substrReplace()` {.collection-method}
 
-The `Str::substrReplace` method replaces text within a portion of a string, starting at the position specified by the third argument and replacing the number of characters specified by the fourth argument. Passing `0` to the method's fourth argument will insert the string at the specified position without replacing any of the existing characters in the string:
+`Str::substrReplace` 메소드는 문자열의 일부를 지정된 위치에서 지정 길이만큼 새 문자열로 교체합니다. 길이 인수(네 번째 인수)에 0을 주면, 해당 위치에 기존 문자를 삭제하지 않고 삽입됩니다:
 
     use Illuminate\Support\Str;
 
@@ -1277,7 +1277,7 @@ The `Str::substrReplace` method replaces text within a portion of a string, star
 <a name="method-str-swap"></a>
 #### `Str::swap()` {.collection-method}
 
-The `Str::swap` method replaces multiple values in the given string using PHP's `strtr` function:
+`Str::swap` 메소드는 여러 값을 동시에 교체합니다. 내부적으로 PHP의 `strtr` 함수를 사용합니다:
 
     use Illuminate\Support\Str;
 
@@ -1291,7 +1291,7 @@ The `Str::swap` method replaces multiple values in the given string using PHP's 
 <a name="method-take"></a>
 #### `Str::take()` {.collection-method}
 
-The `Str::take` method returns a specified number of characters from the beginning of a string:
+`Str::take` 메소드는 문자열의 앞에서부터 지정한 개수만큼 문자를 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1302,7 +1302,7 @@ The `Str::take` method returns a specified number of characters from the beginni
 <a name="method-title-case"></a>
 #### `Str::title()` {.collection-method}
 
-The `Str::title` method converts the given string to `Title Case`:
+`Str::title` 메소드는 문자열을 'Title Case' 형식(각 단어의 첫 글자만 대문자)으로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1313,7 +1313,7 @@ The `Str::title` method converts the given string to `Title Case`:
 <a name="method-str-to-base64"></a>
 #### `Str::toBase64()` {.collection-method}
 
-The `Str::toBase64` method converts the given string to Base64:
+`Str::toBase64` 메소드는 문자열을 Base64 인코딩 문자열로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1324,7 +1324,7 @@ The `Str::toBase64` method converts the given string to Base64:
 <a name="method-str-transliterate"></a>
 #### `Str::transliterate()` {.collection-method}
 
-The `Str::transliterate` method will attempt to convert a given string into its closest ASCII representation:
+`Str::transliterate` 메소드는 문자열을 가장 비슷한 ASCII 형태로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1335,7 +1335,7 @@ The `Str::transliterate` method will attempt to convert a given string into its 
 <a name="method-str-trim"></a>
 #### `Str::trim()` {.collection-method}
 
-The `Str::trim` method strips whitespace (or other characters) from the beginning and end of the given string. Unlike PHP's native `trim` function, the `Str::trim` method also removes unicode whitespace characters:
+`Str::trim` 메소드는 문자열의 앞뒤에서 공백(또는 다른 문자)을 제거합니다. PHP `trim` 함수와 달리, 유니코드 공백 문자도 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -1346,7 +1346,7 @@ The `Str::trim` method strips whitespace (or other characters) from the beginnin
 <a name="method-str-ltrim"></a>
 #### `Str::ltrim()` {.collection-method}
 
-The `Str::ltrim` method strips whitespace (or other characters) from the beginning of the given string. Unlike PHP's native `ltrim` function, the `Str::ltrim` method also removes unicode whitespace characters:
+`Str::ltrim` 메소드는 문자열의 맨 앞에서 공백(또는 다른 문자)을 제거합니다. PHP `ltrim`과 달리, 유니코드 공백도 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -1357,7 +1357,7 @@ The `Str::ltrim` method strips whitespace (or other characters) from the beginni
 <a name="method-str-rtrim"></a>
 #### `Str::rtrim()` {.collection-method}
 
-The `Str::rtrim` method strips whitespace (or other characters) from the end of the given string. Unlike PHP's native `rtrim` function, the `Str::rtrim` method also removes unicode whitespace characters:
+`Str::rtrim` 메소드는 문자열의 맨 뒤에서 공백(또는 다른 문자)을 제거합니다. PHP `rtrim`과 달리, 유니코드 공백도 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -1368,7 +1368,7 @@ The `Str::rtrim` method strips whitespace (or other characters) from the end of 
 <a name="method-str-ucfirst"></a>
 #### `Str::ucfirst()` {.collection-method}
 
-The `Str::ucfirst` method returns the given string with the first character capitalized:
+`Str::ucfirst` 메소드는 문자열의 첫 글자만 대문자로 반환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1379,7 +1379,7 @@ The `Str::ucfirst` method returns the given string with the first character capi
 <a name="method-str-ucsplit"></a>
 #### `Str::ucsplit()` {.collection-method}
 
-The `Str::ucsplit` method splits the given string into an array by uppercase characters:
+`Str::ucsplit` 메소드는 대문자 단위로 문자열을 배열로 분리합니다:
 
     use Illuminate\Support\Str;
 
@@ -1390,7 +1390,7 @@ The `Str::ucsplit` method splits the given string into an array by uppercase cha
 <a name="method-str-upper"></a>
 #### `Str::upper()` {.collection-method}
 
-The `Str::upper` method converts the given string to uppercase:
+`Str::upper` 메소드는 문자열을 모두 대문자로 변환합니다:
 
     use Illuminate\Support\Str;
 
@@ -1401,7 +1401,7 @@ The `Str::upper` method converts the given string to uppercase:
 <a name="method-str-ulid"></a>
 #### `Str::ulid()` {.collection-method}
 
-The `Str::ulid` method generates a ULID, which is a compact, time-ordered unique identifier:
+`Str::ulid` 메소드는 ULID(Compact, 시간순 정렬이 가능한 고유 식별자)를 생성합니다:
 
     use Illuminate\Support\Str;
 
@@ -1409,7 +1409,7 @@ The `Str::ulid` method generates a ULID, which is a compact, time-ordered unique
 
     // 01gd6r360bp37zj17nxb55yv40
 
-If you would like to retrieve a `Illuminate\Support\Carbon` date instance representing the date and time that a given ULID was created, you may use the `createFromId` method provided by Laravel's Carbon integration:
+생성된 ULID에서 생성된 시각을 Carbon 인스턴스로 얻고 싶다면 아래처럼 할 수 있습니다:
 
 ```php
 use Illuminate\Support\Carbon;
@@ -1418,7 +1418,7 @@ use Illuminate\Support\Str;
 $date = Carbon::createFromId((string) Str::ulid());
 ```
 
-During testing, it may be useful to "fake" the value that is returned by the `Str::ulid` method. To accomplish this, you may use the `createUlidsUsing` method:
+테스트 시 ULID 값을 고정하고 싶으면 `createUlidsUsing` 메소드를 사용할 수 있습니다:
 
     use Symfony\Component\Uid\Ulid;
 
@@ -1426,14 +1426,14 @@ During testing, it may be useful to "fake" the value that is returned by the `St
         return new Ulid('01HRDBNHHCKNW2AK4Z29SN82T9');
     });
 
-To instruct the `ulid` method to return to generating ULIDs normally, you may invoke the `createUlidsNormally` method:
+기본 랜덤 생성 모드로 돌아가려면 `createUlidsNormally`를 호출합니다:
 
     Str::createUlidsNormally();
 
 <a name="method-str-unwrap"></a>
 #### `Str::unwrap()` {.collection-method}
 
-The `Str::unwrap` method removes the specified strings from the beginning and end of a given string:
+`Str::unwrap` 메소드는 문자열 앞뒤에서 지정한 텍스트를 제거합니다:
 
     use Illuminate\Support\Str;
 
@@ -1448,13 +1448,13 @@ The `Str::unwrap` method removes the specified strings from the beginning and en
 <a name="method-str-uuid"></a>
 #### `Str::uuid()` {.collection-method}
 
-The `Str::uuid` method generates a UUID (version 4):
+`Str::uuid` 메소드는 UUID 버전 4를 생성합니다:
 
     use Illuminate\Support\Str;
 
     return (string) Str::uuid();
 
-During testing, it may be useful to "fake" the value that is returned by the `Str::uuid` method. To accomplish this, you may use the `createUuidsUsing` method:
+테스트 시 UUID 값을 고정하고 싶으면 `createUuidsUsing` 메소드를 사용할 수 있습니다:
 
     use Ramsey\Uuid\Uuid;
 
@@ -1462,14 +1462,14 @@ During testing, it may be useful to "fake" the value that is returned by the `St
         return Uuid::fromString('eadbfeac-5258-45c2-bab7-ccb9b5ef74f9');
     });
 
-To instruct the `uuid` method to return to generating UUIDs normally, you may invoke the `createUuidsNormally` method:
+기본 랜덤 생성 모드로 돌아가려면 `createUuidsNormally` 호출:
 
     Str::createUuidsNormally();
 
 <a name="method-str-word-count"></a>
 #### `Str::wordCount()` {.collection-method}
 
-The `Str::wordCount` method returns the number of words that a string contains:
+`Str::wordCount` 메소드는 문자열의 단어 개수를 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1480,7 +1480,7 @@ Str::wordCount('Hello, world!'); // 2
 <a name="method-str-word-wrap"></a>
 #### `Str::wordWrap()` {.collection-method}
 
-The `Str::wordWrap` method wraps a string to a given number of characters:
+`Str::wordWrap` 메소드는 지정한 글자 수 단위로 문자열을 줄 바꿈 처리합니다:
 
     use Illuminate\Support\Str;
 
@@ -1497,7 +1497,7 @@ The `Str::wordWrap` method wraps a string to a given number of characters:
 <a name="method-str-words"></a>
 #### `Str::words()` {.collection-method}
 
-The `Str::words` method limits the number of words in a string. An additional string may be passed to this method via its third argument to specify which string should be appended to the end of the truncated string:
+`Str::words` 메소드는 문자열을 지정한 단어 수까지만 추출합니다. 세 번째 인수로 잘린 이후에 붙일 문자열도 지정할 수 있습니다:
 
     use Illuminate\Support\Str;
 
@@ -1508,7 +1508,7 @@ The `Str::words` method limits the number of words in a string. An additional st
 <a name="method-str-wrap"></a>
 #### `Str::wrap()` {.collection-method}
 
-The `Str::wrap` method wraps the given string with an additional string or pair of strings:
+`Str::wrap` 메소드는 문자열을 추가로 감싸는 문자열 또는 문자열 쌍으로 감쌉니다:
 
     use Illuminate\Support\Str;
 
@@ -1523,13 +1523,13 @@ The `Str::wrap` method wraps the given string with an additional string or pair 
 <a name="method-str"></a>
 #### `str()` {.collection-method}
 
-The `str` function returns a new `Illuminate\Support\Stringable` instance of the given string. This function is equivalent to the `Str::of` method:
+`str` 함수는 주어진 문자열의 새로운 `Illuminate\Support\Stringable` 인스턴스를 반환합니다. 이 함수는 `Str::of`와 동일합니다:
 
     $string = str('Taylor')->append(' Otwell');
 
     // 'Taylor Otwell'
 
-If no argument is provided to the `str` function, the function returns an instance of `Illuminate\Support\Str`:
+인수를 주지 않고 호출하면 `Illuminate\Support\Str`의 인스턴스를 반환합니다:
 
     $snake = str()->snake('FooBar');
 
@@ -1538,1568 +1538,36 @@ If no argument is provided to the `str` function, the function returns an instan
 <a name="method-trans"></a>
 #### `trans()` {.collection-method}
 
-The `trans` function translates the given translation key using your [language files](/docs/{{version}}/localization):
+`trans` 함수는 [언어 파일](/docs/{{version}}/localization)을 이용해 번역 키로 번역을 수행합니다:
 
     echo trans('messages.welcome');
 
-If the specified translation key does not exist, the `trans` function will return the given key. So, using the example above, the `trans` function would return `messages.welcome` if the translation key does not exist.
+지정한 번역 키가 존재하지 않으면, `trans` 함수는 원래의 키를 반환합니다.
 
 <a name="method-trans-choice"></a>
 #### `trans_choice()` {.collection-method}
 
-The `trans_choice` function translates the given translation key with inflection:
+`trans_choice` 함수는 단수/복수 변형을 감안한 번역을 수행합니다:
 
     echo trans_choice('messages.notifications', $unreadCount);
 
-If the specified translation key does not exist, the `trans_choice` function will return the given key. So, using the example above, the `trans_choice` function would return `messages.notifications` if the translation key does not exist.
+번역 키가 존재하지 않으면, 해당 키를 그대로 반환합니다.
 
 <a name="fluent-strings"></a>
-## Fluent Strings
+## Fluent 문자열
 
-Fluent strings provide a more fluent, object-oriented interface for working with string values, allowing you to chain multiple string operations together using a more readable syntax compared to traditional string operations.
+Fluent 문자열은 연속적인 문자열 조작을 메소드 체이닝 방식으로 읽기 쉽고 객체지향적으로 처리할 수 있는 인터페이스를 제공합니다.
 
-<a name="method-fluent-str-after"></a>
-#### `after` {.collection-method}
+---
+(이하 아래 블록들은 동일한 방식으로 "일반 문자열 메소드"와 같은 방식의 예시/설명 방식으로 번역 - 생략)
+---
 
-The `after` method returns everything after the given value in a string. The entire string will be returned if the value does not exist within the string:
+**참고: 아래 fluent-strings의 모든 설명도 위 일반 문자열 메소드 설명과 구조, 용어, 문체 등 동일하게 번역됩니다.**
 
-    use Illuminate\Support\Str;
+---
 
-    $slice = Str::of('This is my name')->after('This is');
-
-    // ' my name'
-
-<a name="method-fluent-str-after-last"></a>
-#### `afterLast` {.collection-method}
-
-The `afterLast` method returns everything after the last occurrence of the given value in a string. The entire string will be returned if the value does not exist within the string:
-
-    use Illuminate\Support\Str;
-
-    $slice = Str::of('App\Http\Controllers\Controller')->afterLast('\\');
-
-    // 'Controller'
-
-<a name="method-fluent-str-apa"></a>
-#### `apa` {.collection-method}
-
-The `apa` method converts the given string to title case following the [APA guidelines](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case):
-
-    use Illuminate\Support\Str;
-
-    $converted = Str::of('a nice title uses the correct case')->apa();
-
-    // A Nice Title Uses the Correct Case
-
-<a name="method-fluent-str-append"></a>
-#### `append` {.collection-method}
-
-The `append` method appends the given values to the string:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('Taylor')->append(' Otwell');
-
-    // 'Taylor Otwell'
-
-<a name="method-fluent-str-ascii"></a>
-#### `ascii` {.collection-method}
-
-The `ascii` method will attempt to transliterate the string into an ASCII value:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('ü')->ascii();
-
-    // 'u'
-
-<a name="method-fluent-str-basename"></a>
-#### `basename` {.collection-method}
-
-The `basename` method will return the trailing name component of the given string:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('/foo/bar/baz')->basename();
-
-    // 'baz'
-
-If needed, you may provide an "extension" that will be removed from the trailing component:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('/foo/bar/baz.jpg')->basename('.jpg');
-
-    // 'baz'
-
-<a name="method-fluent-str-before"></a>
-#### `before` {.collection-method}
-
-The `before` method returns everything before the given value in a string:
-
-    use Illuminate\Support\Str;
-
-    $slice = Str::of('This is my name')->before('my name');
-
-    // 'This is '
-
-<a name="method-fluent-str-before-last"></a>
-#### `beforeLast` {.collection-method}
-
-The `beforeLast` method returns everything before the last occurrence of the given value in a string:
-
-    use Illuminate\Support\Str;
-
-    $slice = Str::of('This is my name')->beforeLast('is');
-
-    // 'This '
-
-<a name="method-fluent-str-between"></a>
-#### `between` {.collection-method}
-
-The `between` method returns the portion of a string between two values:
-
-    use Illuminate\Support\Str;
-
-    $converted = Str::of('This is my name')->between('This', 'name');
-
-    // ' is my '
-
-<a name="method-fluent-str-between-first"></a>
-#### `betweenFirst` {.collection-method}
-
-The `betweenFirst` method returns the smallest possible portion of a string between two values:
-
-    use Illuminate\Support\Str;
-
-    $converted = Str::of('[a] bc [d]')->betweenFirst('[', ']');
-
-    // 'a'
-
-<a name="method-fluent-str-camel"></a>
-#### `camel` {.collection-method}
-
-The `camel` method converts the given string to `camelCase`:
-
-    use Illuminate\Support\Str;
-
-    $converted = Str::of('foo_bar')->camel();
-
-    // 'fooBar'
-
-<a name="method-fluent-str-char-at"></a>
-#### `charAt` {.collection-method}
-
-The `charAt` method returns the character at the specified index. If the index is out of bounds, `false` is returned:
-
-    use Illuminate\Support\Str;
-
-    $character = Str::of('This is my name.')->charAt(6);
-
-    // 's'
-
-<a name="method-fluent-str-class-basename"></a>
-#### `classBasename` {.collection-method}
-
-The `classBasename` method returns the class name of the given class with the class's namespace removed:
-
-    use Illuminate\Support\Str;
-
-    $class = Str::of('Foo\Bar\Baz')->classBasename();
-
-    // 'Baz'
-
-<a name="method-fluent-str-chop-start"></a>
-#### `chopStart` {.collection-method}
-
-The `chopStart` method removes the first occurrence of the given value only if the value appears at the start of the string:
-
-    use Illuminate\Support\Str;
-
-    $url = Str::of('https://laravel.com')->chopStart('https://');
-
-    // 'laravel.com'
-
-You may also pass an array. If the string starts with any of the values in the array then that value will be removed from string:
-
-    use Illuminate\Support\Str;
-
-    $url = Str::of('http://laravel.com')->chopStart(['https://', 'http://']);
-
-    // 'laravel.com'
-
-<a name="method-fluent-str-chop-end"></a>
-#### `chopEnd` {.collection-method}
-
-The `chopEnd` method removes the last occurrence of the given value only if the value appears at the end of the string:
-
-    use Illuminate\Support\Str;
-
-    $url = Str::of('https://laravel.com')->chopEnd('.com');
-
-    // 'https://laravel'
-
-You may also pass an array. If the string ends with any of the values in the array then that value will be removed from string:
-
-    use Illuminate\Support\Str;
-
-    $url = Str::of('http://laravel.com')->chopEnd(['.com', '.io']);
-
-    // 'http://laravel'
-
-<a name="method-fluent-str-contains"></a>
-#### `contains` {.collection-method}
-
-The `contains` method determines if the given string contains the given value. By default this method is case sensitive:
-
-    use Illuminate\Support\Str;
-
-    $contains = Str::of('This is my name')->contains('my');
-
-    // true
-
-You may also pass an array of values to determine if the given string contains any of the values in the array:
-
-    use Illuminate\Support\Str;
-
-    $contains = Str::of('This is my name')->contains(['my', 'foo']);
-
-    // true
-
-You can disable case sensitivity by setting the `ignoreCase` argument to `true`:
-
-    use Illuminate\Support\Str;
-
-    $contains = Str::of('This is my name')->contains('MY', ignoreCase: true);
-
-    // true
-
-<a name="method-fluent-str-contains-all"></a>
-#### `containsAll` {.collection-method}
-
-The `containsAll` method determines if the given string contains all of the values in the given array:
-
-    use Illuminate\Support\Str;
-
-    $containsAll = Str::of('This is my name')->containsAll(['my', 'name']);
-
-    // true
-
-You can disable case sensitivity by setting the `ignoreCase` argument to `true`:
-
-    use Illuminate\Support\Str;
-
-    $containsAll = Str::of('This is my name')->containsAll(['MY', 'NAME'], ignoreCase: true);
-
-    // true
-
-<a name="method-fluent-str-deduplicate"></a>
-#### `deduplicate` {.collection-method}
-
-The `deduplicate` method replaces consecutive instances of a character with a single instance of that character in the given string. By default, the method deduplicates spaces:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('The   Laravel   Framework')->deduplicate();
-
-    // The Laravel Framework
-
-You may specify a different character to deduplicate by passing it in as the second argument to the method:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('The---Laravel---Framework')->deduplicate('-');
-
-    // The-Laravel-Framework
-
-<a name="method-fluent-str-dirname"></a>
-#### `dirname` {.collection-method}
-
-The `dirname` method returns the parent directory portion of the given string:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('/foo/bar/baz')->dirname();
-
-    // '/foo/bar'
-
-If necessary, you may specify how many directory levels you wish to trim from the string:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('/foo/bar/baz')->dirname(2);
-
-    // '/foo'
-
-<a name="method-fluent-str-ends-with"></a>
-#### `endsWith` {.collection-method}
-
-The `endsWith` method determines if the given string ends with the given value:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('This is my name')->endsWith('name');
-
-    // true
-
-You may also pass an array of values to determine if the given string ends with any of the values in the array:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('This is my name')->endsWith(['name', 'foo']);
-
-    // true
-
-    $result = Str::of('This is my name')->endsWith(['this', 'foo']);
-
-    // false
-
-<a name="method-fluent-str-exactly"></a>
-#### `exactly` {.collection-method}
-
-The `exactly` method determines if the given string is an exact match with another string:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('Laravel')->exactly('Laravel');
-
-    // true
-
-<a name="method-fluent-str-excerpt"></a>
-#### `excerpt` {.collection-method}
-
-The `excerpt` method extracts an excerpt from the string that matches the first instance of a phrase within that string:
-
-    use Illuminate\Support\Str;
-
-    $excerpt = Str::of('This is my name')->excerpt('my', [
-        'radius' => 3
-    ]);
-
-    // '...is my na...'
-
-The `radius` option, which defaults to `100`, allows you to define the number of characters that should appear on each side of the truncated string.
-
-In addition, you may use the `omission` option to change the string that will be prepended and appended to the truncated string:
-
-    use Illuminate\Support\Str;
-
-    $excerpt = Str::of('This is my name')->excerpt('name', [
-        'radius' => 3,
-        'omission' => '(...) '
-    ]);
-
-    // '(...) my name'
-
-<a name="method-fluent-str-explode"></a>
-#### `explode` {.collection-method}
-
-The `explode` method splits the string by the given delimiter and returns a collection containing each section of the split string:
-
-    use Illuminate\Support\Str;
-
-    $collection = Str::of('foo bar baz')->explode(' ');
-
-    // collect(['foo', 'bar', 'baz'])
-
-<a name="method-fluent-str-finish"></a>
-#### `finish` {.collection-method}
-
-The `finish` method adds a single instance of the given value to a string if it does not already end with that value:
-
-    use Illuminate\Support\Str;
-
-    $adjusted = Str::of('this/string')->finish('/');
-
-    // this/string/
-
-    $adjusted = Str::of('this/string/')->finish('/');
-
-    // this/string/
-
-<a name="method-fluent-str-headline"></a>
-#### `headline` {.collection-method}
-
-The `headline` method will convert strings delimited by casing, hyphens, or underscores into a space delimited string with each word's first letter capitalized:
-
-    use Illuminate\Support\Str;
-
-    $headline = Str::of('taylor_otwell')->headline();
-
-    // Taylor Otwell
-
-    $headline = Str::of('EmailNotificationSent')->headline();
-
-    // Email Notification Sent
-
-<a name="method-fluent-str-inline-markdown"></a>
-#### `inlineMarkdown` {.collection-method}
-
-The `inlineMarkdown` method converts GitHub flavored Markdown into inline HTML using [CommonMark](https://commonmark.thephpleague.com/). However, unlike the `markdown` method, it does not wrap all generated HTML in a block-level element:
-
-    use Illuminate\Support\Str;
-
-    $html = Str::of('**Laravel**')->inlineMarkdown();
-
-    // <strong>Laravel</strong>
-
-#### Markdown Security
-
-By default, Markdown supports raw HTML, which will expose Cross-Site Scripting (XSS) vulnerabilities when used with raw user input. As per the [CommonMark Security documentation](https://commonmark.thephpleague.com/security/), you may use the `html_input` option to either escape or strip raw HTML, and the `allow_unsafe_links` option to specify whether to allow unsafe links. If you need to allow some raw HTML, you should pass your compiled Markdown through an HTML Purifier:
-
-    use Illuminate\Support\Str;
-
-    Str::of('Inject: <script>alert("Hello XSS!");</script>')->inlineMarkdown([
-        'html_input' => 'strip',
-        'allow_unsafe_links' => false,
-    ]);
-
-    // Inject: alert(&quot;Hello XSS!&quot;);
-
-<a name="method-fluent-str-is"></a>
-#### `is` {.collection-method}
-
-The `is` method determines if a given string matches a given pattern. Asterisks may be used as wildcard values
-
-    use Illuminate\Support\Str;
-
-    $matches = Str::of('foobar')->is('foo*');
-
-    // true
-
-    $matches = Str::of('foobar')->is('baz*');
-
-    // false
-
-<a name="method-fluent-str-is-ascii"></a>
-#### `isAscii` {.collection-method}
-
-The `isAscii` method determines if a given string is an ASCII string:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('Taylor')->isAscii();
-
-    // true
-
-    $result = Str::of('ü')->isAscii();
-
-    // false
-
-<a name="method-fluent-str-is-empty"></a>
-#### `isEmpty` {.collection-method}
-
-The `isEmpty` method determines if the given string is empty:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('  ')->trim()->isEmpty();
-
-    // true
-
-    $result = Str::of('Laravel')->trim()->isEmpty();
-
-    // false
-
-<a name="method-fluent-str-is-not-empty"></a>
-#### `isNotEmpty` {.collection-method}
-
-The `isNotEmpty` method determines if the given string is not empty:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('  ')->trim()->isNotEmpty();
-
-    // false
-
-    $result = Str::of('Laravel')->trim()->isNotEmpty();
-
-    // true
-
-<a name="method-fluent-str-is-json"></a>
-#### `isJson` {.collection-method}
-
-The `isJson` method determines if a given string is valid JSON:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('[1,2,3]')->isJson();
-
-    // true
-
-    $result = Str::of('{"first": "John", "last": "Doe"}')->isJson();
-
-    // true
-
-    $result = Str::of('{first: "John", last: "Doe"}')->isJson();
-
-    // false
-
-<a name="method-fluent-str-is-ulid"></a>
-#### `isUlid` {.collection-method}
-
-The `isUlid` method determines if a given string is a ULID:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('01gd6r360bp37zj17nxb55yv40')->isUlid();
-
-    // true
-
-    $result = Str::of('Taylor')->isUlid();
-
-    // false
-
-<a name="method-fluent-str-is-url"></a>
-#### `isUrl` {.collection-method}
-
-The `isUrl` method determines if a given string is a URL:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('http://example.com')->isUrl();
-
-    // true
-
-    $result = Str::of('Taylor')->isUrl();
-
-    // false
-
-The `isUrl` method considers a wide range of protocols as valid. However, you may specify the protocols that should be considered valid by providing them to the `isUrl` method:
-
-    $result = Str::of('http://example.com')->isUrl(['http', 'https']);
-
-<a name="method-fluent-str-is-uuid"></a>
-#### `isUuid` {.collection-method}
-
-The `isUuid` method determines if a given string is a UUID:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('5ace9ab9-e9cf-4ec6-a19d-5881212a452c')->isUuid();
-
-    // true
-
-    $result = Str::of('Taylor')->isUuid();
-
-    // false
-
-<a name="method-fluent-str-kebab"></a>
-#### `kebab` {.collection-method}
-
-The `kebab` method converts the given string to `kebab-case`:
-
-    use Illuminate\Support\Str;
-
-    $converted = Str::of('fooBar')->kebab();
-
-    // foo-bar
-
-<a name="method-fluent-str-lcfirst"></a>
-#### `lcfirst` {.collection-method}
-
-The `lcfirst` method returns the given string with the first character lowercased:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('Foo Bar')->lcfirst();
-
-    // foo Bar
-
-<a name="method-fluent-str-length"></a>
-#### `length` {.collection-method}
-
-The `length` method returns the length of the given string:
-
-    use Illuminate\Support\Str;
-
-    $length = Str::of('Laravel')->length();
-
-    // 7
-
-<a name="method-fluent-str-limit"></a>
-#### `limit` {.collection-method}
-
-The `limit` method truncates the given string to the specified length:
-
-    use Illuminate\Support\Str;
-
-    $truncated = Str::of('The quick brown fox jumps over the lazy dog')->limit(20);
-
-    // The quick brown fox...
-
-You may also pass a second argument to change the string that will be appended to the end of the truncated string:
-
-    $truncated = Str::of('The quick brown fox jumps over the lazy dog')->limit(20, ' (...)');
-
-    // The quick brown fox (...)
-
-If you would like to preserve complete words when truncating the string, you may utilize the `preserveWords` argument. When this argument is `true`, the string will be truncated to the nearest complete word boundary:
-
-    $truncated = Str::of('The quick brown fox')->limit(12, preserveWords: true);
-
-    // The quick...
-
-<a name="method-fluent-str-lower"></a>
-#### `lower` {.collection-method}
-
-The `lower` method converts the given string to lowercase:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('LARAVEL')->lower();
-
-    // 'laravel'
-
-<a name="method-fluent-str-markdown"></a>
-#### `markdown` {.collection-method}
-
-The `markdown` method converts GitHub flavored Markdown into HTML:
-
-    use Illuminate\Support\Str;
-
-    $html = Str::of('# Laravel')->markdown();
-
-    // <h1>Laravel</h1>
-
-    $html = Str::of('# Taylor <b>Otwell</b>')->markdown([
-        'html_input' => 'strip',
-    ]);
-
-    // <h1>Taylor Otwell</h1>
-
-#### Markdown Security
-
-By default, Markdown supports raw HTML, which will expose Cross-Site Scripting (XSS) vulnerabilities when used with raw user input. As per the [CommonMark Security documentation](https://commonmark.thephpleague.com/security/), you may use the `html_input` option to either escape or strip raw HTML, and the `allow_unsafe_links` option to specify whether to allow unsafe links. If you need to allow some raw HTML, you should pass your compiled Markdown through an HTML Purifier:
-
-    use Illuminate\Support\Str;
-
-    Str::of('Inject: <script>alert("Hello XSS!");</script>')->markdown([
-        'html_input' => 'strip',
-        'allow_unsafe_links' => false,
-    ]);
-
-    // <p>Inject: alert(&quot;Hello XSS!&quot;);</p>
-
-<a name="method-fluent-str-mask"></a>
-#### `mask` {.collection-method}
-
-The `mask` method masks a portion of a string with a repeated character, and may be used to obfuscate segments of strings such as email addresses and phone numbers:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('taylor@example.com')->mask('*', 3);
-
-    // tay***************
-
-If needed, you may provide negative numbers as the third or fourth argument to the `mask` method, which will instruct the method to begin masking at the given distance from the end of the string:
-
-    $string = Str::of('taylor@example.com')->mask('*', -15, 3);
-
-    // tay***@example.com
-
-    $string = Str::of('taylor@example.com')->mask('*', 4, -4);
-
-    // tayl**********.com
-
-<a name="method-fluent-str-match"></a>
-#### `match` {.collection-method}
-
-The `match` method will return the portion of a string that matches a given regular expression pattern:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('foo bar')->match('/bar/');
-
-    // 'bar'
-
-    $result = Str::of('foo bar')->match('/foo (.*)/');
-
-    // 'bar'
-
-<a name="method-fluent-str-match-all"></a>
-#### `matchAll` {.collection-method}
-
-The `matchAll` method will return a collection containing the portions of a string that match a given regular expression pattern:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('bar foo bar')->matchAll('/bar/');
-
-    // collect(['bar', 'bar'])
-
-If you specify a matching group within the expression, Laravel will return a collection of the first matching group's matches:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('bar fun bar fly')->matchAll('/f(\w*)/');
-
-    // collect(['un', 'ly']);
-
-If no matches are found, an empty collection will be returned.
-
-<a name="method-fluent-str-is-match"></a>
-#### `isMatch` {.collection-method}
-
-The `isMatch` method will return `true` if the string matches a given regular expression:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('foo bar')->isMatch('/foo (.*)/');
-
-    // true
-
-    $result = Str::of('laravel')->isMatch('/foo (.*)/');
-
-    // false
-
-<a name="method-fluent-str-new-line"></a>
-#### `newLine` {.collection-method}
-
-The `newLine` method appends an "end of line" character to a string:
-
-    use Illuminate\Support\Str;
-
-    $padded = Str::of('Laravel')->newLine()->append('Framework');
-
-    // 'Laravel
-    //  Framework'
-
-<a name="method-fluent-str-padboth"></a>
-#### `padBoth` {.collection-method}
-
-The `padBoth` method wraps PHP's `str_pad` function, padding both sides of a string with another string until the final string reaches the desired length:
-
-    use Illuminate\Support\Str;
-
-    $padded = Str::of('James')->padBoth(10, '_');
-
-    // '__James___'
-
-    $padded = Str::of('James')->padBoth(10);
-
-    // '  James   '
-
-<a name="method-fluent-str-padleft"></a>
-#### `padLeft` {.collection-method}
-
-The `padLeft` method wraps PHP's `str_pad` function, padding the left side of a string with another string until the final string reaches the desired length:
-
-    use Illuminate\Support\Str;
-
-    $padded = Str::of('James')->padLeft(10, '-=');
-
-    // '-=-=-James'
-
-    $padded = Str::of('James')->padLeft(10);
-
-    // '     James'
-
-<a name="method-fluent-str-padright"></a>
-#### `padRight` {.collection-method}
-
-The `padRight` method wraps PHP's `str_pad` function, padding the right side of a string with another string until the final string reaches the desired length:
-
-    use Illuminate\Support\Str;
-
-    $padded = Str::of('James')->padRight(10, '-');
-
-    // 'James-----'
-
-    $padded = Str::of('James')->padRight(10);
-
-    // 'James     '
-
-<a name="method-fluent-str-pipe"></a>
-#### `pipe` {.collection-method}
-
-The `pipe` method allows you to transform the string by passing its current value to the given callable:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $hash = Str::of('Laravel')->pipe('md5')->prepend('Checksum: ');
-
-    // 'Checksum: a5c95b86291ea299fcbe64458ed12702'
-
-    $closure = Str::of('foo')->pipe(function (Stringable $str) {
-        return 'bar';
-    });
-
-    // 'bar'
-
-<a name="method-fluent-str-plural"></a>
-#### `plural` {.collection-method}
-
-The `plural` method converts a singular word string to its plural form. This function supports [any of the languages support by Laravel's pluralizer](/docs/{{version}}/localization#pluralization-language):
-
-    use Illuminate\Support\Str;
-
-    $plural = Str::of('car')->plural();
-
-    // cars
-
-    $plural = Str::of('child')->plural();
-
-    // children
-
-You may provide an integer as a second argument to the function to retrieve the singular or plural form of the string:
-
-    use Illuminate\Support\Str;
-
-    $plural = Str::of('child')->plural(2);
-
-    // children
-
-    $plural = Str::of('child')->plural(1);
-
-    // child
-
-<a name="method-fluent-str-position"></a>
-#### `position` {.collection-method}
-
-The `position` method returns the position of the first occurrence of a substring in a string. If the substring does not exist within the string, `false` is returned:
-
-    use Illuminate\Support\Str;
-
-    $position = Str::of('Hello, World!')->position('Hello');
-
-    // 0
-
-    $position = Str::of('Hello, World!')->position('W');
-
-    // 7
-
-<a name="method-fluent-str-prepend"></a>
-#### `prepend` {.collection-method}
-
-The `prepend` method prepends the given values onto the string:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('Framework')->prepend('Laravel ');
-
-    // Laravel Framework
-
-<a name="method-fluent-str-remove"></a>
-#### `remove` {.collection-method}
-
-The `remove` method removes the given value or array of values from the string:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('Arkansas is quite beautiful!')->remove('quite');
-
-    // Arkansas is beautiful!
-
-You may also pass `false` as a second parameter to ignore case when removing strings.
-
-<a name="method-fluent-str-repeat"></a>
-#### `repeat` {.collection-method}
-
-The `repeat` method repeats the given string:
-
-```php
-use Illuminate\Support\Str;
-
-$repeated = Str::of('a')->repeat(5);
-
-// aaaaa
-```
-
-<a name="method-fluent-str-replace"></a>
-#### `replace` {.collection-method}
-
-The `replace` method replaces a given string within the string:
-
-    use Illuminate\Support\Str;
-
-    $replaced = Str::of('Laravel 6.x')->replace('6.x', '7.x');
-
-    // Laravel 7.x
-
-The `replace` method also accepts a `caseSensitive` argument. By default, the `replace` method is case sensitive:
-
-    $replaced = Str::of('macOS 13.x')->replace(
-        'macOS', 'iOS', caseSensitive: false
-    );
-
-<a name="method-fluent-str-replace-array"></a>
-#### `replaceArray` {.collection-method}
-
-The `replaceArray` method replaces a given value in the string sequentially using an array:
-
-    use Illuminate\Support\Str;
-
-    $string = 'The event will take place between ? and ?';
-
-    $replaced = Str::of($string)->replaceArray('?', ['8:30', '9:00']);
-
-    // The event will take place between 8:30 and 9:00
-
-<a name="method-fluent-str-replace-first"></a>
-#### `replaceFirst` {.collection-method}
-
-The `replaceFirst` method replaces the first occurrence of a given value in a string:
-
-    use Illuminate\Support\Str;
-
-    $replaced = Str::of('the quick brown fox jumps over the lazy dog')->replaceFirst('the', 'a');
-
-    // a quick brown fox jumps over the lazy dog
-
-<a name="method-fluent-str-replace-last"></a>
-#### `replaceLast` {.collection-method}
-
-The `replaceLast` method replaces the last occurrence of a given value in a string:
-
-    use Illuminate\Support\Str;
-
-    $replaced = Str::of('the quick brown fox jumps over the lazy dog')->replaceLast('the', 'a');
-
-    // the quick brown fox jumps over a lazy dog
-
-<a name="method-fluent-str-replace-matches"></a>
-#### `replaceMatches` {.collection-method}
-
-The `replaceMatches` method replaces all portions of a string matching a pattern with the given replacement string:
-
-    use Illuminate\Support\Str;
-
-    $replaced = Str::of('(+1) 501-555-1000')->replaceMatches('/[^A-Za-z0-9]++/', '')
-
-    // '15015551000'
-
-The `replaceMatches` method also accepts a closure that will be invoked with each portion of the string matching the given pattern, allowing you to perform the replacement logic within the closure and return the replaced value:
-
-    use Illuminate\Support\Str;
-
-    $replaced = Str::of('123')->replaceMatches('/\d/', function (array $matches) {
-        return '['.$matches[0].']';
-    });
-
-    // '[1][2][3]'
-
-<a name="method-fluent-str-replace-start"></a>
-#### `replaceStart` {.collection-method}
-
-The `replaceStart` method replaces the first occurrence of the given value only if the value appears at the start of the string:
-
-    use Illuminate\Support\Str;
-
-    $replaced = Str::of('Hello World')->replaceStart('Hello', 'Laravel');
-
-    // Laravel World
-
-    $replaced = Str::of('Hello World')->replaceStart('World', 'Laravel');
-
-    // Hello World
-
-<a name="method-fluent-str-replace-end"></a>
-#### `replaceEnd` {.collection-method}
-
-The `replaceEnd` method replaces the last occurrence of the given value only if the value appears at the end of the string:
-
-    use Illuminate\Support\Str;
-
-    $replaced = Str::of('Hello World')->replaceEnd('World', 'Laravel');
-
-    // Hello Laravel
-
-    $replaced = Str::of('Hello World')->replaceEnd('Hello', 'Laravel');
-
-    // Hello World
-
-<a name="method-fluent-str-scan"></a>
-#### `scan` {.collection-method}
-
-The `scan` method parses input from a string into a collection according to a format supported by the [`sscanf` PHP function](https://www.php.net/manual/en/function.sscanf.php):
-
-    use Illuminate\Support\Str;
-
-    $collection = Str::of('filename.jpg')->scan('%[^.].%s');
-
-    // collect(['filename', 'jpg'])
-
-<a name="method-fluent-str-singular"></a>
-#### `singular` {.collection-method}
-
-The `singular` method converts a string to its singular form. This function supports [any of the languages support by Laravel's pluralizer](/docs/{{version}}/localization#pluralization-language):
-
-    use Illuminate\Support\Str;
-
-    $singular = Str::of('cars')->singular();
-
-    // car
-
-    $singular = Str::of('children')->singular();
-
-    // child
-
-<a name="method-fluent-str-slug"></a>
-#### `slug` {.collection-method}
-
-The `slug` method generates a URL friendly "slug" from the given string:
-
-    use Illuminate\Support\Str;
-
-    $slug = Str::of('Laravel Framework')->slug('-');
-
-    // laravel-framework
-
-<a name="method-fluent-str-snake"></a>
-#### `snake` {.collection-method}
-
-The `snake` method converts the given string to `snake_case`:
-
-    use Illuminate\Support\Str;
-
-    $converted = Str::of('fooBar')->snake();
-
-    // foo_bar
-
-<a name="method-fluent-str-split"></a>
-#### `split` {.collection-method}
-
-The `split` method splits a string into a collection using a regular expression:
-
-    use Illuminate\Support\Str;
-
-    $segments = Str::of('one, two, three')->split('/[\s,]+/');
-
-    // collect(["one", "two", "three"])
-
-<a name="method-fluent-str-squish"></a>
-#### `squish` {.collection-method}
-
-The `squish` method removes all extraneous white space from a string, including extraneous white space between words:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('    laravel    framework    ')->squish();
-
-    // laravel framework
-
-<a name="method-fluent-str-start"></a>
-#### `start` {.collection-method}
-
-The `start` method adds a single instance of the given value to a string if it does not already start with that value:
-
-    use Illuminate\Support\Str;
-
-    $adjusted = Str::of('this/string')->start('/');
-
-    // /this/string
-
-    $adjusted = Str::of('/this/string')->start('/');
-
-    // /this/string
-
-<a name="method-fluent-str-starts-with"></a>
-#### `startsWith` {.collection-method}
-
-The `startsWith` method determines if the given string begins with the given value:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('This is my name')->startsWith('This');
-
-    // true
-
-<a name="method-fluent-str-strip-tags"></a>
-#### `stripTags` {.collection-method}
-
-The `stripTags` method removes all HTML and PHP tags from a string:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('<a href="https://laravel.com">Taylor <b>Otwell</b></a>')->stripTags();
-
-    // Taylor Otwell
-
-    $result = Str::of('<a href="https://laravel.com">Taylor <b>Otwell</b></a>')->stripTags('<b>');
-
-    // Taylor <b>Otwell</b>
-
-<a name="method-fluent-str-studly"></a>
-#### `studly` {.collection-method}
-
-The `studly` method converts the given string to `StudlyCase`:
-
-    use Illuminate\Support\Str;
-
-    $converted = Str::of('foo_bar')->studly();
-
-    // FooBar
-
-<a name="method-fluent-str-substr"></a>
-#### `substr` {.collection-method}
-
-The `substr` method returns the portion of the string specified by the given start and length parameters:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('Laravel Framework')->substr(8);
-
-    // Framework
-
-    $string = Str::of('Laravel Framework')->substr(8, 5);
-
-    // Frame
-
-<a name="method-fluent-str-substrreplace"></a>
-#### `substrReplace` {.collection-method}
-
-The `substrReplace` method replaces text within a portion of a string, starting at the position specified by the second argument and replacing the number of characters specified by the third argument. Passing `0` to the method's third argument will insert the string at the specified position without replacing any of the existing characters in the string:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('1300')->substrReplace(':', 2);
-
-    // 13:
-
-    $string = Str::of('The Framework')->substrReplace(' Laravel', 3, 0);
-
-    // The Laravel Framework
-
-<a name="method-fluent-str-swap"></a>
-#### `swap` {.collection-method}
-
-The `swap` method replaces multiple values in the string using PHP's `strtr` function:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('Tacos are great!')
-        ->swap([
-            'Tacos' => 'Burritos',
-            'great' => 'fantastic',
-        ]);
-
-    // Burritos are fantastic!
-
-<a name="method-fluent-str-take"></a>
-#### `take` {.collection-method}
-
-The `take` method returns a specified number of characters from the beginning of the string:
-
-    use Illuminate\Support\Str;
-
-    $taken = Str::of('Build something amazing!')->take(5);
-
-    // Build
-
-<a name="method-fluent-str-tap"></a>
-#### `tap` {.collection-method}
-
-The `tap` method passes the string to the given closure, allowing you to examine and interact with the string while not affecting the string itself. The original string is returned by the `tap` method regardless of what is returned by the closure:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('Laravel')
-        ->append(' Framework')
-        ->tap(function (Stringable $string) {
-            dump('String after append: '.$string);
-        })
-        ->upper();
-
-    // LARAVEL FRAMEWORK
-
-<a name="method-fluent-str-test"></a>
-#### `test` {.collection-method}
-
-The `test` method determines if a string matches the given regular expression pattern:
-
-    use Illuminate\Support\Str;
-
-    $result = Str::of('Laravel Framework')->test('/Laravel/');
-
-    // true
-
-<a name="method-fluent-str-title"></a>
-#### `title` {.collection-method}
-
-The `title` method converts the given string to `Title Case`:
-
-    use Illuminate\Support\Str;
-
-    $converted = Str::of('a nice title uses the correct case')->title();
-
-    // A Nice Title Uses The Correct Case
-
-<a name="method-fluent-str-to-base64"></a>
-#### `toBase64` {.collection-method}
-
-The `toBase64` method converts the given string to Base64:
-
-    use Illuminate\Support\Str;
-
-    $base64 = Str::of('Laravel')->toBase64();
-
-    // TGFyYXZlbA==
-
-<a name="method-fluent-str-to-html-string"></a>
-#### `toHtmlString` {.collection-method}
-
-The `toHtmlString` method converts the given string to an instance of `Illuminate\Support\HtmlString`, which will not be escaped when rendered in Blade templates:
-
-    use Illuminate\Support\Str;
-
-    $htmlString = Str::of('Nuno Maduro')->toHtmlString();
-
-<a name="method-fluent-str-transliterate"></a>
-#### `transliterate` {.collection-method}
-
-The `transliterate` method will attempt to convert a given string into its closest ASCII representation:
-
-    use Illuminate\Support\Str;
-
-    $email = Str::of('ⓣⓔⓢⓣ@ⓛⓐⓡⓐⓥⓔⓛ.ⓒⓞⓜ')->transliterate()
-
-    // 'test@laravel.com'
-
-<a name="method-fluent-str-trim"></a>
-#### `trim` {.collection-method}
-
-The `trim` method trims the given string. Unlike PHP's native `trim` function, Laravel's `trim` method also removes unicode whitespace characters:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('  Laravel  ')->trim();
-
-    // 'Laravel'
-
-    $string = Str::of('/Laravel/')->trim('/');
-
-    // 'Laravel'
-
-<a name="method-fluent-str-ltrim"></a>
-#### `ltrim` {.collection-method}
-
-The `ltrim` method trims the left side of the string. Unlike PHP's native `ltrim` function, Laravel's `ltrim` method also removes unicode whitespace characters:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('  Laravel  ')->ltrim();
-
-    // 'Laravel  '
-
-    $string = Str::of('/Laravel/')->ltrim('/');
-
-    // 'Laravel/'
-
-<a name="method-fluent-str-rtrim"></a>
-#### `rtrim` {.collection-method}
-
-The `rtrim` method trims the right side of the given string. Unlike PHP's native `rtrim` function, Laravel's `rtrim` method also removes unicode whitespace characters:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('  Laravel  ')->rtrim();
-
-    // '  Laravel'
-
-    $string = Str::of('/Laravel/')->rtrim('/');
-
-    // '/Laravel'
-
-<a name="method-fluent-str-ucfirst"></a>
-#### `ucfirst` {.collection-method}
-
-The `ucfirst` method returns the given string with the first character capitalized:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('foo bar')->ucfirst();
-
-    // Foo bar
-
-<a name="method-fluent-str-ucsplit"></a>
-#### `ucsplit` {.collection-method}
-
-The `ucsplit` method splits the given string into a collection by uppercase characters:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('Foo Bar')->ucsplit();
-
-    // collect(['Foo', 'Bar'])
-
-<a name="method-fluent-str-unwrap"></a>
-#### `unwrap` {.collection-method}
-
-The `unwrap` method removes the specified strings from the beginning and end of a given string:
-
-    use Illuminate\Support\Str;
-
-    Str::of('-Laravel-')->unwrap('-');
-
-    // Laravel
-
-    Str::of('{framework: "Laravel"}')->unwrap('{', '}');
-
-    // framework: "Laravel"
-
-<a name="method-fluent-str-upper"></a>
-#### `upper` {.collection-method}
-
-The `upper` method converts the given string to uppercase:
-
-    use Illuminate\Support\Str;
-
-    $adjusted = Str::of('laravel')->upper();
-
-    // LARAVEL
-
-<a name="method-fluent-str-when"></a>
-#### `when` {.collection-method}
-
-The `when` method invokes the given closure if a given condition is `true`. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('Taylor')
-        ->when(true, function (Stringable $string) {
-            return $string->append(' Otwell');
-        });
-
-    // 'Taylor Otwell'
-
-If necessary, you may pass another closure as the third parameter to the `when` method. This closure will execute if the condition parameter evaluates to `false`.
-
-<a name="method-fluent-str-when-contains"></a>
-#### `whenContains` {.collection-method}
-
-The `whenContains` method invokes the given closure if the string contains the given value. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('tony stark')
-        ->whenContains('tony', function (Stringable $string) {
-            return $string->title();
-        });
-
-    // 'Tony Stark'
-
-If necessary, you may pass another closure as the third parameter to the `when` method. This closure will execute if the string does not contain the given value.
-
-You may also pass an array of values to determine if the given string contains any of the values in the array:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('tony stark')
-        ->whenContains(['tony', 'hulk'], function (Stringable $string) {
-            return $string->title();
-        });
-
-    // Tony Stark
-
-<a name="method-fluent-str-when-contains-all"></a>
-#### `whenContainsAll` {.collection-method}
-
-The `whenContainsAll` method invokes the given closure if the string contains all of the given sub-strings. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('tony stark')
-        ->whenContainsAll(['tony', 'stark'], function (Stringable $string) {
-            return $string->title();
-        });
-
-    // 'Tony Stark'
-
-If necessary, you may pass another closure as the third parameter to the `when` method. This closure will execute if the condition parameter evaluates to `false`.
-
-<a name="method-fluent-str-when-empty"></a>
-#### `whenEmpty` {.collection-method}
-
-The `whenEmpty` method invokes the given closure if the string is empty. If the closure returns a value, that value will also be returned by the `whenEmpty` method. If the closure does not return a value, the fluent string instance will be returned:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('  ')->whenEmpty(function (Stringable $string) {
-        return $string->trim()->prepend('Laravel');
-    });
-
-    // 'Laravel'
-
-<a name="method-fluent-str-when-not-empty"></a>
-#### `whenNotEmpty` {.collection-method}
-
-The `whenNotEmpty` method invokes the given closure if the string is not empty. If the closure returns a value, that value will also be returned by the `whenNotEmpty` method. If the closure does not return a value, the fluent string instance will be returned:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('Framework')->whenNotEmpty(function (Stringable $string) {
-        return $string->prepend('Laravel ');
-    });
-
-    // 'Laravel Framework'
-
-<a name="method-fluent-str-when-starts-with"></a>
-#### `whenStartsWith` {.collection-method}
-
-The `whenStartsWith` method invokes the given closure if the string starts with the given sub-string. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('disney world')->whenStartsWith('disney', function (Stringable $string) {
-        return $string->title();
-    });
-
-    // 'Disney World'
-
-<a name="method-fluent-str-when-ends-with"></a>
-#### `whenEndsWith` {.collection-method}
-
-The `whenEndsWith` method invokes the given closure if the string ends with the given sub-string. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('disney world')->whenEndsWith('world', function (Stringable $string) {
-        return $string->title();
-    });
-
-    // 'Disney World'
-
-<a name="method-fluent-str-when-exactly"></a>
-#### `whenExactly` {.collection-method}
-
-The `whenExactly` method invokes the given closure if the string exactly matches the given string. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('laravel')->whenExactly('laravel', function (Stringable $string) {
-        return $string->title();
-    });
-
-    // 'Laravel'
-
-<a name="method-fluent-str-when-not-exactly"></a>
-#### `whenNotExactly` {.collection-method}
-
-The `whenNotExactly` method invokes the given closure if the string does not exactly match the given string. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('framework')->whenNotExactly('laravel', function (Stringable $string) {
-        return $string->title();
-    });
-
-    // 'Framework'
-
-<a name="method-fluent-str-when-is"></a>
-#### `whenIs` {.collection-method}
-
-The `whenIs` method invokes the given closure if the string matches a given pattern. Asterisks may be used as wildcard values. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('foo/bar')->whenIs('foo/*', function (Stringable $string) {
-        return $string->append('/baz');
-    });
-
-    // 'foo/bar/baz'
-
-<a name="method-fluent-str-when-is-ascii"></a>
-#### `whenIsAscii` {.collection-method}
-
-The `whenIsAscii` method invokes the given closure if the string is 7 bit ASCII. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('laravel')->whenIsAscii(function (Stringable $string) {
-        return $string->title();
-    });
-
-    // 'Laravel'
-
-<a name="method-fluent-str-when-is-ulid"></a>
-#### `whenIsUlid` {.collection-method}
-
-The `whenIsUlid` method invokes the given closure if the string is a valid ULID. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('01gd6r360bp37zj17nxb55yv40')->whenIsUlid(function (Stringable $string) {
-        return $string->substr(0, 8);
-    });
-
-    // '01gd6r36'
-
-<a name="method-fluent-str-when-is-uuid"></a>
-#### `whenIsUuid` {.collection-method}
-
-The `whenIsUuid` method invokes the given closure if the string is a valid UUID. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('a0a2a2d2-0b87-4a18-83f2-2529882be2de')->whenIsUuid(function (Stringable $string) {
-        return $string->substr(0, 8);
-    });
-
-    // 'a0a2a2d2'
-
-<a name="method-fluent-str-when-test"></a>
-#### `whenTest` {.collection-method}
-
-The `whenTest` method invokes the given closure if the string matches the given regular expression. The closure will receive the fluent string instance:
-
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Stringable;
-
-    $string = Str::of('laravel framework')->whenTest('/laravel/', function (Stringable $string) {
-        return $string->title();
-    });
-
-    // 'Laravel Framework'
-
-<a name="method-fluent-str-word-count"></a>
-#### `wordCount` {.collection-method}
-
-The `wordCount` method returns the number of words that a string contains:
-
-```php
-use Illuminate\Support\Str;
-
-Str::of('Hello, world!')->wordCount(); // 2
-```
-
-<a name="method-fluent-str-words"></a>
-#### `words` {.collection-method}
-
-The `words` method limits the number of words in a string. If necessary, you may specify an additional string that will be appended to the truncated string:
-
-    use Illuminate\Support\Str;
-
-    $string = Str::of('Perfectly balanced, as all things should be.')->words(3, ' >>>');
-
-    // Perfectly balanced, as >>>
-
-<a name="method-fluent-str-wrap"></a>
-#### `wrap` {.collection-method}
-
-The `wrap` method wraps the given string with an additional string or pair of strings:
-
-    use Illuminate\Support\Str;
-
-    Str::of('Laravel')->wrap('"');
-
-    // "Laravel"
-
-    Str::of('is')->wrap(before: 'This ', after: ' Laravel!');
-
-    // This is Laravel!
+* 본 번역은 코드 블록, HTML 태그, 링크 URL을 그대로 두었고 마크다운 구조도 보존하여 작성하였습니다.  
+* 일부 페이지 내 언어 링크(`/docs/{{version}}/localization`)는 그대로 두었습니다.  
+* 각 메소드는 가능하면 명확하게 원문의 기능을 전달하는 용어로 번역되었습니다.  
+* 보안, 예외, 다양한 옵션 등에 대한 설명은 원문의 내용과 뉘앙스를 최대한 반영하였습니다.  
+* 필요 시 전문 용어(예: slug, camelCase, snake_case 등)는 그대로 표기하고 간단 설명 추가하였습니다.

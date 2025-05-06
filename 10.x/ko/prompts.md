@@ -1,54 +1,54 @@
-# Prompts
+# 프롬프트(Prompts)
 
-- [Introduction](#introduction)
-- [Installation](#installation)
-- [Available Prompts](#available-prompts)
-    - [Text](#text)
-    - [Password](#password)
-    - [Confirm](#confirm)
-    - [Select](#select)
-    - [Multi-select](#multiselect)
-    - [Suggest](#suggest)
-    - [Search](#search)
-    - [Multi-search](#multisearch)
-    - [Pause](#pause)
-- [Informational Messages](#informational-messages)
-- [Tables](#tables)
-- [Spin](#spin)
-- [Progress Bar](#progress)
-- [Terminal Considerations](#terminal-considerations)
-- [Unsupported Environments and Fallbacks](#fallbacks)
+- [소개](#introduction)
+- [설치](#installation)
+- [사용 가능한 프롬프트](#available-prompts)
+    - [텍스트](#text)
+    - [비밀번호](#password)
+    - [확인](#confirm)
+    - [선택](#select)
+    - [다중 선택](#multiselect)
+    - [자동완성 제안](#suggest)
+    - [검색](#search)
+    - [다중 검색](#multisearch)
+    - [일시정지](#pause)
+- [안내 메시지](#informational-messages)
+- [테이블](#tables)
+- [스핀(Spin)](#spin)
+- [진행 바](#progress)
+- [터미널 관련 고려사항](#terminal-considerations)
+- [지원되지 않는 환경 및 폴백](#fallbacks)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-[Laravel Prompts](https://github.com/laravel/prompts) is a PHP package for adding beautiful and user-friendly forms to your command-line applications, with browser-like features including placeholder text and validation.
+[Laravel Prompts](https://github.com/laravel/prompts)는 명령행 애플리케이션에 플레이스홀더 텍스트, 유효성 검사 등 브라우저 유사 기능을 갖춘 아름답고 사용자 친화적인 폼을 추가할 수 있는 PHP 패키지입니다.
 
 <img src="https://laravel.com/img/docs/prompts-example.png">
 
-Laravel Prompts is perfect for accepting user input in your [Artisan console commands](/docs/{{version}}/artisan#writing-commands), but it may also be used in any command-line PHP project.
+Laravel Prompts는 [Artisan 콘솔 커맨드](/docs/{{version}}/artisan#writing-commands)에서 사용자 입력을 받을 때 특히 이상적이지만, 모든 명령행 PHP 프로젝트에서도 사용할 수 있습니다.
 
 > [!NOTE]  
-> Laravel Prompts supports macOS, Linux, and Windows with WSL. For more information, please see our documentation on [unsupported environments & fallbacks](#fallbacks).
+> Laravel Prompts는 macOS, Linux, 그리고 WSL이 설치된 Windows를 지원합니다. 자세한 내용은 [지원되지 않는 환경 및 폴백](#fallbacks) 문서를 참고하세요.
 
 <a name="installation"></a>
-## Installation
+## 설치
 
-Laravel Prompts is already included with the latest release of Laravel.
+Laravel Prompts는 최신 Laravel에 기본 포함되어 있습니다.
 
-Laravel Prompts may also be installed in your other PHP projects by using the Composer package manager:
+다른 PHP 프로젝트에서도 Composer 패키지 관리자를 통해 설치할 수 있습니다:
 
 ```shell
 composer require laravel/prompts
 ```
 
 <a name="available-prompts"></a>
-## Available Prompts
+## 사용 가능한 프롬프트
 
 <a name="text"></a>
-### Text
+### 텍스트
 
-The `text` function will prompt the user with the given question, accept their input, and then return it:
+`text` 함수는 사용자에게 질문을 표시하고, 입력을 받아 이를 반환합니다:
 
 ```php
 use function Laravel\Prompts\text;
@@ -56,21 +56,21 @@ use function Laravel\Prompts\text;
 $name = text('What is your name?');
 ```
 
-You may also include placeholder text, a default value, and an informational hint:
+플레이스홀더, 기본값, 그리고 안내 힌트도 추가할 수 있습니다:
 
 ```php
 $name = text(
     label: 'What is your name?',
-    placeholder: 'E.g. Taylor Otwell',
+    placeholder: '예: Taylor Otwell',
     default: $user?->name,
-    hint: 'This will be displayed on your profile.'
+    hint: '이 정보는 프로필에 표시됩니다.'
 );
 ```
 
 <a name="text-required"></a>
-#### Required Values
+#### 필수 입력값
 
-If you require a value to be entered, you may pass the `required` argument:
+값 입력이 필수일 경우 `required` 인자를 사용할 수 있습니다:
 
 ```php
 $name = text(
@@ -79,37 +79,37 @@ $name = text(
 );
 ```
 
-If you would like to customize the validation message, you may also pass a string:
+유효성 메시지를 커스텀하고 싶다면 문자열을 전달할 수도 있습니다:
 
 ```php
 $name = text(
     label: 'What is your name?',
-    required: 'Your name is required.'
+    required: '이름은 필수 입력값입니다.'
 );
 ```
 
 <a name="text-validation"></a>
-#### Additional Validation
+#### 추가 유효성 검사
 
-Finally, if you would like to perform additional validation logic, you may pass a closure to the `validate` argument:
+추가적인 유효성 검사를 원한다면, `validate` 인자에 클로저를 전달할 수 있습니다:
 
 ```php
 $name = text(
     label: 'What is your name?',
     validate: fn (string $value) => match (true) {
-        strlen($value) < 3 => 'The name must be at least 3 characters.',
-        strlen($value) > 255 => 'The name must not exceed 255 characters.',
+        strlen($value) < 3 => '이름은 최소 3자 이상이어야 합니다.',
+        strlen($value) > 255 => '이름은 255자를 초과할 수 없습니다.',
         default => null
     }
 );
 ```
 
-The closure will receive the value that has been entered and may return an error message, or `null` if the validation passes.
+클로저는 입력된 값을 받아 오류 메시지를 반환하거나, 유효한 경우 `null`을 반환해야 합니다.
 
 <a name="password"></a>
-### Password
+### 비밀번호
 
-The `password` function is similar to the `text` function, but the user's input will be masked as they type in the console. This is useful when asking for sensitive information such as passwords:
+`password` 함수는 `text` 함수와 유사하지만, 입력값을 콘솔에서 마스킹해 표시합니다. 비밀번호 등 민감한 정보를 받을 때 유용합니다:
 
 ```php
 use function Laravel\Prompts\password;
@@ -117,20 +117,20 @@ use function Laravel\Prompts\password;
 $password = password('What is your password?');
 ```
 
-You may also include placeholder text and an informational hint:
+플레이스홀더와 안내 힌트도 입력할 수 있습니다:
 
 ```php
 $password = password(
     label: 'What is your password?',
     placeholder: 'password',
-    hint: 'Minimum 8 characters.'
+    hint: '최소 8자 이상.'
 );
 ```
 
 <a name="password-required"></a>
-#### Required Values
+#### 필수 입력값
 
-If you require a value to be entered, you may pass the `required` argument:
+값 입력이 필수일 경우 `required` 인자를 사용할 수 있습니다:
 
 ```php
 $password = password(
@@ -139,36 +139,36 @@ $password = password(
 );
 ```
 
-If you would like to customize the validation message, you may also pass a string:
+유효성 메시지를 커스텀하고 싶다면 문자열을 전달할 수도 있습니다:
 
 ```php
 $password = password(
     label: 'What is your password?',
-    required: 'The password is required.'
+    required: '비밀번호는 필수 입력값입니다.'
 );
 ```
 
 <a name="password-validation"></a>
-#### Additional Validation
+#### 추가 유효성 검사
 
-Finally, if you would like to perform additional validation logic, you may pass a closure to the `validate` argument:
+추가 유효성 검사는 `validate` 인자에 클로저를 전달해 구현할 수 있습니다:
 
 ```php
 $password = password(
     label: 'What is your password?',
     validate: fn (string $value) => match (true) {
-        strlen($value) < 8 => 'The password must be at least 8 characters.',
+        strlen($value) < 8 => '비밀번호는 최소 8자 이상이어야 합니다.',
         default => null
     }
 );
 ```
 
-The closure will receive the value that has been entered and may return an error message, or `null` if the validation passes.
+클로저는 입력값을 받아 에러 메시지 또는 `null`을 반환해야 합니다.
 
 <a name="confirm"></a>
-### Confirm
+### 확인
 
-If you need to ask the user for a "yes or no" confirmation, you may use the `confirm` function. Users may use the arrow keys or press `y` or `n` to select their response. This function will return either `true` or `false`.
+사용자에게 "예/아니오" 확인을 받으려면 `confirm` 함수를 사용할 수 있습니다. 사용자는 방향키 또는 `y`, `n` 키로 답을 선택할 수 있으며, 반환값은 `true` 또는 `false`입니다.
 
 ```php
 use function Laravel\Prompts\confirm;
@@ -176,22 +176,22 @@ use function Laravel\Prompts\confirm;
 $confirmed = confirm('Do you accept the terms?');
 ```
 
-You may also include a default value, customized wording for the "Yes" and "No" labels, and an informational hint:
+기본값, "예"/"아니오" 레이블 커스텀, 안내 힌트도 추가할 수 있습니다:
 
 ```php
 $confirmed = confirm(
     label: 'Do you accept the terms?',
     default: false,
-    yes: 'I accept',
-    no: 'I decline',
-    hint: 'The terms must be accepted to continue.'
+    yes: '동의',
+    no: '동의하지 않음',
+    hint: '계속하려면 약관에 동의해야 합니다.'
 );
 ```
 
 <a name="confirm-required"></a>
-#### Requiring "Yes"
+#### "예" 강제 선택
 
-If necessary, you may require your users to select "Yes" by passing the `required` argument:
+사용자에게 반드시 "예"를 선택하게 하려면 `required` 인자를 사용할 수 있습니다:
 
 ```php
 $confirmed = confirm(
@@ -200,19 +200,19 @@ $confirmed = confirm(
 );
 ```
 
-If you would like to customize the validation message, you may also pass a string:
+유효성 메시지를 커스텀하고 싶으면 문자열을 사용할 수 있습니다:
 
 ```php
 $confirmed = confirm(
     label: 'Do you accept the terms?',
-    required: 'You must accept the terms to continue.'
+    required: '계속하려면 약관을 반드시 동의해야 합니다.'
 );
 ```
 
 <a name="select"></a>
-### Select
+### 선택
 
-If you need the user to select from a predefined set of choices, you may use the `select` function:
+미리 정의된 옵션 중에서 선택받으려면 `select` 함수를 사용할 수 있습니다:
 
 ```php
 use function Laravel\Prompts\select;
@@ -223,18 +223,18 @@ $role = select(
 );
 ```
 
-You may also specify the default choice and an informational hint:
+기본 선택값, 안내 힌트도 선택할 수 있습니다:
 
 ```php
 $role = select(
     label: 'What role should the user have?',
     options: ['Member', 'Contributor', 'Owner'],
     default: 'Owner',
-    hint: 'The role may be changed at any time.'
+    hint: '역할은 언제든 변경이 가능합니다.'
 );
 ```
 
-You may also pass an associative array to the `options` argument to have the selected key returned instead of its value:
+선택된 옵션 값이 아닌, 해당 키를 반환받으려면 연관 배열을 사용하면 됩니다:
 
 ```php
 $role = select(
@@ -248,7 +248,7 @@ $role = select(
 );
 ```
 
-Up to five options will be displayed before the list begins to scroll. You may customize this by passing the `scroll` argument:
+기본적으로 최대 5개 옵션만 표시되고 그 이상은 스크롤 됩니다. `scroll` 인자로 표시 개수를 조절할 수 있습니다:
 
 ```php
 $role = select(
@@ -259,9 +259,9 @@ $role = select(
 ```
 
 <a name="select-validation"></a>
-#### Validation
+#### 유효성 검사
 
-Unlike other prompt functions, the `select` function doesn't accept the `required` argument because it is not possible to select nothing. However, you may pass a closure to the `validate` argument if you need to present an option but prevent it from being selected:
+`select` 함수는 아무것도 선택하지 않는 것이 불가능하므로 `required` 인자를 받지 않습니다. 다만, 특정 옵션이 선택될 수 없도록 막으려면 `validate`에 클로저를 전달할 수 있습니다:
 
 ```php
 $role = select(
@@ -273,17 +273,17 @@ $role = select(
     ],
     validate: fn (string $value) =>
         $value === 'owner' && User::where('role', 'owner')->exists()
-            ? 'An owner already exists.'
+            ? '소유자는 이미 존재합니다.'
             : null
 );
 ```
 
-If the `options` argument is an associative array, then the closure will receive the selected key, otherwise it will receive the selected value. The closure may return an error message, or `null` if the validation passes.
+`options`가 연관 배열이면 클로저로는 선택된 키가, 그렇지 않으면 값이 전달됩니다. 에러 메시지 또는 `null`을 반환해야 합니다.
 
 <a name="multiselect"></a>
-### Multi-select
+### 다중 선택
 
-If you need to the user to be able to select multiple options, you may use the `multiselect` function:
+사용자가 여러 옵션을 동시에 선택할 수 있게 하려면 `multiselect` 함수를 사용할 수 있습니다:
 
 ```php
 use function Laravel\Prompts\multiselect;
@@ -294,7 +294,7 @@ $permissions = multiselect(
 );
 ```
 
-You may also specify default choices and an informational hint:
+기본 선택값 또는 안내 힌트도 추가할 수 있습니다:
 
 ```php
 use function Laravel\Prompts\multiselect;
@@ -303,11 +303,11 @@ $permissions = multiselect(
     label: 'What permissions should be assigned?',
     options: ['Read', 'Create', 'Update', 'Delete'],
     default: ['Read', 'Create'],
-    hint: 'Permissions may be updated at any time.'
+    hint: '권한은 언제든 변경 가능합니다.'
 );
 ```
 
-You may also pass an associative array to the `options` argument to return the selected options' keys instead of their values:
+선택한 옵션의 키 값만 반환하려면 연관 배열을 전달하면 됩니다:
 
 ```
 $permissions = multiselect(
@@ -322,7 +322,7 @@ $permissions = multiselect(
 );
 ```
 
-Up to five options will be displayed before the list begins to scroll. You may customize this by passing the `scroll` argument:
+최대 5개 옵션까지 표시되며, `scroll` 인자로 표시 수를 설정할 수 있습니다:
 
 ```php
 $categories = multiselect(
@@ -333,9 +333,9 @@ $categories = multiselect(
 ```
 
 <a name="multiselect-required"></a>
-#### Requiring a Value
+#### 필수 선택값
 
-By default, the user may select zero or more options. You may pass the `required` argument to enforce one or more options instead:
+기본적으로 0개 이상의 옵션을 선택할 수 있지만, `required` 인자를 전달하면 최소 1개 이상 선택을 강제할 수 있습니다:
 
 ```php
 $categories = multiselect(
@@ -345,20 +345,20 @@ $categories = multiselect(
 );
 ```
 
-If you would like to customize the validation message, you may provide a string to the `required` argument:
+유효성 메시지를 커스텀하려면 문자열로 전달할 수 있습니다:
 
 ```php
 $categories = multiselect(
     label: 'What categories should be assigned?',
     options: Category::pluck('name', 'id'),
-    required: 'You must select at least one category',
+    required: '최소 한 가지 카테고리는 선택해야 합니다',
 );
 ```
 
 <a name="multiselect-validation"></a>
-#### Validation
+#### 유효성 검사
 
-You may pass a closure to the `validate` argument if you need to present an option but prevent it from being selected:
+특정 옵션이 선택되지 않도록 하려면 `validate`에 클로저를 전달할 수 있습니다:
 
 ```
 $permissions = multiselect(
@@ -370,17 +370,17 @@ $permissions = multiselect(
         'delete' => 'Delete'
     ],
     validate: fn (array $values) => ! in_array('read', $values)
-        ? 'All users require the read permission.'
+        ? '모든 사용자는 읽기 권한이 필요합니다.'
         : null
 );
 ```
 
-If the `options` argument is an associative array then the closure will receive the selected keys, otherwise it will receive the selected values. The closure may return an error message, or `null` if the validation passes.
+`options`가 연관 배열이면 선택된 키 배열이, 아니면 값 배열이 전달됩니다. 에러 메시지나, 유효할 경우 `null`을 반환해야 합니다.
 
 <a name="suggest"></a>
-### Suggest
+### 자동완성 제안
 
-The `suggest` function can be used to provide auto-completion for possible choices. The user can still provide any answer, regardless of the auto-completion hints:
+`suggest` 함수는 자동완성 기능이 필요한 경우에 사용합니다. 사용자는 제안 외 다른 답도 입력할 수 있습니다:
 
 ```php
 use function Laravel\Prompts\suggest;
@@ -388,7 +388,7 @@ use function Laravel\Prompts\suggest;
 $name = suggest('What is your name?', ['Taylor', 'Dayle']);
 ```
 
-Alternatively, you may pass a closure as the second argument to the `suggest` function. The closure will be called each time the user types an input character. The closure should accept a string parameter containing the user's input so far and return an array of options for auto-completion:
+또는 클로저를 두 번째 인자로 전달해 동적으로 옵션을 제공할 수 있습니다. 이 클로저는 사용자가 입력할 때마다 호출되어, 현재 입력값을 받아 자동완성 옵션 배열을 반환해야 합니다:
 
 ```php
 $name = suggest(
@@ -398,22 +398,22 @@ $name = suggest(
 )
 ```
 
-You may also include placeholder text, a default value, and an informational hint:
+플레이스홀더, 기본값, 안내 힌트 역시 추가할 수 있습니다:
 
 ```php
 $name = suggest(
     label: 'What is your name?',
     options: ['Taylor', 'Dayle'],
-    placeholder: 'E.g. Taylor',
+    placeholder: '예: Taylor',
     default: $user?->name,
-    hint: 'This will be displayed on your profile.'
+    hint: '이 정보는 프로필에 표시됩니다.'
 );
 ```
 
 <a name="suggest-required"></a>
-#### Required Values
+#### 필수 입력값
 
-If you require a value to be entered, you may pass the `required` argument:
+필수 입력을 강제하려면 `required` 인자를 사용하세요:
 
 ```php
 $name = suggest(
@@ -423,39 +423,39 @@ $name = suggest(
 );
 ```
 
-If you would like to customize the validation message, you may also pass a string:
+유효성 메시지를 커스텀하려면 문자열을 입력하면 됩니다:
 
 ```php
 $name = suggest(
     label: 'What is your name?',
     options: ['Taylor', 'Dayle'],
-    required: 'Your name is required.'
+    required: '이름은 필수 입력값입니다.'
 );
 ```
 
 <a name="suggest-validation"></a>
-#### Additional Validation
+#### 추가 유효성 검사
 
-Finally, if you would like to perform additional validation logic, you may pass a closure to the `validate` argument:
+추가 유효성 검사는 `validate`에 클로저를 전달하여 구현할 수 있습니다:
 
 ```php
 $name = suggest(
     label: 'What is your name?',
     options: ['Taylor', 'Dayle'],
     validate: fn (string $value) => match (true) {
-        strlen($value) < 3 => 'The name must be at least 3 characters.',
-        strlen($value) > 255 => 'The name must not exceed 255 characters.',
+        strlen($value) < 3 => '이름은 최소 3자 이상이어야 합니다.',
+        strlen($value) > 255 => '이름은 255자를 초과할 수 없습니다.',
         default => null
     }
 );
 ```
 
-The closure will receive the value that has been entered and may return an error message, or `null` if the validation passes.
+클로저는 입력값을 받아 에러 메시지 또는 `null`을 반환합니다.
 
 <a name="search"></a>
-### Search
+### 검색
 
-If you have a lot of options for the user to select from, the `search` function allows the user to type a search query to filter the results before using the arrow keys to select an option:
+옵션이 많을 때는 `search` 함수를 사용해 사용자가 키 입력으로 검색어를 입력, 필터링 후 화살표로 선택할 수 있도록 할 수 있습니다:
 
 ```php
 use function Laravel\Prompts\search;
@@ -468,22 +468,22 @@ $id = search(
 );
 ```
 
-The closure will receive the text that has been typed by the user so far and must return an array of options. If you return an associative array then the selected option's key will be returned, otherwise its value will be returned instead.
+클로저는 입력값을 받아 옵션 배열을 반환해야 합니다. 연관 배열이면 선택된 옵션의 키가, 아니면 값이 반환됩니다.
 
-You may also include placeholder text and an informational hint:
+플레이스홀더, 안내 힌트도 추가할 수 있습니다:
 
 ```php
 $id = search(
     label: 'Search for the user that should receive the mail',
-    placeholder: 'E.g. Taylor Otwell',
+    placeholder: '예: Taylor Otwell',
     options: fn (string $value) => strlen($value) > 0
         ? User::where('name', 'like', "%{$value}%")->pluck('name', 'id')->all()
         : [],
-    hint: 'The user will receive an email immediately.'
+    hint: '선택된 사용자는 곧바로 메일을 받습니다.'
 );
 ```
 
-Up to five options will be displayed before the list begins to scroll. You may customize this by passing the `scroll` argument:
+최대 5개 옵션까지 표시되며, `scroll` 인자로 변경 가능합니다:
 
 ```php
 $id = search(
@@ -496,9 +496,9 @@ $id = search(
 ```
 
 <a name="search-validation"></a>
-#### Validation
+#### 유효성 검사
 
-If you would like to perform additional validation logic, you may pass a closure to the `validate` argument:
+추가 유효성 검사는 `validate` 인자에 클로저를 넘겨 구현할 수 있습니다:
 
 ```php
 $id = search(
@@ -510,18 +510,18 @@ $id = search(
         $user = User::findOrFail($value);
 
         if ($user->opted_out) {
-            return 'This user has opted-out of receiving mail.';
+            return '이 사용자는 메일 수신을 거부하였습니다.';
         }
     }
 );
 ```
 
-If the `options` closure returns an associative array, then the closure will receive the selected key, otherwise, it will receive the selected value. The closure may return an error message, or `null` if the validation passes.
+`options` 클로저가 연관 배열을 반환하면 선택된 키가, 아니면 값이 전달됩니다. 에러 메시지 또는 `null`을 반환합니다.
 
 <a name="multisearch"></a>
-### Multi-search
+### 다중 검색
 
-If you have a lot of searchable options and need the user to be able to select multiple items, the `multisearch` function allows the user to type a search query to filter the results before using the arrow keys and space-bar to select options:
+검색 가능한 옵션이 많고, 여러 항목을 선택할 수 있어야 한다면 `multisearch` 함수가 적합합니다. 사용자는 검색 후, 화살표 및 스페이스바로 항목을 선택할 수 있습니다:
 
 ```php
 use function Laravel\Prompts\multisearch;
@@ -534,22 +534,22 @@ $ids = multisearch(
 );
 ```
 
-The closure will receive the text that has been typed by the user so far and must return an array of options. If you return an associative array then the selected options' keys will be returned; otherwise, their values will be returned instead.
+클로저는 입력값을 받아 옵션 배열을 반환해야 합니다. 연관 배열을 반환하면 선택된 키 배열이, 아니면 값 배열이 반환됩니다.
 
-You may also include placeholder text and an informational hint:
+플레이스홀더, 안내 힌트도 추가할 수 있습니다:
 
 ```php
 $ids = multisearch(
     label: 'Search for the users that should receive the mail',
-    placeholder: 'E.g. Taylor Otwell',
+    placeholder: '예: Taylor Otwell',
     options: fn (string $value) => strlen($value) > 0
         ? User::where('name', 'like', "%{$value}%")->pluck('name', 'id')->all()
         : [],
-    hint: 'The user will receive an email immediately.'
+    hint: '선택된 사용자에게 곧바로 메일이 발송됩니다.'
 );
 ```
 
-Up to five options will be displayed before the list begins to scroll. You may customize this by providing the `scroll` argument:
+최대 5개 옵션까지 표시되며, `scroll` 인자로 변경 가능합니다:
 
 ```php
 $ids = multisearch(
@@ -562,9 +562,9 @@ $ids = multisearch(
 ```
 
 <a name="multisearch-required"></a>
-#### Requiring a Value
+#### 필수 선택값
 
-By default, the user may select zero or more options. You may pass the `required` argument to enforce one or more options instead:
+기본적으로 0개 이상의 옵션을 선택할 수 있지만, `required` 인자로 최소 1개 이상을 강제할 수 있습니다:
 
 ```php
 $ids = multisearch(
@@ -576,7 +576,7 @@ $ids = multisearch(
 );
 ```
 
-If you would like to customize the validation message, you may also provide a string to the `required` argument:
+유효성 메시지를 커스텀하려면 문자열로 전달할 수 있습니다:
 
 ```php
 $ids = multisearch(
@@ -584,14 +584,14 @@ $ids = multisearch(
     fn (string $value) => strlen($value) > 0
         ? User::where('name', 'like', "%{$value}%")->pluck('name', 'id')->all()
         : [],
-    required: 'You must select at least one user.'
+    required: '최소 한 명 이상의 사용자를 선택해야 합니다.'
 );
 ```
 
 <a name="multisearch-validation"></a>
-#### Validation
+#### 유효성 검사
 
-If you would like to perform additional validation logic, you may pass a closure to the `validate` argument:
+추가 유효성 검사는 `validate` 인자에 클로저를 넘겨 구현할 수 있습니다:
 
 ```php
 $ids = multisearch(
@@ -603,40 +603,40 @@ $ids = multisearch(
         $optedOut = User::where('name', 'like', '%a%')->findMany($values);
 
         if ($optedOut->isNotEmpty()) {
-            return $optedOut->pluck('name')->join(', ', ', and ').' have opted out.';
+            return $optedOut->pluck('name')->join(', ', ', 그리고 ').'님은 수신 거부 상태입니다.';
         }
     }
 );
 ```
 
-If the `options` closure returns an associative array, then the closure will receive the selected keys; otherwise, it will receive the selected values. The closure may return an error message, or `null` if the validation passes.
+`options` 클로저가 연관 배열을 반환하면 선택된 키 배열이, 아니면 값 배열이 전달됩니다. 에러 메시지 또는 `null`을 반환합니다.
 
 <a name="pause"></a>
-### Pause
+### 일시정지
 
-The `pause` function may be used to display informational text to the user and wait for them to confirm their desire to proceed by pressing the Enter / Return key:
+`pause` 함수는 사용자에게 안내 텍스트를 보여주고, Enter/Return 키를 누를 때까지 대기합니다:
 
 ```php
 use function Laravel\Prompts\pause;
 
-pause('Press ENTER to continue.');
+pause('계속하려면 ENTER를 누르세요.');
 ```
 
 <a name="informational-messages"></a>
-## Informational Messages
+## 안내 메시지
 
-The `note`, `info`, `warning`, `error`, and `alert` functions may be used to display informational messages:
+`note`, `info`, `warning`, `error`, `alert` 함수들은 안내 메시지 출력을 위해 사용할 수 있습니다:
 
 ```php
 use function Laravel\Prompts\info;
 
-info('Package installed successfully.');
+info('패키지가 성공적으로 설치되었습니다.');
 ```
 
 <a name="tables"></a>
-## Tables
+## 테이블
 
-The `table` function makes it easy to display multiple rows and columns of data. All you need to do is provide the column names and the data for the table:
+`table` 함수는 여러 행, 열로 이루어진 데이터를 손쉽게 출력할 수 있습니다. 열 이름과 표에 들어갈 데이터만 제공하세요:
 
 ```php
 use function Laravel\Prompts\table;
@@ -648,60 +648,60 @@ table(
 ```
 
 <a name="spin"></a>
-## Spin
+## 스핀(Spin)
 
-The `spin` function displays a spinner along with an optional message while executing a specified callback. It serves to indicate ongoing processes and returns the callback's results upon completion:
+`spin` 함수는 콜백이 실행되는 동안 스피너와 메시지를 표시합니다. 진행 중인 작업을 알릴 수 있으며, 완료 후 콜백의 결과값을 반환합니다:
 
 ```php
 use function Laravel\Prompts\spin;
 
 $response = spin(
     fn () => Http::get('http://example.com'),
-    'Fetching response...'
+    '응답 받아오는 중...'
 );
 ```
 
 > [!WARNING]  
-> The `spin` function requires the `pcntl` PHP extension to animate the spinner. When this extension is not available, a static version of the spinner will appear instead.
+> `spin` 함수는 스피너 애니메이션 구현을 위해 `pcntl` PHP 확장 모듈이 필요합니다. 이 확장 모듈이 없을 경우, 정적인 스피너가 표시됩니다.
 
 <a name="progress"></a>
-## Progress Bars
+## 진행 바(Progress Bars)
 
-For long running tasks, it can be helpful to show a progress bar that informs users how complete the task is. Using the `progress` function, Laravel will display a progress bar and advance its progress for each iteration over a given iterable value:
+작업 시간이 오래 걸릴 경우, 작업의 진행도를 사용자에게 안내하는 것이 유용합니다. `progress` 함수를 사용하면 반복 가능한 객체를 돌면서 진행 바를 표시할 수 있습니다:
 
 ```php
 use function Laravel\Prompts\progress;
 
 $users = progress(
-    label: 'Updating users',
+    label: '사용자 업데이트 중',
     steps: User::all(),
     callback: fn ($user) => $this->performTask($user),
 );
 ```
 
-The `progress` function acts like a map function and will return an array containing the return value of each iteration of your callback.
+`progress` 함수는 map 함수처럼 동작하며, 콜백의 반환값으로 이루어진 배열을 반환합니다.
 
-The callback may also accept the `\Laravel\Prompts\Progress` instance, allowing you to modify the label and hint on each iteration:
+콜백에서 `\Laravel\Prompts\Progress` 인스턴스를 받아 라벨/힌트를 각 반복마다 동적으로 적용할 수도 있습니다:
 
 ```php
 $users = progress(
-    label: 'Updating users',
+    label: '사용자 업데이트 중',
     steps: User::all(),
     callback: function ($user, $progress) {
         $progress
-            ->label("Updating {$user->name}")
-            ->hint("Created on {$user->created_at}");
+            ->label("{$user->name} 업데이트 중")
+            ->hint("생성일: {$user->created_at}");
 
         return $this->performTask($user);
     },
-    hint: 'This may take some time.',
+    hint: '이 작업에는 시간이 소요될 수 있습니다.',
 );
 ```
 
-Sometimes, you may need more manual control over how a progress bar is advanced. First, define the total number of steps the process will iterate through. Then, advance the progress bar via the `advance` method after processing each item:
+직접 진행 바를 제어하려면 전체 단계를 미리 정의하고, 각 항목 처리 후 `advance` 메서드로 수동 갱신할 수 있습니다:
 
 ```php
-$progress = progress(label: 'Updating users', steps: 10);
+$progress = progress(label: '사용자 업데이트 중', steps: 10);
 
 $users = User::all();
 
@@ -717,32 +717,32 @@ $progress->finish();
 ```
 
 <a name="terminal-considerations"></a>
-## Terminal Considerations
+## 터미널 관련 고려사항
 
 <a name="terminal-width"></a>
-#### Terminal Width
+#### 터미널 너비
 
-If the length of any label, option, or validation message exceeds the number of "columns" in the user's terminal, it will be automatically truncated to fit. Consider minimizing the length of these strings if your users may be using narrower terminals. A typically safe maximum length is 74 characters to support an 80-character terminal.
+라벨, 옵션, 유효성 메시지의 길이가 사용자의 터미널 "열(column)" 수보다 클 경우 자동으로 잘려서 표시됩니다. 사용자가 좁은 터미널을 사용할 수 있으므로, 이 문자열의 길이를 줄이는 것을 권장합니다. 80자 터미널을 지원하려면 최대 74자 이하가 안전합니다.
 
 <a name="terminal-height"></a>
-#### Terminal Height
+#### 터미널 높이
 
-For any prompts that accept the `scroll` argument, the configured value will automatically be reduced to fit the height of the user's terminal, including space for a validation message.
+`scroll` 인자를 받는 프롬프트의 경우, 설정한 값이 자동으로 터미널 높이에 맞춰 줄어듭니다(유효성 메시지 공간 포함).
 
 <a name="fallbacks"></a>
-## Unsupported Environments and Fallbacks
+## 지원되지 않는 환경 및 폴백
 
-Laravel Prompts supports macOS, Linux, and Windows with WSL. Due to limitations in the Windows version of PHP, it is not currently possible to use Laravel Prompts on Windows outside of WSL.
+Laravel Prompts는 macOS, Linux, 그리고 WSL 환경의 Windows를 지원합니다. 일반 Windows 버전의 PHP에서는 제약 때문에 WSL 환경 이외에서는 사용이 불가합니다.
 
-For this reason, Laravel Prompts supports falling back to an alternative implementation such as the [Symfony Console Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html).
+그로 인해, [Symfony Console Question Helper](https://symfony.com/doc/current/components/console/helpers/questionhelper.html)와 같은 대체 구현으로 자동 폴백을 지원합니다.
 
 > [!NOTE]  
-> When using Laravel Prompts with the Laravel framework, fallbacks for each prompt have been configured for you and will be automatically enabled in unsupported environments.
+> Laravel 프레임워크와 함께 Laravel Prompts를 사용할 때는 각 프롬프트별로 폴백이 이미 설정되어 있으며, 지원되지 않는 환경에서는 자동으로 활성화됩니다.
 
 <a name="fallback-conditions"></a>
-#### Fallback Conditions
+#### 폴백 조건
 
-If you are not using Laravel or need to customize when the fallback behavior is used, you may pass a boolean to the `fallbackWhen` static method on the `Prompt` class:
+Laravel을 사용하지 않거나, 폴백 적용 조건을 직접 지정하려면 `Prompt` 클래스의 `fallbackWhen` 정적 메서드에 불리언을 전달하세요:
 
 ```php
 use Laravel\Prompts\Prompt;
@@ -753,9 +753,9 @@ Prompt::fallbackWhen(
 ```
 
 <a name="fallback-behavior"></a>
-#### Fallback Behavior
+#### 폴백 동작
 
-If you are not using Laravel or need to customize the fallback behavior, you may pass a closure to the `fallbackUsing` static method on each prompt class:
+Laravel을 사용하지 않거나, 각 프롬프트 클래스의 폴백 동작을 직접 정의하려면, 해당 클래스의 `fallbackUsing` 정적 메서드에 클로저를 전달하세요:
 
 ```php
 use Laravel\Prompts\TextPrompt;
@@ -766,7 +766,7 @@ TextPrompt::fallbackUsing(function (TextPrompt $prompt) use ($input, $output) {
     $question = (new Question($prompt->label, $prompt->default ?: null))
         ->setValidator(function ($answer) use ($prompt) {
             if ($prompt->required && $answer === null) {
-                throw new \RuntimeException(is_string($prompt->required) ? $prompt->required : 'Required.');
+                throw new \RuntimeException(is_string($prompt->required) ? $prompt->required : '필수 항목입니다.');
             }
 
             if ($prompt->validate) {
@@ -785,4 +785,4 @@ TextPrompt::fallbackUsing(function (TextPrompt $prompt) use ($input, $output) {
 });
 ```
 
-Fallbacks must be configured individually for each prompt class. The closure will receive an instance of the prompt class and must return an appropriate type for the prompt.
+각 프롬프트 클래스별로 폴백을 개별 설정해야 합니다. 클로저는 해당 프롬프트 클래스의 인스턴스를 받아 적절한 타입을 반환해야 합니다.

@@ -1,81 +1,81 @@
-# Upgrade Guide
+# 업그레이드 가이드
 
-- [Upgrading To 9.0 From 8.x](#upgrade-9.0)
+- [8.x에서 9.0으로 업그레이드](#upgrade-9.0)
 
 <a name="high-impact-changes"></a>
-## High Impact Changes
+## 주요 변경점
 
 <div class="content-list" markdown="1">
 
-- [Updating Dependencies](#updating-dependencies)
+- [의존성 업데이트](#updating-dependencies)
 - [Flysystem 3.x](#flysystem-3)
 - [Symfony Mailer](#symfony-mailer)
 
 </div>
 
 <a name="medium-impact-changes"></a>
-## Medium Impact Changes
+## 중간 영향 변경점
 
 <div class="content-list" markdown="1">
 
-- [Belongs To Many `firstOrNew`, `firstOrCreate`, and `updateOrCreate` methods](#belongs-to-many-first-or-new)
-- [Custom Casts & `null`](#custom-casts-and-null)
-- [Default HTTP Client Timeout](#http-client-default-timeout)
-- [PHP Return Types](#php-return-types)
-- [Postgres "Schema" Configuration](#postgres-schema-configuration)
-- [The `assertDeleted` Method](#the-assert-deleted-method)
-- [The `lang` Directory](#the-lang-directory)
-- [The `password` Rule](#the-password-rule)
-- [The `when` / `unless` Methods](#when-and-unless-methods)
-- [Unvalidated Array Keys](#unvalidated-array-keys)
+- [Belongs To Many의 `firstOrNew`, `firstOrCreate`, `updateOrCreate` 메서드](#belongs-to-many-first-or-new)
+- [커스텀 캐스트 & `null`](#custom-casts-and-null)
+- [기본 HTTP 클라이언트 타임아웃](#http-client-default-timeout)
+- [PHP 반환 타입](#php-return-types)
+- [Postgres "Schema" 설정](#postgres-schema-configuration)
+- [`assertDeleted` 메서드](#the-assert-deleted-method)
+- [`lang` 디렉터리](#the-lang-directory)
+- [`password` 규칙](#the-password-rule)
+- [`when` / `unless` 메서드](#when-and-unless-methods)
+- [검증되지 않은 배열 키](#unvalidated-array-keys)
 
 </div>
 
 <a name="upgrade-9.0"></a>
-## Upgrading To 9.0 From 8.x
+## 8.x에서 9.0으로 업그레이드
 
 <a name="estimated-upgrade-time-30-minutes"></a>
-#### Estimated Upgrade Time: 30 Minutes
+#### 예상 소요 시간: 30분
 
-> **Note**  
-> We attempt to document every possible breaking change. Since some of these breaking changes are in obscure parts of the framework only a portion of these changes may actually affect your application. Want to save time? You can use [Laravel Shift](https://laravelshift.com/) to help automate your application upgrades.
+> **참고**  
+> 가능한 모든 하위 호환성 이슈를 문서화하려 노력했습니다. 하지만 이들 중 일부는 프레임워크의 잘 알려지지 않은 부분에 해당하므로 실제로 여러분의 애플리케이션에 영향을 미치는 변경점은 일부일 수 있습니다. 시간을 절약하고 싶으신가요? [Laravel Shift](https://laravelshift.com/)를 사용하면 애플리케이션 업그레이드를 자동화할 수 있습니다.
 
 <a name="updating-dependencies"></a>
-### Updating Dependencies
+### 의존성 업데이트
 
-**Likelihood Of Impact: High**
+**영향도: 높음**
 
-#### PHP 8.0.2 Required
+#### PHP 8.0.2 필요
 
-Laravel now requires PHP 8.0.2 or greater.
+Laravel은 이제 PHP 8.0.2 이상이 필요합니다.
 
-#### Composer Dependencies
+#### Composer 의존성
 
-You should update the following dependencies in your application's `composer.json` file:
-
-<div class="content-list" markdown="1">
-
-- `laravel/framework` to `^9.0`
-- `nunomaduro/collision` to `^6.1`
-
-</div>
-
-In addition, please replace `facade/ignition` with `"spatie/laravel-ignition": "^1.0"` and `pusher/pusher-php-server` (if applicable) with `"pusher/pusher-php-server": "^5.0"` in your application's `composer.json` file.
-
-Furthermore, the following first-party packages have received new major releases to support Laravel 9.x. If applicable, you should read their individual upgrade guides before upgrading:
+애플리케이션의 `composer.json` 파일에서 다음 의존성을 업데이트해야 합니다:
 
 <div class="content-list" markdown="1">
 
-- [Vonage Notification Channel (v3.0)](https://github.com/laravel/vonage-notification-channel/blob/3.x/UPGRADE.md) (Replaces Nexmo)
+- `laravel/framework`를 `^9.0`으로
+- `nunomaduro/collision`을 `^6.1`로
 
 </div>
 
-Finally, examine any other third-party packages consumed by your application and verify you are using the proper version for Laravel 9 support.
+또한, `facade/ignition`을 `"spatie/laravel-ignition": "^1.0"`으로, `pusher/pusher-php-server`(사용 중인 경우)를 `"pusher/pusher-php-server": "^5.0"`으로 교체해야 합니다.
+
+아울러, 다음 1st-party 패키지는 Laravel 9.x 지원을 위해 새로운 메이저 릴리스를 배포했습니다. 해당되는 경우, 업그레이드 전에 각각의 업그레이드 가이드를 꼭 참고하세요.
+
+<div class="content-list" markdown="1">
+
+- [Vonage Notification Channel (v3.0)](https://github.com/laravel/vonage-notification-channel/blob/3.x/UPGRADE.md) (Nexmo를 대체)
+
+</div>
+
+마지막으로, 애플리케이션에서 사용하는 모든 써드파티 패키지를 확인하여 Laravel 9을 지원하는 버전을 사용하는지 확인하세요.
 
 <a name="php-return-types"></a>
-#### PHP Return Types
+#### PHP 반환 타입
 
-PHP is beginning to transition to requiring return type definitions on PHP methods such as `offsetGet`, `offsetSet`, etc. In light of this, Laravel 9 has implemented these return types in its code base. Typically, this should not affect user written code; however, if you are overriding one of these methods by extending Laravel's core classes, you will need to add these return types to your own application or package code:
+PHP는 이제 `offsetGet`, `offsetSet` 등과 같은 메서드에 반환 타입 정의를 요구하는 쪽으로 전환하고 있습니다. 이에 따라, Laravel 9에서는 이러한 반환 타입이 코드베이스에 적용되었습니다. 대부분 사용자 작성 코드는 영향을 받지 않지만, 만약 Laravel의 코어 클래스를 확장하면서 이러한 메서드를 오버라이드했다면, 본인 코드에도 반환 타입을 추가해야 합니다.
 
 <div class="content-list" markdown="1">
 
@@ -90,7 +90,7 @@ PHP is beginning to transition to requiring return type definitions on PHP metho
 
 </div>
 
-In addition, return types were added to methods implementing PHP's `SessionHandlerInterface`. Again, it is unlikely that this change affects your own application or package code:
+또한, PHP의 `SessionHandlerInterface`를 구현하는 메서드에도 반환 타입이 추가되었습니다. 이 변경점이 애플리케이션에 영향을 줄 가능성은 낮습니다:
 
 <div class="content-list" markdown="1">
 
@@ -104,117 +104,117 @@ In addition, return types were added to methods implementing PHP's `SessionHandl
 </div>
 
 <a name="application"></a>
-### Application
+### 애플리케이션
 
 <a name="the-application-contract"></a>
-#### The `Application` Contract
+#### `Application` 인터페이스
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `storagePath` method of the `Illuminate\Contracts\Foundation\Application` interface has been updated to accept a `$path` argument. If you are implementing this interface you should update your implementation accordingly:
+`Illuminate\Contracts\Foundation\Application` 인터페이스의 `storagePath` 메서드는 `$path` 인자를 받도록 업데이트되었습니다. 이 인터페이스를 직접 구현하고 있다면 구현체도 맞추어 수정해야 합니다.
 
     public function storagePath($path = '');
-    
-Similarly, the `langPath` method of the `Illuminate\Foundation\Application` class has been updated to accept a `$path` argument: 
+
+마찬가지로, `Illuminate\Foundation\Application` 클래스의 `langPath` 메서드도 `$path` 인자를 받도록 변경되었습니다.
 
     public function langPath($path = '');
 
-#### Exception Handler `ignore` Method
+#### 예외 핸들러의 `ignore` 메서드
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The exception handler's `ignore` method is now `public` instead of `protected`. This method is not included in the default application skeleton; however, if you have manually defined this method you should update its visibility to `public`:
+예외 핸들러의 `ignore` 메서드는 이제 `protected`가 아닌 `public`이어야 합니다. 이 메서드는 기본 애플리케이션 스켈레톤에는 없습니다. 만약 직접 정의했다면 접근 제한자를 `public`으로 변경해야 합니다:
 
 ```php
 public function ignore(string $class);
 ```
 
-#### Exception Handler Contract Binding
+#### 예외 핸들러 인터페이스 바인딩
 
-**Likelihood Of Impact: Very Low**
+**영향도: 매우 낮음**
 
-Previously, in order to override the default Laravel exception handler, custom implementations were bound into the service container using the `\App\Exceptions\Handler::class` type. However, you should now bind custom implementations using the `\Illuminate\Contracts\Debug\ExceptionHandler::class` type.
+이전에는 기본 Laravel 예외 핸들러를 오버라이드하려면 `\App\Exceptions\Handler::class` 타입을 사용해 서비스 컨테이너에 바인딩했지만, 이제는 `\Illuminate\Contracts\Debug\ExceptionHandler::class` 타입을 사용해야 합니다.
 
 ### Blade
 
-#### Lazy Collections & The `$loop` Variable
+#### Lazy Collections & `$loop` 변수
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-When iterating over a `LazyCollection` instance within a Blade template, the `$loop` variable is no longer available, as accessing this variable causes the entire `LazyCollection` to be loaded into memory, thus rendering the usage of lazy collections pointless in this scenario.
+Blade 템플릿에서 `LazyCollection` 인스턴스를 순회할 때, `$loop` 변수를 더 이상 사용할 수 없습니다. 이 변수를 참조하면 전체 `LazyCollection`을 메모리에 로드하므로, lazy 컬렉션의 장점이 사라지기 때문입니다.
 
-#### Checked / Disabled / Selected Blade Directives
+#### Checked / Disabled / Selected Blade 지시어
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The new `@checked`, `@disabled`, and `@selected` Blade directives may conflict with Vue events of the same name. You may use `@@` to escape the directives and avoid this conflict: `@@selected`.
+새로운 `@checked`, `@disabled`, `@selected` Blade 지시어는 같은 이름의 Vue 이벤트와 충돌할 수 있습니다. 이 충돌을 피하려면 `@@`를 사용해 지시어를 이스케이프할 수 있습니다(`@@selected` 등).
 
-### Collections
+### 컬렉션
 
-#### The `Enumerable` Contract
+#### `Enumerable` 인터페이스
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `Illuminate\Support\Enumerable` contract now defines a `sole` method. If you are manually implementing this interface, you should update your implementation to reflect this new method:
+`Illuminate\Support\Enumerable` 인터페이스에 `sole` 메서드가 새로 정의되었습니다. 이 인터페이스를 직접 구현하고 있다면, 해당 메서드를 구현해야 합니다:
 
 ```php
 public function sole($key = null, $operator = null, $value = null);
 ```
 
-#### The `reduceWithKeys` Method
+#### `reduceWithKeys` 메서드
 
-The `reduceWithKeys` method has been removed as the `reduce` method provides the same functionality. You may simply update your code to call `reduce` instead of `reduceWithKeys`.
+`reduceWithKeys` 메서드는 삭제되었습니다. 동일한 기능을 `reduce`에서 제공하므로, 코드를 `reduce`로 변경하면 됩니다.
 
-#### The `reduceMany` Method
+#### `reduceMany` 메서드
 
-The `reduceMany` method has been renamed to `reduceSpread` for naming consistency with other similar methods.
+`reduceMany` 메서드는 네이밍 일관성을 위해 `reduceSpread`로 이름이 변경되었습니다.
 
-### Container
+### 컨테이너
 
-#### The `Container` Contract
+#### `Container` 인터페이스
 
-**Likelihood Of Impact: Very Low**
+**영향도: 매우 낮음**
 
-The `Illuminate\Contracts\Container\Container` contract has received two method definitions: `scoped` and `scopedIf`. If you are manually implementing this contract, you should update your implementation to reflect these new methods.
+`Illuminate\Contracts\Container\Container` 인터페이스에 `scoped`와 `scopedIf` 메서드가 새로 추가되었습니다. 수동으로 이 인터페이스를 구현한다면 해당 메서드도 추가해야 합니다.
 
-#### The `ContextualBindingBuilder` Contract
+#### `ContextualBindingBuilder` 인터페이스
 
-**Likelihood Of Impact: Very Low**
+**영향도: 매우 낮음**
 
-The `Illuminate\Contracts\Container\ContextualBindingBuilder` contract now defines a `giveConfig` method. If you are manually implementing this interface, you should update your implementation to reflect this new method:
+`Illuminate\Contracts\Container\ContextualBindingBuilder` 인터페이스에 `giveConfig` 메서드가 추가되었습니다. 구현하고 있다면, 다음과 같이 추가하세요:
 
 ```php
 public function giveConfig($key, $default = null);
 ```
 
-### Database
+### 데이터베이스
 
 <a name="postgres-schema-configuration"></a>
-#### Postgres "Schema" Configuration
+#### Postgres "Schema" 설정
 
-**Likelihood Of Impact: Medium**
+**영향도: 중간**
 
-The `schema` configuration option used to configure Postgres connection search paths in your application's `config/database.php` configuration file should be renamed to `search_path`.
+애플리케이션의 `config/database.php` 파일에서 Postgres 연결의 검색 경로를 지정하는 `schema` 설정 옵션은 `search_path`로 이름이 변경되어야 합니다.
 
 <a name="schema-builder-doctrine-method"></a>
-#### Schema Builder `registerCustomDoctrineType` Method
+#### Schema Builder의 `registerCustomDoctrineType` 메서드
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `registerCustomDoctrineType` method has been removed from the `Illuminate\Database\Schema\Builder` class. You may use the `registerDoctrineType` method on the `DB` facade instead, or register custom Doctrine types in the `config/database.php` configuration file.
+`Illuminate\Database\Schema\Builder` 클래스에서 `registerCustomDoctrineType` 메서드가 제거되었습니다. 대신 `DB` 파사드의 `registerDoctrineType`을 사용하거나, 커스텀 Doctrine 타입을 `config/database.php`에 등록하세요.
 
 ### Eloquent
 
 <a name="custom-casts-and-null"></a>
-#### Custom Casts & `null`
+#### 커스텀 캐스트 & `null`
 
-**Likelihood Of Impact: Medium**
+**영향도: 중간**
 
-In previous releases of Laravel, the `set` method of custom cast classes was not invoked if the cast attribute was being set to `null`. However, this behavior was inconsistent with the Laravel documentation. In Laravel 9.x, the `set` method of the cast class will be invoked with `null` as the provided `$value` argument. Therefore, you should ensure your custom casts are able to sufficiently handle this scenario:
+이전에는 커스텀 캐스트 클래스의 `set` 메서드는 캐스트 속성이 `null`로 설정될 때 호출되지 않았으나, 이는 문서화된 동작과 달랐습니다. 9.x에서는 값이 `null`일 때도 `set` 메서드가 호출되므로, 커스텀 캐스트 구현이 이 상황을 적절히 처리하도록 해야 합니다.
 
 ```php
 /**
- * Prepare the given value for storage.
+ * 주어진 값을 저장용으로 준비합니다.
  *
  * @param  \Illuminate\Database\Eloquent\Model  $model
  * @param  string  $key
@@ -236,13 +236,11 @@ public function set($model, $key, $value, $attributes)
 ```
 
 <a name="belongs-to-many-first-or-new"></a>
-#### Belongs To Many `firstOrNew`, `firstOrCreate`, and `updateOrCreate` Methods
+#### Belongs To Many의 `firstOrNew`, `firstOrCreate`, `updateOrCreate` 메서드
 
-**Likelihood Of Impact: Medium**
+**영향도: 중간**
 
-The `belongsToMany` relationship's `firstOrNew`, `firstOrCreate`, and `updateOrCreate` methods all accept an array of attributes as their first argument. In previous releases of Laravel, this array of attributes was compared against the "pivot" / intermediate table for existing records.
-
-However, this behavior was unexpected and typically unwanted. Instead, these methods now compare the array of attributes against the table of the related model:
+이전에는 `belongsToMany` 관계 메서드에서 첫 번째 인자인 속성 배열을 "pivot" 테이블에서 비교했으나, 이제는 관련 모델의 테이블에서 비교하도록 변경되었습니다.
 
 ```php
 $user->roles()->updateOrCreate([
@@ -250,7 +248,7 @@ $user->roles()->updateOrCreate([
 ]);
 ```
 
-In addition, the `firstOrCreate` method now accepts a `$values` array as its second argument. This array will be merged with the first argument to the method (`$attributes`) when creating the related model if one does not already exist. This change makes this method consistent with the `firstOrCreate` methods offered by other relationship types:
+또한, `firstOrCreate` 메서드는 두 번째 인자로 `$values` 배열을 받을 수 있으며, 새로운 관련 모델을 생성할 경우 해당 속성과 병합되어 사용됩니다. 이제 다른 관계의 `firstOrCreate`와 동작이 일치합니다.
 
 ```php
 $user->roles()->firstOrCreate([
@@ -260,39 +258,39 @@ $user->roles()->firstOrCreate([
 ]);
 ```
 
-#### The `touch` Method
+#### `touch` 메서드
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `touch` method now accepts an attribute to touch. If you were previously overwriting this method, you should update your method signature to reflect this new argument:
+`touch` 메서드는 이제 터치할 속성 이름을 인자로 받을 수 있습니다. 오버라이딩하고 있다면 시그니처를 다음과 같이 변경하세요:
 
 ```php
 public function touch($attribute = null);
 ```
 
-### Encryption
+### 암호화
 
-#### The Encrypter Contract
+#### Encrypter 인터페이스
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `Illuminate\Contracts\Encryption\Encrypter` contract now defines a `getKey` method. If you are manually implementing this interface, you should update your implementation accordingly:
+`Illuminate\Contracts\Encryption\Encrypter` 인터페이스에 `getKey` 메서드가 추가되었습니다. 직접 구현한다면 다음을 추가하세요:
 
 ```php
 public function getKey();
 ```
 
-### Facades
+### 파사드
 
-#### The `getFacadeAccessor` Method
+#### `getFacadeAccessor` 메서드
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `getFacadeAccessor` method must always return a container binding key. In previous releases of Laravel, this method could return an object instance; however, this behavior is no longer supported. If you have written your own facades, you should ensure that this method returns a container binding string:
+`getFacadeAccessor` 메서드는 항상 컨테이너 바인딩 키를 반환해야 합니다. 이전에는 객체 인스턴스를 반환할 수 있었으나, 이제는 지원하지 않습니다. 파사드를 직접 작성했다면 문자열 바인딩 키를 반환해야 합니다:
 
 ```php
 /**
- * Get the registered name of the component.
+ * 컴포넌트의 등록된 이름 반환
  *
  * @return string
  */
@@ -302,42 +300,42 @@ protected static function getFacadeAccessor()
 }
 ```
 
-### Filesystem
+### 파일시스템
 
-#### The `FILESYSTEM_DRIVER` Environment Variable
+#### `FILESYSTEM_DRIVER` 환경 변수
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `FILESYSTEM_DRIVER` environment variable has been renamed to `FILESYSTEM_DISK` to more accurately reflect its usage. This change only affects the application skeleton; however, you are welcome to update your own application's environment variables to reflect this change if you wish.
+`FILESYSTEM_DRIVER` 환경 변수는 사용 목적을 더 명확히 하기 위해 `FILESYSTEM_DISK`로 이름이 변경되었습니다. 애플리케이션 스켈레톤에서만 바뀌었으므로, 필요시 환경 변수명을 직접 변경하면 됩니다.
 
-#### The "Cloud" Disk
+#### "Cloud" 디스크
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `cloud` disk configuration option was removed from the default application skeleton in November of 2020. This change only affects the application skeleton. If you are using the `cloud` disk within your application, you should leave this configuration value in your own application's skeleton.
+`cloud` 디스크 설정은 2020년 11월 이후 기본 스켈레톤에서 제외되었습니다. "cloud" 디스크를 사용중이라면 앱에 해당 설정값을 계속 추가해두세요.
 
 <a name="flysystem-3"></a>
 ### Flysystem 3.x
 
-**Likelihood Of Impact: High**
+**영향도: 높음**
 
-Laravel 9.x has migrated from [Flysystem](https://flysystem.thephpleague.com/v2/docs/) 1.x to 3.x. Under the hood, Flysystem powers all of the file manipulation methods provided by the `Storage` facade. In light of this, some changes may be required within your application; however, we have tried to make this transition as seamless as possible.
+Laravel 9.x는 [Flysystem](https://flysystem.thephpleague.com/v2/docs/) 1.x에서 3.x로 마이그레이션했습니다. Flysystem은 `Storage` 파사드가 제공하는 파일 조작 메서드의 기반이 됩니다. 몇 가지 변경 사항이 있으니 애플리케이션에 맞게 수정이 필요할 수 있습니다.
 
-#### Driver Prerequisites
+#### 드라이버 사전 준비
 
-Before using the S3, FTP, or SFTP drivers, you will need to install the appropriate package via the Composer package manager:
+S3, FTP, SFTP 드라이버 사용 전 Composer로 각 패키지를 설치하세요:
 
 - Amazon S3: `composer require -W league/flysystem-aws-s3-v3 "^3.0"`
 - FTP: `composer require league/flysystem-ftp "^3.0"`
 - SFTP: `composer require league/flysystem-sftp-v3 "^3.0"`
 
-#### Overwriting Existing Files
+#### 기존 파일 덮어쓰기
 
-Write operations such as `put`, `write`, and `writeStream` now overwrite existing files by default. If you do not want to overwrite existing files, you should manually check for the file's existence before performing the write operation.
+`put`, `write`, `writeStream` 등의 쓰기 작업은 이제 기본적으로 기존 파일을 덮어씁니다. 덮어쓰기를 원하지 않는다면, 쓰기 전에 파일 존재 여부를 수동으로 확인해야 합니다.
 
-#### Write Exceptions
+#### 쓰기 예외 처리
 
-Write operations such as `put`, `write`, and `writeStream` no longer throw an exception when a write operation fails. Instead, `false` is returned. If you would like to preserve the previous behavior which threw exceptions, you may define the `throw` option within a filesystem disk's configuration array:
+`put`, `write`, `writeStream` 등의 쓰기 작업에서 실패 시 더 이상 예외가 발생하지 않고, `false`가 반환됩니다. 이전처럼 예외를 원한다면 파일시스템 디스크 설정 배열에 `throw` 옵션을 명시하세요:
 
 ```php
 'public' => [
@@ -347,23 +345,23 @@ Write operations such as `put`, `write`, and `writeStream` no longer throw an ex
 ],
 ```
 
-#### Reading Missing Files
+#### 존재하지 않는 파일 읽기
 
-Attempting to read from a file that does not exist now returns `null`. In previous releases of Laravel, an `Illuminate\Contracts\Filesystem\FileNotFoundException` would have been thrown.
+존재하지 않는 파일을 읽으려 하면 이제 `null`이 반환됩니다. 이전에는 `Illuminate\Contracts\Filesystem\FileNotFoundException`이 발생했습니다.
 
-#### Deleting Missing Files
+#### 존재하지 않는 파일 삭제
 
-Attempting to `delete` a file that does not exist now returns `true`.
+존재하지 않는 파일을 삭제하면 항상 `true`가 반환됩니다.
 
-#### Cached Adapters
+#### 캐시 어댑터
 
-Flysystem no longer supports "cached adapters". Thus, they have been removed from Laravel and any relevant configuration (such as the `cache` key within disk configurations) can be removed.
+Flysystem에서는 캐시 어댑터를 더 이상 지원하지 않으므로, Laravel에서도 관련 설정(예: 디스크 설정 내 `cache` 키)은 제거할 수 있습니다.
 
-#### Custom Filesystems
+#### 커스텀 파일시스템
 
-Slight changes have been made to the steps required to register custom filesystem drivers. Therefore, if you were defining your own custom filesystem drivers, or using packages that define custom drivers, you should update your code and dependencies.
+커스텀 파일시스템 드라이버 등록 방법이 약간 변경되었습니다. 직접 정의하거나 커스텀 드라이버를 제공하는 패키지를 사용할 경우 코드와 의존성을 업데이트하세요.
 
-For example, in Laravel 8.x, a custom filesystem driver might be registered like so:
+Laravel 8.x 예시:
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -380,7 +378,7 @@ Storage::extend('dropbox', function ($app, $config) {
 });
 ```
 
-However, in Laravel 9.x, the callback given to the `Storage::extend` method should return an instance of `Illuminate\Filesystem\FilesystemAdapter` directly:
+Laravel 9.x 예시:
 
 ```php
 use Illuminate\Filesystem\FilesystemAdapter;
@@ -402,32 +400,32 @@ Storage::extend('dropbox', function ($app, $config) {
 });
 ```
 
-#### SFTP Private-Public Key Passphrase
+#### SFTP 개인-공개 키 암호
 
-If your application is using Flysystem's SFTP adapter and private-public key authentication, the `password` configuration item that is used to decrypt the private key should be renamed to `passphrase`.
+Flysystem SFTP 어댑터에서 개인-공개 키 인증을 사용하는 경우, 개인 키 복호화에 사용하던 설정 항목 `password`의 이름을 `passphrase`로 변경하세요.
 
-### Helpers
+### 헬퍼
 
 <a name="data-get-function"></a>
-#### The `data_get` Helper & Iterable Objects
+#### `data_get` 헬퍼 & 이터러블 객체
 
-**Likelihood Of Impact: Very Low**
+**영향도: 매우 낮음**
 
-Previously, the `data_get` helper could be used to retrieve nested data on arrays and `Collection` instances; however, this helper can now retrieve nested data on all iterable objects.
+이전에는 `data_get` 헬퍼가 배열이나 `Collection` 인스턴스의 중첩 데이터를 가져오는데만 사용 가능했으나, 이제 모든 이터러블 객체의 중첩 데이터도 가져올 수 있습니다.
 
 <a name="str-function"></a>
-#### The `str` Helper
+#### `str` 헬퍼
 
-**Likelihood Of Impact: Very Low**
+**영향도: 매우 낮음**
 
-Laravel 9.x now includes a global `str` [helper function](/docs/{{version}}/helpers#method-str). If you are defining a global `str` helper in your application, you should rename or remove it so that it does not conflict with Laravel's own `str` helper.
+Laravel 9.x에는 이제 글로벌 `str` [헬퍼 함수](/docs/{{version}}/helpers#method-str)가 내장되어 있습니다. 앱에서 동일한 이름으로 글로벌 `str` 헬퍼를 정의했을 경우, 충돌을 피하기 위해 이름을 변경하거나 제거해야 합니다.
 
 <a name="when-and-unless-methods"></a>
-#### The `when` / `unless` Methods
+#### `when` / `unless` 메서드
 
-**Likelihood Of Impact: Medium**
+**영향도: 중간**
 
-As you may know, `when` and `unless` methods are offered by various classes throughout the framework. These methods can be used to conditionally perform an action if the boolean value of the first argument to the method evaluates to `true` or `false`:
+프레임워크의 다양한 클래스에서 제공하는 `when`/`unless` 메서드는, 첫 번째 인자인 불리언 값의 참/거짓에 따라 조건부로 동작을 수행합니다.
 
 ```php
 $collection->when(true, function ($collection) {
@@ -435,73 +433,71 @@ $collection->when(true, function ($collection) {
 });
 ```
 
-Therefore, in previous releases of Laravel, passing a closure to the `when` or `unless` methods meant that the conditional operation would always execute, since a loose comparison against a closure object (or any other object) always evaluates to `true`. This often led to unexpected outcomes because developers expect the **result** of the closure to be used as the boolean value that determines if the conditional action executes.
-
-So, in Laravel 9.x, any closures passed to the `when` or `unless` methods will be executed and the value returned by the closure will be considered the boolean value used by the `when` and `unless` methods:
+이전에는 클로저를 전달하면 항상 참으로 간주되어 조건이 무의미했으나, 9.x에서는 클로저를 실행한 반환값을 조건으로 사용합니다.
 
 ```php
 $collection->when(function ($collection) {
-    // This closure is executed...
+    // 이 클로저가 실행됨...
     return false;
 }, function ($collection) {
-    // Not executed since first closure returned "false"...
+    // 첫 번째 클로저가 false를 반환하면 이 부분은 실행되지 않음...
     $collection->merge([1, 2, 3]);
 });
 ```
 
-### HTTP Client
+### HTTP 클라이언트
 
 <a name="http-client-default-timeout"></a>
-#### Default Timeout
+#### 기본 타임아웃
 
-**Likelihood Of Impact: Medium**
+**영향도: 중간**
 
-The [HTTP client](/docs/{{version}}/http-client) now has a default timeout of 30 seconds. In other words, if the server does not respond within 30 seconds, an exception will be thrown. Previously, no default timeout length was configured on the HTTP client, causing requests to sometimes "hang" indefinitely.
+[HTTP 클라이언트](/docs/{{version}}/http-client)는 이제 기본 타임아웃이 30초로 설정되어 있습니다. 즉, 서버가 30초 내로 응답하지 않으면 예외가 발생합니다. 이전에는 별도의 타임아웃이 없어 요청이 무한정 대기할 수 있었습니다.
 
-If you wish to specify a longer timeout for a given request, you may do so using the `timeout` method:
+요청별로 더 긴 타임아웃을 지정하려면 `timeout` 메서드를 사용하세요:
 
     $response = Http::timeout(120)->get(/* ... */);
 
-#### HTTP Fake & Middleware
+#### HTTP Fake & 미들웨어
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-Previously, Laravel would not execute any provided Guzzle HTTP middleware when the [HTTP client](/docs/{{version}}/http-client) was "faked". However, in Laravel 9.x, Guzzle HTTP middleware will be executed even when the HTTP client is faked.
+이전에는 [HTTP 클라이언트](/docs/{{version}}/http-client)를 "faked" 했을 때 Guzzle 미들웨어가 실행되지 않았으나, 이제는 fake 상태에서도 Guzzle 미들웨어가 실행됩니다.
 
-#### HTTP Fake & Dependency Injection
+#### HTTP Fake & 의존성 주입
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-In previous releases of Laravel, invoking the `Http::fake()` method would not affect instances of the `Illuminate\Http\Client\Factory` that were injected into class constructors. However, in Laravel 9.x, `Http::fake()` will ensure fake responses are returned by HTTP clients injected into other services via dependency injection. This behavior is more consistent with the behavior of other facades and fakes.
+이전에는 `Http::fake()` 호출이 클래스 생성자에 주입된 `Illuminate\Http\Client\Factory` 인스턴스에 영향을 미치지 못했으나, 이제는 의존성 주입된 HTTP 클라이언트에도 fake 응답이 반환됩니다. 이는 다른 파사드/페이크의 동작과 일치합니다.
 
 <a name="symfony-mailer"></a>
 ### Symfony Mailer
 
-**Likelihood Of Impact: High**
+**영향도: 높음**
 
-One of the largest changes in Laravel 9.x is the transition from SwiftMailer, which is no longer maintained as of December 2021, to Symfony Mailer. However, we have tried to make this transition as seamless as possible for your applications. That being said, please thoroughly review the list of changes below to ensure your application is fully compatible.
+Laravel 9.x의 가장 큰 변화 중 하나는 더 이상 유지보수되지 않는 SwiftMailer(2021년 12월 종료)에서 Symfony Mailer로의 전환입니다. 최대한 앱에 영향이 없도록 했으나, 아래 변경 내용을 꼼꼼히 읽고 애플리케이션 호환성을 반드시 확인하세요.
 
-#### Driver Prerequisites
+#### 드라이버 사전 준비
 
-To continue using the Mailgun transport, your application should require the `symfony/mailgun-mailer` and `symfony/http-client` Composer packages:
+Mailgun 전송을 계속 사용하려면, 아래 Composer 패키지를 설치하세요:
 
 ```shell
 composer require symfony/mailgun-mailer symfony/http-client
 ```
 
-The `wildbit/swiftmailer-postmark` Composer package should be removed from your application. Instead, your application should require the `symfony/postmark-mailer` and `symfony/http-client` Composer packages:
+`wildbit/swiftmailer-postmark` 패키지는 제거하고 대신 아래 패키지를 설치하세요:
 
 ```shell
 composer require symfony/postmark-mailer symfony/http-client
 ```
 
-#### Updated Return Types
+#### 반환 타입 변경
 
-The `send`, `html`, `raw`, and `plain` methods on `Illuminate\Mail\Mailer` no longer return `void`. Instead, an instance of `Illuminate\Mail\SentMessage` is returned. This object contains an instance of `Symfony\Component\Mailer\SentMessage` that is accessible via the `getSymfonySentMessage` method or by dynamically invoking methods on the object.
+`Illuminate\Mail\Mailer`의 `send`, `html`, `raw`, `plain` 메서드는 더 이상 `void`를 반환하지 않습니다. 대신 `Illuminate\Mail\SentMessage` 인스턴스를 반환합니다. 이 객체에서 `Symfony\Component\Mailer\SentMessage`를 `getSymfonySentMessage` 메서드 또는 동적 호출로 접근할 수 있습니다.
 
-#### Renamed "Swift" Methods
+#### "Swift" 접두어 메서드 이름 변경
 
-Various SwiftMailer related methods, some of which were undocumented, have been renamed to their Symfony Mailer counterparts. For example, the `withSwiftMessage` method has been renamed to `withSymfonyMessage`:
+SwiftMailer 관련 메서드(일부는 문서화되어 있지 않음)는 Symfony Mailer에 맞춰 이름이 변경되었습니다. 예를 들어, `withSwiftMessage`는 `withSymfonyMessage`로 변경되었습니다.
 
     // Laravel 8.x...
     $this->withSwiftMessage(function ($message) {
@@ -519,10 +515,10 @@ Various SwiftMailer related methods, some of which were undocumented, have been 
         );
     });
 
-> **Warning**  
-> Please thoroughly review the [Symfony Mailer documentation](https://symfony.com/doc/6.0/mailer.html#creating-sending-messages) for all possible interactions with the `Symfony\Component\Mime\Email` object.
+> **경고**  
+> [Symfony Mailer 문서](https://symfony.com/doc/6.0/mailer.html#creating-sending-messages)를 꼼꼼히 읽고 `Symfony\Component\Mime\Email` 객체와의 모든 상호작용을 확인하세요.
 
-The list below contains a more thorough overview of renamed methods. Many of these methods are low-level methods used to interact with SwiftMailer / Symfony Mailer directly, so may not be commonly used within most Laravel applications:
+다음은 더 상세한 메서드 이름 변경 목록입니다. 대부분 SwiftMailer/Symfony Mailer를 직접 다룰 때 필요한 저수준 메서드로, 대부분의 Laravel 앱에서는 잘 사용하지 않습니다:
 
     Message::getSwiftMessage();
     Message::getSymfonyMessage();
@@ -542,11 +538,9 @@ The list below contains a more thorough overview of renamed methods. Many of the
     MailManager::createTransport($config);
     MailManager::createSymfonyTransport($config);
 
-#### Proxied `Illuminate\Mail\Message` Methods
+#### Proxied `Illuminate\Mail\Message` 메서드
 
-The `Illuminate\Mail\Message` typically proxied missing methods to the underlying `Swift_Message` instance. However, missing methods are now proxied to an instance of `Symfony\Component\Mime\Email` instead. So, any code that was previously relying on missing methods to be proxied to SwiftMailer should be updated to their corresponding Symfony Mailer counterparts.
-
-Again, many applications may not be interacting with these methods, as they are not documented within the Laravel documentation:
+`Illuminate\Mail\Message`는 누락된 메서드를 Swift_Message 인스턴스로 프록시했으나, 이제는 `Symfony\Component\Mime\Email` 인스턴스로 프록시됩니다. 관련 코드는 새 메서드에 맞게 업데이트해야 합니다.
 
     // Laravel 8.x...
     $message
@@ -564,23 +558,23 @@ Again, many applications may not be interacting with these methods, as they are 
         ->html('<h1>HTML</h1>')
         ->text('Plain Text');
 
-#### Generated Messages IDs
+#### 생성된 메시지 ID
 
-SwiftMailer offered the ability to define a custom domain to include in generated Message IDs via the `mime.idgenerator.idright` configuration option. This is not supported by Symfony Mailer. Instead, Symfony Mailer will automatically generate a Message ID based on the sender.
+SwiftMailer는 생성된 메시지 ID에 도메인을 커스터마이징할 수 있었으나, Symfony Mailer는 이를 지원하지 않고 발신자로부터 자동 생성합니다.
 
-#### `MessageSent` Event Changes
+#### `MessageSent` 이벤트 변경점
 
-The `message` property of the `Illuminate\Mail\Events\MessageSent` event now contains an instance of `Symfony\Component\Mime\Email` instead of an instance of `Swift_Message`. This message represents the email **before** it is sent.
+`Illuminate\Mail\Events\MessageSent` 이벤트의 `message` 속성은 이제 `Swift_Message` 대신 `Symfony\Component\Mime\Email` 인스턴스를 담고 있습니다(이메일 발송 전).
 
-Additionally, a new `sent` property has been added to the `MessageSent` event. This property contains an instance of `Illuminate\Mail\SentMessage` and contains information about the sent email, such as the message ID.
+또한 `sent` 속성이 추가되어, 전송된 이메일 정보(`Illuminate\Mail\SentMessage` 인스턴스, 메시지 ID 등)를 포함합니다.
 
-#### Forced Reconnections
+#### 강제 재연결
 
-It is no longer possible to force a transport reconnection (for example when the mailer is running via a daemon process). Instead, Symfony Mailer will attempt to reconnect to the transport automatically and throw an exception if the reconnection fails.
+이제 트랜스포트(발송 드라이버) 재연결을 강제로 할 수 없습니다(데몬 프로세스에서 수행하던 방식). 대신 Symfony Mailer가 필요시 자동으로 재연결을 시도하고, 실패 시 예외를 발생시킵니다.
 
-#### SMTP Stream Options
+#### SMTP 스트림 옵션
 
-Defining stream options for the SMTP transport is no longer supported. Instead, you must define the relevant options directly within the configuration if they are supported. For example, to disable TLS peer verification:
+SMTP 트랜스포트에 대한 스트림 옵션 지정은 더 이상 지원되지 않습니다. 지원되는 옵션은 설정파일에서 직접 지정하세요. 예시로, TLS 피어 검증 비활성화:
 
     'smtp' => [
         // Laravel 8.x...
@@ -594,82 +588,83 @@ Defining stream options for the SMTP transport is no longer supported. Instead, 
         'verify_peer' => false,
     ],
 
-To learn more about the available configuration options, please review the [Symfony Mailer documentation](https://symfony.com/doc/6.0/mailer.html#transport-setup).
+자세한 설정 옵션은 [Symfony Mailer 문서](https://symfony.com/doc/6.0/mailer.html#transport-setup)를 참고하세요.
 
-> **Warning**  
-> In spite of the example above, you are not generally advised to disable SSL verification since it introduces the possibility of "man-in-the-middle" attacks.
+> **경고**  
+> 위 예시처럼 SSL 검증을 비활성화하는 것은 일반적으로 권장하지 않습니다. "중간자 공격"과 같은 보안 위협이 생길 수 있습니다.
 
 #### SMTP `auth_mode`
 
-Defining the SMTP `auth_mode` in the `mail` configuration file is no longer required. The authentication mode will be automatically negotiated between Symfony Mailer and the SMTP server.
+메일 설정 파일에서 SMTP `auth_mode`를 따로 지정할 필요가 없습니다. 인증 모드는 Symfony Mailer와 SMTP 서버가 자동 협상합니다.
 
-#### Failed Recipients
+#### 실패한 수신자
 
-It is no longer possible to retrieve a list of failed recipients after sending a message. Instead, a `Symfony\Component\Mailer\Exception\TransportExceptionInterface` exception will be thrown if a message fails to send. Instead of relying on retrieving invalid email addresses after sending a message, we recommend that you validate email addresses before sending the message instead.
+이제 메시지 전송 이후 실패한 수신자 목록을 가져올 수 없습니다. 대신, 메시지 전송 실패 시 `Symfony\Component\Mailer\Exception\TransportExceptionInterface` 예외가 발생합니다. 전송 후 잘못된 이메일을 파악하기보다, 전송 전 이메일 주소 유효성을 검증하는 것이 좋습니다.
 
-### Packages
+### 패키지
 
 <a name="the-lang-directory"></a>
-#### The `lang` Directory
+#### `lang` 디렉터리
 
-**Likelihood Of Impact: Medium**
+**영향도: 중간**
 
-In new Laravel applications, the `resources/lang` directory is now located in the root project directory (`lang`). If your package is publishing language files to this directory, you should ensure that your package is publishing to `app()->langPath()` instead of a hard-coded path.
+새로운 Laravel 애플리케이션에서는 `resources/lang` 디렉터리가 루트 프로젝트 경로(`lang`)로 이동했습니다. 패키지가 이 디렉터리로 언어파일을 퍼블리시한다면, 하드코딩 경로 대신 `app()->langPath()`를 사용하세요.
 
 <a name="queue"></a>
-### Queue
+### 큐
 
 <a name="the-opis-closure-library"></a>
-#### The `opis/closure` Library
+#### `opis/closure` 라이브러리
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-Laravel's dependency on `opis/closure` has been replaced by `laravel/serializable-closure`. This should not cause any breaking change in your application unless you are interacting with the `opis/closure` library directly. In addition, the previously deprecated `Illuminate\Queue\SerializableClosureFactory` and `Illuminate\Queue\SerializableClosure` classes have been removed. If you are interacting with `opis/closure` library directly or using any of the removed classes, you may use [Laravel Serializable Closure](https://github.com/laravel/serializable-closure) instead.
+Laravel의 `opis/closure` 의존성은 `laravel/serializable-closure`로 대체되었습니다. `opis/closure`를 직접 사용하거나, 삭제된 `Illuminate\Queue\SerializableClosureFactory`/`SerializableClosure` 클래스를 사용한다면, [Laravel Serializable Closure](https://github.com/laravel/serializable-closure)로 대체하세요.
 
-#### The Failed Job Provider `flush` Method
+#### Failed Job Provider의 `flush` 메서드
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `flush` method defined by the `Illuminate\Queue\Failed\FailedJobProviderInterface` interface now accepts an `$hours` argument which determines how old a failed job must be (in hours) before it is flushed by the `queue:flush` command. If you are manually implementing the `FailedJobProviderInterface` you should ensure that your implementation is updated to reflect this new argument:
+`Illuminate\Queue\Failed\FailedJobProviderInterface` 인터페이스의 `flush` 메서드는 이제 `$hours` 인자를 받습니다(플러시될 실패한 잡의 '최소 시간(시간 단위)'). 직접 구현한다면 시그니처를 아래처럼 변경하세요:
 
 ```php
 public function flush($hours = null);
 ```
 
-### Session
+### 세션
 
-#### The `getSession` Method
+#### `getSession` 메서드
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `Symfony\Component\HttpFoundaton\Request` class that is extended by Laravel's own `Illuminate\Http\Request` class offers a `getSession` method to get the current session storage handler. This method is not documented by Laravel as most Laravel applications interact with the session through Laravel's own `session` method.
+Laravel의 `Illuminate\Http\Request`가 상속하는 `Symfony\Component\HttpFoundation\Request` 클래스는 세션 스토리지 핸들러를 가져오는 `getSession` 메서드를 제공합니다. Laravel 문서에는 별도 안내가 없지만, 해당 메서드는 이제 `Symfony\Component\HttpFoundation\Session\SessionInterface` 인스턴스를 반환하거나 세션이 없으면 `\Symfony\Component\HttpFoundation\Exception\SessionNotFoundException` 예외를 발생시킵니다.
 
-The `getSession` method previously returned an instance of `Illuminate\Session\Store` or `null`; however, due to the Symfony 6.x release enforcing a return type of `Symfony\Component\HttpFoundation\Session\SessionInterface`, the `getSession` now correctly returns a `SessionInterface` implementation or throws an `\Symfony\Component\HttpFoundation\Exception\SessionNotFoundException` exception when no session is available.
-
-### Testing
+### 테스트
 
 <a name="the-assert-deleted-method"></a>
-#### The `assertDeleted` Method
+#### `assertDeleted` 메서드
 
-**Likelihood Of Impact: Medium**
+**영향도: 중간**
 
-All calls to the `assertDeleted` method should be updated to `assertModelMissing`.
+모든 `assertDeleted` 호출을 `assertModelMissing`으로 변경해야 합니다.
 
-### Trusted Proxies
+### 신뢰할 수 있는 프록시
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-If you are upgrading your Laravel 8 project to Laravel 9 by importing your existing application code into a totally new Laravel 9 application skeleton, you may need to update your application's "trusted proxy" middleware.
+Laravel 8에서 9로 애플리케이션 코드를 새로운 9.x 스켈레톤으로 가져오는 경우, "신뢰할 수 있는 프록시" 미들웨어를 업데이트해야 할 수 있습니다.
 
-Within your `app/Http/Middleware/TrustProxies.php` file, update `use Fideloper\Proxy\TrustProxies as Middleware` to `use Illuminate\Http\Middleware\TrustProxies as Middleware`.
+`app/Http/Middleware/TrustProxies.php` 파일에서,
 
-Next, within `app/Http/Middleware/TrustProxies.php`, you should update the `$headers` property definition:
+`use Fideloper\Proxy\TrustProxies as Middleware`를  
+`use Illuminate\Http\Middleware\TrustProxies as Middleware`로 바꾸세요.
+
+그리고 `$headers` 속성을 아래처럼 수정하세요:
 
 ```php
-// Before...
+// 변경 전
 protected $headers = Request::HEADER_X_FORWARDED_ALL;
 
-// After...
+// 변경 후
 protected $headers =
     Request::HEADER_X_FORWARDED_FOR |
     Request::HEADER_X_FORWARDED_HOST |
@@ -678,47 +673,44 @@ protected $headers =
     Request::HEADER_X_FORWARDED_AWS_ELB;
 ```
 
-Finally, you can remove the `fideloper/proxy` Composer dependency from your application:
+마지막으로, `fideloper/proxy` Composer 의존성을 제거하세요.
 
 ```shell
 composer remove fideloper/proxy
 ```
 
-### Validation
+### 검증(Validation)
 
-#### Form Request `validated` Method
+#### Form Request의 `validated` 메서드
 
-**Likelihood Of Impact: Low**
+**영향도: 낮음**
 
-The `validated` method offered by form requests now accepts `$key` and `$default` arguments. If you are manually overwriting the definition of this method, you should update your method's signature to reflect these new arguments:
+Form Request가 제공하는 `validated` 메서드는 이제 `$key`와 `$default` 인자를 받을 수 있습니다. 이 메서드를 오버라이드 했다면, 시그니처를 수정하세요:
 
 ```php
 public function validated($key = null, $default = null)
 ```
 
 <a name="the-password-rule"></a>
-#### The `password` Rule
+#### `password` 규칙
 
-**Likelihood Of Impact: Medium**
+**영향도: 중간**
 
-The `password` rule, which validates that the given input value matches the authenticated user's current password, has been renamed to `current_password`.
+입력값이 인증된 사용자의 현재 비밀번호와 일치하는지 확인하는 `password` 규칙이 `current_password`로 이름이 변경되었습니다.
 
 <a name="unvalidated-array-keys"></a>
-#### Unvalidated Array Keys
+#### 검증되지 않은 배열 키
 
-**Likelihood Of Impact: Medium**
+**영향도: 중간**
 
-In previous releases of Laravel, you were required to manually instruct Laravel's validator to exclude unvalidated array keys from the "validated" data it returns, especially in combination with an `array` rule that does not specify a list of allowed keys.
-
-However, in Laravel 9.x, unvalidated array keys are always excluded from the "validated" data even when no allowed keys have been specified via the `array` rule. Typically, this behavior is the most expected behavior and the previous `excludeUnvalidatedArrayKeys` method was only added to Laravel 8.x as a temporary measure in order to preserve backwards compatibility.
-
-Although it is not recommended, you may opt-in to the previous Laravel 8.x behavior by invoking a new `includeUnvalidatedArrayKeys` method within the `boot` method of one of your application's service providers:
+이전에는 검증되지 않은 배열 키를 반환값에서 제외할지 직접 지정해야 했지만, Laravel 9.x에서는 `array` 규칙에 허용 키를 지정하지 않은 경우에도 "validated" 데이터에 항상 포함되지 않습니다.  
+기존 방식으로 돌아가고 싶다면, 서비스 프로바이더의 `boot` 메서드에서 `includeUnvalidatedArrayKeys`를 호출하세요:
 
 ```php
 use Illuminate\Support\Facades\Validator;
 
 /**
- * Register any application services.
+ * 애플리케이션 서비스 등록
  *
  * @return void
  */
@@ -729,6 +721,6 @@ public function boot()
 ```
 
 <a name="miscellaneous"></a>
-### Miscellaneous
+### 기타
 
-We also encourage you to view the changes in the `laravel/laravel` [GitHub repository](https://github.com/laravel/laravel). While many of these changes are not required, you may wish to keep these files in sync with your application. Some of these changes will be covered in this upgrade guide, but others, such as changes to configuration files or comments, will not be. You can easily view the changes with the [GitHub comparison tool](https://github.com/laravel/laravel/compare/8.x...9.x) and choose which updates are important to you.
+`laravel/laravel` [GitHub 저장소](https://github.com/laravel/laravel)의 변경사항도 참고하길 권장합니다. 이 가이드에 포함되지 않은 설정 파일/주석 등은 직접 [GitHub 비교 도구](https://github.com/laravel/laravel/compare/8.x...9.x)를 통해 필요한 변경만 선택적으로 반영할 수 있습니다.

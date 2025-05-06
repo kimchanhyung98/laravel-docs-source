@@ -1,56 +1,56 @@
 # Laravel Scout
 
-- [Introduction](#introduction)
-- [Installation](#installation)
-    - [Driver Prerequisites](#driver-prerequisites)
-    - [Queueing](#queueing)
-- [Configuration](#configuration)
-    - [Configuring Model Indexes](#configuring-model-indexes)
-    - [Configuring Searchable Data](#configuring-searchable-data)
-    - [Configuring The Model ID](#configuring-the-model-id)
-    - [Configuring Search Engines Per Model](#configuring-search-engines-per-model)
-    - [Identifying Users](#identifying-users)
-- [Database / Collection Engines](#database-and-collection-engines)
-    - [Database Engine](#database-engine)
-    - [Collection Engine](#collection-engine)
-- [Indexing](#indexing)
-    - [Batch Import](#batch-import)
-    - [Adding Records](#adding-records)
-    - [Updating Records](#updating-records)
-    - [Removing Records](#removing-records)
-    - [Pausing Indexing](#pausing-indexing)
-    - [Conditionally Searchable Model Instances](#conditionally-searchable-model-instances)
-- [Searching](#searching)
-    - [Where Clauses](#where-clauses)
-    - [Pagination](#pagination)
-    - [Soft Deleting](#soft-deleting)
-    - [Customizing Engine Searches](#customizing-engine-searches)
-- [Custom Engines](#custom-engines)
-- [Builder Macros](#builder-macros)
+- [소개](#introduction)
+- [설치](#installation)
+    - [드라이버 사전 준비](#driver-prerequisites)
+    - [큐 사용](#queueing)
+- [구성](#configuration)
+    - [모델 인덱스 설정](#configuring-model-indexes)
+    - [검색 대상 데이터 설정](#configuring-searchable-data)
+    - [모델 ID 설정](#configuring-the-model-id)
+    - [모델별 검색 엔진 설정](#configuring-search-engines-per-model)
+    - [사용자 식별](#identifying-users)
+- [데이터베이스 / 컬렉션 엔진](#database-and-collection-engines)
+    - [데이터베이스 엔진](#database-engine)
+    - [컬렉션 엔진](#collection-engine)
+- [인덱싱](#indexing)
+    - [배치 가져오기](#batch-import)
+    - [레코드 추가](#adding-records)
+    - [레코드 업데이트](#updating-records)
+    - [레코드 제거](#removing-records)
+    - [인덱싱 일시 중지](#pausing-indexing)
+    - [조건부로 검색 가능한 모델 인스턴스](#conditionally-searchable-model-instances)
+- [검색](#searching)
+    - [Where 절](#where-clauses)
+    - [페이지네이션](#pagination)
+    - [소프트 삭제(Soft Deleting)](#soft-deleting)
+    - [엔진별 검색 커스터마이징](#customizing-engine-searches)
+- [커스텀 엔진](#custom-engines)
+- [빌더 매크로](#builder-macros)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-[Laravel Scout](https://github.com/laravel/scout) provides a simple, driver based solution for adding full-text search to your [Eloquent models](/docs/{{version}}/eloquent). Using model observers, Scout will automatically keep your search indexes in sync with your Eloquent records.
+[Laravel Scout](https://github.com/laravel/scout)는 [Eloquent 모델](/docs/{{version}}/eloquent)에 전체 텍스트 검색을 추가하기 위한 간단한, 드라이버 기반의 솔루션을 제공합니다. 모델 옵저버를 사용하여, Scout는 Eloquent 레코드와 검색 인덱스를 자동으로 동기화합니다.
 
-Currently, Scout ships with [Algolia](https://www.algolia.com/), [MeiliSearch](https://www.meilisearch.com), and MySQL / PostgreSQL (`database`) drivers. In addition, Scout includes a "collection" driver that is designed for local development usage and does not require any external dependencies or third-party services. Furthermore, writing custom drivers is simple and you are free to extend Scout with your own search implementations.
+현재 Scout는 [Algolia](https://www.algolia.com/), [MeiliSearch](https://www.meilisearch.com), 그리고 MySQL / PostgreSQL(`database`) 드라이버를 지원합니다. 추가로, Scout에는 외부 의존성이나 서드파티 서비스 없이 로컬 개발 환경에서 사용하기 좋은 "collection" 드라이버도 포함되어 있습니다. 또한, 직접 커스텀 드라이버를 작성하는 것도 매우 간단하며, 자신만의 검색 엔진을 자유롭게 확장할 수 있습니다.
 
 <a name="installation"></a>
-## Installation
+## 설치
 
-First, install Scout via the Composer package manager:
+먼저, Composer 패키지 매니저를 통해 Scout를 설치하세요:
 
 ```shell
 composer require laravel/scout
 ```
 
-After installing Scout, you should publish the Scout configuration file using the `vendor:publish` Artisan command. This command will publish the `scout.php` configuration file to your application's `config` directory:
+Scout를 설치한 후에는 `vendor:publish` Artisan 명령어로 Scout 설정 파일을 배포해야 합니다. 이 명령을 실행하면 `scout.php` 설정 파일이 애플리케이션의 `config` 디렉터리에 생성됩니다:
 
 ```shell
 php artisan vendor:publish --provider="Laravel\Scout\ScoutServiceProvider"
 ```
 
-Finally, add the `Laravel\Scout\Searchable` trait to the model you would like to make searchable. This trait will register a model observer that will automatically keep the model in sync with your search driver:
+마지막으로, 검색 대상으로 만들 모델에 `Laravel\Scout\Searchable` 트레이트를 추가하세요. 이 트레이트는 모델 옵저버를 등록하여, 모델이 검색 드라이버와 자동으로 동기화되도록 합니다:
 
     <?php
 
@@ -65,12 +65,12 @@ Finally, add the `Laravel\Scout\Searchable` trait to the model you would like to
     }
 
 <a name="driver-prerequisites"></a>
-### Driver Prerequisites
+### 드라이버 사전 준비
 
 <a name="algolia"></a>
 #### Algolia
 
-When using the Algolia driver, you should configure your Algolia `id` and `secret` credentials in your `config/scout.php` configuration file. Once your credentials have been configured, you will also need to install the Algolia PHP SDK via the Composer package manager:
+Algolia 드라이버를 사용할 경우, `config/scout.php` 파일에서 Algolia `id`와 `secret` 자격증명을 설정해야 합니다. 자격증명을 설정한 뒤, Composer 패키지 매니저로 Algolia PHP SDK도 설치해야 합니다:
 
 ```shell
 composer require algolia/algoliasearch-client-php
@@ -79,15 +79,15 @@ composer require algolia/algoliasearch-client-php
 <a name="meilisearch"></a>
 #### MeiliSearch
 
-[MeiliSearch](https://www.meilisearch.com) is a blazingly fast and open source search engine. If you aren't sure how to install MeiliSearch on your local machine, you may use [Laravel Sail](/docs/{{version}}/sail#meilisearch), Laravel's officially supported Docker development environment.
+[MeiliSearch](https://www.meilisearch.com)는 매우 빠르고 오픈 소스인 검색 엔진입니다. 로컬 환경에 MeiliSearch를 설치하는 방법을 잘 모를 경우, Laravel의 공식 Docker 개발 환경인 [Laravel Sail](/docs/{{version}}/sail#meilisearch)을 사용할 수 있습니다.
 
-When using the MeiliSearch driver you will need to install the MeiliSearch PHP SDK via the Composer package manager:
+MeiliSearch 드라이버를 사용할 경우, Composer로 MeiliSearch PHP SDK를 설치해야 합니다:
 
 ```shell
 composer require meilisearch/meilisearch-php http-interop/http-factory-guzzle
 ```
 
-Then, set the `SCOUT_DRIVER` environment variable as well as your MeiliSearch `host` and `key` credentials within your application's `.env` file:
+그런 다음, 애플리케이션의 `.env` 파일에 `SCOUT_DRIVER` 환경 변수와 MeiliSearch의 `host`, `key` 값을 설정하세요:
 
 ```ini
 SCOUT_DRIVER=meilisearch
@@ -95,25 +95,25 @@ MEILISEARCH_HOST=http://127.0.0.1:7700
 MEILISEARCH_KEY=masterKey
 ```
 
-For more information regarding MeiliSearch, please consult the [MeiliSearch documentation](https://docs.meilisearch.com/learn/getting_started/quick_start.html).
+MeiliSearch에 대한 자세한 설명은 [MeiliSearch 공식 문서](https://docs.meilisearch.com/learn/getting_started/quick_start.html)를 참고하세요.
 
-In addition, you should ensure that you install a version of `meilisearch/meilisearch-php` that is compatible with your MeiliSearch binary version by reviewing [MeiliSearch's documentation regarding binary compatibility](https://github.com/meilisearch/meilisearch-php#-compatibility-with-meilisearch).
+또한, [MeiliSearch-php 바이너리 호환성 관련 문서](https://github.com/meilisearch/meilisearch-php#-compatibility-with-meilisearch)를 참고하여, 사용하는 MeiliSearch 바이너리 버전에 호환 가능한 `meilisearch/meilisearch-php` 버전을 설치해야 합니다.
 
-> **Warning**  
-> When upgrading Scout on an application that utilizes MeiliSearch, you should always [review any additional breaking changes](https://github.com/meilisearch/MeiliSearch/releases) to the MeiliSearch service itself.
+> **경고**  
+> MeiliSearch를 사용하는 애플리케이션에서 Scout를 업그레이드할 때에는, 항상 [MeiliSearch 서비스의 파괴적 변경 사항](https://github.com/meilisearch/MeiliSearch/releases)이 있는지 확인해야 합니다.
 
 <a name="queueing"></a>
-### Queueing
+### 큐 사용
 
-While not strictly required to use Scout, you should strongly consider configuring a [queue driver](/docs/{{version}}/queues) before using the library. Running a queue worker will allow Scout to queue all operations that sync your model information to your search indexes, providing much better response times for your application's web interface.
+Scout를 사용하는 데 필수는 아니지만, [큐 드라이버](/docs/{{version}}/queues)를 미리 설정하면 더 나은 응답 시간을 경험할 수 있습니다. 큐 워커를 실행하면, Scout가 모델 정보를 검색 인덱스와 동기화하는 모든 작업을 큐에 삽입하여 웹 인터페이스의 응답 속도를 대폭 개선할 수 있습니다.
 
-Once you have configured a queue driver, set the value of the `queue` option in your `config/scout.php` configuration file to `true`:
+큐 드라이버를 설정한 후, `config/scout.php` 설정 파일의 `queue` 옵션 값을 `true`로 설정하세요:
 
     'queue' => true,
 
-Even when the `queue` option is set to `false`, it's important to remember that some Scout drivers like Algolia and Meilisearch always index records asynchronously. Meaning, even though the index operation has completed within your Laravel application, the search engine itself may not reflect the new and updated records immediately.
+`queue` 옵션이 `false`로 설정되어 있더라도, Algolia나 Meilisearch 같은 일부 Scout 드라이버는 항상 비동기로 레코드를 인덱싱한다는 점을 유념해야 합니다. 즉, Laravel 애플리케이션에서 인덱스 작업이 완료되어도, 실제 검색 엔진 결과 반영이 바로 이루어지지 않을 수 있습니다.
 
-To specify the connection and queue that your Scout jobs utilize, you may define the `queue` configuration option as an array:
+Scout 작업이 사용할 연결과 큐를 지정하려면, `queue` 구성을 배열로 정의할 수 있습니다:
 
     'queue' => [
         'connection' => 'redis',
@@ -121,12 +121,12 @@ To specify the connection and queue that your Scout jobs utilize, you may define
     ],
 
 <a name="configuration"></a>
-## Configuration
+## 구성
 
 <a name="configuring-model-indexes"></a>
-### Configuring Model Indexes
+### 모델 인덱스 설정
 
-Each Eloquent model is synced with a given search "index", which contains all of the searchable records for that model. In other words, you can think of each index like a MySQL table. By default, each model will be persisted to an index matching the model's typical "table" name. Typically, this is the plural form of the model name; however, you are free to customize the model's index by overriding the `searchableAs` method on the model:
+각 Eloquent 모델은 해당 모델에 대한 모든 검색 가능한 레코드를 저장하는 특정 검색 "인덱스"와 동기화됩니다. 즉, 각 인덱스는 MySQL의 테이블처럼 생각할 수 있습니다. 기본적으로는 각 모델이 테이블명과 일치하는 인덱스에 저장됩니다. 대체로 이 값은 모델 이름의 복수형이 사용됩니다. 하지만, 모델의 `searchableAs` 메서드를 오버라이드하여 인덱스명을 자유롭게 지정할 수 있습니다:
 
     <?php
 
@@ -140,7 +140,7 @@ Each Eloquent model is synced with a given search "index", which contains all of
         use Searchable;
 
         /**
-         * Get the name of the index associated with the model.
+         * 모델에 연결된 인덱스의 이름 반환.
          *
          * @return string
          */
@@ -151,9 +151,9 @@ Each Eloquent model is synced with a given search "index", which contains all of
     }
 
 <a name="configuring-searchable-data"></a>
-### Configuring Searchable Data
+### 검색 대상 데이터 설정
 
-By default, the entire `toArray` form of a given model will be persisted to its search index. If you would like to customize the data that is synchronized to the search index, you may override the `toSearchableArray` method on the model:
+기본적으로, 해당 모델의 `toArray` 형태 전체가 검색 인덱스에 보관됩니다. 인덱스에 동기화될 데이터를 커스터마이즈하려면, 모델에서 `toSearchableArray` 메서드를 오버라이드할 수 있습니다:
 
     <?php
 
@@ -167,7 +167,7 @@ By default, the entire `toArray` form of a given model will be persisted to its 
         use Searchable;
 
         /**
-         * Get the indexable data array for the model.
+         * 모델을 인덱싱할 데이터 배열 반환.
          *
          * @return array
          */
@@ -175,13 +175,13 @@ By default, the entire `toArray` form of a given model will be persisted to its 
         {
             $array = $this->toArray();
 
-            // Customize the data array...
+            // 데이터 배열 커스터마이징...
 
             return $array;
         }
     }
 
-Some search engines such as MeiliSearch will only perform filter operations (`>`, `<`, etc.) on data of the correct type. So, when using these search engines and customizing your searchable data, you should ensure that numeric values are cast to their correct type:
+MeiliSearch와 같이 데이터 타입에 따라 필터 연산(`>`, `<` 등)이 가능한 검색 엔진에서는, 숫자값을 정확한 타입으로 캐스팅해야 필터링이 정상 동작됩니다:
 
     public function toSearchableArray()
     {
@@ -193,11 +193,11 @@ Some search engines such as MeiliSearch will only perform filter operations (`>`
     }
 
 <a name="configuring-filterable-data-for-meilisearch"></a>
-#### Configuring Filterable Data & Index Settings (MeiliSearch)
+#### 필터/정렬 속성 및 인덱스 설정(MeiliSearch)
 
-Unlike Scout's other drivers, MeiliSearch requires you to pre-define index search settings such as filterable attributes, sortable attributes, and [other supported settings fields](https://docs.meilisearch.com/reference/api/settings.html).
+Scout의 다른 드라이버와 달리, MeiliSearch는 필터링 가능 속성과 정렬 가능 속성 등 [지원되는 설정 필드](https://docs.meilisearch.com/reference/api/settings.html)를 미리 정의해야 합니다.
 
-Filterable attributes are any attributes you plan to filter on when invoking Scout's `where` method, while sortable attributes are any attributes you plan to sort by when invoking Scout's `orderBy` method. To define your index settings, adjust the `index-settings` portion of your `meilisearch` configuration entry in your application's `scout` configuration file:
+필터링 가능 속성은 Scout의 `where` 메서드로 필터링할 속성이고, 정렬 가능 속성은 `orderBy` 메서드로 정렬할 속성입니다. 인덱스 설정은 `scout` 설정 파일의 `meilisearch` 항목에서 `index-settings`를 통해 정의할 수 있습니다:
 
 ```php
 use App\Models\User;
@@ -210,7 +210,7 @@ use App\Models\Flight;
         User::class => [
             'filterableAttributes'=> ['id', 'name', 'email'],
             'sortableAttributes' => ['created_at'],
-            // Other settings fields...
+            // 기타 설정...
         ],
         Flight::class => [
             'filterableAttributes'=> ['id', 'destination'],
@@ -220,7 +220,7 @@ use App\Models\Flight;
 ],
 ```
 
-If the model underlying a given index is soft deletable and is included in the `index-settings` array, Scout will automatically include support for filtering on soft deleted models on that index. If you have no other filterable or sortable attributes to define for a soft deletable model index, you may simply add an empty entry to the `index-settings` array for that model:
+해당 인덱스가 소프트 딜리트 가능한 모델일 경우, `index-settings` 배열에 모델이 포함돼 있으면 자동으로 소프트 딜리트 필터링 지원이 설정됩니다. 딱히 다른 필터/정렬 속성이 필요 없는 경우, 아래처럼 빈 항목만 추가해도 됩니다:
 
 ```php
 'index-settings' => [
@@ -228,16 +228,16 @@ If the model underlying a given index is soft deletable and is included in the `
 ],
 ```
 
-After configuring your application's index settings, you must invoke the `scout:sync-index-settings` Artisan command. This command will inform MeiliSearch of your currently configured index settings. For convenience, you may wish to make this command part of your deployment process:
+설정 후에는 `scout:sync-index-settings` Artisan 명령어를 반드시 실행하여, MeiliSearch에 인덱스 설정 정보를 반영해야 합니다. 배포 자동화에 포함시키면 편리합니다:
 
 ```shell
 php artisan scout:sync-index-settings
 ```
 
 <a name="configuring-the-model-id"></a>
-### Configuring The Model ID
+### 모델 ID 설정
 
-By default, Scout will use the primary key of the model as the model's unique ID / key that is stored in the search index. If you need to customize this behavior, you may override the `getScoutKey` and the `getScoutKeyName` methods on the model:
+기본적으로 Scout는 모델의 기본 키(primary key)를 검색 인덱스에 저장하는 모델의 고유 ID/키로 사용합니다. 이 동작을 커스터마이즈하려면, 모델에서 `getScoutKey` 및 `getScoutKeyName` 메서드를 오버라이드하세요:
 
     <?php
 
@@ -251,7 +251,7 @@ By default, Scout will use the primary key of the model as the model's unique ID
         use Searchable;
 
         /**
-         * Get the value used to index the model.
+         * 모델 인덱싱에 사용할 값 반환.
          *
          * @return mixed
          */
@@ -261,7 +261,7 @@ By default, Scout will use the primary key of the model as the model's unique ID
         }
 
         /**
-         * Get the key name used to index the model.
+         * 모델 인덱싱에 사용할 키 명 반환.
          *
          * @return mixed
          */
@@ -272,9 +272,9 @@ By default, Scout will use the primary key of the model as the model's unique ID
     }
 
 <a name="configuring-search-engines-per-model"></a>
-### Configuring Search Engines Per Model
+### 모델별 검색 엔진 설정
 
-When searching, Scout will typically use the default search engine specified in your application's `scout` configuration file. However, the search engine for a particular model can be changed by overriding the `searchableUsing` method on the model:
+보통 Scout는 `scout` 설정 파일의 기본 검색 엔진을 사용합니다. 하지만, 특정 모델에서 사용할 검색 엔진을 변경하려면 `searchableUsing` 메서드를 오버라이드하세요:
 
     <?php
 
@@ -289,7 +289,7 @@ When searching, Scout will typically use the default search engine specified in 
         use Searchable;
 
         /**
-         * Get the engine used to index the model.
+         * 모델 인덱싱에 사용할 엔진 반환.
          *
          * @return \Laravel\Scout\Engines\Engine
          */
@@ -300,47 +300,47 @@ When searching, Scout will typically use the default search engine specified in 
     }
 
 <a name="identifying-users"></a>
-### Identifying Users
+### 사용자 식별
 
-Scout also allows you to auto identify users when using [Algolia](https://algolia.com). Associating the authenticated user with search operations may be helpful when viewing your search analytics within Algolia's dashboard. You can enable user identification by defining a `SCOUT_IDENTIFY` environment variable as `true` in your application's `.env` file:
+Scout는 [Algolia](https://algolia.com) 사용 시 사용자 자동 식별도 지원합니다. 인증된 사용자를 검색 요청과 연계하면, Algolia 대시보드에서 검색 분석 시 유용하게 활용할 수 있습니다. 사용자 식별 기능은 `.env` 파일에 `SCOUT_IDENTIFY` 환경 변수를 `true`로 지정하여 활성화할 수 있습니다:
 
 ```ini
 SCOUT_IDENTIFY=true
 ```
 
-Enabling this feature this will also pass the request's IP address and your authenticated user's primary identifier to Algolia so this data is associated with any search request that is made by the user.
+이 기능을 활성화하면 요청의 IP 주소와 인증된 사용자의 기본 키도 Algolia에 전달되어, 검색 요청 데이터와 연관됩니다.
 
 <a name="database-and-collection-engines"></a>
-## Database / Collection Engines
+## 데이터베이스 / 컬렉션 엔진
 
 <a name="database-engine"></a>
-### Database Engine
+### 데이터베이스 엔진
 
-> **Warning**  
-> The database engine currently supports MySQL and PostgreSQL.
+> **경고**  
+> 데이터베이스 엔진은 현재 MySQL 및 PostgreSQL만 지원합니다.
 
-If your application interacts with small to medium sized databases or has a light workload, you may find it more convenient to get started with Scout's "database" engine. The database engine will use "where like" clauses and full text indexes when filtering results from your existing database to determine the applicable search results for your query.
+애플리케이션이 소규모~중간 규모 DB를 사용하거나, 부하가 가벼울 경우 Scout의 "database" 엔진으로 빠르게 시작할 수 있습니다. DB 엔진은 기존 DB에서 "where like" 절과 전체 텍스트 인덱스를 활용하여 검색 쿼리에 맞는 결과를 걸러냅니다.
 
-To use the database engine, you may simply set the value of the `SCOUT_DRIVER` environment variable to `database`, or specify the `database` driver directly in your application's `scout` configuration file:
+데이터베이스 엔진 사용 방법은, `.env` 파일에서 `SCOUT_DRIVER` 변수를 `database`로 설정하거나, 설정 파일에서 `database` 드라이버를 직접 지정하면 됩니다:
 
 ```ini
 SCOUT_DRIVER=database
 ```
 
-Once you have specified the database engine as your preferred driver, you must [configure your searchable data](#configuring-searchable-data). Then, you may start [executing search queries](#searching) against your models. Search engine indexing, such as the indexing needed to seed Algolia or MeiliSearch indexes, is unnecessary when using the database engine.
+데이터베이스 엔진이 선택되면 [검색 대상 데이터 설정](#configuring-searchable-data)을 반드시 완료하세요. 그 후 [검색 쿼리 실행](#searching)이 가능합니다. Algolia/MeiliSearch처럼 별도 인덱싱을 위한 시딩 작업이 필요하지 않습니다.
 
-#### Customizing Database Searching Strategies
+#### 데이터베이스 검색 전략 커스터마이징
 
-By default, the database engine will execute a "where like" query against every model attribute that you have [configured as searchable](#configuring-searchable-data). However, in some situations, this may result in poor performance. Therefore, the database engine's search strategy can be configured so that some specified columns utilize full text search queries or only use "where like" constraints to search the prefixes of strings (`example%`) instead of searching within the entire string (`%example%`).
+기본적으로 database 엔진은 [검색 대상으로 설정된](#configuring-searchable-data) 모든 모델 속성에 "where like" 쿼리를 실행합니다. 하지만 성능에 문제가 있을 경우, 특정 컬럼을 전체 텍스트 검색 또는 접두어만 검색하는 "where like"로 지정할 수 있습니다.
 
-To define this behavior, you may assign PHP attributes to your model's `toSearchableArray` method. Any columns that are not assigned additional search strategy behavior will continue to use the default "where like" strategy:
+이 설정은 모델의 `toSearchableArray`에 PHP 속성(Attributes)을 추가해 정의합니다. 별도 검색 전략이 없는 컬럼은 기본 "where like"를 유지합니다:
 
 ```php
 use Laravel\Scout\Attributes\SearchUsingFullText;
 use Laravel\Scout\Attributes\SearchUsingPrefix;
 
 /**
- * Get the indexable data array for the model.
+ * 모델 검색 대상 데이터 배열을 반환.
  *
  * @return array
  */
@@ -357,53 +357,53 @@ public function toSearchableArray()
 }
 ```
 
-> **Warning**  
-> Before specifying that a column should use full text query constraints, ensure that the column has been assigned a [full text index](/docs/{{version}}/migrations#available-index-types).
+> **경고**  
+> 전체 텍스트 인덱스를 사용하는 컬럼을 지정할 경우, 해당 컬럼에 [FullText 인덱스](/docs/{{version}}/migrations#available-index-types)가 적용되어 있는지 확인하세요.
 
 <a name="collection-engine"></a>
-### Collection Engine
+### 컬렉션 엔진
 
-While you are free to use the Algolia or MeiliSearch search engines during local development, you may find it more convenient to get started with the "collection" engine. The collection engine will use "where" clauses and collection filtering on results from your existing database to determine the applicable search results for your query. When using this engine, it is not necessary to "index" your searchable models, as they will simply be retrieved from your local database.
+로컬 개발에서 Algolia나 MeiliSearch 대신 "collection" 엔진으로 간편히 시작할 수 있습니다. 컬렉션 엔진은 기존 DB에서 쿼리 결과를 불러온 후, "where" 절과 Laravel의 컬렉션 필터링 기능을 사용합니다. 인덱싱 과정 없이, 모델은 로컬 DB에서 바로 읽어 집니다.
 
-To use the collection engine, you may simply set the value of the `SCOUT_DRIVER` environment variable to `collection`, or specify the `collection` driver directly in your application's `scout` configuration file:
+컬렉션 엔진 사용 방법은 `.env` 파일에서 `SCOUT_DRIVER` 변수를 `collection`으로 설정하거나 `scout` 설정 파일에서 직접 지정하면 됩니다:
 
 ```ini
 SCOUT_DRIVER=collection
 ```
 
-Once you have specified the collection driver as your preferred driver, you may start [executing search queries](#searching) against your models. Search engine indexing, such as the indexing needed to seed Algolia or MeiliSearch indexes, is unnecessary when using the collection engine.
+컬렉션 드라이버가 선택되면 바로 [검색 쿼리 실행](#searching)이 가능합니다. 별도의 인덱싱 작업이 필요하지 않습니다.
 
-#### Differences From Database Engine
+#### 데이터베이스 엔진과의 차이점
 
-On first glance, the "database" and "collections" engines are fairly similar. They both interact directly with your database to retrieve search results. However, the collection engine does not utilize full text indexes or `LIKE` clauses to find matching records. Instead, it pulls all possible records and uses Laravel's `Str::is` helper to determine if the search string exists within the model attribute values.
+언뜻 보면 "database"와 "collection" 엔진은 모두 DB에 직접 접근하는 점이 비슷하지만, collection 엔진은 full text 인덱스나 `LIKE` 쿼리를 쓰지 않고, 모든 레코드를 로드한 뒤 Laravel `Str::is` 헬퍼로 검색 문자열이 속성값에 포함되어 있는지 판별합니다.
 
-The collection engine is the most portable search engine as it works across all relational databases supported by Laravel (including SQLite and SQL Server); however, it is less efficient than Scout's database engine.
+컬렉션 엔진은 SQLite, SQL Server 등 Laravel이 지원하는 모든 관계형 DB에서 작동하기 때문에 가장 이식성이 높은 검색 엔진입니다. 단, database 엔진보다 효율성은 낮습니다.
 
 <a name="indexing"></a>
-## Indexing
+## 인덱싱
 
 <a name="batch-import"></a>
-### Batch Import
+### 배치 가져오기
 
-If you are installing Scout into an existing project, you may already have database records you need to import into your indexes. Scout provides a `scout:import` Artisan command that you may use to import all of your existing records into your search indexes:
+기존 프로젝트에 Scout를 도입하는 경우, 이미 DB에 저장된 레코드를 검색 인덱스에 가져와야 할 수 있습니다. Scout는 `scout:import` Artisan 명령어로 기존 레코드를 인덱스에 일괄 등록할 수 있습니다:
 
 ```shell
 php artisan scout:import "App\Models\Post"
 ```
 
-The `flush` command may be used to remove all of a model's records from your search indexes:
+모델 전체를 인덱스에서 제거하려면 `flush` 명령어를 사용하세요:
 
 ```shell
 php artisan scout:flush "App\Models\Post"
 ```
 
 <a name="modifying-the-import-query"></a>
-#### Modifying The Import Query
+#### 가져오기 쿼리 수정
 
-If you would like to modify the query that is used to retrieve all of your models for batch importing, you may define a `makeAllSearchableUsing` method on your model. This is a great place to add any eager relationship loading that may be necessary before importing your models:
+배치 가져오기 시점에 불러오는 모델 쿼리를 수정하고 싶다면, 모델에 `makeAllSearchableUsing` 메서드를 정의하세요. 이곳에서 관계 로딩(eager loading) 등 필요한 로직을 추가할 수 있습니다:
 
     /**
-     * Modify the query used to retrieve models when making all of the models searchable.
+     * 전체 모델을 검색 가능하게 만들 때 쿼리 수정.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
@@ -414,9 +414,9 @@ If you would like to modify the query that is used to retrieve all of your model
     }
 
 <a name="adding-records"></a>
-### Adding Records
+### 레코드 추가
 
-Once you have added the `Laravel\Scout\Searchable` trait to a model, all you need to do is `save` or `create` a model instance and it will automatically be added to your search index. If you have configured Scout to [use queues](#queueing) this operation will be performed in the background by your queue worker:
+`Laravel\Scout\Searchable` 트레이트를 모델에 추가했다면, 단순히 `save`나 `create`로 모델을 저장하는 것만으로 자동으로 검색 인덱스에 추가됩니다. Scout를 [큐 작업과 연동](#queueing)하고 있다면, 이 동작도 백그라운드 큐 작업자로 처리됩니다:
 
     use App\Models\Order;
 
@@ -427,54 +427,54 @@ Once you have added the `Laravel\Scout\Searchable` trait to a model, all you nee
     $order->save();
 
 <a name="adding-records-via-query"></a>
-#### Adding Records Via Query
+#### 쿼리로 레코드 추가
 
-If you would like to add a collection of models to your search index via an Eloquent query, you may chain the `searchable` method onto the Eloquent query. The `searchable` method will [chunk the results](/docs/{{version}}/eloquent#chunking-results) of the query and add the records to your search index. Again, if you have configured Scout to use queues, all of the chunks will be imported in the background by your queue workers:
+Eloquent 쿼리를 활용해 여러 모델을 인덱스에 추가하려면, Eloquent 쿼리 체인에 `searchable` 메서드를 사용하세요. 이 메서드는 쿼리 결과를 [청크 단위로 분할](/docs/{{version}}/eloquent#chunking-results)하여 인덱스에 추가합니다. 큐를 사용 중이면, 각 청크도 큐 워커가 백그라운드에서 처리합니다:
 
     use App\Models\Order;
 
     Order::where('price', '>', 100)->searchable();
 
-You may also call the `searchable` method on an Eloquent relationship instance:
+Eloquent 관계 인스턴스에도 `searchable`을 호출할 수 있습니다:
 
     $user->orders()->searchable();
 
-Or, if you already have a collection of Eloquent models in memory, you may call the `searchable` method on the collection instance to add the model instances to their corresponding index:
+이미 Eloquent 모델이 담긴 컬렉션이 있다면, 컬렉션 인스턴스에 `searchable`을 호출해 해당 인스턴스를 인덱스에 추가할 수 있습니다:
 
     $orders->searchable();
 
-> **Note**  
-> The `searchable` method can be considered an "upsert" operation. In other words, if the model record is already in your index, it will be updated. If it does not exist in the search index, it will be added to the index.
+> **참고**  
+> `searchable` 메서드는 "업서트(upsert)" 동작을 합니다. 즉, 이미 인덱스에 있으면 업데이트, 없으면 새로 추가합니다.
 
 <a name="updating-records"></a>
-### Updating Records
+### 레코드 업데이트
 
-To update a searchable model, you only need to update the model instance's properties and `save` the model to your database. Scout will automatically persist the changes to your search index:
+검색 가능한 모델을 업데이트하려면, 해당 모델의 속성값을 변경하고 `save` 하면 자동으로 검색 인덱스에 반영됩니다:
 
     use App\Models\Order;
 
     $order = Order::find(1);
 
-    // Update the order...
+    // 주문 정보 변경...
 
     $order->save();
 
-You may also invoke the `searchable` method on an Eloquent query instance to update a collection of models. If the models do not exist in your search index, they will be created:
+Eloquent 쿼리 인스턴스에도 `searchable`을 호출해 다수 모델을 한 번에 업데이트할 수 있습니다. 인덱스에 없다면 새로 추가합니다:
 
     Order::where('price', '>', 100)->searchable();
 
-If you would like to update the search index records for all of the models in a relationship, you may invoke the `searchable` on the relationship instance:
+관계형 모델의 인덱스도 `searchable`로 일괄 업데이트할 수 있습니다:
 
     $user->orders()->searchable();
 
-Or, if you already have a collection of Eloquent models in memory, you may call the `searchable` method on the collection instance to update the model instances in their corresponding index:
+모델 컬렉션이 있다면, 컬렉션의 `searchable` 메서드로 한번에 반영할 수 있습니다:
 
     $orders->searchable();
 
 <a name="removing-records"></a>
-### Removing Records
+### 레코드 제거
 
-To remove a record from your index you may simply `delete` the model from the database. This may be done even if you are using [soft deleted](/docs/{{version}}/eloquent#soft-deleting) models:
+인덱스에서 레코드를 제거하려면, 단순히 해당 모델을 DB에서 `delete` 하면 됩니다. [소프트 삭제](/docs/{{version}}/eloquent#soft-deleting) 모델도 동일합니다:
 
     use App\Models\Order;
 
@@ -482,36 +482,36 @@ To remove a record from your index you may simply `delete` the model from the da
 
     $order->delete();
 
-If you do not want to retrieve the model before deleting the record, you may use the `unsearchable` method on an Eloquent query instance:
+모델 인스턴스를 굳이 불러오지 않고 바로 삭제하고 싶다면, Eloquent 쿼리에 `unsearchable`을 사용하세요:
 
     Order::where('price', '>', 100)->unsearchable();
 
-If you would like to remove the search index records for all of the models in a relationship, you may invoke the `unsearchable` on the relationship instance:
+관계형 모델도 `unsearchable`로 모든 인덱스 레코드를 제거할 수 있습니다:
 
     $user->orders()->unsearchable();
 
-Or, if you already have a collection of Eloquent models in memory, you may call the `unsearchable` method on the collection instance to remove the model instances from their corresponding index:
+컬렉션 인스턴스에 `unsearchable`을 사용하여 인메모리 모델을 인덱스에서 제거할 수도 있습니다:
 
     $orders->unsearchable();
 
 <a name="pausing-indexing"></a>
-### Pausing Indexing
+### 인덱싱 일시 중지
 
-Sometimes you may need to perform a batch of Eloquent operations on a model without syncing the model data to your search index. You may do this using the `withoutSyncingToSearch` method. This method accepts a single closure which will be immediately executed. Any model operations that occur within the closure will not be synced to the model's index:
+일시적으로 모델 인덱싱을 비활성화한 채 일괄적인 Eloquent 작업을 해야할 때는 `withoutSyncingToSearch` 메서드를 사용할 수 있습니다. 이 메서드는 하나의 클로저를 파라미터로 받으며, 클로저 내부에서 수행된 모든 모델 조작이 인덱스에 반영되지 않습니다:
 
     use App\Models\Order;
 
     Order::withoutSyncingToSearch(function () {
-        // Perform model actions...
+        // 여러 모델 작업 수행...
     });
 
 <a name="conditionally-searchable-model-instances"></a>
-### Conditionally Searchable Model Instances
+### 조건부로 검색 가능한 모델 인스턴스
 
-Sometimes you may need to only make a model searchable under certain conditions. For example, imagine you have `App\Models\Post` model that may be in one of two states: "draft" and "published". You may only want to allow "published" posts to be searchable. To accomplish this, you may define a `shouldBeSearchable` method on your model:
+특정 조건에서만 모델을 검색 대상으로 만들고 싶을 때가 있습니다. 예를 들어, `App\Models\Post` 모델이 "임시 저장" 또는 "공개됨" 상태일 수 있고, 공개된 게시글만 인덱싱하고 싶다면, 모델에서 `shouldBeSearchable` 메서드를 정의하세요:
 
     /**
-     * Determine if the model should be searchable.
+     * 이 모델이 검색 가능해야 할지 결정.
      *
      * @return bool
      */
@@ -520,21 +520,21 @@ Sometimes you may need to only make a model searchable under certain conditions.
         return $this->isPublished();
     }
 
-The `shouldBeSearchable` method is only applied when manipulating models through the `save` and `create` methods, queries, or relationships. Directly making models or collections searchable using the `searchable` method will override the result of the `shouldBeSearchable` method.
+이 메서드는 `save`, `create`, 쿼리, 관계를 통한 모델 조작 시에 한해 동작합니다. `searchable` 메서드로 직접 인덱싱하면 이 메서드 결과는 무시됩니다.
 
-> **Warning**  
-> The `shouldBeSearchable` method is not applicable when using Scout's "database" engine, as all searchable data is always stored in the database. To achieve similar behavior when using the database engine, you should use [where clauses](#where-clauses) instead.
+> **경고**  
+> "database" 엔진을 사용할 경우에는 `shouldBeSearchable`이 적용되지 않습니다. 이 때 비슷한 동작을 원하면 [where절](#where-clauses)을 사용하세요.
 
 <a name="searching"></a>
-## Searching
+## 검색
 
-You may begin searching a model using the `search` method. The search method accepts a single string that will be used to search your models. You should then chain the `get` method onto the search query to retrieve the Eloquent models that match the given search query:
+모델에서 `search` 메서드를 사용해 검색을 시작할 수 있습니다. 이 메서드에는 검색할 문자열을 인자로 넘기고, `get` 메서드를 체인하여 해당 검색어에 일치하는 Eloquent 모델 컬렉션을 반환받습니다:
 
     use App\Models\Order;
 
     $orders = Order::search('Star Trek')->get();
 
-Since Scout searches return a collection of Eloquent models, you may even return the results directly from a route or controller and they will automatically be converted to JSON:
+Scout의 검색 결과는 Eloquent 모델 컬렉션이므로 라우트나 컨트롤러에서 바로 반환해도 자동으로 JSON 으로 변환됩니다:
 
     use App\Models\Order;
     use Illuminate\Http\Request;
@@ -543,53 +543,53 @@ Since Scout searches return a collection of Eloquent models, you may even return
         return Order::search($request->search)->get();
     });
 
-If you would like to get the raw search results before they are converted to Eloquent models, you may use the `raw` method:
+Eloquent 모델로 변환되기 전의 원시 검색 결과를 받고 싶다면 `raw` 메서드를 사용할 수 있습니다:
 
     $orders = Order::search('Star Trek')->raw();
 
 <a name="custom-indexes"></a>
-#### Custom Indexes
+#### 커스텀 인덱스
 
-Search queries will typically be performed on the index specified by the model's [`searchableAs`](#configuring-model-indexes) method. However, you may use the `within` method to specify a custom index that should be searched instead:
+일반적으로 검색 쿼리는 모델의 [`searchableAs`](#configuring-model-indexes)로 지정된 인덱스에서 수행됩니다. 별도의 인덱스에서 검색하려면 `within` 메서드를 이용할 수 있습니다:
 
     $orders = Order::search('Star Trek')
         ->within('tv_shows_popularity_desc')
         ->get();
 
 <a name="where-clauses"></a>
-### Where Clauses
+### Where 절
 
-Scout allows you to add simple "where" clauses to your search queries. Currently, these clauses only support basic numeric equality checks and are primarily useful for scoping search queries by an owner ID:
+Scout는 검색 쿼리에 간단한 "where" 조건을 추가할 수 있습니다. 현재로서는 기본적인 숫자 동등(equality) 조건만 지원되며, 주로 소유자 ID 등으로 범위를 제한하는 데 유용합니다:
 
     use App\Models\Order;
 
     $orders = Order::search('Star Trek')->where('user_id', 1)->get();
 
-You may use the `whereIn` method to constrain results against a given set of values:
+`whereIn` 메서드로 지정값 집합에 포함된 결과로 제한할 수 있습니다:
 
     $orders = Order::search('Star Trek')->whereIn(
         'status', ['paid', 'open']
     )->get();
 
-Since a search index is not a relational database, more advanced "where" clauses are not currently supported.
+검색 인덱스는 관계형 데이터베이스가 아니므로, 복잡한 "where" 절은 지원되지 않습니다.
 
-> **Warning**
-> If your application is using MeiliSearch, you must configure your application's [filterable attributes](#configuring-filterable-data-for-meilisearch) before utilizing Scout's "where" clauses.
+> **경고**
+> MeiliSearch 사용 시, 반드시 [필터 가능 속성](#configuring-filterable-data-for-meilisearch)이 먼저 설정되어야 Scout의 "where" 절이 동작합니다.
 
 <a name="pagination"></a>
-### Pagination
+### 페이지네이션
 
-In addition to retrieving a collection of models, you may paginate your search results using the `paginate` method. This method will return an `Illuminate\Pagination\LengthAwarePaginator` instance just as if you had [paginated a traditional Eloquent query](/docs/{{version}}/pagination):
+검색 결과를 컬렉션으로 반환하는 것 외에도, `paginate` 메서드로 페이지네이션이 가능합니다. 이 메서드는 [일반 Eloquent 페이지네이션](/docs/{{version}}/pagination)과 동일하게 `Illuminate\Pagination\LengthAwarePaginator` 인스턴스를 반환합니다:
 
     use App\Models\Order;
 
     $orders = Order::search('Star Trek')->paginate();
 
-You may specify how many models to retrieve per page by passing the amount as the first argument to the `paginate` method:
+한 페이지에 가져올 모델 개수를 첫 번째 인자로 지정할 수 있습니다:
 
     $orders = Order::search('Star Trek')->paginate(15);
 
-Once you have retrieved the results, you may display the results and render the page links using [Blade](/docs/{{version}}/blade) just as if you had paginated a traditional Eloquent query:
+검색 결과와 페이지 링크 렌더링도 [Blade](/docs/{{version}}/blade)를 사용해 일반 쿼리 페이지네이션처럼 출력하면 됩니다:
 
 ```html
 <div class="container">
@@ -601,7 +601,7 @@ Once you have retrieved the results, you may display the results and render the 
 {{ $orders->links() }}
 ```
 
-Of course, if you would like to retrieve the pagination results as JSON, you may return the paginator instance directly from a route or controller:
+페이지네이션 결과를 JSON으로 반환하려면, 라우트나 컨트롤러에서 paginator 인스턴스를 바로 반환하면 됩니다:
 
     use App\Models\Order;
     use Illuminate\Http\Request;
@@ -610,33 +610,33 @@ Of course, if you would like to retrieve the pagination results as JSON, you may
         return Order::search($request->input('query'))->paginate(15);
     });
 
-> **Warning**  
-> Since search engines are not aware of your Eloquent model's global scope definitions, you should not utilize global scopes in applications that utilize Scout pagination. Or, you should recreate the global scope's constraints when searching via Scout.
+> **경고**  
+> 검색 엔진은 Eloquent 모델의 글로벌 스코프를 알지 못하므로, Scout 페이지네이션에서는 글로벌 스코프를 사용하면 안 됩니다. 필요하다면, 검색 시 직접 조건을 재구성해야 합니다.
 
 <a name="soft-deleting"></a>
-### Soft Deleting
+### 소프트 삭제(Soft Deleting)
 
-If your indexed models are [soft deleting](/docs/{{version}}/eloquent#soft-deleting) and you need to search your soft deleted models, set the `soft_delete` option of the `config/scout.php` configuration file to `true`:
+검색 인덱싱된 모델이 [소프트 삭제](/docs/{{version}}/eloquent#soft-deleting)를 지원하며, 소프트 삭제된 모델 검색이 필요하다면 `config/scout.php`의 `soft_delete` 옵션을 `true`로 설정하세요:
 
     'soft_delete' => true,
 
-When this configuration option is `true`, Scout will not remove soft deleted models from the search index. Instead, it will set a hidden `__soft_deleted` attribute on the indexed record. Then, you may use the `withTrashed` or `onlyTrashed` methods to retrieve the soft deleted records when searching:
+이 경우, Scout는 소프트 삭제된 모델을 인덱스에서 제거하지 않고, 인덱싱된 레코드에 숨겨진 `__soft_deleted` 속성을 추가합니다. 이후 `withTrashed` 또는 `onlyTrashed` 메서드로 소프트 삭제된 레코드까지 검색 결과에 포함할 수 있습니다:
 
     use App\Models\Order;
 
-    // Include trashed records when retrieving results...
+    // 소프트 삭제 포함 모든 결과
     $orders = Order::search('Star Trek')->withTrashed()->get();
 
-    // Only include trashed records when retrieving results...
+    // 소프트 삭제된 결과만
     $orders = Order::search('Star Trek')->onlyTrashed()->get();
 
-> **Note**  
-> When a soft deleted model is permanently deleted using `forceDelete`, Scout will remove it from the search index automatically.
+> **참고**  
+> 소프트 삭제 모델이 `forceDelete`로 영구 삭제되면, Scout는 자동으로 인덱스에서 제거합니다.
 
 <a name="customizing-engine-searches"></a>
-### Customizing Engine Searches
+### 엔진별 검색 커스터마이징
 
-If you need to perform advanced customization of the search behavior of an engine you may pass a closure as the second argument to the `search` method. For example, you could use this callback to add geo-location data to your search options before the search query is passed to Algolia:
+엔진의 검색 동작을 고급 커스터마이징해야 할 경우, `search` 메서드의 두 번째 인자에 클로저를 전달할 수 있습니다. 예를 들어, Algolia 검색 옵션에 지리 정보 데이터를 추가하고 싶으면 다음과 같이 할 수 있습니다:
 
     use Algolia\AlgoliaSearch\SearchIndex;
     use App\Models\Order;
@@ -654,9 +654,9 @@ If you need to perform advanced customization of the search behavior of an engin
     )->get();
 
 <a name="customizing-the-eloquent-results-query"></a>
-#### Customizing The Eloquent Results Query
+#### Eloquent 결과 쿼리 커스터마이징
 
-After Scout retrieves a list of matching Eloquent models from your application's search engine, Eloquent is used to retrieve all of the matching models by their primary keys. You may customize this query by invoking the `query` method. The `query` method accepts a closure that will receive the Eloquent query builder instance as an argument:
+Scout가 검색 엔진에서 일치하는 Eloquent 모델의 ID를 얻은 뒤, 이를 기반으로 실제 모델 데이터를 다시 Eloquent 쿼리로 조회합니다. 이 때 `query` 메서드로 이 쿼리를 커스터마이징할 수 있습니다. `query`는 Eloquent 쿼리 빌더 인스턴스를 인자로 갖는 클로저를 받습니다:
 
 ```php
 use App\Models\Order;
@@ -666,15 +666,15 @@ $orders = Order::search('Star Trek')
     ->get();
 ```
 
-Since this callback is invoked after the relevant models have already been retrieved from your application's search engine, the `query` method should not be used for "filtering" results. Instead, you should use [Scout where clauses](#where-clauses).
+이 콜백은 검색 엔진에서 해당 모델 키가 반환된 뒤에 실행되므로, 결과를 "필터링"하는 용도가 아니라 추가 쿼리 기능에만 사용하세요. 필터링이 필요하다면 [Scout의 where절](#where-clauses)을 사용하세요.
 
 <a name="custom-engines"></a>
-## Custom Engines
+## 커스텀 엔진
 
 <a name="writing-the-engine"></a>
-#### Writing The Engine
+#### 엔진 작성
 
-If one of the built-in Scout search engines doesn't fit your needs, you may write your own custom engine and register it with Scout. Your engine should extend the `Laravel\Scout\Engines\Engine` abstract class. This abstract class contains eight methods your custom engine must implement:
+Scout 내장 검색 엔진이 요구사항에 맞지 않을 경우, 직접 커스텀 엔진을 작성하여 Scout에 등록할 수 있습니다. 커스텀 엔진은 반드시 `Laravel\Scout\Engines\Engine` 추상 클래스를 상속해야 하며, 아래 8개 메서드를 반드시 구현해야 합니다:
 
     use Laravel\Scout\Builder;
 
@@ -687,18 +687,18 @@ If one of the built-in Scout search engines doesn't fit your needs, you may writ
     abstract public function getTotalCount($results);
     abstract public function flush($model);
 
-You may find it helpful to review the implementations of these methods on the `Laravel\Scout\Engines\AlgoliaEngine` class. This class will provide you with a good starting point for learning how to implement each of these methods in your own engine.
+이 메서드들은 `Laravel\Scout\Engines\AlgoliaEngine` 클래스 구현을 참고하면 도움이 됩니다. 해당 구현을 참고하면, 각 메서드의 용도를 쉽게 파악할 수 있습니다.
 
 <a name="registering-the-engine"></a>
-#### Registering The Engine
+#### 엔진 등록
 
-Once you have written your custom engine, you may register it with Scout using the `extend` method of the Scout engine manager. Scout's engine manager may be resolved from the Laravel service container. You should call the `extend` method from the `boot` method of your `App\Providers\AppServiceProvider` class or any other service provider used by your application:
+엔진을 작성한 후, Scout의 엔진 매니저의 `extend` 메서드로 등록할 수 있습니다. 엔진 매니저는 Laravel 서비스 컨테이너로부터 받아옵니다. 보통 `App\Providers\AppServiceProvider`의 `boot` 메서드나, 필요한 서비스 프로바이더의 `boot` 메서드에서 호출하세요:
 
     use App\ScoutExtensions\MySqlSearchEngine
     use Laravel\Scout\EngineManager;
 
     /**
-     * Bootstrap any application services.
+     * 애플리케이션 서비스 부트스트랩.
      *
      * @return void
      */
@@ -709,21 +709,21 @@ Once you have written your custom engine, you may register it with Scout using t
         });
     }
 
-Once your engine has been registered, you may specify it as your default Scout `driver` in your application's `config/scout.php` configuration file:
+엔진이 등록된 후에는, `config/scout.php`의 `driver` 설정에서 기본 드라이버로 지정하면 됩니다:
 
     'driver' => 'mysql',
 
 <a name="builder-macros"></a>
-## Builder Macros
+## 빌더 매크로
 
-If you would like to define a custom Scout search builder method, you may use the `macro` method on the `Laravel\Scout\Builder` class. Typically, "macros" should be defined within a [service provider's](/docs/{{version}}/providers) `boot` method:
+Scout 검색 빌더(`Laravel\Scout\Builder`)에서 사용할 커스텀 메서드를 정의하고 싶다면, `macro` 메서드를 사용할 수 있습니다. 보통 "매크로"는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 선언하는 것이 일반적입니다:
 
     use Illuminate\Support\Facades\Response;
     use Illuminate\Support\ServiceProvider;
     use Laravel\Scout\Builder;
 
     /**
-     * Bootstrap any application services.
+     * 애플리케이션 서비스 부트스트랩.
      *
      * @return void
      */
@@ -736,7 +736,7 @@ If you would like to define a custom Scout search builder method, you may use th
         });
     }
 
-The `macro` function accepts a macro name as its first argument and a closure as its second argument. The macro's closure will be executed when calling the macro name from a `Laravel\Scout\Builder` implementation:
+`macro` 함수는 첫 번째 인수로 매크로 이름, 두 번째 인수로 클로저를 받습니다. 정의 후에는 `Laravel\Scout\Builder` 구현 인스턴스에서 매크로 이름으로 호출할 수 있습니다:
 
     use App\Models\Order;
 

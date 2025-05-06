@@ -1,45 +1,45 @@
 # Laravel Socialite
 
-- [Introduction](#introduction)
-- [Installation](#installation)
-- [Upgrading Socialite](#upgrading-socialite)
-- [Configuration](#configuration)
-- [Authentication](#authentication)
-    - [Routing](#routing)
-    - [Authentication and Storage](#authentication-and-storage)
-    - [Access Scopes](#access-scopes)
-    - [Slack Bot Scopes](#slack-bot-scopes)
-    - [Optional Parameters](#optional-parameters)
-- [Retrieving User Details](#retrieving-user-details)
+- [소개](#introduction)
+- [설치](#installation)
+- [Socialite 업그레이드](#upgrading-socialite)
+- [설정](#configuration)
+- [인증](#authentication)
+    - [라우팅](#routing)
+    - [인증 및 저장](#authentication-and-storage)
+    - [액세스 스코프](#access-scopes)
+    - [Slack 봇 스코프](#slack-bot-scopes)
+    - [선택적 파라미터](#optional-parameters)
+- [사용자 정보 가져오기](#retrieving-user-details)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-In addition to typical, form based authentication, Laravel also provides a simple, convenient way to authenticate with OAuth providers using [Laravel Socialite](https://github.com/laravel/socialite). Socialite currently supports authentication via Facebook, X, LinkedIn, Google, GitHub, GitLab, Bitbucket, and Slack.
+일반적인 폼 기반 인증 외에도, Laravel은 [Laravel Socialite](https://github.com/laravel/socialite)를 사용해 OAuth 공급자를 통한 인증을 간편하게 처리할 수 있는 방법을 제공합니다. Socialite는 현재 Facebook, X, LinkedIn, Google, GitHub, GitLab, Bitbucket, Slack을 통한 인증을 지원합니다.
 
 > [!NOTE]
-> Adapters for other platforms are available via the community driven [Socialite Providers](https://socialiteproviders.com/) website.
+> 다른 플랫폼에 대한 어댑터는 커뮤니티가 관리하는 [Socialite Providers](https://socialiteproviders.com/) 사이트를 통해 제공됩니다.
 
 <a name="installation"></a>
-## Installation
+## 설치
 
-To get started with Socialite, use the Composer package manager to add the package to your project's dependencies:
+Socialite를 시작하려면 Composer 패키지 관리자를 사용해 프로젝트의 의존성에 패키지를 추가합니다:
 
 ```shell
 composer require laravel/socialite
 ```
 
 <a name="upgrading-socialite"></a>
-## Upgrading Socialite
+## Socialite 업그레이드
 
-When upgrading to a new major version of Socialite, it's important that you carefully review [the upgrade guide](https://github.com/laravel/socialite/blob/master/UPGRADE.md).
+Socialite의 새로운 주요 버전으로 업그레이드할 때는 [업그레이드 가이드](https://github.com/laravel/socialite/blob/master/UPGRADE.md)를 주의 깊게 확인해야 합니다.
 
 <a name="configuration"></a>
-## Configuration
+## 설정
 
-Before using Socialite, you will need to add credentials for the OAuth providers your application utilizes. Typically, these credentials may be retrieved by creating a "developer application" within the dashboard of the service you will be authenticating with.
+Socialite를 사용하기 전에, 애플리케이션에서 사용할 OAuth 공급자들의 자격 증명을 추가해야 합니다. 일반적으로 이러한 자격 증명은 사용하려는 서비스의 대시보드에서 "개발자 애플리케이션"을 생성하여 얻을 수 있습니다.
 
-These credentials should be placed in your application's `config/services.php` configuration file, and should use the key `facebook`, `x`, `linkedin-openid`, `google`, `github`, `gitlab`, `bitbucket`, `slack`, or `slack-openid`, depending on the providers your application requires:
+이 자격 증명은 애플리케이션의 `config/services.php` 설정 파일에 추가해야 하며, 사용하는 공급자에 따라 `facebook`, `x`, `linkedin-openid`, `google`, `github`, `gitlab`, `bitbucket`, `slack`, 또는 `slack-openid` 키를 사용해야 합니다:
 
 ```php
 'github' => [
@@ -50,15 +50,15 @@ These credentials should be placed in your application's `config/services.php` c
 ```
 
 > [!NOTE]
-> If the `redirect` option contains a relative path, it will automatically be resolved to a fully qualified URL.
+> `redirect` 옵션에 상대 경로가 포함되어 있으면 자동으로 전체 URL로 변환됩니다.
 
 <a name="authentication"></a>
-## Authentication
+## 인증
 
 <a name="routing"></a>
-### Routing
+### 라우팅
 
-To authenticate users using an OAuth provider, you will need two routes: one for redirecting the user to the OAuth provider, and another for receiving the callback from the provider after authentication. The example routes below demonstrate the implementation of both routes:
+OAuth 공급자를 사용해 사용자를 인증하려면, 사용자를 OAuth 공급자로 리디렉션할 라우트와 인증 후 공급자로부터 콜백을 받을 라우트, 두 개가 필요합니다. 아래 예시에서는 두 라우트의 구현을 보여줍니다:
 
 ```php
 use Laravel\Socialite\Facades\Socialite;
@@ -74,12 +74,12 @@ Route::get('/auth/callback', function () {
 });
 ```
 
-The `redirect` method provided by the `Socialite` facade takes care of redirecting the user to the OAuth provider, while the `user` method will examine the incoming request and retrieve the user's information from the provider after they have approved the authentication request.
+`Socialite` 파사드에서 제공하는 `redirect` 메서드는 사용자를 OAuth 공급자로 리디렉션하는 역할을 하며, `user` 메서드는 인증 요청이 승인된 후 들어온 요청을 확인하고 공급자로부터 사용자 정보를 가져옵니다.
 
 <a name="authentication-and-storage"></a>
-### Authentication and Storage
+### 인증 및 저장
 
-Once the user has been retrieved from the OAuth provider, you may determine if the user exists in your application's database and [authenticate the user](/docs/{{version}}/authentication#authenticate-a-user-instance). If the user does not exist in your application's database, you will typically create a new record in your database to represent the user:
+사용자가 OAuth 공급자로부터 반환되면, 해당 사용자가 애플리케이션 데이터베이스에 존재하는지 확인하고, [사용자를 인증](/docs/{{version}}/authentication#authenticate-a-user-instance)할 수 있습니다. 사용자가 데이터베이스에 없다면 보통 새 사용자를 생성합니다:
 
 ```php
 use App\Models\User;
@@ -105,12 +105,12 @@ Route::get('/auth/callback', function () {
 ```
 
 > [!NOTE]
-> For more information regarding what user information is available from specific OAuth providers, please consult the documentation on [retrieving user details](#retrieving-user-details).
+> 특정 OAuth 공급자에서 어떤 사용자 정보가 제공되는지 자세한 내용은 [사용자 정보 가져오기](#retrieving-user-details) 문서를 참조하세요.
 
 <a name="access-scopes"></a>
-### Access Scopes
+### 액세스 스코프
 
-Before redirecting the user, you may use the `scopes` method to specify the "scopes" that should be included in the authentication request. This method will merge all previously specified scopes with the scopes that you specify:
+사용자를 리디렉션하기 전에, `scopes` 메서드를 사용해 인증 요청에 포함할 “스코프”를 지정할 수 있습니다. 이 메서드는 이전에 지정했던 스코프와 새로 지정한 스코프를 모두 병합합니다:
 
 ```php
 use Laravel\Socialite\Facades\Socialite;
@@ -120,7 +120,7 @@ return Socialite::driver('github')
     ->redirect();
 ```
 
-You can overwrite all existing scopes on the authentication request using the `setScopes` method:
+`setScopes` 메서드를 사용하면 인증 요청의 기존 스코프를 모두 덮어쓸 수 있습니다:
 
 ```php
 return Socialite::driver('github')
@@ -129,20 +129,20 @@ return Socialite::driver('github')
 ```
 
 <a name="slack-bot-scopes"></a>
-### Slack Bot Scopes
+### Slack 봇 스코프
 
-Slack's API provides [different types of access tokens](https://api.slack.com/authentication/token-types), each with their own set of [permission scopes](https://api.slack.com/scopes). Socialite is compatible with both of the following Slack access tokens types:
+Slack의 API는 각기 다른 [액세스 토큰 유형](https://api.slack.com/authentication/token-types)과 [권한 스코프](https://api.slack.com/scopes)를 지원합니다. Socialite는 다음 두 종류의 Slack 액세스 토큰과 호환됩니다:
 
 <div class="content-list" markdown="1">
 
-- Bot (prefixed with `xoxb-`)
-- User (prefixed with `xoxp-`)
+- 봇 (접두사 `xoxb-`)
+- 사용자 (접두사 `xoxp-`)
 
 </div>
 
-By default, the `slack` driver will generate a `user` token and invoking the driver's `user` method will return the user's details.
+기본적으로 `slack` 드라이버는 `user` 토큰을 생성하며, 드라이버의 `user` 메서드를 호출하면 사용자 정보를 반환합니다.
 
-Bot tokens are primarily useful if your application will be sending notifications to external Slack workspaces that are owned by your application's users. To generate a bot token, invoke the `asBotUser` method before redirecting the user to Slack for authentication:
+봇 토큰은 애플리케이션 사용자가 소유한 외부 Slack 워크스페이스에 알림을 보내고자 할 때 주로 사용됩니다. 봇 토큰을 생성하려면, 사용자를 Slack으로 인증 리디렉션하기 전에 `asBotUser` 메서드를 호출하세요:
 
 ```php
 return Socialite::driver('slack')
@@ -151,18 +151,18 @@ return Socialite::driver('slack')
     ->redirect();
 ```
 
-In addition, you must invoke the `asBotUser` method before invoking the `user` method after Slack redirects the user back to your application after authentication:
+또한, Slack 인증 후 사용자를 애플리케이션으로 리디렉션한 뒤에는, `user` 메서드를 호출하기 전에 반드시 `asBotUser`를 호출해야 합니다:
 
 ```php
 $user = Socialite::driver('slack')->asBotUser()->user();
 ```
 
-When generating a bot token, the `user` method will still return a `Laravel\Socialite\Two\User` instance; however, only the `token` property will be hydrated. This token may be stored in order to [send notifications to the authenticated user's Slack workspaces](/docs/{{version}}/notifications#notifying-external-slack-workspaces).
+봇 토큰을 생성할 때 `user` 메서드는 여전히 `Laravel\Socialite\Two\User` 인스턴스를 반환하지만, `token` 프로퍼티만 채워져 있습니다. 이 토큰을 저장해 [인증된 사용자의 Slack 워크스페이스로 알림을 보낼 수 있습니다](/docs/{{version}}/notifications#notifying-external-slack-workspaces).
 
 <a name="optional-parameters"></a>
-### Optional Parameters
+### 선택적 파라미터
 
-A number of OAuth providers support other optional parameters on the redirect request. To include any optional parameters in the request, call the `with` method with an associative array:
+일부 OAuth 공급자는 리디렉션 요청에서 기타 선택적 파라미터를 지원합니다. 이러한 파라미터를 요청에 포함하려면, 연관 배열 형태로 `with` 메서드를 호출하세요:
 
 ```php
 use Laravel\Socialite\Facades\Socialite;
@@ -173,14 +173,14 @@ return Socialite::driver('google')
 ```
 
 > [!WARNING]
-> When using the `with` method, be careful not to pass any reserved keywords such as `state` or `response_type`.
+> `with` 메서드를 사용할 때는 `state`나 `response_type`과 같은 예약어는 전달하지 않도록 주의하세요.
 
 <a name="retrieving-user-details"></a>
-## Retrieving User Details
+## 사용자 정보 가져오기
 
-After the user is redirected back to your application's authentication callback route, you may retrieve the user's details using Socialite's `user` method. The user object returned by the `user` method provides a variety of properties and methods you may use to store information about the user in your own database.
+사용자가 애플리케이션의 인증 콜백 라우트로 리디렉션된 후, Socialite의 `user` 메서드를 사용해 사용자 정보를 가져올 수 있습니다. `user` 메서드가 반환하는 사용자 객체에는 데이터베이스에 정보를 저장하는 데 유용한 다양한 속성과 메서드가 있습니다.
 
-Differing properties and methods may be available on this object depending on whether the OAuth provider you are authenticating with supports OAuth 1.0 or OAuth 2.0:
+인증하는 OAuth 공급자가 OAuth 1.0이나 OAuth 2.0 중 무엇을 지원하는지에 따라, 이 객체에서 제공되는 속성과 메서드는 다를 수 있습니다:
 
 ```php
 use Laravel\Socialite\Facades\Socialite;
@@ -188,16 +188,16 @@ use Laravel\Socialite\Facades\Socialite;
 Route::get('/auth/callback', function () {
     $user = Socialite::driver('github')->user();
 
-    // OAuth 2.0 providers...
+    // OAuth 2.0 공급자...
     $token = $user->token;
     $refreshToken = $user->refreshToken;
     $expiresIn = $user->expiresIn;
 
-    // OAuth 1.0 providers...
+    // OAuth 1.0 공급자...
     $token = $user->token;
     $tokenSecret = $user->tokenSecret;
 
-    // All providers...
+    // 모든 공급자...
     $user->getId();
     $user->getNickname();
     $user->getName();
@@ -207,9 +207,9 @@ Route::get('/auth/callback', function () {
 ```
 
 <a name="retrieving-user-details-from-a-token-oauth2"></a>
-#### Retrieving User Details From a Token
+#### 토큰으로 사용자 정보 가져오기
 
-If you already have a valid access token for a user, you can retrieve their user details using Socialite's `userFromToken` method:
+이미 사용자의 유효한 액세스 토큰이 있는 경우, Socialite의 `userFromToken` 메서드를 사용해 사용자 정보를 조회할 수 있습니다:
 
 ```php
 use Laravel\Socialite\Facades\Socialite;
@@ -217,12 +217,12 @@ use Laravel\Socialite\Facades\Socialite;
 $user = Socialite::driver('github')->userFromToken($token);
 ```
 
-If you are using Facebook Limited Login via an iOS application, Facebook will return an OIDC token instead of an access token. Like an access token, the OIDC token can be provided to the `userFromToken` method in order to retrieve user details.
+iOS 애플리케이션에서 Facebook Limited Login을 사용할 경우, Facebook은 액세스 토큰 대신 OIDC 토큰을 반환합니다. 액세스 토큰과 마찬가지로 OIDC 토큰도 `userFromToken` 메서드에 전달해 사용자 정보를 가져올 수 있습니다.
 
 <a name="stateless-authentication"></a>
-#### Stateless Authentication
+#### 무상태 인증
 
-The `stateless` method may be used to disable session state verification. This is useful when adding social authentication to a stateless API that does not utilize cookie based sessions:
+`stateless` 메서드를 사용하면 세션 상태 검증을 비활성화할 수 있습니다. 이는 쿠키 기반 세션을 사용하지 않는 무상태 API에 소셜 인증을 추가할 때 유용합니다:
 
 ```php
 use Laravel\Socialite\Facades\Socialite;

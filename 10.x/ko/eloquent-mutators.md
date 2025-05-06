@@ -1,36 +1,36 @@
-# Eloquent: Mutators & Casting
+# Eloquent: 뮤테이터와 캐스팅
 
-- [Introduction](#introduction)
-- [Accessors and Mutators](#accessors-and-mutators)
-    - [Defining an Accessor](#defining-an-accessor)
-    - [Defining a Mutator](#defining-a-mutator)
-- [Attribute Casting](#attribute-casting)
-    - [Array and JSON Casting](#array-and-json-casting)
-    - [Date Casting](#date-casting)
-    - [Enum Casting](#enum-casting)
-    - [Encrypted Casting](#encrypted-casting)
-    - [Query Time Casting](#query-time-casting)
-- [Custom Casts](#custom-casts)
-    - [Value Object Casting](#value-object-casting)
-    - [Array / JSON Serialization](#array-json-serialization)
-    - [Inbound Casting](#inbound-casting)
-    - [Cast Parameters](#cast-parameters)
-    - [Castables](#castables)
+- [소개](#introduction)
+- [접근자와 뮤테이터](#accessors-and-mutators)
+    - [접근자 정의하기](#defining-an-accessor)
+    - [뮤테이터 정의하기](#defining-a-mutator)
+- [속성 캐스팅](#attribute-casting)
+    - [배열 및 JSON 캐스팅](#array-and-json-casting)
+    - [날짜 캐스팅](#date-casting)
+    - [Enum 캐스팅](#enum-casting)
+    - [암호화 캐스팅](#encrypted-casting)
+    - [쿼리 타임 캐스팅](#query-time-casting)
+- [커스텀 캐스트](#custom-casts)
+    - [값 객체 캐스팅](#value-object-casting)
+    - [배열 / JSON 직렬화](#array-json-serialization)
+    - [입력 값 캐스팅(Inbound Casting)](#inbound-casting)
+    - [캐스트 파라미터](#cast-parameters)
+    - [캐스터블(Castable)](#castables)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Accessors, mutators, and attribute casting allow you to transform Eloquent attribute values when you retrieve or set them on model instances. For example, you may want to use the [Laravel encrypter](/docs/{{version}}/encryption) to encrypt a value while it is stored in the database, and then automatically decrypt the attribute when you access it on an Eloquent model. Or, you may want to convert a JSON string that is stored in your database to an array when it is accessed via your Eloquent model.
+접근자(accessor), 뮤테이터(mutator), 속성 캐스팅(attribute casting)을 통해 Eloquent 모델 인스턴스의 속성을 가져오거나 설정할 때 값을 쉽게 변환할 수 있습니다. 예를 들어, [Laravel 암호화기](/docs/{{version}}/encryption)를 사용하여 값을 데이터베이스에 저장할 때 암호화하고, Eloquent 모델에서 속성을 조회할 때 자동으로 복호화할 수 있습니다. 또는 데이터베이스에 저장된 JSON 문자열을 Eloquent 모델에서 접근할 때 배열로 변환할 수도 있습니다.
 
 <a name="accessors-and-mutators"></a>
-## Accessors and Mutators
+## 접근자와 뮤테이터
 
 <a name="defining-an-accessor"></a>
-### Defining an Accessor
+### 접근자 정의하기
 
-An accessor transforms an Eloquent attribute value when it is accessed. To define an accessor, create a protected method on your model to represent the accessible attribute. This method name should correspond to the "camel case" representation of the true underlying model attribute / database column when applicable.
+접근자는 Eloquent 속성 값을 조회할 때 변환을 수행합니다. 접근자를 정의하려면, 모델 내에 접근할 속성을 나타내는 protected 메서드를 생성하면 됩니다. 이 메서드명은 해당 모델 속성 · 데이터베이스 컬럼명에 대해 "카멜 케이스(camel case)" 형식이어야 합니다.
 
-In this example, we'll define an accessor for the `first_name` attribute. The accessor will automatically be called by Eloquent when attempting to retrieve the value of the `first_name` attribute. All attribute accessor / mutator methods must declare a return type-hint of `Illuminate\Database\Eloquent\Casts\Attribute`:
+예를 들어, `first_name` 속성에 대한 접근자를 정의해보겠습니다. `first_name` 속성의 값을 조회하려고 할 때 Eloquent가 자동으로 접근자를 호출합니다. 모든 속성 접근자 · 뮤테이터 메서드는 `Illuminate\Database\Eloquent\Casts\Attribute` 반환 타입힌트를 선언해야 합니다:
 
     <?php
 
@@ -42,7 +42,7 @@ In this example, we'll define an accessor for the `first_name` attribute. The ac
     class User extends Model
     {
         /**
-         * Get the user's first name.
+         * 사용자의 이름을 가져옵니다.
          */
         protected function firstName(): Attribute
         {
@@ -52,9 +52,9 @@ In this example, we'll define an accessor for the `first_name` attribute. The ac
         }
     }
 
-All accessor methods return an `Attribute` instance which defines how the attribute will be accessed and, optionally, mutated. In this example, we are only defining how the attribute will be accessed. To do so, we supply the `get` argument to the `Attribute` class constructor.
+모든 접근자 메서드는 속성의 접근 및 필요하다면 변경(뮤테이트) 방법을 정의하는 `Attribute` 인스턴스를 반환합니다. 위 예제에서는 속성의 접근 방법만 정의합니다. 이를 위해 `Attribute` 클래스 생성자에 `get` 인자를 전달합니다.
 
-As you can see, the original value of the column is passed to the accessor, allowing you to manipulate and return the value. To access the value of the accessor, you may simply access the `first_name` attribute on a model instance:
+보시다시피, 실제 컬럼의 원본 값이 접근자로 전달되어, 값을 가공하여 반환할 수 있습니다. 접근자 값을 조회하려면, 단순히 모델 인스턴스의 `first_name` 속성을 참조하면 됩니다:
 
     use App\Models\User;
 
@@ -63,19 +63,19 @@ As you can see, the original value of the column is passed to the accessor, allo
     $firstName = $user->first_name;
 
 > [!NOTE]  
-> If you would like these computed values to be added to the array / JSON representations of your model, [you will need to append them](/docs/{{version}}/eloquent-serialization#appending-values-to-json).
+> 이렇게 계산된 값이 모델의 배열/JSON 표현에 포함되길 원한다면, [해당 값을 추가로 등록해야 합니다](/docs/{{version}}/eloquent-serialization#appending-values-to-json).
 
 <a name="building-value-objects-from-multiple-attributes"></a>
-#### Building Value Objects From Multiple Attributes
+#### 여러 속성으로 값 객체 만들기
 
-Sometimes your accessor may need to transform multiple model attributes into a single "value object". To do so, your `get` closure may accept a second argument of `$attributes`, which will be automatically supplied to the closure and will contain an array of all of the model's current attributes:
+접근자가 여러 모델 속성을 하나의 "값 객체"로 변환해야 할 때도 있습니다. 이를 위해 `get` 클로저의 두 번째 인자로 `$attributes`를 받아올 수 있습니다. 이 배열에는 모델의 현재 모든 속성이 담겨 전달됩니다:
 
 ```php
 use App\Support\Address;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
- * Interact with the user's address.
+ * 사용자의 주소에 접근합니다.
  */
 protected function address(): Attribute
 {
@@ -89,9 +89,9 @@ protected function address(): Attribute
 ```
 
 <a name="accessor-caching"></a>
-#### Accessor Caching
+#### 접근자 캐싱
 
-When returning value objects from accessors, any changes made to the value object will automatically be synced back to the model before the model is saved. This is possible because Eloquent retains instances returned by accessors so it can return the same instance each time the accessor is invoked:
+접근자를 통해 값 객체를 반환할 때, 해당 값 객체의 변경 내용은 모델을 저장하기 전에 자동으로 모델에 반영됩니다. 이는 Eloquent가 접근자에서 반환된 인스턴스를 기억하여 같은 접근자가 호출될 때마다 동일한 인스턴스를 반환하기 때문입니다:
 
     use App\Models\User;
 
@@ -102,7 +102,7 @@ When returning value objects from accessors, any changes made to the value objec
 
     $user->save();
 
-However, you may sometimes wish to enable caching for primitive values like strings and booleans, particularly if they are computationally intensive. To accomplish this, you may invoke the `shouldCache` method when defining your accessor:
+하지만 원시 타입(문자열, 불리언 등)도 캐싱이 필요할 때가 있습니다. 특히 계산 비용이 비쌀 때 그렇습니다. 이럴 땐 접근자를 정의할 때 `shouldCache` 메서드를 호출하면 됩니다:
 
 ```php
 protected function hash(): Attribute
@@ -113,11 +113,11 @@ protected function hash(): Attribute
 }
 ```
 
-If you would like to disable the object caching behavior of attributes, you may invoke the `withoutObjectCaching` method when defining the attribute:
+속성의 객체 캐싱 동작을 비활성화하고 싶으면, 접근자 정의 시 `withoutObjectCaching` 메서드를 사용할 수 있습니다:
 
 ```php
 /**
- * Interact with the user's address.
+ * 사용자의 주소에 접근합니다.
  */
 protected function address(): Attribute
 {
@@ -131,9 +131,9 @@ protected function address(): Attribute
 ```
 
 <a name="defining-a-mutator"></a>
-### Defining a Mutator
+### 뮤테이터 정의하기
 
-A mutator transforms an Eloquent attribute value when it is set. To define a mutator, you may provide the `set` argument when defining your attribute. Let's define a mutator for the `first_name` attribute. This mutator will be automatically called when we attempt to set the value of the `first_name` attribute on the model:
+뮤테이터는 Eloquent 속성 값을 설정할 때 변환을 수행합니다. 뮤테이터를 정의하려면, 속성 정의 시 `set` 인자를 제공하면 됩니다. 예를 들어 `first_name` 속성의 뮤테이터를 정의해보겠습니다. 이 뮤테이터는 모델의 `first_name` 속성 값을 설정할 때 자동으로 호출됩니다:
 
     <?php
 
@@ -145,7 +145,7 @@ A mutator transforms an Eloquent attribute value when it is set. To define a mut
     class User extends Model
     {
         /**
-         * Interact with the user's first name.
+         * 사용자의 이름을 다룹니다.
          */
         protected function firstName(): Attribute
         {
@@ -156,7 +156,7 @@ A mutator transforms an Eloquent attribute value when it is set. To define a mut
         }
     }
 
-The mutator closure will receive the value that is being set on the attribute, allowing you to manipulate the value and return the manipulated value. To use our mutator, we only need to set the `first_name` attribute on an Eloquent model:
+뮤테이터 클로저는 설정되는 값을 인자로 받아 처리한 후 가공된 값을 반환해야 합니다. 뮤테이터를 사용하려면, Eloquent 모델에 단순히 `first_name` 속성을 할당하면 됩니다:
 
     use App\Models\User;
 
@@ -164,19 +164,19 @@ The mutator closure will receive the value that is being set on the attribute, a
 
     $user->first_name = 'Sally';
 
-In this example, the `set` callback will be called with the value `Sally`. The mutator will then apply the `strtolower` function to the name and set its resulting value in the model's internal `$attributes` array.
+이 예제에서 `set` 콜백엔 `Sally`가 전달됩니다. 뮤테이터는 `strtolower` 함수를 적용해서 가공된 값을 모델의 `$attributes` 배열에 저장합니다.
 
 <a name="mutating-multiple-attributes"></a>
-#### Mutating Multiple Attributes
+#### 여러 속성 변환하기
 
-Sometimes your mutator may need to set multiple attributes on the underlying model. To do so, you may return an array from the `set` closure. Each key in the array should correspond with an underlying attribute / database column associated with the model:
+뮤테이터가 여러 모델 속성을 입력해야 할 때도 있습니다. 이럴 땐 `set` 클로저에서 배열을 반환하면 됩니다. 배열의 각 키는 모델에 매핑되는 실제 속성명이어야 합니다:
 
 ```php
 use App\Support\Address;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
- * Interact with the user's address.
+ * 사용자의 주소에 접근합니다.
  */
 protected function address(): Attribute
 {
@@ -194,11 +194,11 @@ protected function address(): Attribute
 ```
 
 <a name="attribute-casting"></a>
-## Attribute Casting
+## 속성 캐스팅
 
-Attribute casting provides functionality similar to accessors and mutators without requiring you to define any additional methods on your model. Instead, your model's `$casts` property provides a convenient method of converting attributes to common data types.
+속성 캐스팅(attribute casting)은 접근자 및 뮤테이터와 유사한 기능을 제공하지만, 별도의 메서드 없이 간단히 속성 타입을 변환할 수 있습니다. 모델의 `$casts` 속성에 캐스팅할 속성과 타입을 배열로 등록하면 됩니다.
 
-The `$casts` property should be an array where the key is the name of the attribute being cast and the value is the type you wish to cast the column to. The supported cast types are:
+`$casts` 속성은 캐스팅할 속성명을 키로, 캐스팅할 타입을 값으로 하는 배열이어야 하며, 지원되는 캐스트 타입은 다음과 같습니다:
 
 <div class="content-list" markdown="1">
 
@@ -226,7 +226,7 @@ The `$casts` property should be an array where the key is the name of the attrib
 
 </div>
 
-To demonstrate attribute casting, let's cast the `is_admin` attribute, which is stored in our database as an integer (`0` or `1`) to a boolean value:
+예를 들어, 데이터베이스에 정수형(0 또는 1)으로 저장된 `is_admin` 속성을 불리언으로 캐스팅해보겠습니다:
 
     <?php
 
@@ -237,7 +237,7 @@ To demonstrate attribute casting, let's cast the `is_admin` attribute, which is 
     class User extends Model
     {
         /**
-         * The attributes that should be cast.
+         * 캐스팅할 속성.
          *
          * @var array
          */
@@ -246,7 +246,7 @@ To demonstrate attribute casting, let's cast the `is_admin` attribute, which is 
         ];
     }
 
-After defining the cast, the `is_admin` attribute will always be cast to a boolean when you access it, even if the underlying value is stored in the database as an integer:
+캐스트를 정의하면 데이터베이스에는 정수로 저장되어 있더라도 `is_admin` 속성에 접근할 때마다 항상 불리언으로 반환됩니다:
 
     $user = App\Models\User::find(1);
 
@@ -254,7 +254,7 @@ After defining the cast, the `is_admin` attribute will always be cast to a boole
         // ...
     }
 
-If you need to add a new, temporary cast at runtime, you may use the `mergeCasts` method. These cast definitions will be added to any of the casts already defined on the model:
+런타임에 임시로 새로운 캐스트를 추가하고 싶다면 `mergeCasts` 메서드를 사용할 수 있습니다. 이 정의는 기존의 캐스트에 추가됩니다:
 
     $user->mergeCasts([
         'is_admin' => 'integer',
@@ -262,12 +262,12 @@ If you need to add a new, temporary cast at runtime, you may use the `mergeCasts
     ]);
 
 > [!WARNING]  
-> Attributes that are `null` will not be cast. In addition, you should never define a cast (or an attribute) that has the same name as a relationship or assign a cast to the model's primary key.
+> 값이 `null`인 속성은 캐스팅되지 않습니다. 또한 관계와 동일한 이름이나 모델의 기본키에 대한 캐스트(혹은 속성)를 정의하면 안 됩니다.
 
 <a name="stringable-casting"></a>
-#### Stringable Casting
+#### Stringable 캐스팅
 
-You may use the `Illuminate\Database\Eloquent\Casts\AsStringable` cast class to cast a model attribute to a [fluent `Illuminate\Support\Stringable` object](/docs/{{version}}/strings#fluent-strings-method-list):
+`Illuminate\Database\Eloquent\Casts\AsStringable` 캐스트 클래스를 사용하면 [유연한 `Illuminate\Support\Stringable` 객체](/docs/{{version}}/strings#fluent-strings-method-list)로 속성을 캐스팅할 수 있습니다:
 
     <?php
 
@@ -279,7 +279,7 @@ You may use the `Illuminate\Database\Eloquent\Casts\AsStringable` cast class to 
     class User extends Model
     {
         /**
-         * The attributes that should be cast.
+         * 캐스팅할 속성.
          *
          * @var array
          */
@@ -289,9 +289,9 @@ You may use the `Illuminate\Database\Eloquent\Casts\AsStringable` cast class to 
     }
 
 <a name="array-and-json-casting"></a>
-### Array and JSON Casting
+### 배열 및 JSON 캐스팅
 
-The `array` cast is particularly useful when working with columns that are stored as serialized JSON. For example, if your database has a `JSON` or `TEXT` field type that contains serialized JSON, adding the `array` cast to that attribute will automatically deserialize the attribute to a PHP array when you access it on your Eloquent model:
+`array` 캐스트는 직렬화된 JSON 형태로 저장된 컬럼을 다룰 때 유용합니다. 예를 들어, 데이터베이스에 JSON이나 TEXT 타입 칼럼이 직렬화된 JSON을 담고 있다면, 해당 속성에 `array` 캐스트를 지정하면 Eloquent 모델에서 접근할 때 자동으로 PHP 배열로 복원해줍니다:
 
     <?php
 
@@ -302,7 +302,7 @@ The `array` cast is particularly useful when working with columns that are store
     class User extends Model
     {
         /**
-         * The attributes that should be cast.
+         * 캐스팅할 속성.
          *
          * @var array
          */
@@ -311,7 +311,7 @@ The `array` cast is particularly useful when working with columns that are store
         ];
     }
 
-Once the cast is defined, you may access the `options` attribute and it will automatically be deserialized from JSON into a PHP array. When you set the value of the `options` attribute, the given array will automatically be serialized back into JSON for storage:
+캐스트를 정의하면 `options` 속성에 접근할 때 JSON에서 PHP 배열로 변환됩니다. 값을 저장할 때는 자동으로 배열이 JSON으로 직렬화되어 저장됩니다:
 
     use App\Models\User;
 
@@ -325,27 +325,27 @@ Once the cast is defined, you may access the `options` attribute and it will aut
 
     $user->save();
 
-To update a single field of a JSON attribute with a more terse syntax, you may [make the attribute mass assignable](/docs/{{version}}/eloquent#mass-assignment-json-columns) and use the `->` operator when calling the `update` method:
+더 간결한 문법으로 JSON 속성의 필드 하나를 업데이트하려면, [해당 속성을 대량 할당 가능한(mass assignable) 속성](/docs/{{version}}/eloquent#mass-assignment-json-columns)으로 지정하고 `->` 연산자를 이용한 `update`를 사용할 수 있습니다:
 
     $user = User::find(1);
 
     $user->update(['options->key' => 'value']);
 
 <a name="array-object-and-collection-casting"></a>
-#### Array Object and Collection Casting
+#### ArrayObject 및 컬렉션 캐스팅
 
-Although the standard `array` cast is sufficient for many applications, it does have some disadvantages. Since the `array` cast returns a primitive type, it is not possible to mutate an offset of the array directly. For example, the following code will trigger a PHP error:
+기본 `array` 캐스트는 많은 상황에 적합하지만, 배열 오프셋을 직접 변경할 수 없는 단점이 있습니다. 예를 들어, 아래 코드와 같이 값을 변경하면 PHP 에러가 발생합니다:
 
     $user = User::find(1);
 
     $user->options['key'] = $value;
 
-To solve this, Laravel offers an `AsArrayObject` cast that casts your JSON attribute to an [ArrayObject](https://www.php.net/manual/en/class.arrayobject.php) class. This feature is implemented using Laravel's [custom cast](#custom-casts) implementation, which allows Laravel to intelligently cache and transform the mutated object such that individual offsets may be modified without triggering a PHP error. To use the `AsArrayObject` cast, simply assign it to an attribute:
+이를 해결하기 위해, Laravel은 JSON 속성을 [ArrayObject](https://www.php.net/manual/en/class.arrayobject.php) 클래스로 캐스팅해주는 `AsArrayObject` 캐스트를 제공합니다. 이 기능은 Laravel의 [커스텀 캐스트](#custom-casts) 구현을 활용하여, 개별 오프셋 수정 시 PHP 에러 없이 객체가 캐싱·변환됩니다. 사용법은 아래와 같습니다:
 
     use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 
     /**
-     * The attributes that should be cast.
+     * 캐스팅할 속성.
      *
      * @var array
      */
@@ -353,12 +353,12 @@ To solve this, Laravel offers an `AsArrayObject` cast that casts your JSON attri
         'options' => AsArrayObject::class,
     ];
 
-Similarly, Laravel offers an `AsCollection` cast that casts your JSON attribute to a Laravel [Collection](/docs/{{version}}/collections) instance:
+마찬가지로, `AsCollection` 캐스트를 사용하면 JSON 속성을 Laravel [Collection](/docs/{{version}}/collections) 인스턴스로 변환할 수 있습니다:
 
     use Illuminate\Database\Eloquent\Casts\AsCollection;
 
     /**
-     * The attributes that should be cast.
+     * 캐스팅할 속성.
      *
      * @var array
      */
@@ -366,13 +366,13 @@ Similarly, Laravel offers an `AsCollection` cast that casts your JSON attribute 
         'options' => AsCollection::class,
     ];
 
-If you would like the `AsCollection` cast to instantiate a custom collection class instead of Laravel's base collection class, you may provide the collection class name as a cast argument:
+`AsCollection` 캐스트로 기본 컬렉션이 아닌 커스텀 컬렉션 클래스를 사용하고 싶다면, 캐스트 인자에 컬렉션 클래스명을 전달할 수 있습니다:
 
     use App\Collections\OptionCollection;
     use Illuminate\Database\Eloquent\Casts\AsCollection;
 
     /**
-     * The attributes that should be cast.
+     * 캐스팅할 속성.
      *
      * @var array
      */
@@ -381,14 +381,14 @@ If you would like the `AsCollection` cast to instantiate a custom collection cla
     ];
 
 <a name="date-casting"></a>
-### Date Casting
+### 날짜 캐스팅
 
-By default, Eloquent will cast the `created_at` and `updated_at` columns to instances of [Carbon](https://github.com/briannesbitt/Carbon), which extends the PHP `DateTime` class and provides an assortment of helpful methods. You may cast additional date attributes by defining additional date casts within your model's `$casts` property array. Typically, dates should be cast using the `datetime` or `immutable_datetime` cast types.
+기본적으로 Eloquent는 `created_at`, `updated_at` 컬럼을 [Carbon](https://github.com/briannesbitt/Carbon) 인스턴스로 캐스팅합니다. Carbon은 PHP `DateTime`을 확장한 강력한 날짜/시간 라이브러리입니다. 추가로 날짜 속성을 캐스팅하려면, `$casts` 프로퍼티에 해당 속성을 `datetime` 또는 `immutable_datetime` 타입으로 지정하면 됩니다.
 
-When defining a `date` or `datetime` cast, you may also specify the date's format. This format will be used when the [model is serialized to an array or JSON](/docs/{{version}}/eloquent-serialization):
+`date` 또는 `datetime` 캐스트를 정의할 때, 날짜의 포맷도 지정할 수 있습니다. 포맷은 [모델이 배열 또는 JSON으로 직렬화](/docs/{{version}}/eloquent-serialization)될 때 사용됩니다:
 
     /**
-     * The attributes that should be cast.
+     * 캐스팅할 속성.
      *
      * @var array
      */
@@ -396,43 +396,43 @@ When defining a `date` or `datetime` cast, you may also specify the date's forma
         'created_at' => 'datetime:Y-m-d',
     ];
 
-When a column is cast as a date, you may set the corresponding model attribute value to a UNIX timestamp, date string (`Y-m-d`), date-time string, or a `DateTime` / `Carbon` instance. The date's value will be correctly converted and stored in your database.
+컬럼이 날짜로 캐스팅되면, 속성 값에 유닉스 타임스탬프, 날짜 문자열(`Y-m-d`), 날짜-시간 문자열, `DateTime`/`Carbon` 객체를 할당할 수 있으며, 형식에 맞게 데이터베이스에 저장됩니다.
 
-You may customize the default serialization format for all of your model's dates by defining a `serializeDate` method on your model. This method does not affect how your dates are formatted for storage in the database:
+모델의 모든 날짜 기본 직렬화 포맷을 바꾸고 싶다면, 모델에 `serializeDate` 메서드를 정의하면 됩니다. 이 메서드는 데이터베이스 저장 포맷에는 영향을 주지 않습니다:
 
     /**
-     * Prepare a date for array / JSON serialization.
+     * 날짜를 배열 / JSON 직렬화용으로 준비합니다.
      */
     protected function serializeDate(DateTimeInterface $date): string
     {
         return $date->format('Y-m-d');
     }
 
-To specify the format that should be used when actually storing a model's dates within your database, you should define a `$dateFormat` property on your model:
+데이터베이스 저장 시 실제로 쓸 포맷을 지정하려면, `$dateFormat` 속성을 정의할 수 있습니다:
 
     /**
-     * The storage format of the model's date columns.
+     * 날짜 컬럼의 저장 포맷.
      *
      * @var string
      */
     protected $dateFormat = 'U';
 
 <a name="date-casting-and-timezones"></a>
-#### Date Casting, Serialization, and Timezones
+#### 날짜 캐스팅과 직렬화, 그리고 타임존
 
-By default, the `date` and `datetime` casts will serialize dates to a UTC ISO-8601 date string (`YYYY-MM-DDTHH:MM:SS.uuuuuuZ`), regardless of the timezone specified in your application's `timezone` configuration option. You are strongly encouraged to always use this serialization format, as well as to store your application's dates in the UTC timezone by not changing your application's `timezone` configuration option from its default `UTC` value. Consistently using the UTC timezone throughout your application will provide the maximum level of interoperability with other date manipulation libraries written in PHP and JavaScript.
+기본적으로 `date` 및 `datetime` 캐스트로 직렬화된 날짜는 애플리케이션의 `timezone` 설정에 상관없이 항상 UTC ISO-8601 날짜 문자열(`YYYY-MM-DDTHH:MM:SS.uuuuuuZ`)로 변환됩니다. 이 직렬화 포맷과 애플리케이션의 날짜를 UTC 타임존에 저장(설정 변경 없이 기본값인 UTC 유지)하는 것이 강력히 권장됩니다. UTC 타임존을 일관되게 사용하면 PHP/JS의 기타 날짜 처리 라이브러리와의 호환성이 극대화됩니다.
 
-If a custom format is applied to the `date` or `datetime` cast, such as `datetime:Y-m-d H:i:s`, the inner timezone of the Carbon instance will be used during date serialization. Typically, this will be the timezone specified in your application's `timezone` configuration option.
+`date` 또는 `datetime` 캐스트에 커스텀 포맷(예: `datetime:Y-m-d H:i:s`)을 적용하면, Carbon 인스턴스의 내부 타임존이 사용됩니다. 일반적으로 이 타임존은 애플리케이션의 `timezone` 설정이 반영됩니다.
 
 <a name="enum-casting"></a>
-### Enum Casting
+### Enum 캐스팅
 
-Eloquent also allows you to cast your attribute values to PHP [Enums](https://www.php.net/manual/en/language.enumerations.backed.php). To accomplish this, you may specify the attribute and enum you wish to cast in your model's `$casts` property array:
+Eloquent는 속성 값을 PHP [Enum](https://www.php.net/manual/en/language.enumerations.backed.php)으로 직접 캐스팅할 수 있습니다. 사용하려면, 모델의 `$casts` 배열에 캐스팅하려는 속성과 Enum 클래스를 지정하면 됩니다:
 
     use App\Enums\ServerStatus;
 
     /**
-     * The attributes that should be cast.
+     * 캐스팅할 속성.
      *
      * @var array
      */
@@ -440,7 +440,7 @@ Eloquent also allows you to cast your attribute values to PHP [Enums](https://ww
         'status' => ServerStatus::class,
     ];
 
-Once you have defined the cast on your model, the specified attribute will be automatically cast to and from an enum when you interact with the attribute:
+이렇게 하면 해당 속성에 할당하거나 접근할 때 Enum 객체와 값이 서로 자동 변환됩니다:
 
     if ($server->status == ServerStatus::Provisioned) {
         $server->status = ServerStatus::Ready;
@@ -449,15 +449,15 @@ Once you have defined the cast on your model, the specified attribute will be au
     }
 
 <a name="casting-arrays-of-enums"></a>
-#### Casting Arrays of Enums
+#### Enum 배열 캐스팅
 
-Sometimes you may need your model to store an array of enum values within a single column. To accomplish this, you may utilize the `AsEnumArrayObject` or `AsEnumCollection` casts provided by Laravel:
+모델에서 Enum 값들의 배열을 하나의 컬럼에 저장해야 할 경우, Laravel에서 제공하는 `AsEnumArrayObject`, `AsEnumCollection` 캐스트를 사용할 수 있습니다:
 
     use App\Enums\ServerStatus;
     use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 
     /**
-     * The attributes that should be cast.
+     * 캐스팅할 속성.
      *
      * @var array
      */
@@ -466,21 +466,21 @@ Sometimes you may need your model to store an array of enum values within a sing
     ];
 
 <a name="encrypted-casting"></a>
-### Encrypted Casting
+### 암호화 캐스팅
 
-The `encrypted` cast will encrypt a model's attribute value using Laravel's built-in [encryption](/docs/{{version}}/encryption) features. In addition, the `encrypted:array`, `encrypted:collection`, `encrypted:object`, `AsEncryptedArrayObject`, and `AsEncryptedCollection` casts work like their unencrypted counterparts; however, as you might expect, the underlying value is encrypted when stored in your database.
+`encrypted` 캐스트를 사용하면 Laravel의 내장 [암호화 기능](/docs/{{version}}/encryption)으로 속성값이 암호화됩니다. 또한 `encrypted:array`, `encrypted:collection`, `encrypted:object`, `AsEncryptedArrayObject`, `AsEncryptedCollection` 등도 해당 속성을 암호화하여 저장합니다.
 
-As the final length of the encrypted text is not predictable and is longer than its plain text counterpart, make sure the associated database column is of `TEXT` type or larger. In addition, since the values are encrypted in the database, you will not be able to query or search encrypted attribute values.
+암호화된 텍스트는 평문보다 길고 최종 길이를 예측할 수 없으므로, 관련 데이터베이스 컬럼 타입은 반드시 `TEXT` 이상이어야 합니다. 또한 값이 암호화되어 저장되므로 DB에서 암호화된 필드값을 조회/검색할 수 없습니다.
 
 <a name="key-rotation"></a>
-#### Key Rotation
+#### 키 롤링(Key Rotation)
 
-As you may know, Laravel encrypts strings using the `key` configuration value specified in your application's `app` configuration file. Typically, this value corresponds to the value of the `APP_KEY` environment variable. If you need to rotate your application's encryption key, you will need to manually re-encrypt your encrypted attributes using the new key.
+Laravel은 애플리케이션의 `app` 설정파일 내 `key` 설정값(일반적으로 환경변수 `APP_KEY`)으로 문자열을 암호화합니다. 암호화 키를 변경(롤링)해야 한다면, 새로운 키로 DB에 저장된 암호화된 속성값을 수동으로 다시 암호화해야 합니다.
 
 <a name="query-time-casting"></a>
-### Query Time Casting
+### 쿼리 타임 캐스팅
 
-Sometimes you may need to apply casts while executing a query, such as when selecting a raw value from a table. For example, consider the following query:
+가끔 쿼리 실행 중에 캐스트를 적용해야 할 수 있습니다. 예를 들어, 테이블에서 Raw 값을 조회할 때 다음과 같이 쿼리를 작성했다고 합시다:
 
     use App\Models\Post;
     use App\Models\User;
@@ -491,7 +491,7 @@ Sometimes you may need to apply casts while executing a query, such as when sele
                 ->whereColumn('user_id', 'users.id')
     ])->get();
 
-The `last_posted_at` attribute on the results of this query will be a simple string. It would be wonderful if we could apply a `datetime` cast to this attribute when executing the query. Thankfully, we may accomplish this using the `withCasts` method:
+이 쿼리 결과의 `last_posted_at` 속성은 단순한 문자열로 반환됩니다. 만약 이 속성에 `datetime` 캐스트를 쿼리 실행시에 적용하고 싶다면, `withCasts` 메서드를 사용하면 됩니다:
 
     $users = User::select([
         'users.*',
@@ -502,15 +502,15 @@ The `last_posted_at` attribute on the results of this query will be a simple str
     ])->get();
 
 <a name="custom-casts"></a>
-## Custom Casts
+## 커스텀 캐스트
 
-Laravel has a variety of built-in, helpful cast types; however, you may occasionally need to define your own cast types. To create a cast, execute the `make:cast` Artisan command. The new cast class will be placed in your `app/Casts` directory:
+Laravel에는 기본적으로 다양한 타입의 편리한 캐스트가 있지만, 필요에 따라 커스텀 캐스트 타입을 만들 수도 있습니다. 캐스트를 생성하려면 `make:cast` 아티즌 명령을 실행하세요. 새로운 캐스트 클래스는 `app/Casts` 디렉터리에 생성됩니다.
 
 ```shell
 php artisan make:cast Json
 ```
 
-All custom cast classes implement the `CastsAttributes` interface. Classes that implement this interface must define a `get` and `set` method. The `get` method is responsible for transforming a raw value from the database into a cast value, while the `set` method should transform a cast value into a raw value that can be stored in the database. As an example, we will re-implement the built-in `json` cast type as a custom cast type:
+모든 커스텀 캐스트 클래스는 `CastsAttributes` 인터페이스를 구현해야 하며, `get`과 `set` 메서드를 정의해야 합니다. `get` 메서드는 데이터베이스의 원시 값을 캐스팅값으로 변환하며, `set`은 캐스팅값을 데이터베이스에 저장할 원시값으로 변환해야 합니다. 예시로, Laravel 내장 `json` 캐스트를 커스텀 캐스트로 재구현해보겠습니다.
 
     <?php
 
@@ -522,7 +522,7 @@ All custom cast classes implement the `CastsAttributes` interface. Classes that 
     class Json implements CastsAttributes
     {
         /**
-         * Cast the given value.
+         * 값 캐스팅.
          *
          * @param  array<string, mixed>  $attributes
          * @return array<string, mixed>
@@ -533,7 +533,7 @@ All custom cast classes implement the `CastsAttributes` interface. Classes that 
         }
 
         /**
-         * Prepare the given value for storage.
+         * 저장용 값 가공.
          *
          * @param  array<string, mixed>  $attributes
          */
@@ -543,7 +543,7 @@ All custom cast classes implement the `CastsAttributes` interface. Classes that 
         }
     }
 
-Once you have defined a custom cast type, you may attach it to a model attribute using its class name:
+커스텀 캐스트 타입을 정의했다면, 클래스명을 속성에 지정해 사용할 수 있습니다:
 
     <?php
 
@@ -555,7 +555,7 @@ Once you have defined a custom cast type, you may attach it to a model attribute
     class User extends Model
     {
         /**
-         * The attributes that should be cast.
+         * 캐스팅할 속성.
          *
          * @var array
          */
@@ -565,11 +565,11 @@ Once you have defined a custom cast type, you may attach it to a model attribute
     }
 
 <a name="value-object-casting"></a>
-### Value Object Casting
+### 값 객체 캐스팅
 
-You are not limited to casting values to primitive types. You may also cast values to objects. Defining custom casts that cast values to objects is very similar to casting to primitive types; however, the `set` method should return an array of key / value pairs that will be used to set raw, storable values on the model.
+캐스팅은 원시 타입에 한정되지 않습니다. 속성을 객체로도 캐스팅할 수 있습니다. 객체로 캐스팅하는 커스텀 캐스트 정의는 원시 타입의 경우와 거의 유사하지만, `set` 메서드는 모델에 저장될 수 있는 키/값 쌍의 배열을 반환해야 합니다.
 
-As an example, we will define a custom cast class that casts multiple model values into a single `Address` value object. We will assume the `Address` value has two public properties: `lineOne` and `lineTwo`:
+예시로, 여러 모델 속성을 하나의 `Address` 값 객체로 캐스팅하는 커스텀 캐스트 클래스를 정의하겠습니다. 이 객체는 `lineOne`과 `lineTwo` 두 프로퍼티를 갖는다고 가정합니다:
 
     <?php
 
@@ -583,7 +583,7 @@ As an example, we will define a custom cast class that casts multiple model valu
     class Address implements CastsAttributes
     {
         /**
-         * Cast the given value.
+         * 값 캐스팅.
          *
          * @param  array<string, mixed>  $attributes
          */
@@ -596,7 +596,7 @@ As an example, we will define a custom cast class that casts multiple model valu
         }
 
         /**
-         * Prepare the given value for storage.
+         * 저장용 값 가공.
          *
          * @param  array<string, mixed>  $attributes
          * @return array<string, string>
@@ -614,7 +614,7 @@ As an example, we will define a custom cast class that casts multiple model valu
         }
     }
 
-When casting to value objects, any changes made to the value object will automatically be synced back to the model before the model is saved:
+값 객체로 캐스팅한 후 객체를 변경하면, 저장 전에 모델에 자동으로 반영됩니다:
 
     use App\Models\User;
 
@@ -625,14 +625,14 @@ When casting to value objects, any changes made to the value object will automat
     $user->save();
 
 > [!NOTE]  
-> If you plan to serialize your Eloquent models containing value objects to JSON or arrays, you should implement the `Illuminate\Contracts\Support\Arrayable` and `JsonSerializable` interfaces on the value object.
+> 값 객체를 갖는 Eloquent 모델을 배열/JSON으로 직렬화할 계획이라면, 해당 값 객체에 `Illuminate\Contracts\Support\Arrayable`, `JsonSerializable` 인터페이스를 구현하는 것이 좋습니다.
 
 <a name="value-object-caching"></a>
-#### Value Object Caching
+#### 값 객체 캐싱
 
-When attributes that are cast to value objects are resolved, they are cached by Eloquent. Therefore, the same object instance will be returned if the attribute is accessed again.
+값 객체로 캐스팅된 속성은 Eloquent에서 캐싱되므로, 동일 속성을 다시 접근하면 항상 같은 객체 인스턴스가 반환됩니다.
 
-If you would like to disable the object caching behavior of custom cast classes, you may declare a public `withoutObjectCaching` property on your custom cast class:
+특정 커스텀 캐스트 클래스에서 객체 캐싱을 비활성화하고 싶다면, 클래스에 public한 `withoutObjectCaching` 속성을 선언하십시오:
 
 ```php
 class Address implements CastsAttributes
@@ -644,14 +644,14 @@ class Address implements CastsAttributes
 ```
 
 <a name="array-json-serialization"></a>
-### Array / JSON Serialization
+### 배열 / JSON 직렬화
 
-When an Eloquent model is converted to an array or JSON using the `toArray` and `toJson` methods, your custom cast value objects will typically be serialized as well as long as they implement the `Illuminate\Contracts\Support\Arrayable` and `JsonSerializable` interfaces. However, when using value objects provided by third-party libraries, you may not have the ability to add these interfaces to the object.
+Eloquent 모델의 `toArray`, `toJson` 메서드로 배열/JSON 변환 시, 커스텀 캐스트 값 객체는 일반적으로 `Illuminate\Contracts\Support\Arrayable`, `JsonSerializable` 인터페이스가 구현되어 있다면 자동으로 직렬화됩니다. 그러나 서드파티 라이브러리의 값 객체는 인터페이스 구현이 불가능할 수 있습니다.
 
-Therefore, you may specify that your custom cast class will be responsible for serializing the value object. To do so, your custom cast class should implement the `Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes` interface. This interface states that your class should contain a `serialize` method which should return the serialized form of your value object:
+이럴 때 커스텀 캐스트 클래스에서 값 객체 직렬화를 책임지도록 지정할 수 있습니다. 클래스를 `Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes` 인터페이스로 구현하면, 클래스 내 `serialize` 메서드에서 객체의 직렬화 형태를 반환해야 합니다:
 
     /**
-     * Get the serialized representation of the value.
+     * 값의 직렬화 표현 반환.
      *
      * @param  array<string, mixed>  $attributes
      */
@@ -661,17 +661,17 @@ Therefore, you may specify that your custom cast class will be responsible for s
     }
 
 <a name="inbound-casting"></a>
-### Inbound Casting
+### 입력 값 캐스팅(Inbound Casting)
 
-Occasionally, you may need to write a custom cast class that only transforms values that are being set on the model and does not perform any operations when attributes are being retrieved from the model.
+때로는 모델에 값을 할당(set)할 때만 값을 변환하고, 조회(get)할 때는 변환하지 않는 커스텀 캐스트 클래스가 필요할 수 있습니다.
 
-Inbound only custom casts should implement the `CastsInboundAttributes` interface, which only requires a `set` method to be defined. The `make:cast` Artisan command may be invoked with the `--inbound` option to generate an inbound only cast class:
+입력 전용 커스텀 캐스트는 `CastsInboundAttributes` 인터페이스를 구현해야 하며, 이 인터페이스는 `set` 메서드만 필요합니다. 아티즌 명령어 실행 시 `--inbound` 옵션을 추가해 생성할 수 있습니다:
 
 ```shell
 php artisan make:cast Hash --inbound
 ```
 
-A classic example of an inbound only cast is a "hashing" cast. For example, we may define a cast that hashes inbound values via a given algorithm:
+입력 전용 캐스트 대표 예시는 "해싱" 캐스트입니다. 예를 들어, 입력값을 주어진 알고리즘으로 해시하는 캐스트를 만들 수 있습니다:
 
     <?php
 
@@ -683,14 +683,14 @@ A classic example of an inbound only cast is a "hashing" cast. For example, we m
     class Hash implements CastsInboundAttributes
     {
         /**
-         * Create a new cast class instance.
+         * 새 인스턴스를 생성합니다.
          */
         public function __construct(
             protected string|null $algorithm = null,
         ) {}
 
         /**
-         * Prepare the given value for storage.
+         * 저장용 값 가공.
          *
          * @param  array<string, mixed>  $attributes
          */
@@ -703,12 +703,12 @@ A classic example of an inbound only cast is a "hashing" cast. For example, we m
     }
 
 <a name="cast-parameters"></a>
-### Cast Parameters
+### 캐스트 파라미터
 
-When attaching a custom cast to a model, cast parameters may be specified by separating them from the class name using a `:` character and comma-delimiting multiple parameters. The parameters will be passed to the constructor of the cast class:
+커스텀 캐스트를 모델에 지정할 때, `:`로 구분하여 파라미터를 전달할 수 있습니다. 여러 파라미터는 쉼표로 구분합니다. 이 파라미터들은 캐스트 클래스 생성자에 전달됩니다:
 
     /**
-     * The attributes that should be cast.
+     * 캐스팅할 속성.
      *
      * @var array
      */
@@ -717,9 +717,9 @@ When attaching a custom cast to a model, cast parameters may be specified by sep
     ];
 
 <a name="castables"></a>
-### Castables
+### 캐스터블(Castable)
 
-You may want to allow your application's value objects to define their own custom cast classes. Instead of attaching the custom cast class to your model, you may alternatively attach a value object class that implements the `Illuminate\Contracts\Database\Eloquent\Castable` interface:
+애플리케이션의 값 객체가 자체적으로 커스텀 캐스트 클래스를 지정하도록 하고 싶을 수 있습니다. 모델에 커스텀 캐스트 클래스명을 지정하는 대신, `Illuminate\Contracts\Database\Eloquent\Castable` 인터페이스를 구현한 값 객체 클래스를 속성에 지정해도 됩니다:
 
     use App\ValueObjects\Address;
 
@@ -727,7 +727,7 @@ You may want to allow your application's value objects to define their own custo
         'address' => Address::class,
     ];
 
-Objects that implement the `Castable` interface must define a `castUsing` method that returns the class name of the custom caster class that is responsible for casting to and from the `Castable` class:
+`Castable` 인터페이스를 구현한 객체는 `castUsing` 메서드를 반드시 정의해야 하며, 이 메서드는 해당 객체의 변환을 담당하는 캐스터(캐스트 클래스)명을 반환해야 합니다:
 
     <?php
 
@@ -739,7 +739,7 @@ Objects that implement the `Castable` interface must define a `castUsing` method
     class Address implements Castable
     {
         /**
-         * Get the name of the caster class to use when casting from / to this cast target.
+         * 이 객체의 캐스팅 담당 캐스터 클래스명을 반환합니다.
          *
          * @param  array<string, mixed>  $arguments
          */
@@ -749,7 +749,7 @@ Objects that implement the `Castable` interface must define a `castUsing` method
         }
     }
 
-When using `Castable` classes, you may still provide arguments in the `$casts` definition. The arguments will be passed to the `castUsing` method:
+`Castable` 클래스 사용 시에도 `$casts` 정의에 인자를 추가할 수 있습니다. 이 인자는 `castUsing` 메서드에 전달됩니다:
 
     use App\ValueObjects\Address;
 
@@ -758,9 +758,9 @@ When using `Castable` classes, you may still provide arguments in the `$casts` d
     ];
 
 <a name="anonymous-cast-classes"></a>
-#### Castables & Anonymous Cast Classes
+#### 캐스터블 & 익명 클래스
 
-By combining "castables" with PHP's [anonymous classes](https://www.php.net/manual/en/language.oop5.anonymous.php), you may define a value object and its casting logic as a single castable object. To accomplish this, return an anonymous class from your value object's `castUsing` method. The anonymous class should implement the `CastsAttributes` interface:
+"캐스터블"과 PHP [익명 클래스](https://www.php.net/manual/en/language.oop5.anonymous.php)를 조합하면, 값 객체와 캐스팅 로직을 하나의 캐스터블 객체로 정의할 수 있습니다. 값 객체의 `castUsing` 메서드에서 익명 클래스를 반환하세요. 익명 클래스는 `CastsAttributes` 인터페이스를 구현해야 합니다:
 
     <?php
 
@@ -774,7 +774,7 @@ By combining "castables" with PHP's [anonymous classes](https://www.php.net/manu
         // ...
 
         /**
-         * Get the caster class to use when casting from / to this cast target.
+         * 이 객체의 캐스팅에 사용할 캐스터 클래스 반환.
          *
          * @param  array<string, mixed>  $arguments
          */

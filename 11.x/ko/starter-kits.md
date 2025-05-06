@@ -1,48 +1,48 @@
-# Starter Kits
+# 스타터 키트
 
-- [Introduction](#introduction)
+- [소개](#introduction)
 - [Laravel Breeze](#laravel-breeze)
-    - [Installation](#laravel-breeze-installation)
-    - [Breeze and Blade](#breeze-and-blade)
-    - [Breeze and Livewire](#breeze-and-livewire)
-    - [Breeze and React / Vue](#breeze-and-inertia)
-    - [Breeze and Next.js / API](#breeze-and-next)
+    - [설치](#laravel-breeze-installation)
+    - [Breeze와 Blade](#breeze-and-blade)
+    - [Breeze와 Livewire](#breeze-and-livewire)
+    - [Breeze와 React / Vue](#breeze-and-inertia)
+    - [Breeze와 Next.js / API](#breeze-and-next)
 - [Laravel Jetstream](#laravel-jetstream)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-To give you a head start building your new Laravel application, we are happy to offer authentication and application starter kits. These kits automatically scaffold your application with the routes, controllers, and views you need to register and authenticate your application's users.
+새로운 Laravel 애플리케이션을 빠르게 구축할 수 있도록, 인증 및 애플리케이션 스타터 키트를 제공합니다. 이 키트들은 회원 가입 및 인증에 필요한 라우트, 컨트롤러, 뷰를 자동으로 스캐폴딩해줍니다.
 
-While you are welcome to use these starter kits, they are not required. You are free to build your own application from the ground up by simply installing a fresh copy of Laravel. Either way, we know you will build something great!
+이러한 스타터 키트를 자유롭게 사용할 수 있지만, 반드시 사용해야 하는 것은 아닙니다. Laravel의 새 복사본을 설치하여 처음부터 직접 애플리케이션을 구축할 수도 있습니다. 어떤 방식을 선택하든 멋진 결과를 만들어 내실 수 있을 것입니다!
 
 <a name="laravel-breeze"></a>
 ## Laravel Breeze
 
-[Laravel Breeze](https://github.com/laravel/breeze) is a minimal, simple implementation of all of Laravel's [authentication features](/docs/{{version}}/authentication), including login, registration, password reset, email verification, and password confirmation. In addition, Breeze includes a simple "profile" page where the user may update their name, email address, and password.
+[Laravel Breeze](https://github.com/laravel/breeze)는 로그인, 회원가입, 비밀번호 재설정, 이메일 인증, 비밀번호 확인 등 Laravel의 모든 [인증 기능](/docs/{{version}}/authentication)을 최소한의 구현으로 제공합니다. 또한, 사용자가 이름, 이메일, 비밀번호를 수정할 수 있는 간단한 "프로필" 페이지도 포함되어 있습니다.
 
-Laravel Breeze's default view layer is made up of simple [Blade templates](/docs/{{version}}/blade) styled with [Tailwind CSS](https://tailwindcss.com). Additionally, Breeze provides scaffolding options based on [Livewire](https://livewire.laravel.com) or [Inertia](https://inertiajs.com), with the choice of using Vue or React for the Inertia-based scaffolding.
+Laravel Breeze의 기본 뷰 레이어는 간단한 [Blade 템플릿](/docs/{{version}}/blade)과 [Tailwind CSS](https://tailwindcss.com)로 스타일링되어 있습니다. 추가로, [Livewire](https://livewire.laravel.com) 기반 또는 [Inertia](https://inertiajs.com) 기반(Vue 또는 React 선택 가능) 스캐폴딩 옵션도 제공합니다.
 
 <img src="https://laravel.com/img/docs/breeze-register.png">
 
-#### Laravel Bootcamp
+#### Laravel 부트캠프
 
-If you're new to Laravel, feel free to jump into the [Laravel Bootcamp](https://bootcamp.laravel.com). The Laravel Bootcamp will walk you through building your first Laravel application using Breeze. It's a great way to get a tour of everything that Laravel and Breeze have to offer.
+Laravel을 처음 접하신다면, [Laravel 부트캠프](https://bootcamp.laravel.com)에 참여해 보세요. 부트캠프에서는 Breeze를 사용하여 첫 Laravel 애플리케이션을 만드는 과정을 단계별로 안내합니다. Laravel과 Breeze의 다양한 기능을 둘러보기에 좋은 방법입니다.
 
 <a name="laravel-breeze-installation"></a>
-### Installation
+### 설치
 
-First, you should [create a new Laravel application](/docs/{{version}}/installation). If you create your application using the [Laravel installer](/docs/{{version}}/installation#creating-a-laravel-project), you will be prompted to install Laravel Breeze during the installation process. Otherwise, you will need to follow the manual installation instructions below.
+우선, [새로운 Laravel 애플리케이션을 생성](/docs/{{version}}/installation)해야 합니다. [Laravel 설치 프로그램](/docs/{{version}}/installation#creating-a-laravel-project)을 사용하여 애플리케이션을 생성하면, 설치 과정 중 Laravel Breeze를 설치할 것인지 묻는 안내를 받게 됩니다. 그렇지 않은 경우에는 아래의 수동 설치 지침에 따라 진행하면 됩니다.
 
-If you have already created a new Laravel application without a starter kit, you may manually install Laravel Breeze using Composer:
+만약 스타터 키트 없이 이미 새 Laravel 애플리케이션을 생성했다면, Composer를 사용하여 Laravel Breeze를 수동으로 설치할 수 있습니다:
 
 ```shell
 composer require laravel/breeze --dev
 ```
 
-After Composer has installed the Laravel Breeze package, you should run the `breeze:install` Artisan command. This command publishes the authentication views, routes, controllers, and other resources to your application. Laravel Breeze publishes all of its code to your application so that you have full control and visibility over its features and implementation.
+Composer로 Laravel Breeze 패키지를 설치한 후, `breeze:install` Artisan 명령어를 실행해야 합니다. 이 명령어는 인증 뷰, 라우트, 컨트롤러 등 여러 리소스를 애플리케이션에 퍼블리시합니다. Laravel Breeze의 모든 코드를 애플리케이션에 퍼블리시하기 때문에, 기능과 구현 방식을 완전히 제어하고 직접 확인할 수 있습니다.
 
-The `breeze:install` command will prompt you for your preferred frontend stack and testing framework:
+`breeze:install` 명령은 원하는 프론트엔드 스택과 테스트 프레임워크를 선택하도록 안내합니다:
 
 ```shell
 php artisan breeze:install
@@ -53,9 +53,9 @@ npm run dev
 ```
 
 <a name="breeze-and-blade"></a>
-### Breeze and Blade
+### Breeze와 Blade
 
-The default Breeze "stack" is the Blade stack, which utilizes simple [Blade templates](/docs/{{version}}/blade) to render your application's frontend. The Blade stack may be installed by invoking the `breeze:install` command with no other additional arguments and selecting the Blade frontend stack. After Breeze's scaffolding is installed, you should also compile your application's frontend assets:
+Breeze의 기본 스택은 Blade 스택으로, 간단한 [Blade 템플릿](/docs/{{version}}/blade)을 사용해 프론트엔드를 렌더링합니다. Blade 스택은 추가 인수 없이 `breeze:install` 명령어를 실행한 뒤 Blade 프론트엔드 스택을 선택하면 설치할 수 있습니다. Breeze 스캐폴딩 설치 후, 프론트엔드 에셋도 컴파일해야 합니다:
 
 ```shell
 php artisan breeze:install
@@ -65,19 +65,19 @@ npm install
 npm run dev
 ```
 
-Next, you may navigate to your application's `/login` or `/register` URLs in your web browser. All of Breeze's routes are defined within the `routes/auth.php` file.
+이제 웹 브라우저로 애플리케이션의 `/login` 또는 `/register` URL에 접속해 보세요. Breeze의 모든 라우트는 `routes/auth.php` 파일에서 정의됩니다.
 
 > [!NOTE]  
-> To learn more about compiling your application's CSS and JavaScript, check out Laravel's [Vite documentation](/docs/{{version}}/vite#running-vite).
+> 애플리케이션의 CSS와 JavaScript를 컴파일하는 방법에 대한 자세한 내용은 Laravel의 [Vite 문서](/docs/{{version}}/vite#running-vite)를 참조하세요.
 
 <a name="breeze-and-livewire"></a>
-### Breeze and Livewire
+### Breeze와 Livewire
 
-Laravel Breeze also offers [Livewire](https://livewire.laravel.com) scaffolding. Livewire is a powerful way of building dynamic, reactive, front-end UIs using just PHP.
+Laravel Breeze는 [Livewire](https://livewire.laravel.com) 스캐폴딩도 제공합니다. Livewire는 PHP만으로 동적이고 반응성이 뛰어난 프론트엔드 UI를 구축할 수 있는 강력한 도구입니다.
 
-Livewire is a great fit for teams that primarily use Blade templates and are looking for a simpler alternative to JavaScript-driven SPA frameworks like Vue and React.
+Livewire는 주로 Blade 템플릿을 사용하며, Vue나 React와 같은 자바스크립트 기반 SPA 프레임워크보다 더 단순한 대안을 원하는 팀에게 적합합니다.
 
-To use the Livewire stack, you may select the Livewire frontend stack when executing the `breeze:install` Artisan command. After Breeze's scaffolding is installed, you should run your database migrations:
+Livewire 스택을 사용하려면 `breeze:install` Artisan 명령어 실행 시 Livewire 프론트엔드 스택을 선택하십시오. Breeze 스캐폴딩 설치 후에는 데이터베이스 마이그레이션을 실행해야 합니다:
 
 ```shell
 php artisan breeze:install
@@ -86,13 +86,13 @@ php artisan migrate
 ```
 
 <a name="breeze-and-inertia"></a>
-### Breeze and React / Vue
+### Breeze와 React / Vue
 
-Laravel Breeze also offers React and Vue scaffolding via an [Inertia](https://inertiajs.com) frontend implementation. Inertia allows you to build modern, single-page React and Vue applications using classic server-side routing and controllers.
+Laravel Breeze는 [Inertia](https://inertiajs.com) 프론트엔드 구현을 통해 React와 Vue 스캐폴딩도 지원합니다. Inertia를 사용하면 서버 사이드 라우팅과 컨트롤러를 그대로 유지하면서 모던 싱글 페이지 React나 Vue 애플리케이션을 쉽게 만들 수 있습니다.
 
-Inertia lets you enjoy the frontend power of React and Vue combined with the incredible backend productivity of Laravel and lightning-fast [Vite](https://vitejs.dev) compilation. To use an Inertia stack, you may select the Vue or React frontend stacks when executing the `breeze:install` Artisan command.
+Inertia를 통해 React와 Vue의 강력한 프론트엔드 기능과 함께, Laravel의 생산성 그리고 빠른 [Vite](https://vitejs.dev) 컴파일 속도를 누릴 수 있습니다. Inertia 스택을 사용하려면 `breeze:install` Artisan 명령어 실행 시 Vue 또는 React 프론트엔드 스택을 선택하십시오.
 
-When selecting the Vue or React frontend stack, the Breeze installer will also prompt you to determine if you would like [Inertia SSR](https://inertiajs.com/server-side-rendering) or TypeScript support. After Breeze's scaffolding is installed, you should also compile your application's frontend assets:
+Vue나 React 프론트엔드 스택을 선택하면, Breeze 설치 도중 [Inertia SSR](https://inertiajs.com/server-side-rendering) 또는 TypeScript 지원 여부도 함께 묻게 됩니다. Breeze 스캐폴딩 설치 후에는 프론트엔드 에셋을 컴파일해야 합니다:
 
 ```shell
 php artisan breeze:install
@@ -102,12 +102,12 @@ npm install
 npm run dev
 ```
 
-Next, you may navigate to your application's `/login` or `/register` URLs in your web browser. All of Breeze's routes are defined within the `routes/auth.php` file.
+이제 웹 브라우저로 애플리케이션의 `/login` 또는 `/register` URL에 접속해 보세요. Breeze의 모든 라우트는 `routes/auth.php` 파일에서 정의됩니다.
 
 <a name="breeze-and-next"></a>
-### Breeze and Next.js / API
+### Breeze와 Next.js / API
 
-Laravel Breeze can also scaffold an authentication API that is ready to authenticate modern JavaScript applications such as those powered by [Next](https://nextjs.org), [Nuxt](https://nuxt.com), and others. To get started, select the API stack as your desired stack when executing the `breeze:install` Artisan command:
+Laravel Breeze는 [Next](https://nextjs.org), [Nuxt](https://nuxt.com) 등 최신 자바스크립트 애플리케이션과 연동할 수 있는 인증용 API 스캐폴딩도 지원합니다. 시작하려면 `breeze:install` Artisan 명령어 실행 시 API 스택을 선택하세요:
 
 ```shell
 php artisan breeze:install
@@ -115,18 +115,18 @@ php artisan breeze:install
 php artisan migrate
 ```
 
-During installation, Breeze will add a `FRONTEND_URL` environment variable to your application's `.env` file. This URL should be the URL of your JavaScript application. This will typically be `http://localhost:3000` during local development. In addition, you should ensure that your `APP_URL` is set to `http://localhost:8000`, which is the default URL used by the `serve` Artisan command.
+설치 중 Breeze는 애플리케이션의 `.env` 파일에 `FRONTEND_URL` 환경변수를 추가합니다. 이 URL은 자바스크립트 애플리케이션의 URL이어야 하며, 로컬 개발 환경에서는 일반적으로 `http://localhost:3000`이 됩니다. 또한 `APP_URL`이 `http://localhost:8000`(기본 `serve` Artisan 명령어 사용하는 주소)로 설정되어 있는지 반드시 확인하세요.
 
 <a name="next-reference-implementation"></a>
-#### Next.js Reference Implementation
+#### Next.js 참고 구현
 
-Finally, you are ready to pair this backend with the frontend of your choice. A Next reference implementation of the Breeze frontend is [available on GitHub](https://github.com/laravel/breeze-next). This frontend is maintained by Laravel and contains the same user interface as the traditional Blade and Inertia stacks provided by Breeze.
+이제 백엔드를 원하는 프론트엔드와 연동할 준비가 되었습니다. Breeze 프론트엔드의 Next 참고 구현은 [GitHub에서 확인할 수 있습니다](https://github.com/laravel/breeze-next). 이 프론트엔드는 Laravel에서 공식적으로 관리하며, Breeze가 제공하는 Blade·Inertia 스택과 동일한 사용자 인터페이스를 포함하고 있습니다.
 
 <a name="laravel-jetstream"></a>
 ## Laravel Jetstream
 
-While Laravel Breeze provides a simple and minimal starting point for building a Laravel application, Jetstream augments that functionality with more robust features and additional frontend technology stacks. **For those brand new to Laravel, we recommend learning the ropes with Laravel Breeze before graduating to Laravel Jetstream.**
+Laravel Breeze가 Laravel 애플리케이션 구축을 위한 단순하고 최소한의 시작점을 제공한다면, Jetstream은 더 강력한 기능과 다양한 프론트엔드 기술 스택으로 이를 확장한 도구입니다. **Laravel을 처음 접하시는 분들은 Jetstream을 사용하기 전에 Laravel Breeze로 기본 개념부터 익히실 것을 추천합니다.**
 
-Jetstream provides a beautifully designed application scaffolding for Laravel and includes login, registration, email verification, two-factor authentication, session management, API support via Laravel Sanctum, and optional team management. Jetstream is designed using [Tailwind CSS](https://tailwindcss.com) and offers your choice of [Livewire](https://livewire.laravel.com) or [Inertia](https://inertiajs.com) driven frontend scaffolding.
+Jetstream은 아름답게 디자인된 애플리케이션 스캐폴딩을 제공하며, 로그인, 회원가입, 이메일 인증, 2단계 인증, 세션 관리, Laravel Sanctum 기반 API 지원, 그리고 선택적 팀 관리 기능까지 포함하고 있습니다. Jetstream은 [Tailwind CSS](https://tailwindcss.com)로 제작되었으며, [Livewire](https://livewire.laravel.com) 또는 [Inertia](https://inertiajs.com) 기반의 프론트엔드 스캐폴딩을 선택할 수 있습니다.
 
-Complete documentation for installing Laravel Jetstream can be found within the [official Jetstream documentation](https://jetstream.laravel.com).
+Laravel Jetstream 설치에 관한 전체 문서는 [공식 Jetstream 문서](https://jetstream.laravel.com)에서 확인하실 수 있습니다.

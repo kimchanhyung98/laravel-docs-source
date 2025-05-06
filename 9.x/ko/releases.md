@@ -1,85 +1,85 @@
-# Release Notes
+# 릴리즈 노트
 
-- [Versioning Scheme](#versioning-scheme)
-- [Support Policy](#support-policy)
+- [버전 관리 정책](#versioning-scheme)
+- [지원 정책](#support-policy)
 - [Laravel 9](#laravel-9)
 
 <a name="versioning-scheme"></a>
-## Versioning Scheme
+## 버전 관리 정책
 
-Laravel and its other first-party packages follow [Semantic Versioning](https://semver.org). Major framework releases are released every year (~February), while minor and patch releases may be released as often as every week. Minor and patch releases should **never** contain breaking changes.
+Laravel 및 기타 1차 제공 패키지들은 [시맨틱 버전 관리](https://semver.org)를 따릅니다. 주요 프레임워크 릴리즈는 매년(약 2월) 출시되며, 마이너 및 패치 릴리즈는 매주 출시될 수 있습니다. 마이너 및 패치 릴리즈에는 **절대** 하위 호환성에 영향을 주는 변경 사항이 포함되어서는 안 됩니다.
 
-When referencing the Laravel framework or its components from your application or package, you should always use a version constraint such as `^9.0`, since major releases of Laravel do include breaking changes. However, we strive to always ensure you may update to a new major release in one day or less.
+애플리케이션이나 패키지에서 Laravel 프레임워크 또는 그 컴포넌트를 참조할 때는 반드시 `^9.0`과 같은 버전 제약 조건을 사용해야 합니다. 왜냐하면 주요 릴리즈에는 하위 호환성 이슈가 포함될 수 있기 때문입니다. 하지만, 새 주요 릴리즈로의 업그레이드가 하루 이내에 완료될 수 있도록 항상 노력하고 있습니다.
 
 <a name="named-arguments"></a>
-#### Named Arguments
+#### 네임드 아규먼트
 
-[Named arguments](https://www.php.net/manual/en/functions.arguments.php#functions.named-arguments) are not covered by Laravel's backwards compatibility guidelines. We may choose to rename function arguments when necessary in order to improve the Laravel codebase. Therefore, using named arguments when calling Laravel methods should be done cautiously and with the understanding that the parameter names may change in the future.
+[네임드 아규먼트](https://www.php.net/manual/kr/functions.arguments.php#functions.named-arguments)는 Laravel의 하위 호환성 정책에 포함되지 않습니다. Laravel 코드베이스 개선을 위해 함수 인자명을 필요에 따라 변경할 수 있습니다. 따라서 Laravel 메서드 호출 시 네임드 아규먼트를 사용할 때는 추후 인자 이름이 변경될 가능성을 염두에 두고 주의해서 사용해야 합니다.
 
 <a name="support-policy"></a>
-## Support Policy
+## 지원 정책
 
-For all Laravel releases, bug fixes are provided for 18 months and security fixes are provided for 2 years. For all additional libraries, including Lumen, only the latest major release receives bug fixes. In addition, please review the database versions [supported by Laravel](/docs/{{version}}/database#introduction).
+Laravel의 모든 릴리즈에는 18개월 동안 버그 수정, 2년 동안 보안 패치가 제공됩니다. Lumen을 포함한 모든 추가 라이브러리는 최신 주요 릴리즈만 버그 수정이 제공됩니다. 또한, Laravel이 지원하는 데이터베이스 버전도 [여기](/docs/{{version}}/database#introduction)에서 확인하세요.
 
-| Version | PHP (*) | Release | Bug Fixes Until | Security Fixes Until |
+| 버전 | PHP (*) | 릴리즈 | 버그 수정 지원 종료 | 보안 패치 지원 종료 |
 | --- | --- | --- | --- | --- |
-| 6 (LTS) | 7.2 - 8.0 | September 3rd, 2019 | January 25th, 2022 | September 6th, 2022 |
-| 7 | 7.2 - 8.0 | March 3rd, 2020 | October 6th, 2020 | March 3rd, 2021 |
-| 8 | 7.3 - 8.1 | September 8th, 2020 | July 26th, 2022 | January 24th, 2023 |
-| 9 | 8.0 - 8.2 | February 8th, 2022 | August 8th, 2023 | February 6th, 2024 |
-| 10 | 8.1 - 8.3 | February 14th, 2023 | August 6th, 2024 | February 4th, 2025 |
+| 6 (LTS) | 7.2 - 8.0 | 2019년 9월 3일 | 2022년 1월 25일 | 2022년 9월 6일 |
+| 7 | 7.2 - 8.0 | 2020년 3월 3일 | 2020년 10월 6일 | 2021년 3월 3일 |
+| 8 | 7.3 - 8.1 | 2020년 9월 8일 | 2022년 7월 26일 | 2023년 1월 24일 |
+| 9 | 8.0 - 8.2 | 2022년 2월 8일 | 2023년 8월 8일 | 2024년 2월 6일 |
+| 10 | 8.1 - 8.3 | 2023년 2월 14일 | 2024년 8월 6일 | 2025년 2월 4일 |
 
 <div class="version-colors">
     <div class="end-of-life">
         <div class="color-box"></div>
-        <div>End of life</div>
+        <div>지원 종료</div>
     </div>
     <div class="security-fixes">
         <div class="color-box"></div>
-        <div>Security fixes only</div>
+        <div>보안 패치만 지원</div>
     </div>
 </div>
 
-(*) Supported PHP versions
+(*) 지원하는 PHP 버전
 
 <a name="laravel-9"></a>
 ## Laravel 9
 
-As you may know, Laravel transitioned to yearly releases with the release of Laravel 8. Previously, major versions were released every 6 months. This transition is intended to ease the maintenance burden on the community and challenge our development team to ship amazing, powerful new features without introducing breaking changes. Therefore, we have shipped a variety of robust features to Laravel 8 without breaking backwards compatibility, such as parallel testing support, improved Breeze starter kits, HTTP client improvements, and even new Eloquent relationship types such as "has one of many".
+알다시피, Laravel은 8 버전부터 연 1회 릴리즈로 전환하였습니다. 이전에는 6개월마다 주요 버전이 출시되었으나, 이 변화는 커뮤니티의 유지 보수 부담을 완화하고, 개발팀이 혁신적인 기능을 도입하면서도 깨지는 변경 없이 더 많은 기능을 제공하도록 하기 위함입니다. 그 결과, 병렬 테스트 지원, 개선된 Breeze 스타터 키트, HTTP 클라이언트 향상, "has one of many"와 같은 새로운 Eloquent 관계 타입 등 하위 호환성을 해치지 않는 다양한 기능이 Laravel 8에 도입되었습니다.
 
-Therefore, this commitment to ship great new features during the current release will likely lead to future "major" releases being primarily used for "maintenance" tasks such as upgrading upstream dependencies, which can be seen in these release notes.
+이처럼, 현재 릴리즈에 강력한 기능을 계속 추가하는 정책으로 인해 향후 "주요" 릴리즈는 주로 상위 의존성 업그레이드와 같은 "유지 관리" 작업을 위해 사용될 가능성이 높습니다. 이는 이 릴리즈 노트에서 확인할 수 있습니다.
 
-Laravel 9 continues the improvements made in Laravel 8.x by introducing support for Symfony 6.0 components, Symfony Mailer, Flysystem 3.0, improved `route:list` output, a Laravel Scout database driver, new Eloquent accessor / mutator syntax, implicit route bindings via Enums, and a variety of other bug fixes and usability improvements.
+Laravel 9는 Symfony 6.0 컴포넌트, Symfony Mailer, Flysystem 3.0, 개선된 `route:list` 출력, Laravel Scout 데이터베이스 드라이버, 새로운 Eloquent 접근자/변경자 문법, Enum을 통한 암시적 라우트 바인딩 등 다양한 버그 수정 및 사용성 개선을 도입하면서 8.x에서의 발전을 이어갑니다.
 
 <a name="php-8"></a>
 ### PHP 8.0
 
-Laravel 9.x requires a minimum PHP version of 8.0.
+Laravel 9.x는 PHP 8.0 이상의 버전을 필요로 합니다.
 
 <a name="symfony-mailer"></a>
 ### Symfony Mailer
 
-_Symfony Mailer support was contributed by [Dries Vints](https://github.com/driesvints)_, [James Brooks](https://github.com/jbrooksuk), and [Julius Kiekbusch](https://github.com/Jubeki).
+_Symfony Mailer 지원은 [Dries Vints](https://github.com/driesvints)_, [James Brooks](https://github.com/jbrooksuk), [Julius Kiekbusch](https://github.com/Jubeki)가 기여했습니다.
 
-Previous releases of Laravel utilized the [Swift Mailer](https://swiftmailer.symfony.com/docs/introduction.html) library to send outgoing email. However, that library is no longer maintained and has been succeeded by Symfony Mailer.
+이전 Laravel 릴리즈에서는 [Swift Mailer](https://swiftmailer.symfony.com/docs/introduction.html) 라이브러리를 통해 메일을 발송했습니다. 하지만 해당 라이브러리는 더 이상 유지되지 않으며 Symfony Mailer로 대체되었습니다.
 
-Please review the [upgrade guide](/docs/{{version}}/upgrade#symfony-mailer) to learn more about ensuring your application is compatible with Symfony Mailer.
+Symfony Mailer와의 호환을 위해, [업그레이드 가이드](/docs/{{version}}/upgrade#symfony-mailer)를 참고하세요.
 
 <a name="flysystem-3"></a>
 ### Flysystem 3.x
 
-_Flysystem 3.x support was contributed by [Dries Vints](https://github.com/driesvints)_.
+_Flysystem 3.x 지원은 [Dries Vints](https://github.com/driesvints)가 기여했습니다._
 
-Laravel 9.x upgrades our upstream Flysystem dependency to Flysystem 3.x. Flysystem powers all of filesystem interactions offered by the `Storage` facade.
+Laravel 9.x는 Flysystem의 상위 의존성을 3.x로 업그레이드합니다. Flysystem은 `Storage` 파사드가 제공하는 모든 파일시스템 동작을 담당합니다.
 
-Please review the [upgrade guide](/docs/{{version}}/upgrade#flysystem-3) to learn more about ensuring your application is compatible with Flysystem 3.x.
+애플리케이션이 Flysystem 3.x에 호환되는지 확인하려면 [업그레이드 가이드](/docs/{{version}}/upgrade#flysystem-3)를 참조하세요.
 
 <a name="eloquent-accessors-and-mutators"></a>
-### Improved Eloquent Accessors / Mutators
+### 개선된 Eloquent 접근자/변경자
 
-_Improved Eloquent accessors / mutators was contributed by [Taylor Otwell](https://github.com/taylorotwell)_.
+_개선된 Eloquent 접근자/변경자는 [Taylor Otwell](https://github.com/taylorotwell)이 기여했습니다._
 
-Laravel 9.x offers a new way to define Eloquent [accessors and mutators](/docs/{{version}}/eloquent-mutators#accessors-and-mutators). In previous releases of Laravel, the only way to define accessors and mutators was by defining prefixed methods on your model like so:
+Laravel 9.x는 새로운 방식의 Eloquent [접근자 및 변경자](/docs/{{version}}/eloquent-mutators#accessors-and-mutators) 정의법을 제공합니다. 이전에는 아래와 같이 접두사가 붙은 메서드로만 접근자/변경자를 정의할 수 있었습니다.
 
 ```php
 public function getNameAttribute($value)
@@ -93,7 +93,7 @@ public function setNameAttribute($value)
 }
 ```
 
-However, in Laravel 9.x you may define an accessor and mutator using a single, non-prefixed method by type-hinting a return type of `Illuminate\Database\Eloquent\Casts\Attribute`:
+이제는 `Illuminate\Database\Eloquent\Casts\Attribute`를 반환하도록 타입 힌트를 주는 비접두사 단일 메서드로 접근자와 변경자를 정의할 수 있습니다:
 
 ```php
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -107,7 +107,7 @@ public function name(): Attribute
 }
 ```
 
-In addition, this new approach to defining accessors will cache object values that are returned by the attribute, just like [custom cast classes](/docs/{{version}}/eloquent-mutators#custom-casts):
+또한, 이 방식은 [커스텀 캐스트 클래스](/docs/{{version}}/eloquent-mutators#custom-casts)처럼 반환 객체 값을 캐싱합니다:
 
 ```php
 use App\Support\Address;
@@ -129,19 +129,19 @@ public function address(): Attribute
 ```
 
 <a name="enum-casting"></a>
-### Enum Eloquent Attribute Casting
+### Enum Eloquent 속성 캐스팅
 
-> **Warning**  
-> Enum casting is only available for PHP 8.1+.
+> **경고**  
+> Enum 캐스팅은 PHP 8.1+에서만 사용할 수 있습니다.
 
-_Enum casting was contributed by [Mohamed Said](https://github.com/themsaid)_.
+_Enum 캐스팅은 [Mohamed Said](https://github.com/themsaid)가 기여했습니다._
 
-Eloquent now allows you to cast your attribute values to PHP ["backed" Enums](https://www.php.net/manual/en/language.enumerations.backed.php). To accomplish this, you may specify the attribute and enum you wish to cast in your model's `$casts` property array:
+Eloquent는 이제 PHP ["백업(Backed)" Enum](https://www.php.net/manual/en/language.enumerations.backed.php) 타입으로 속성 값을 캐스팅할 수 있습니다. 모델의 `$casts` 프로퍼티에 해당 속성과 enum을 지정하세요:
 
     use App\Enums\ServerStatus;
 
     /**
-     * The attributes that should be cast.
+     * 캐스팅할 속성 리스트
      *
      * @var array
      */
@@ -149,7 +149,7 @@ Eloquent now allows you to cast your attribute values to PHP ["backed" Enums](ht
         'status' => ServerStatus::class,
     ];
 
-Once you have defined the cast on your model, the specified attribute will be automatically cast to and from an enum when you interact with the attribute:
+이후 모델의 해당 속성 접근 시, 지정한 enum으로 자동 변환됩니다:
 
     if ($server->status == ServerStatus::Provisioned) {
         $server->status = ServerStatus::Ready;
@@ -158,11 +158,11 @@ Once you have defined the cast on your model, the specified attribute will be au
     }
 
 <a name="implicit-route-bindings-with-enums"></a>
-### Implicit Route Bindings With Enums
+### Enum을 활용한 암시적 라우트 바인딩
 
-_Implicit Enum bindings was contributed by [Nuno Maduro](https://github.com/nunomaduro)_.
+_암시적 Enum 바인딩은 [Nuno Maduro](https://github.com/nunomaduro)가 기여했습니다._
 
-PHP 8.1 introduces support for [Enums](https://www.php.net/manual/en/language.enumerations.backed.php). Laravel 9.x introduces the ability to type-hint an Enum on your route definition and Laravel will only invoke the route if that route segment is a valid Enum value in the URI. Otherwise, an HTTP 404 response will be returned automatically. For example, given the following Enum:
+PHP 8.1부터 [Enum](https://www.php.net/manual/en/language.enumerations.backed.php) 지원이 추가되었습니다. Laravel 9.x에서는 Enum을 라우트 정의에 타입힌트로 사용할 수 있고, 해당 URI 세그먼트가 올바른 Enum 값일 경우에만 라우트가 실행됩니다. 그렇지 않을 경우 자동으로 HTTP 404가 반환됩니다.
 
 ```php
 enum Category: string
@@ -172,7 +172,7 @@ enum Category: string
 }
 ```
 
-You may define a route that will only be invoked if the `{category}` route segment is `fruits` or `people`. Otherwise, an HTTP 404 response will be returned:
+예를 들어, 아래 라우트에서 `{category}` 세그먼트가 `fruits` 또는 `people`일 때만 호출됩니다:
 
 ```php
 Route::get('/categories/{category}', function (Category $category) {
@@ -181,11 +181,11 @@ Route::get('/categories/{category}', function (Category $category) {
 ```
 
 <a name="forced-scoping-of-route-bindings"></a>
-### Forced Scoping Of Route Bindings
+### 라우트 바인딩의 강제 스코프 지정
 
-_Forced scoped bindings was contributed by [Claudio Dekker](https://github.com/claudiodekker)_.
+_강제 스코프 바인딩은 [Claudio Dekker](https://github.com/claudiodekker)가 기여했습니다._
 
-In previous releases of Laravel, you may wish to scope the second Eloquent model in a route definition such that it must be a child of the previous Eloquent model. For example, consider this route definition that retrieves a blog post by slug for a specific user:
+이전 Laravel 버전에서는 라우트 정의에서 두 번째 Eloquent 모델이 첫 번째 모델의 자식임을 스코프할 수 있습니다. 예를 들어, 특정 사용자의 블로그 포스트를 slug로 조회하는 경우:
 
     use App\Models\Post;
     use App\Models\User;
@@ -194,9 +194,9 @@ In previous releases of Laravel, you may wish to scope the second Eloquent model
         return $post;
     });
 
-When using a custom keyed implicit binding as a nested route parameter, Laravel will automatically scope the query to retrieve the nested model by its parent using conventions to guess the relationship name on the parent. However, this behavior was only previously supported by Laravel when a custom key was used for the child route binding.
+중첩 라우트 파라미터에서 커스텀 키를 사용할 경우, Laravel은 자동으로 관계명을 추측해 부모 모델에 대해 쿼리를 스코프합니다. 하지만 이 동작은 자식 바인딩에 커스텀 키를 지정할 때만 지원되었습니다.
 
-However, in Laravel 9.x, you may now instruct Laravel to scope "child" bindings even when a custom key is not provided. To do so, you may invoke the `scopeBindings` method when defining your route:
+Laravel 9.x부터는 커스텀 키가 없어도 명시적으로 `scopeBindings` 메서드를 호출해 자식 바인딩 스코프 지정이 가능합니다:
 
     use App\Models\Post;
     use App\Models\User;
@@ -205,7 +205,7 @@ However, in Laravel 9.x, you may now instruct Laravel to scope "child" bindings 
         return $post;
     })->scopeBindings();
 
-Or, you may instruct an entire group of route definitions to use scoped bindings:
+또는 라우트 그룹 전체에 대해 스코프 바인딩을 적용할 수 있습니다:
 
     Route::scopeBindings()->group(function () {
         Route::get('/users/{user}/posts/{post}', function (User $user, Post $post) {
@@ -214,11 +214,11 @@ Or, you may instruct an entire group of route definitions to use scoped bindings
     });
 
 <a name="controller-route-groups"></a>
-### Controller Route Groups
+### 컨트롤러 라우트 그룹
 
-_Route group improvements were contributed by [Luke Downing](https://github.com/lukeraymonddowning)_.
+_라우트 그룹 개선은 [Luke Downing](https://github.com/lukeraymonddowning)가 기여했습니다._
 
-You may now use the `controller` method to define the common controller for all of the routes within the group. Then, when defining the routes, you only need to provide the controller method that they invoke:
+`controller` 메서드를 사용해 그룹 내 모든 라우트의 공통 컨트롤러를 지정할 수 있습니다. 이후 각 라우트에는 컨트롤러 메서드 이름만 명시하면 됩니다.
 
     use App\Http\Controllers\OrderController;
 
@@ -228,35 +228,35 @@ You may now use the `controller` method to define the common controller for all 
     });
 
 <a name="full-text"></a>
-### Full Text Indexes / Where Clauses
+### 전문(Full Text) 인덱스/Where 절
 
-_Full text indexes and "where" clauses were contributed by [Taylor Otwell](https://github.com/taylorotwell) and [Dries Vints](https://github.com/driesvints)_.
+_전문 인덱스 및 "where" 절은 [Taylor Otwell](https://github.com/taylorotwell), [Dries Vints](https://github.com/driesvints)가 기여했습니다._
 
-When using MySQL or PostgreSQL, the `fullText` method may now be added to column definitions to generate full text indexes:
+MySQL 또는 PostgreSQL 사용 시, 컬럼 정의에 `fullText` 메서드를 추가해 전문 인덱스를 생성할 수 있습니다:
 
     $table->text('bio')->fullText();
 
-In addition, the `whereFullText` and `orWhereFullText` methods may be used to add full text "where" clauses to a query for columns that have [full text indexes](/docs/{{version}}/migrations#available-index-types). These methods will be transformed into the appropriate SQL for the underlying database system by Laravel. For example, a `MATCH AGAINST` clause will be generated for applications utilizing MySQL:
+또한, `whereFullText` 및 `orWhereFullText` 메서드를 사용해 [full text index](/docs/{{version}}/migrations#available-index-types)가 적용된 컬럼에 전문 "where" 절을 추가할 수 있습니다. Laravel이 데이터베이스 종류에 맞는 적절한 SQL로 변환해줍니다. 예) MySQL의 경우 `MATCH AGAINST` 절 생성:
 
     $users = DB::table('users')
                ->whereFullText('bio', 'web developer')
                ->get();
 
 <a name="laravel-scout-database-engine"></a>
-### Laravel Scout Database Engine
+### Laravel Scout 데이터베이스 엔진
 
-_The Laravel Scout database engine was contributed by [Taylor Otwell](https://github.com/taylorotwell) and [Dries Vints](https://github.com/driesvints)_.
+_Laravel Scout 데이터베이스 엔진은 [Taylor Otwell](https://github.com/taylorotwell), [Dries Vints](https://github.com/driesvints)가 기여했습니다._
 
-If your application interacts with small to medium sized databases or has a light workload, you may now use Scout's "database" engine instead of a dedicated search service such as Algolia or MeiliSearch. The database engine will use "where like" clauses and full text indexes when filtering results from your existing database to determine the applicable search results for your query.
+애플리케이션이 소규모~중규모 데이터베이스를 사용하거나 가벼운 쿼리만 필요하다면, 별도의 검색 서비스(Algolia, MeiliSearch 등) 대신 Scout의 "database" 엔진을 사용할 수 있습니다. 데이터베이스 엔진은 기존 데이터베이스에서 "where like" 및 전문 인덱스를 활용해 검색 결과를 반환합니다.
 
-To learn more about the Scout database engine, consult the [Scout documentation](/docs/{{version}}/scout).
+Scout 데이터베이스 엔진 관련 자세한 내용은 [Scout 문서](/docs/{{version}}/scout)를 참조하세요.
 
 <a name="rendering-inline-blade-templates"></a>
-### Rendering Inline Blade Templates
+### 인라인 Blade 템플릿 렌더링
 
-_Rendering inline Blade templates was contributed by [Jason Beggs](https://github.com/jasonlbeggs). Rendering inline Blade components was contributed by [Toby Zerner](https://github.com/tobyzerner)_.
+_인라인 Blade 템플릿 렌더링은 [Jason Beggs](https://github.com/jasonlbeggs), 인라인 Blade 컴포넌트 렌더링은 [Toby Zerner](https://github.com/tobyzerner)가 기여했습니다._
 
-Sometimes you may need to transform a raw Blade template string into valid HTML. You may accomplish this using the `render` method provided by the `Blade` facade. The `render` method accepts the Blade template string and an optional array of data to provide to the template:
+Raw Blade 템플릿 문자열을 HTML로 변환이 필요할 때, `Blade` 파사드의 `render` 메서드를 사용할 수 있습니다. 이 메서드는 Blade 템플릿 문자열과(옵션) 데이터를 받아 렌더링합니다:
 
 ```php
 use Illuminate\Support\Facades\Blade;
@@ -264,7 +264,7 @@ use Illuminate\Support\Facades\Blade;
 return Blade::render('Hello, {{ $name }}', ['name' => 'Julian Bashir']);
 ```
 
-Similarly, the `renderComponent` method may be used to render a given class component by passing the component instance to the method:
+또한, `renderComponent` 메서드로 인스턴스를 직접 넘겨 클래식 컴포넌트도 렌더링할 수 있습니다:
 
 ```php
 use App\View\Components\HelloComponent;
@@ -273,11 +273,11 @@ return Blade::renderComponent(new HelloComponent('Julian Bashir'));
 ```
 
 <a name="slot-name-shortcut"></a>
-### Slot Name Shortcut
+### Slot 이름 단축 문법
 
-_Slot name shortcuts were contributed by [Caleb Porzio](https://github.com/calebporzio)._
+_Slot 이름 단축 문법은 [Caleb Porzio](https://github.com/calebporzio)가 기여했습니다._
 
-In previous releases of Laravel, slot names were provided using a `name` attribute on the `x-slot` tag:
+기존에는 `x-slot` 태그에 `name` 속성을 사용해 슬롯 이름을 지정했습니다:
 
 ```blade
 <x-alert>
@@ -289,7 +289,7 @@ In previous releases of Laravel, slot names were provided using a `name` attribu
 </x-alert>
 ```
 
-However, beginning in Laravel 9.x, you may specify the slot's name using a convenient, shorter syntax:
+하지만 Laravel 9.x부터 더 짧은 아래 문법을 사용할 수 있습니다:
 
 ```xml
 <x-slot:title>
@@ -298,11 +298,11 @@ However, beginning in Laravel 9.x, you may specify the slot's name using a conve
 ```
 
 <a name="checked-selected-blade-directives"></a>
-### Checked / Selected Blade Directives
+### Checked / Selected Blade 디렉티브
 
-_Checked and selected Blade directives were contributed by [Ash Allen](https://github.com/ash-jc-allen) and [Taylor Otwell](https://github.com/taylorotwell)_.
+_Checked, selected Blade 디렉티브는 [Ash Allen](https://github.com/ash-jc-allen), [Taylor Otwell](https://github.com/taylorotwell)이 기여했습니다._
 
-For convenience, you may now use the `@checked` directive to easily indicate if a given HTML checkbox input is "checked". This directive will echo `checked` if the provided condition evaluates to `true`:
+이제 `@checked` 디렉티브로 체크박스 input이 체크되었는지 간단히 표시할 수 있습니다. 조건이 true면 `checked`를 출력합니다:
 
 ```blade
 <input type="checkbox"
@@ -311,7 +311,7 @@ For convenience, you may now use the `@checked` directive to easily indicate if 
         @checked(old('active', $user->active)) />
 ```
 
-Likewise, the `@selected` directive may be used to indicate if a given select option should be "selected":
+마찬가지로, `@selected` 디렉티브로 select 옵션이 선택되었는지도 쉽게 표시할 수 있습니다:
 
 ```blade
 <select name="version">
@@ -324,16 +324,16 @@ Likewise, the `@selected` directive may be used to indicate if a given select op
 ```
 
 <a name="bootstrap-5-pagination-views"></a>
-### Bootstrap 5 Pagination Views
+### Bootstrap 5 페이지네이션 뷰
 
-_Bootstrap 5 pagination views were contributed by [Jared Lewis](https://github.com/jrd-lewis)_.
+_Bootstrap 5 페이지네이션 뷰는 [Jared Lewis](https://github.com/jrd-lewis)가 기여했습니다._
 
-Laravel now includes pagination views built using [Bootstrap 5](https://getbootstrap.com/). To use these views instead of the default Tailwind views, you may call the paginator's `useBootstrapFive` method within the `boot` method of your `App\Providers\AppServiceProvider` class:
+Laravel에는 이제 [Bootstrap 5](https://getbootstrap.com/)로 제작된 페이지네이션 뷰가 기본 포함됩니다. 기존 Tailwind 뷰 대신 사용하고 싶다면, `App\Providers\AppServiceProvider`의 `boot` 메서드 안에서 paginator의 `useBootstrapFive`를 호출하세요:
 
     use Illuminate\Pagination\Paginator;
 
     /**
-     * Bootstrap any application services.
+     * 애플리케이션 서비스 부트스트랩
      *
      * @return void
      */
@@ -343,11 +343,11 @@ Laravel now includes pagination views built using [Bootstrap 5](https://getboots
     }
 
 <a name="improved-validation-of-nested-array-data"></a>
-### Improved Validation Of Nested Array Data
+### 중첩 배열 데이터 검증 개선
 
-_Improved validation of nested array inputs was contributed by [Steve Bauman](https://github.com/stevebauman)_.
+_중첩 배열 인풋 검증 개선은 [Steve Bauman](https://github.com/stevebauman)이 기여했습니다._
 
-Sometimes you may need to access the value for a given nested array element when assigning validation rules to the attribute. You may now accomplish this using the `Rule::forEach` method. The `forEach` method accepts a closure that will be invoked for each iteration of the array attribute under validation and will receive the attribute's value and explicit, fully-expanded attribute name. The closure should return an array of rules to assign to the array element:
+중첩 배열의 각 요소별로 검증 규칙을 다르게 할 때, 이제 `Rule::forEach` 메서드를 사용할 수 있습니다. 이 메서드는 검증 대상 배열의 각 반복 시 클로저를 호출하며, 해당 요소의 값과 완전한 속성 이름을 전달합니다. 클로저는 해당 배열 요소에 적용할 검증 규칙 배열을 반환해야 합니다:
 
     use App\Rules\HasPermission;
     use Illuminate\Support\Facades\Validator;
@@ -365,50 +365,50 @@ Sometimes you may need to access the value for a given nested array element when
 <a name="laravel-breeze-api"></a>
 ### Laravel Breeze API & Next.js
 
-_The Laravel Breeze API scaffolding and Next.js starter kit was contributed by [Taylor Otwell](https://github.com/taylorotwell) and [Miguel Piedrafita](https://twitter.com/m1guelpf)_.
+_Laravel Breeze API 스캐폴딩 및 Next.js 스타터 키트는 [Taylor Otwell](https://github.com/taylorotwell), [Miguel Piedrafita](https://twitter.com/m1guelpf)가 기여했습니다._
 
-The [Laravel Breeze](/docs/{{version}}/starter-kits#breeze-and-next) starter kit has received an "API" scaffolding mode and complimentary [Next.js](https://nextjs.org) [frontend implementation](https://github.com/laravel/breeze-next). This starter kit scaffolding may be used to jump start your Laravel applications that are serving as a backend, Laravel Sanctum authenticated API for a JavaScript frontend.
+[Laravel Breeze](/docs/{{version}}/starter-kits#breeze-and-next) 스타터 키트에 "API" 스캐폴딩 모드와 함께 [Next.js](https://nextjs.org) [프론트엔드 구현체](https://github.com/laravel/breeze-next)가 추가되었습니다. 이 키트를 사용하면 자바스크립트 프론트엔드용으로 Laravel Sanctum 인증 API 백엔드를 손쉽게 시작할 수 있습니다.
 
 <a name="exception-page"></a>
-### Improved Ignition Exception Page
+### Ignition 예외 페이지 개선
 
-_Ignition is developed by [Spatie](https://spatie.be/)._
+_Ignition은 [Spatie](https://spatie.be/)가 개발하였습니다._
 
-Ignition, the open source exception debug page created by Spatie, has been redesigned from the ground up. The new, improved Ignition ships with Laravel 9.x and includes light / dark themes, customizable "open in editor" functionality, and more.
+Spatie가 만든 오픈 소스 예외 디버깅 페이지 Ignition이 완전히 새로 디자인되어 Laravel 9.x에 포함되었습니다. 새로운 Ignition은 라이트/다크 테마, 편집기에서 열기 커스터마이즈, 기타 다양한 기능을 제공합니다.
 
 <p align="center">
 <img width="100%" src="https://user-images.githubusercontent.com/483853/149235404-f7caba56-ebdf-499e-9883-cac5d5610369.png"/>
 </p>
 
 <a name="improved-route-list"></a>
-### Improved `route:list` CLI Output
+### `route:list` CLI 출력 개선
 
-_Improved `route:list` CLI output was contributed by [Nuno Maduro](https://github.com/nunomaduro)_.
+_개선된 `route:list` CLI 출력은 [Nuno Maduro](https://github.com/nunomaduro)가 기여했습니다._
 
-The `route:list` CLI output has been significantly improved for the Laravel 9.x release, offering a beautiful new experience when exploring your route definitions.
+Laravel 9.x에서 `route:list` CLI의 출력이 크게 개선되어, 라우트 정의를 탐색할 때 더욱 보기 편해졌습니다.
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/5457236/148321982-38c8b869-f188-4f42-a3cc-a03451d5216c.png"/>
 </p>
 
 <a name="test-coverage-support-on-artisan-test-Command"></a>
-### Test Coverage Using Artisan `test` Command
+### Artisan `test` 커맨드로 테스트 커버리지 측정
 
-_Test coverage when using the Artisan `test` command was contributed by [Nuno Maduro](https://github.com/nunomaduro)_.
+_Artisan `test` 커맨드 커버리지 기능은 [Nuno Maduro](https://github.com/nunomaduro)가 기여했습니다._
 
-The Artisan `test` command has received a new `--coverage` option that you may use to explore the amount of code coverage your tests are providing to your application:
+Artisan `test` 커맨드에 새롭게 추가된 `--coverage` 옵션을 사용해, 현재 테스트들이 코드 베이스를 얼마나 커버하는지 확인할 수 있습니다:
 
 ```shell
 php artisan test --coverage
 ```
 
-The test coverage results will be displayed directly within the CLI output.
+테스트 커버리지 결과는 CLI 출력에 바로 표시됩니다.
 
 <p align="center">
 <img width="100%" src="https://user-images.githubusercontent.com/5457236/150133237-440290c2-3538-4d8e-8eac-4fdd5ec7bd9e.png"/>
 </p>
 
-In addition, if you would like to specify a minimum threshold that your test coverage percentage must meet, you may use the `--min` option. The test suite will fail if the given minimum threshold is not met:
+또한, 커버리지 퍼센트에 최소 임계값을 지정하려면 `--min` 옵션을 사용하세요. 임계값을 충족하지 못하면 테스트가 실패합니다:
 
 ```shell
 php artisan test --coverage --min=80.3
@@ -419,40 +419,40 @@ php artisan test --coverage --min=80.3
 </p>
 
 <a name="soketi-echo-server"></a>
-### Soketi Echo Server
+### Soketi Echo 서버
 
-_The Soketi Echo server was developed by [Alex Renoki](https://github.com/rennokki)_.
+_Soketi Echo 서버는 [Alex Renoki](https://github.com/rennokki)가 개발했습니다._
 
-Although not exclusive to Laravel 9.x, Laravel has recently assisted with the documentation of Soketi, a [Laravel Echo](/docs/{{version}}/broadcasting) compatible Web Socket server written for Node.js. Soketi provides a great, open source alternative to Pusher and Ably for those applications that prefer to manage their own Web Socket server.
+Laravel 9.x 전용은 아니지만, Laravel은 최근 Node.js 기반 [Laravel Echo](/docs/{{version}}/broadcasting) 호환 Web Socket 서버인 Soketi의 문서화에 도움을 주었습니다. Soketi는 Pusher, Ably 등 상용 서비스를 대체해 직접 Web Socket 서버를 운영하고 싶은 서비스에 훌륭한 오픈 소스 대안입니다.
 
-For more information on using Soketi, please consult the [broadcasting documentation](/docs/{{version}}/broadcasting) and [Soketi documentation](https://docs.soketi.app/).
+Soketi 사용에 대한 자세한 내용은 [브로드캐스팅 문서](/docs/{{version}}/broadcasting) 및 [Soketi 공식 문서](https://docs.soketi.app/)를 참고하세요.
 
 <a name="improved-collections-ide-support"></a>
-### Improved Collections IDE Support
+### 컬렉션 IDE 지원 개선
 
-_Improved collections IDE support was contributed by [Nuno Maduro](https://github.com/nunomaduro)_.
+_컬렉션 IDE 지원 개선은 [Nuno Maduro](https://github.com/nunomaduro)가 기여했습니다._
 
-Laravel 9.x adds improved, "generic" style type definitions to the collections component, improving IDE and static analysis support. IDEs such as [PHPStorm](https://blog.jetbrains.com/phpstorm/2021/12/phpstorm-2021-3-release/#support_for_future_laravel_collections) or static analysis tools such as [PHPStan](https://phpstan.org) will now better understand Laravel collections natively.
+Laravel 9.x에서는 컬렉션 컴포넌트에 "제너릭" 스타일 타입 정의가 추가되어, IDE 및 정적 분석 툴 지원이 향상되었습니다. [PHPStorm](https://blog.jetbrains.com/phpstorm/2021/12/phpstorm-2021-3-release/#support_for_future_laravel_collections)과 [PHPStan](https://phpstan.org) 등에서 Laravel 컬렉션을 더욱 잘 이해하게 됩니다.
 
 <p align="center">
 <img width="100%" src="https://user-images.githubusercontent.com/5457236/151783350-ed301660-1e09-44c1-b549-85c6db3f078d.gif"/>
 </p>
 
 <a name="new-helpers"></a>
-### New Helpers
+### 신규 헬퍼 함수
 
-Laravel 9.x introduces two new, convenient helper functions that you may use in your own application.
+Laravel 9.x에는 다음과 같이 두 가지 새로운 편리한 헬퍼 함수가 도입되었습니다.
 
 <a name="new-helpers-str"></a>
 #### `str`
 
-The `str` function returns a new `Illuminate\Support\Stringable` instance for the given string. This function is equivalent to the `Str::of` method:
+`str` 함수는 지정 문자열로 새로운 `Illuminate\Support\Stringable` 인스턴스를 반환합니다. 이 함수는 `Str::of` 메서드와 같습니다:
 
     $string = str('Taylor')->append(' Otwell');
 
     // 'Taylor Otwell'
 
-If no argument is provided to the `str` function, the function returns an instance of `Illuminate\Support\Str`:
+인수가 없으면 `str` 함수는 `Illuminate\Support\Str` 인스턴스를 반환합니다:
 
     $snake = str()->snake('LaravelFramework');
 
@@ -461,10 +461,10 @@ If no argument is provided to the `str` function, the function returns an instan
 <a name="new-helpers-to-route"></a>
 #### `to_route`
 
-The `to_route` function generates a redirect HTTP response for a given named route, providing an expressive way to redirect to named routes from your routes and controllers:
+`to_route` 함수는 지정한 네임드 라우트로의 리디렉션 HTTP 응답을 생성하며, 라우트나 컨트롤러에서 명확하게 리다이렉트할 수 있습니다:
 
     return to_route('users.show', ['user' => 1]);
 
-If necessary, you may pass the HTTP status code that should be assigned to the redirect and any additional response headers as the third and fourth arguments to the to_route method:
+필요하다면, 세 번째, 네 번째 인수로 HTTP 상태 코드와 추가 헤더를 지정할 수도 있습니다:
 
     return to_route('users.show', ['user' => 1], 302, ['X-Framework' => 'Laravel']);

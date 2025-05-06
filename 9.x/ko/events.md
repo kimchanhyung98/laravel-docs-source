@@ -1,38 +1,38 @@
-# Events
+# 이벤트
 
-- [Introduction](#introduction)
-- [Registering Events & Listeners](#registering-events-and-listeners)
-    - [Generating Events & Listeners](#generating-events-and-listeners)
-    - [Manually Registering Events](#manually-registering-events)
-    - [Event Discovery](#event-discovery)
-- [Defining Events](#defining-events)
-- [Defining Listeners](#defining-listeners)
-- [Queued Event Listeners](#queued-event-listeners)
-    - [Manually Interacting With The Queue](#manually-interacting-with-the-queue)
-    - [Queued Event Listeners & Database Transactions](#queued-event-listeners-and-database-transactions)
-    - [Handling Failed Jobs](#handling-failed-jobs)
-- [Dispatching Events](#dispatching-events)
-- [Event Subscribers](#event-subscribers)
-    - [Writing Event Subscribers](#writing-event-subscribers)
-    - [Registering Event Subscribers](#registering-event-subscribers)
+- [소개](#introduction)
+- [이벤트 및 리스너 등록](#registering-events-and-listeners)
+    - [이벤트 및 리스너 생성](#generating-events-and-listeners)
+    - [이벤트 수동 등록](#manually-registering-events)
+    - [이벤트 디스커버리](#event-discovery)
+- [이벤트 정의](#defining-events)
+- [리스너 정의](#defining-listeners)
+- [큐잉된 이벤트 리스너](#queued-event-listeners)
+    - [큐와 수동으로 상호작용하기](#manually-interacting-with-the-queue)
+    - [큐 리스너와 데이터베이스 트랜잭션](#queued-event-listeners-and-database-transactions)
+    - [실패한 작업 처리](#handling-failed-jobs)
+- [이벤트 디스패치](#dispatching-events)
+- [이벤트 구독자](#event-subscribers)
+    - [이벤트 구독자 작성](#writing-event-subscribers)
+    - [이벤트 구독자 등록](#registering-event-subscribers)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel's events provide a simple observer pattern implementation, allowing you to subscribe and listen for various events that occur within your application. Event classes are typically stored in the `app/Events` directory, while their listeners are stored in `app/Listeners`. Don't worry if you don't see these directories in your application as they will be created for you as you generate events and listeners using Artisan console commands.
+Laravel의 이벤트는 간단한 옵서버 패턴 구현을 제공하여 애플리케이션 내에서 발생하는 다양한 이벤트를 구독 및 청취할 수 있게 합니다. 이벤트 클래스는 일반적으로 `app/Events` 디렉터리에 저장되며, 해당 리스너들은 `app/Listeners`에 저장됩니다. 만약 애플리케이션에 이 디렉터리가 없다면, Artisan 콘솔 명령어를 사용하여 이벤트와 리스너를 생성할 때 자동으로 생성됩니다.
 
-Events serve as a great way to decouple various aspects of your application, since a single event can have multiple listeners that do not depend on each other. For example, you may wish to send a Slack notification to your user each time an order has shipped. Instead of coupling your order processing code to your Slack notification code, you can raise an `App\Events\OrderShipped` event which a listener can receive and use to dispatch a Slack notification.
+이벤트는 애플리케이션의 다양한 부분을 분리하는 훌륭한 방법입니다. 하나의 이벤트에 여러 리스너를 연결할 수 있는데, 이들은 서로에게 의존하지 않습니다. 예를 들어, 주문이 배송될 때마다 사용자가 Slack 알림을 받도록 하고 싶다면, 주문 처리 코드와 Slack 알림 코드를 직접 연결하지 않고, `App\Events\OrderShipped` 이벤트를 발생시키고, 리스너에서 Slack 알림을 전송하도록 할 수 있습니다.
 
 <a name="registering-events-and-listeners"></a>
-## Registering Events & Listeners
+## 이벤트 및 리스너 등록
 
-The `App\Providers\EventServiceProvider` included with your Laravel application provides a convenient place to register all of your application's event listeners. The `listen` property contains an array of all events (keys) and their listeners (values). You may add as many events to this array as your application requires. For example, let's add an `OrderShipped` event:
+Laravel 애플리케이션에 포함된 `App\Providers\EventServiceProvider`는 모든 이벤트 리스너를 등록할 수 있는 편리한 위치를 제공합니다. `listen` 속성에는 모든 이벤트(키)와 해당 리스너(값)의 배열이 들어갑니다. 애플리케이션에서 필요한 만큼 이벤트를 추가할 수 있습니다. 예를 들어 `OrderShipped` 이벤트를 추가해보겠습니다:
 
     use App\Events\OrderShipped;
     use App\Listeners\SendShipmentNotification;
 
     /**
-     * The event listener mappings for the application.
+     * 애플리케이션의 이벤트 리스너 매핑.
      *
      * @var array
      */
@@ -42,19 +42,19 @@ The `App\Providers\EventServiceProvider` included with your Laravel application 
         ],
     ];
 
-> **Note**  
-> The `event:list` command may be used to display a list of all events and listeners registered by your application.
+> **참고**
+> `event:list` 명령어를 사용하여 애플리케이션에 등록된 모든 이벤트와 리스너 목록을 확인할 수 있습니다.
 
 <a name="generating-events-and-listeners"></a>
-### Generating Events & Listeners
+### 이벤트 및 리스너 생성
 
-Of course, manually creating the files for each event and listener is cumbersome. Instead, add listeners and events to your `EventServiceProvider` and use the `event:generate` Artisan command. This command will generate any events or listeners that are listed in your `EventServiceProvider` that do not already exist:
+각 이벤트와 리스너 파일을 직접 만드는 것은 번거롭기 때문에, `EventServiceProvider`에 리스너 및 이벤트를 추가한 뒤 `event:generate` Artisan 명령어를 사용할 수 있습니다. 이 명령어는 `EventServiceProvider`에 정의된, 아직 존재하지 않는 이벤트 또는 리스너의 파일을 생성해줍니다:
 
 ```shell
 php artisan event:generate
 ```
 
-Alternatively, you may use the `make:event` and `make:listener` Artisan commands to generate individual events and listeners:
+또는 `make:event` 및 `make:listener` Artisan 명령어를 사용하여 각각 개별적으로 이벤트나 리스너를 생성할 수 있습니다:
 
 ```shell
 php artisan make:event PodcastProcessed
@@ -63,16 +63,16 @@ php artisan make:listener SendPodcastNotification --event=PodcastProcessed
 ```
 
 <a name="manually-registering-events"></a>
-### Manually Registering Events
+### 이벤트 수동 등록
 
-Typically, events should be registered via the `EventServiceProvider` `$listen` array; however, you may also register class or closure based event listeners manually in the `boot` method of your `EventServiceProvider`:
+일반적으로 이벤트는 `EventServiceProvider`의 `$listen` 배열을 통해 등록해야 하지만, 클래스 또는 클로저 기반의 이벤트 리스너를 `EventServiceProvider`의 `boot` 메서드에서 수동으로 등록할 수도 있습니다:
 
     use App\Events\PodcastProcessed;
     use App\Listeners\SendPodcastNotification;
     use Illuminate\Support\Facades\Event;
 
     /**
-     * Register any other events for your application.
+     * 애플리케이션의 기타 이벤트를 등록합니다.
      *
      * @return void
      */
@@ -89,16 +89,16 @@ Typically, events should be registered via the `EventServiceProvider` `$listen` 
     }
 
 <a name="queuable-anonymous-event-listeners"></a>
-#### Queueable Anonymous Event Listeners
+#### 큐잉 가능한 익명 이벤트 리스너
 
-When registering closure based event listeners manually, you may wrap the listener closure within the `Illuminate\Events\queueable` function to instruct Laravel to execute the listener using the [queue](/docs/{{version}}/queues):
+클로저 기반 이벤트 리스너를 수동 등록할 때, 해당 리스너 클로저를 `Illuminate\Events\queueable` 함수로 감싸면 Laravel이 [큐](/docs/{{version}}/queues)를 사용해 리스너를 실행하도록 지정할 수 있습니다:
 
     use App\Events\PodcastProcessed;
     use function Illuminate\Events\queueable;
     use Illuminate\Support\Facades\Event;
 
     /**
-     * Register any other events for your application.
+     * 애플리케이션의 기타 이벤트를 등록합니다.
      *
      * @return void
      */
@@ -109,13 +109,13 @@ When registering closure based event listeners manually, you may wrap the listen
         }));
     }
 
-Like queued jobs, you may use the `onConnection`, `onQueue`, and `delay` methods to customize the execution of the queued listener:
+큐에 등록되는 작업처럼 `onConnection`, `onQueue`, `delay` 메서드를 사용하여 큐 리스너의 실행 방법을 커스터마이즈할 수 있습니다:
 
     Event::listen(queueable(function (PodcastProcessed $event) {
         //
     })->onConnection('redis')->onQueue('podcasts')->delay(now()->addSeconds(10)));
 
-If you would like to handle anonymous queued listener failures, you may provide a closure to the `catch` method while defining the `queueable` listener. This closure will receive the event instance and the `Throwable` instance that caused the listener's failure:
+익명 큐 리스너가 실패했을 때 처리를 원한다면, `queueable` 리스너 정의 시 `catch` 메서드에 클로저를 제공할 수 있습니다. 이 클로저는 이벤트 인스턴스와 실패의 원인이 된 `Throwable` 인스턴스를 전달받습니다:
 
     use App\Events\PodcastProcessed;
     use function Illuminate\Events\queueable;
@@ -125,31 +125,31 @@ If you would like to handle anonymous queued listener failures, you may provide 
     Event::listen(queueable(function (PodcastProcessed $event) {
         //
     })->catch(function (PodcastProcessed $event, Throwable $e) {
-        // The queued listener failed...
+        // 큐 리스너가 실패했을 때...
     }));
 
 <a name="wildcard-event-listeners"></a>
-#### Wildcard Event Listeners
+#### 와일드카드 이벤트 리스너
 
-You may even register listeners using the `*` as a wildcard parameter, allowing you to catch multiple events on the same listener. Wildcard listeners receive the event name as their first argument and the entire event data array as their second argument:
+리스너를 `*` 와일드카드 파라미터로 등록하여 동일한 리스너에서 여러 이벤트를 수신할 수 있습니다. 와일드카드 리스너는 첫 번째 인자에 이벤트 이름, 두 번째 인자에 전체 이벤트 데이터 배열을 전달받습니다:
 
     Event::listen('event.*', function ($eventName, array $data) {
         //
     });
 
 <a name="event-discovery"></a>
-### Event Discovery
+### 이벤트 디스커버리
 
-Instead of registering events and listeners manually in the `$listen` array of the `EventServiceProvider`, you can enable automatic event discovery. When event discovery is enabled, Laravel will automatically find and register your events and listeners by scanning your application's `Listeners` directory. In addition, any explicitly defined events listed in the `EventServiceProvider` will still be registered.
+`EventServiceProvider`의 `$listen` 배열에 이벤트와 리스너를 수동으로 등록하는 대신, 자동 이벤트 디스커버리를 사용할 수 있습니다. 이벤트 디스커버리가 활성화되면, Laravel이 애플리케이션의 `Listeners` 디렉터리를 스캔하여 자동으로 이벤트와 리스너를 찾아서 등록합니다. 또한, `EventServiceProvider`에 명시적으로 정의된 이벤트들은 계속 등록됩니다.
 
-Laravel finds event listeners by scanning the listener classes using PHP's reflection services. When Laravel finds any listener class method that begins with `handle` or `__invoke`, Laravel will register those methods as event listeners for the event that is type-hinted in the method's signature:
+Laravel은 PHP의 리플렉션을 사용해 리스너 클래스를 스캔합니다. 클래스 메서드가 `handle` 또는 `__invoke`로 시작되면, 해당 메서드에 명시된 타입힌트 이벤트에 대해 리스너로 자동 등록합니다:
 
     use App\Events\PodcastProcessed;
 
     class SendPodcastNotification
     {
         /**
-         * Handle the given event.
+         * 해당 이벤트를 처리합니다.
          *
          * @param  \App\Events\PodcastProcessed  $event
          * @return void
@@ -160,10 +160,10 @@ Laravel finds event listeners by scanning the listener classes using PHP's refle
         }
     }
 
-Event discovery is disabled by default, but you can enable it by overriding the `shouldDiscoverEvents` method of your application's `EventServiceProvider`:
+이벤트 디스커버리는 기본적으로 비활성화되어 있지만, 애플리케이션의 `EventServiceProvider`에서 `shouldDiscoverEvents` 메서드를 오버라이딩하여 활성화할 수 있습니다:
 
     /**
-     * Determine if events and listeners should be automatically discovered.
+     * 이벤트와 리스너 자동 디스커버리 여부 반환.
      *
      * @return bool
      */
@@ -172,10 +172,10 @@ Event discovery is disabled by default, but you can enable it by overriding the 
         return true;
     }
 
-By default, all listeners within your application's `app/Listeners` directory will be scanned. If you would like to define additional directories to scan, you may override the `discoverEventsWithin` method in your `EventServiceProvider`:
+기본적으로 애플리케이션의 `app/Listeners` 디렉터리가 스캔 대상입니다. 추가로 스캔할 디렉터리를 지정하고자 한다면, `EventServiceProvider`의 `discoverEventsWithin` 메서드를 오버라이딩하면 됩니다:
 
     /**
-     * Get the listener directories that should be used to discover events.
+     * 이벤트를 찾을 리스너 디렉터리 반환.
      *
      * @return array
      */
@@ -187,14 +187,14 @@ By default, all listeners within your application's `app/Listeners` directory wi
     }
 
 <a name="event-discovery-in-production"></a>
-#### Event Discovery In Production
+#### 운영 환경에서 이벤트 디스커버리
 
-In production, it is not efficient for the framework to scan all of your listeners on every request. Therefore, during your deployment process, you should run the `event:cache` Artisan command to cache a manifest of all of your application's events and listeners. This manifest will be used by the framework to speed up the event registration process. The `event:clear` command may be used to destroy the cache.
+운영 환경에서는 모든 요청마다 리스너 전체를 스캔하는 것은 비효율적입니다. 따라서 배포 시점에 `event:cache` Artisan 명령어로 애플리케이션의 모든 이벤트 및 리스너의 매니페스트를 캐시해두기 바랍니다. 이 매니페스트는 프레임워크가 이벤트 등록을 빠르게 할 수 있도록 사용됩니다. `event:clear` 명령어를 사용해 캐시를 삭제할 수도 있습니다.
 
 <a name="defining-events"></a>
-## Defining Events
+## 이벤트 정의
 
-An event class is essentially a data container which holds the information related to the event. For example, let's assume an `App\Events\OrderShipped` event receives an [Eloquent ORM](/docs/{{version}}/eloquent) object:
+이벤트 클래스는 이벤트와 관련된 정보를 담는 단순한 데이터 컨테이너입니다. 예를 들어 `App\Events\OrderShipped` 이벤트가 [Eloquent ORM](/docs/{{version}}/eloquent) 객체를 받는다고 가정해봅시다:
 
     <?php
 
@@ -210,14 +210,14 @@ An event class is essentially a data container which holds the information relat
         use Dispatchable, InteractsWithSockets, SerializesModels;
 
         /**
-         * The order instance.
+         * 주문 인스턴스.
          *
          * @var \App\Models\Order
          */
         public $order;
 
         /**
-         * Create a new event instance.
+         * 새로운 이벤트 인스턴스 생성.
          *
          * @param  \App\Models\Order  $order
          * @return void
@@ -228,12 +228,12 @@ An event class is essentially a data container which holds the information relat
         }
     }
 
-As you can see, this event class contains no logic. It is a container for the `App\Models\Order` instance that was purchased. The `SerializesModels` trait used by the event will gracefully serialize any Eloquent models if the event object is serialized using PHP's `serialize` function, such as when utilizing [queued listeners](#queued-event-listeners).
+이벤트 클래스에는 로직이 없습니다. 주문이 이루어진 `App\Models\Order` 인스턴스를 감싸는 컨테이너일 뿐입니다. 이벤트에서 사용하는 `SerializesModels` 트레이트는 이벤트 객체를 PHP의 `serialize` 기능으로 직렬화할 때(Eloquent 모델 포함) 자동으로 직렬화 과정을 처리해줍니다. 이는 [큐잉된 리스너](#queued-event-listeners) 사용 시 유용합니다.
 
 <a name="defining-listeners"></a>
-## Defining Listeners
+## 리스너 정의
 
-Next, let's take a look at the listener for our example event. Event listeners receive event instances in their `handle` method. The `event:generate` and `make:listener` Artisan commands will automatically import the proper event class and type-hint the event on the `handle` method. Within the `handle` method, you may perform any actions necessary to respond to the event:
+이제 예제 이벤트에 대한 리스너를 살펴보겠습니다. 이벤트 리스너는 `handle` 메서드에서 이벤트 인스턴스를 전달받습니다. `event:generate` 및 `make:listener` Artisan 명령어를 사용하면 관련 이벤트 클래스를 자동으로 import하고, 타입힌트를 지정해줍니다. `handle` 메서드 내부에서 이벤트에 대한 처리를 자유롭게 할 수 있습니다:
 
     <?php
 
@@ -244,7 +244,7 @@ Next, let's take a look at the listener for our example event. Event listeners r
     class SendShipmentNotification
     {
         /**
-         * Create the event listener.
+         * 이벤트 리스너 생성자.
          *
          * @return void
          */
@@ -254,31 +254,31 @@ Next, let's take a look at the listener for our example event. Event listeners r
         }
 
         /**
-         * Handle the event.
+         * 이벤트 처리.
          *
          * @param  \App\Events\OrderShipped  $event
          * @return void
          */
         public function handle(OrderShipped $event)
         {
-            // Access the order using $event->order...
+            // $event->order를 사용해 주문 정보에 접근할 수 있습니다...
         }
     }
 
-> **Note**  
-> Your event listeners may also type-hint any dependencies they need on their constructors. All event listeners are resolved via the Laravel [service container](/docs/{{version}}/container), so dependencies will be injected automatically.
+> **참고**  
+> 이벤트 리스너의 생성자에서 필요한 의존성을 타입힌트 할 수도 있습니다. 모든 이벤트 리스너는 Laravel [서비스 컨테이너](/docs/{{version}}/container)를 통해 해석되므로, 의존성은 자동으로 주입됩니다.
 
 <a name="stopping-the-propagation-of-an-event"></a>
-#### Stopping The Propagation Of An Event
+#### 이벤트 전파 중단
 
-Sometimes, you may wish to stop the propagation of an event to other listeners. You may do so by returning `false` from your listener's `handle` method.
+때때로 이벤트가 다른 리스너로 전파되는 것을 중지하고 싶을 때가 있습니다. 리스너의 `handle` 메서드에서 `false`를 반환하면 이벤트 전파를 중단할 수 있습니다.
 
 <a name="queued-event-listeners"></a>
-## Queued Event Listeners
+## 큐잉된 이벤트 리스너
 
-Queueing listeners can be beneficial if your listener is going to perform a slow task such as sending an email or making an HTTP request. Before using queued listeners, make sure to [configure your queue](/docs/{{version}}/queues) and start a queue worker on your server or local development environment.
+이메일 전송이나 HTTP 요청처럼 느린 작업을 수행해야 하는 경우, 리스너를 큐잉하는 것이 좋습니다. 큐잉된 리스너를 사용하기 전에 [큐 설정](/docs/{{version}}/queues)을 완료하고, 서버 또는 개발 환경에서 큐 워커를 실행해야 합니다.
 
-To specify that a listener should be queued, add the `ShouldQueue` interface to the listener class. Listeners generated by the `event:generate` and `make:listener` Artisan commands already have this interface imported into the current namespace so you can use it immediately:
+리스너가 큐에 저장되도록 지정하려면 리스너 클래스에 `ShouldQueue` 인터페이스를 추가하세요. `event:generate` 및 `make:listener` 명령어로 생성한 리스너에는 이미 이 인터페이스가 import되어 있습니다:
 
     <?php
 
@@ -292,12 +292,12 @@ To specify that a listener should be queued, add the `ShouldQueue` interface to 
         //
     }
 
-That's it! Now, when an event handled by this listener is dispatched, the listener will automatically be queued by the event dispatcher using Laravel's [queue system](/docs/{{version}}/queues). If no exceptions are thrown when the listener is executed by the queue, the queued job will automatically be deleted after it has finished processing.
+이제 해당 이벤트가 디스패치될 때, 라라벨의 [큐 시스템](/docs/{{version}}/queues)을 사용하여 이 리스너가 자동으로 큐에 등록됩니다. 큐에서 리스너가 실행되고 예외가 발생하지 않으면, 큐 작업은 자동으로 삭제됩니다.
 
 <a name="customizing-the-queue-connection-queue-name"></a>
-#### Customizing The Queue Connection & Queue Name
+#### 큐 연결 및 큐 이름 커스터마이징
 
-If you would like to customize the queue connection, queue name, or queue delay time of an event listener, you may define the `$connection`, `$queue`, or `$delay` properties on your listener class:
+큐 연결, 큐 이름, 지연(딜레이) 시간을 커스터마이징하려면 리스너 클래스에 `$connection`, `$queue`, `$delay` 속성을 정의하세요:
 
     <?php
 
@@ -309,31 +309,31 @@ If you would like to customize the queue connection, queue name, or queue delay 
     class SendShipmentNotification implements ShouldQueue
     {
         /**
-         * The name of the connection the job should be sent to.
+         * 이 작업이 전송될 연결 이름.
          *
          * @var string|null
          */
         public $connection = 'sqs';
 
         /**
-         * The name of the queue the job should be sent to.
+         * 이 작업이 전송될 큐 이름.
          *
          * @var string|null
          */
         public $queue = 'listeners';
 
         /**
-         * The time (seconds) before the job should be processed.
+         * 작업 실행까지 대기 시간(초).
          *
          * @var int
          */
         public $delay = 60;
     }
 
-If you would like to define the listener's queue connection or queue name at runtime, you may define `viaConnection` or `viaQueue` methods on the listener:
+실행 시점에 큐 연결이나 큐 이름을 지정하고자 한다면, `viaConnection` 또는 `viaQueue` 메서드를 리스너에 추가하세요:
 
     /**
-     * Get the name of the listener's queue connection.
+     * 리스너의 큐 연결 이름 반환.
      *
      * @return string
      */
@@ -343,7 +343,7 @@ If you would like to define the listener's queue connection or queue name at run
     }
 
     /**
-     * Get the name of the listener's queue.
+     * 리스너의 큐 이름 반환.
      *
      * @return string
      */
@@ -353,9 +353,9 @@ If you would like to define the listener's queue connection or queue name at run
     }
 
 <a name="conditionally-queueing-listeners"></a>
-#### Conditionally Queueing Listeners
+#### 조건부로 큐잉되는 리스너
 
-Sometimes, you may need to determine whether a listener should be queued based on some data that are only available at runtime. To accomplish this, a `shouldQueue` method may be added to a listener to determine whether the listener should be queued. If the `shouldQueue` method returns `false`, the listener will not be executed:
+실행 중에만 알 수 있는 데이터나 조건에 따라 리스너를 큐잉할지 판단해야 한다면, 리스너에 `shouldQueue` 메서드를 추가하면 됩니다. 이 메서드가 `false`를 반환하면 리스너는 실행되지 않습니다:
 
     <?php
 
@@ -367,7 +367,7 @@ Sometimes, you may need to determine whether a listener should be queued based o
     class RewardGiftCard implements ShouldQueue
     {
         /**
-         * Reward a gift card to the customer.
+         * 고객에게 기프트카드를 제공합니다.
          *
          * @param  \App\Events\OrderCreated  $event
          * @return void
@@ -378,7 +378,7 @@ Sometimes, you may need to determine whether a listener should be queued based o
         }
 
         /**
-         * Determine whether the listener should be queued.
+         * 리스너가 큐잉되어야 하는지 판단.
          *
          * @param  \App\Events\OrderCreated  $event
          * @return bool
@@ -390,9 +390,9 @@ Sometimes, you may need to determine whether a listener should be queued based o
     }
 
 <a name="manually-interacting-with-the-queue"></a>
-### Manually Interacting With The Queue
+### 큐와 수동으로 상호작용하기
 
-If you need to manually access the listener's underlying queue job's `delete` and `release` methods, you may do so using the `Illuminate\Queue\InteractsWithQueue` trait. This trait is imported by default on generated listeners and provides access to these methods:
+리스너의 큐 작업에서 `delete`, `release` 등의 메서드에 직접 접근이 필요하면, `Illuminate\Queue\InteractsWithQueue` 트레이트를 사용하면 됩니다. 이 트레이트는 생성된 리스너에 기본적으로 포함되어 있습니다:
 
     <?php
 
@@ -407,7 +407,7 @@ If you need to manually access the listener's underlying queue job's `delete` an
         use InteractsWithQueue;
 
         /**
-         * Handle the event.
+         * 이벤트 처리.
          *
          * @param  \App\Events\OrderShipped  $event
          * @return void
@@ -421,11 +421,11 @@ If you need to manually access the listener's underlying queue job's `delete` an
     }
 
 <a name="queued-event-listeners-and-database-transactions"></a>
-### Queued Event Listeners & Database Transactions
+### 큐 리스너와 데이터베이스 트랜잭션
 
-When queued listeners are dispatched within database transactions, they may be processed by the queue before the database transaction has committed. When this happens, any updates you have made to models or database records during the database transaction may not yet be reflected in the database. In addition, any models or database records created within the transaction may not exist in the database. If your listener depends on these models, unexpected errors can occur when the job that dispatches the queued listener is processed.
+큐잉된 리스너가 데이터베이스 트랜잭션 내에서 디스패치되면, 트랜잭션 커밋 전에 큐에서 처리될 수 있습니다. 이 경우, 트랜잭션 내에서 변경된 모델이나 데이터베이스 레코드가 아직 데이터베이스에 반영되지 않았을 수 있으므로, 큐잉된 리스너가 이러한 모델에 의존한다면 오류가 발생할 수 있습니다.
 
-If your queue connection's `after_commit` configuration option is set to `false`, you may still indicate that a particular queued listener should be dispatched after all open database transactions have been committed by defining an `$afterCommit` property on the listener class:
+큐 연결 설정의 `after_commit` 옵션이 `false`인 경우에도, 리스너 클래스에 `$afterCommit` 속성을 정의하여 모든 데이터베이스 트랜잭션이 커밋된 후에만 큐잉된 리스너가 실행되도록 지정할 수 있습니다:
 
     <?php
 
@@ -441,13 +441,13 @@ If your queue connection's `after_commit` configuration option is set to `false`
         public $afterCommit = true;
     }
 
-> **Note**  
-> To learn more about working around these issues, please review the documentation regarding [queued jobs and database transactions](/docs/{{version}}/queues#jobs-and-database-transactions).
+> **참고**  
+> 이러한 문제의 자세한 해결 방법은 [큐 작업과 데이터베이스 트랜잭션](/docs/{{version}}/queues#jobs-and-database-transactions) 문서를 참고하세요.
 
 <a name="handling-failed-jobs"></a>
-### Handling Failed Jobs
+### 실패한 작업 처리
 
-Sometimes your queued event listeners may fail. If the queued listener exceeds the maximum number of attempts as defined by your queue worker, the `failed` method will be called on your listener. The `failed` method receives the event instance and the `Throwable` that caused the failure:
+가끔 큐잉된 이벤트 리스너가 실패할 수 있습니다. 큐잉된 리스너가 큐 워커에 정의된 최대 시도 횟수를 초과하면, 리스너의 `failed` 메서드가 호출됩니다. 이 메서드는 이벤트 인스턴스와 실패를 일으킨 `Throwable` 예외 객체를 전달받습니다:
 
     <?php
 
@@ -462,7 +462,7 @@ Sometimes your queued event listeners may fail. If the queued listener exceeds t
         use InteractsWithQueue;
 
         /**
-         * Handle the event.
+         * 이벤트 처리.
          *
          * @param  \App\Events\OrderShipped  $event
          * @return void
@@ -473,7 +473,7 @@ Sometimes your queued event listeners may fail. If the queued listener exceeds t
         }
 
         /**
-         * Handle a job failure.
+         * 작업 실패 처리.
          *
          * @param  \App\Events\OrderShipped  $event
          * @param  \Throwable  $exception
@@ -486,11 +486,11 @@ Sometimes your queued event listeners may fail. If the queued listener exceeds t
     }
 
 <a name="specifying-queued-listener-maximum-attempts"></a>
-#### Specifying Queued Listener Maximum Attempts
+#### 큐 리스너의 최대 시도 횟수 지정
 
-If one of your queued listeners is encountering an error, you likely do not want it to keep retrying indefinitely. Therefore, Laravel provides various ways to specify how many times or for how long a listener may be attempted.
+큐잉된 리스너가 오류를 계속 발생시키면 무한정 재시도되는 걸 막는 것이 좋습니다. 이를 위해 리스너를 몇 번이나(혹은 얼마나 오랫동안) 시도할지 지정할 수 있는 방법들이 있습니다.
 
-You may define a `$tries` property on your listener class to specify how many times the listener may be attempted before it is considered to have failed:
+리스너 클래스에 `$tries` 속성을 정의하면, 정해진 횟수만큼 시도한 뒤 실패로 간주할 수 있습니다:
 
     <?php
 
@@ -505,17 +505,17 @@ You may define a `$tries` property on your listener class to specify how many ti
         use InteractsWithQueue;
 
         /**
-         * The number of times the queued listener may be attempted.
+         * 큐 리스너의 최대 시도 횟수.
          *
          * @var int
          */
         public $tries = 5;
     }
 
-As an alternative to defining how many times a listener may be attempted before it fails, you may define a time at which the listener should no longer be attempted. This allows a listener to be attempted any number of times within a given time frame. To define the time at which a listener should no longer be attempted, add a `retryUntil` method to your listener class. This method should return a `DateTime` instance:
+반면, 지정된 시각까지 시도하다가 넘으면 더 이상 시도하지 않게 하고 싶다면, 리스너 클래스에 `retryUntil` 메서드를 추가하세요. 이 메서드는 `DateTime` 인스턴스를 반환해야 합니다:
 
     /**
-     * Determine the time at which the listener should timeout.
+     * 이 리스너가 타임아웃되어야 하는 시점 반환.
      *
      * @return \DateTime
      */
@@ -525,9 +525,9 @@ As an alternative to defining how many times a listener may be attempted before 
     }
 
 <a name="dispatching-events"></a>
-## Dispatching Events
+## 이벤트 디스패치
 
-To dispatch an event, you may call the static `dispatch` method on the event. This method is made available on the event by the `Illuminate\Foundation\Events\Dispatchable` trait. Any arguments passed to the `dispatch` method will be passed to the event's constructor:
+이벤트를 발생시키려면, 해당 이벤트에서 static `dispatch` 메서드를 호출하세요. 이 메서드는 `Illuminate\Foundation\Events\Dispatchable` 트레이트가 제공하며, 인자로 전달하는 값은 이벤트 생성자에 전달됩니다:
 
     <?php
 
@@ -541,7 +541,7 @@ To dispatch an event, you may call the static `dispatch` method on the event. Th
     class OrderShipmentController extends Controller
     {
         /**
-         * Ship the given order.
+         * 지정된 주문을 배송 처리합니다.
          *
          * @param  \Illuminate\Http\Request  $request
          * @return \Illuminate\Http\Response
@@ -550,28 +550,28 @@ To dispatch an event, you may call the static `dispatch` method on the event. Th
         {
             $order = Order::findOrFail($request->order_id);
 
-            // Order shipment logic...
+            // 주문 배송 로직...
 
             OrderShipped::dispatch($order);
         }
     }
-    
- If you would like to conditionally dispatch an event, you may use the `dispatchIf` and `dispatchUnless` methods:
+
+조건에 따라 이벤트를 디스패치하고 싶다면, `dispatchIf`, `dispatchUnless` 메서드를 사용하세요:
 
     OrderShipped::dispatchIf($condition, $order);
 
     OrderShipped::dispatchUnless($condition, $order);
 
-> **Note**  
-> When testing, it can be helpful to assert that certain events were dispatched without actually triggering their listeners. Laravel's [built-in testing helpers](/docs/{{version}}/mocking#event-fake) makes it a cinch.
+> **참고**
+> 테스트 시, 실제 리스너를 작동시키지 않고 특정 이벤트가 발생했는지만 검증할 수 있습니다. Laravel의 [내장 테스트 헬퍼](/docs/{{version}}/mocking#event-fake)를 참고하세요.
 
 <a name="event-subscribers"></a>
-## Event Subscribers
+## 이벤트 구독자
 
 <a name="writing-event-subscribers"></a>
-### Writing Event Subscribers
+### 이벤트 구독자 작성
 
-Event subscribers are classes that may subscribe to multiple events from within the subscriber class itself, allowing you to define several event handlers within a single class. Subscribers should define a `subscribe` method, which will be passed an event dispatcher instance. You may call the `listen` method on the given dispatcher to register event listeners:
+이벤트 구독자는 하나의 클래스에서 여러 이벤트를 구독할 수 있는 클래스입니다. 이는 여러 이벤트 핸들러를 하나의 클래스에 정의할 수 있게 해줍니다. 구독자 클래스는 `subscribe` 메서드를 정의해야 하며, 이 메서드에는 이벤트 디스패처 인스턴스가 전달됩니다. 이 디스패처의 `listen` 메서드를 사용하여 이벤트 리스너를 등록할 수 있습니다:
 
     <?php
 
@@ -583,17 +583,17 @@ Event subscribers are classes that may subscribe to multiple events from within 
     class UserEventSubscriber
     {
         /**
-         * Handle user login events.
+         * 사용자 로그인 이벤트 처리.
          */
         public function handleUserLogin($event) {}
 
         /**
-         * Handle user logout events.
+         * 사용자 로그아웃 이벤트 처리.
          */
         public function handleUserLogout($event) {}
 
         /**
-         * Register the listeners for the subscriber.
+         * 구독자의 리스너 등록.
          *
          * @param  \Illuminate\Events\Dispatcher  $events
          * @return void
@@ -612,7 +612,7 @@ Event subscribers are classes that may subscribe to multiple events from within 
         }
     }
 
-If your event listener methods are defined within the subscriber itself, you may find it more convenient to return an array of events and method names from the subscriber's `subscribe` method. Laravel will automatically determine the subscriber's class name when registering the event listeners:
+구독자 자체에 이벤트 리스너 메서드가 정의되어 있다면, 구독자의 `subscribe` 메서드에서 이벤트와 메서드명을 배열로 반환하는 방식도 유용합니다. 이 경우 Laravel이 구독자 클래스명을 자동으로 인식하여 이벤트 리스너를 등록합니다:
 
     <?php
 
@@ -624,17 +624,17 @@ If your event listener methods are defined within the subscriber itself, you may
     class UserEventSubscriber
     {
         /**
-         * Handle user login events.
+         * 사용자 로그인 이벤트 처리.
          */
         public function handleUserLogin($event) {}
 
         /**
-         * Handle user logout events.
+         * 사용자 로그아웃 이벤트 처리.
          */
         public function handleUserLogout($event) {}
 
         /**
-         * Register the listeners for the subscriber.
+         * 구독자의 리스너 등록.
          *
          * @param  \Illuminate\Events\Dispatcher  $events
          * @return array
@@ -649,9 +649,9 @@ If your event listener methods are defined within the subscriber itself, you may
     }
 
 <a name="registering-event-subscribers"></a>
-### Registering Event Subscribers
+### 이벤트 구독자 등록
 
-After writing the subscriber, you are ready to register it with the event dispatcher. You may register subscribers using the `$subscribe` property on the `EventServiceProvider`. For example, let's add the `UserEventSubscriber` to the list:
+구독자 클래스를 작성했다면, 이벤트 디스패처에 등록해야 합니다. 등록은 `EventServiceProvider`의 `$subscribe` 속성을 사용합니다. 예를 들어 `UserEventSubscriber`를 추가해보겠습니다:
 
     <?php
 
@@ -663,7 +663,7 @@ After writing the subscriber, you are ready to register it with the event dispat
     class EventServiceProvider extends ServiceProvider
     {
         /**
-         * The event listener mappings for the application.
+         * 애플리케이션의 이벤트 리스너 매핑.
          *
          * @var array
          */
@@ -672,7 +672,7 @@ After writing the subscriber, you are ready to register it with the event dispat
         ];
 
         /**
-         * The subscriber classes to register.
+         * 등록할 구독자 클래스.
          *
          * @var array
          */
