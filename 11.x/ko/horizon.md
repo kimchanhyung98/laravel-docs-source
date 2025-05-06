@@ -1,62 +1,62 @@
 # Laravel Horizon
 
-- [Introduction](#introduction)
-- [Installation](#installation)
-    - [Configuration](#configuration)
-    - [Balancing Strategies](#balancing-strategies)
-    - [Dashboard Authorization](#dashboard-authorization)
-    - [Silenced Jobs](#silenced-jobs)
-- [Upgrading Horizon](#upgrading-horizon)
-- [Running Horizon](#running-horizon)
-    - [Deploying Horizon](#deploying-horizon)
-- [Tags](#tags)
-- [Notifications](#notifications)
-- [Metrics](#metrics)
-- [Deleting Failed Jobs](#deleting-failed-jobs)
-- [Clearing Jobs From Queues](#clearing-jobs-from-queues)
+- [소개](#introduction)
+- [설치](#installation)
+    - [구성](#configuration)
+    - [로드 밸런싱 전략](#balancing-strategies)
+    - [대시보드 권한 제어](#dashboard-authorization)
+    - [무음 처리된 작업](#silenced-jobs)
+- [Horizon 업그레이드](#upgrading-horizon)
+- [Horizon 실행](#running-horizon)
+    - [Horizon 배포](#deploying-horizon)
+- [태그](#tags)
+- [알림](#notifications)
+- [메트릭](#metrics)
+- [실패한 작업 삭제](#deleting-failed-jobs)
+- [큐에서 작업 비우기](#clearing-jobs-from-queues)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
 > [!NOTE]  
-> Before digging into Laravel Horizon, you should familiarize yourself with Laravel's base [queue services](/docs/{{version}}/queues). Horizon augments Laravel's queue with additional features that may be confusing if you are not already familiar with the basic queue features offered by Laravel.
+> Laravel Horizon을 시작하기 전에, Laravel의 기본 [큐 서비스](/docs/{{version}}/queues)에 익숙해지는 것이 좋습니다. Horizon은 Laravel의 큐에 다양한 기능을 추가하기 때문에, 기본 큐 기능을 이해하지 못한 상태에서는 혼란스러울 수 있습니다.
 
-[Laravel Horizon](https://github.com/laravel/horizon) provides a beautiful dashboard and code-driven configuration for your Laravel powered [Redis queues](/docs/{{version}}/queues). Horizon allows you to easily monitor key metrics of your queue system such as job throughput, runtime, and job failures.
+[Laravel Horizon](https://github.com/laravel/horizon)은 Laravel 기반의 [Redis 큐](/docs/{{version}}/queues)를 위한 아름다운 대시보드와 코드 기반 구성 기능을 제공합니다. Horizon을 사용하면 작업 처리량, 실행 시간, 작업 실패와 같은 주요 메트릭을 손쉽게 모니터링할 수 있습니다.
 
-When using Horizon, all of your queue worker configuration is stored in a single, simple configuration file. By defining your application's worker configuration in a version controlled file, you may easily scale or modify your application's queue workers when deploying your application.
+Horizon을 사용하면 모든 큐 워커 구성이 단일 구성 파일에 저장됩니다. 버전 관리되는 파일에 워커 구성을 정의하면, 애플리케이션 배포 시 큐 워커를 손쉽게 확장하거나 수정할 수 있습니다.
 
 <img src="https://laravel.com/img/docs/horizon-example.png">
 
 <a name="installation"></a>
-## Installation
+## 설치
 
 > [!WARNING]  
-> Laravel Horizon requires that you use [Redis](https://redis.io) to power your queue. Therefore, you should ensure that your queue connection is set to `redis` in your application's `config/queue.php` configuration file.
+> Laravel Horizon은 [Redis](https://redis.io) 기반 큐만 지원합니다. 따라서 `config/queue.php` 구성 파일에서 큐 연결이 반드시 `redis`로 설정되어 있어야 합니다.
 
-You may install Horizon into your project using the Composer package manager:
+Composer 패키지 관리자를 사용하여 Horizon을 프로젝트에 설치할 수 있습니다:
 
 ```shell
 composer require laravel/horizon
 ```
 
-After installing Horizon, publish its assets using the `horizon:install` Artisan command:
+설치 후, `horizon:install` Artisan 명령어로 Horizon의 에셋을 퍼블리시하세요:
 
 ```shell
 php artisan horizon:install
 ```
 
 <a name="configuration"></a>
-### Configuration
+### 구성
 
-After publishing Horizon's assets, its primary configuration file will be located at `config/horizon.php`. This configuration file allows you to configure the queue worker options for your application. Each configuration option includes a description of its purpose, so be sure to thoroughly explore this file.
+에셋을 퍼블리시하면 기본 구성 파일이 `config/horizon.php`에 생성됩니다. 이 파일에서 애플리케이션의 큐 워커 옵션을 설정할 수 있습니다. 각 구성 옵션에는 설명이 있으니, 이 파일을 꼼꼼히 살펴보시기 바랍니다.
 
 > [!WARNING]  
-> Horizon uses a Redis connection named `horizon` internally. This Redis connection name is reserved and should not be assigned to another Redis connection in the `database.php` configuration file or as the value of the `use` option in the `horizon.php` configuration file.
+> Horizon은 내부적으로 `horizon`이라는 이름의 Redis 연결을 사용합니다. 이 연결명은 예약되어 있으므로 `database.php`의 다른 Redis 연결이나 `horizon.php`의 `use` 옵션에 할당해서는 안 됩니다.
 
 <a name="environments"></a>
-#### Environments
+#### 환경별 설정
 
-After installation, the primary Horizon configuration option that you should familiarize yourself with is the `environments` configuration option. This configuration option is an array of environments that your application runs on and defines the worker process options for each environment. By default, this entry contains a `production` and `local` environment. However, you are free to add more environments as needed:
+설치 후 가장 먼저 익숙해져야 할 옵션은 `environments`입니다. 이 옵션은 애플리케이션이 실행되는 여러 환경에 대한 배열이며, 각 환경별 워커 프로세스 옵션을 정의합니다. 기본 값으로는 `production`과 `local` 환경이 포함되어 있지만, 필요에 따라 환경을 추가할 수 있습니다:
 
     'environments' => [
         'production' => [
@@ -74,7 +74,7 @@ After installation, the primary Horizon configuration option that you should fam
         ],
     ],
 
-You may also define a wildcard environment (`*`) which will be used when no other matching environment is found:
+와일드카드(`*`) 환경을 정의할 수도 있습니다. 해당 환경이 없으면 이 설정이 사용됩니다:
 
     'environments' => [
         // ...
@@ -86,22 +86,22 @@ You may also define a wildcard environment (`*`) which will be used when no othe
         ],
     ],
 
-When you start Horizon, it will use the worker process configuration options for the environment that your application is running on. Typically, the environment is determined by the value of the `APP_ENV` [environment variable](/docs/{{version}}/configuration#determining-the-current-environment). For example, the default `local` Horizon environment is configured to start three worker processes and automatically balance the number of worker processes assigned to each queue. The default `production` environment is configured to start a maximum of 10 worker processes and automatically balance the number of worker processes assigned to each queue.
+Horizon을 시작하면 애플리케이션이 실행 중인 환경에 맞는 워커 프로세스 옵션이 적용됩니다. 보통 환경은 `APP_ENV` [환경 변수](/docs/{{version}}/configuration#determining-the-current-environment)의 값으로 결정됩니다. 예를 들어, 기본 `local` 환경에서는 3개의 워커 프로세스가 생성되고 각 큐에 자동으로 워커가 분배됩니다. `production`에서는 최대 10개의 워커 프로세스가 자동 조절됩니다.
 
 > [!WARNING]  
-> You should ensure that the `environments` portion of your `horizon` configuration file contains an entry for each [environment](/docs/{{version}}/configuration#environment-configuration) on which you plan to run Horizon.
+> `horizon` 구성 파일의 `environments` 부분에 Horizon을 실행할 [모든 환경](/docs/{{version}}/configuration#environment-configuration)에 대한 설정 항목이 있는지 반드시 확인하세요.
 
 <a name="supervisors"></a>
-#### Supervisors
+#### 슈퍼바이저(Supervisors)
 
-As you can see in Horizon's default configuration file, each environment can contain one or more "supervisors". By default, the configuration file defines this supervisor as `supervisor-1`; however, you are free to name your supervisors whatever you want. Each supervisor is essentially responsible for "supervising" a group of worker processes and takes care of balancing worker processes across queues.
+기본 구성 파일에서 볼 수 있듯, 각 환경에는 한 개 이상 "슈퍼바이저"를 둘 수 있습니다. `supervisor-1`라는 이름이 기본으로 제공되지만, 원하는 대로 이름을 지정할 수 있습니다. 각 슈퍼바이저는 워커 프로세스 그룹을 "감독"하며 큐 전체에 워커 분배를 담당합니다.
 
-You may add additional supervisors to a given environment if you would like to define a new group of worker processes that should run in that environment. You may choose to do this if you would like to define a different balancing strategy or worker process count for a given queue used by your application.
+새로운 워커 그룹이 필요하다면 해당 환경에 추가 슈퍼바이저를 정의할 수 있습니다. 예를 들어, 특정 큐에 대해 별도의 워커 개수나 밸런싱 전략을 원하는 경우 사용할 수 있습니다.
 
 <a name="maintenance-mode"></a>
-#### Maintenance Mode
+#### 유지보수 모드
 
-While your application is in [maintenance mode](/docs/{{version}}/configuration#maintenance-mode), queued jobs will not be processed by Horizon unless the supervisor's `force` option is defined as `true` within the Horizon configuration file:
+애플리케이션이 [유지보수 모드](/docs/{{version}}/configuration#maintenance-mode)일 때는 슈퍼바이저의 `force` 옵션이 `true`로 설정되어 있지 않으면 Horizon이 큐 작업을 처리하지 않습니다:
 
     'environments' => [
         'production' => [
@@ -113,20 +113,20 @@ While your application is in [maintenance mode](/docs/{{version}}/configuration#
     ],
 
 <a name="default-values"></a>
-#### Default Values
+#### 기본값
 
-Within Horizon's default configuration file, you will notice a `defaults` configuration option. This configuration option specifies the default values for your application's [supervisors](#supervisors). The supervisor's default configuration values will be merged into the supervisor's configuration for each environment, allowing you to avoid unnecessary repetition when defining your supervisors.
+Horizon의 기본 구성 파일에는 `defaults` 옵션이 있습니다. 이는 애플리케이션의 [슈퍼바이저](#supervisors)에 대한 기본 값을 지정합니다. 각 환경에 슈퍼바이저를 정의할 때 이 기본값이 병합되어 불필요한 중복을 줄여줍니다.
 
 <a name="balancing-strategies"></a>
-### Balancing Strategies
+### 로드 밸런싱 전략
 
-Unlike Laravel's default queue system, Horizon allows you to choose from three worker balancing strategies: `simple`, `auto`, and `false`. The `simple` strategy splits incoming jobs evenly between worker processes:
+Laravel의 기본 큐 시스템과 달리, Horizon은 세 가지 워커 로드 밸런싱 전략인 `simple`, `auto`, `false` 중 선택할 수 있습니다. `simple` 전략은 들어오는 작업을 워커 간에 균등하게 분배합니다:
 
     'balance' => 'simple',
 
-The `auto` strategy, which is the configuration file's default, adjusts the number of worker processes per queue based on the current workload of the queue. For example, if your `notifications` queue has 1,000 pending jobs while your `render` queue is empty, Horizon will allocate more workers to your `notifications` queue until the queue is empty.
+구성 파일의 기본값인 `auto` 전략은 큐의 현재 작업량에 따라 큐별 워커 프로세스 수를 자동으로 조정합니다. 예를 들어, `notifications` 큐에 1,000개의 대기 작업이 있고 `render` 큐가 비어있으면 Horizon은 워커를 `notifications` 큐에 더 많이 할당합니다.
 
-When using the `auto` strategy, you may define the `minProcesses` and `maxProcesses` configuration options to control the minimum number of processes per queue and the maximum number of worker processes in total Horizon should scale up and down to:
+`auto` 전략을 사용할 때는 큐별 최소 프로세스 개수(`minProcesses`)와 전체 워커 최대 개수(`maxProcesses`)도 설정할 수 있습니다:
 
     'environments' => [
         'production' => [
@@ -144,21 +144,21 @@ When using the `auto` strategy, you may define the `minProcesses` and `maxProces
         ],
     ],
 
-The `autoScalingStrategy` configuration value determines if Horizon will assign more worker processes to queues based on the total amount of time it will take to clear the queue (`time` strategy) or by the total number of jobs on the queue (`size` strategy).
+`autoScalingStrategy` 옵션은 Horizon이 워커를 큐에 할당할 때, 대기 작업을 모두 처리하는데 걸리는 총 시간 기준(`time`) 또는 큐의 전체 작업 개수 기준(`size`) 중 어떤 기준을 적용할지 결정합니다.
 
-The `balanceMaxShift` and `balanceCooldown` configuration values determine how quickly Horizon will scale to meet worker demand. In the example above, a maximum of one new process will be created or destroyed every three seconds. You are free to tweak these values as necessary based on your application's needs.
+`balanceMaxShift`와 `balanceCooldown` 옵션은 워커 수가 얼마나 빠르게 조정될지를 결정합니다. 예시에서는 3초마다 최대 1개 프로세스가 추가 또는 감소합니다. 애플리케이션에 맞게 조정하세요.
 
-When the `balance` option is set to `false`, the default Laravel behavior will be used, wherein queues are processed in the order they are listed in your configuration.
+`balance` 옵션을 `false`로 설정하면 기본 Laravel 동작이 적용되어, 구성에 나열된 순서대로 큐가 처리됩니다.
 
 <a name="dashboard-authorization"></a>
-### Dashboard Authorization
+### 대시보드 권한 제어
 
-The Horizon dashboard may be accessed via the `/horizon` route. By default, you will only be able to access this dashboard in the `local` environment. However, within your `app/Providers/HorizonServiceProvider.php` file, there is an [authorization gate](/docs/{{version}}/authorization#gates) definition. This authorization gate controls access to Horizon in **non-local** environments. You are free to modify this gate as needed to restrict access to your Horizon installation:
+Horizon 대시보드는 `/horizon` 경로로 접근할 수 있습니다. 기본적으로 `local` 환경에서만 접근이 허용됩니다. 그러나 `app/Providers/HorizonServiceProvider.php` 파일에는 [권한 게이트](/docs/{{version}}/authorization#gates)가 정의되어 있습니다. 이 게이트는 **로컬이 아닌** 환경에서 Horizon 접근을 통제합니다. 필요에 따라 이 게이트를 수정하여 접근을 제한할 수 있습니다:
 
     /**
-     * Register the Horizon gate.
+     * Horizon 게이트 등록.
      *
-     * This gate determines who can access Horizon in non-local environments.
+     * 이 게이트는 로컬 환경이 아닌 곳에서 Horizon 접근을 결정합니다.
      */
     protected function gate(): void
     {
@@ -170,20 +170,20 @@ The Horizon dashboard may be accessed via the `/horizon` route. By default, you 
     }
 
 <a name="alternative-authentication-strategies"></a>
-#### Alternative Authentication Strategies
+#### 대체 인증 전략
 
-Remember that Laravel automatically injects the authenticated user into the gate closure. If your application is providing Horizon security via another method, such as IP restrictions, then your Horizon users may not need to "login". Therefore, you will need to change `function (User $user)` closure signature above to `function (User $user = null)` in order to force Laravel to not require authentication.
+Laravel은 게이트 클로저 내부에 인증된 사용자를 자동으로 주입합니다. 만약 IP 제약 등 다른 방식으로 Horizon 보안을 제공한다면, Horizon 사용자가 "로그인"하지 않아도 됩니다. 이 경우에는 위의 `function (User $user)` 시그니처를 `function (User $user = null)`로 변경하여 인증이 필요하지 않게 할 수 있습니다.
 
 <a name="silenced-jobs"></a>
-### Silenced Jobs
+### 무음 처리된 작업(Silenced Jobs)
 
-Sometimes, you may not be interested in viewing certain jobs dispatched by your application or third-party packages. Instead of these jobs taking up space in your "Completed Jobs" list, you can silence them. To get started, add the job's class name to the `silenced` configuration option in your application's `horizon` configuration file:
+때로는 애플리케이션이나 서드 파티 패키지에서 발생하는 특정 작업을 대시보드에 표시하지 않고 싶을 수 있습니다. 이런 작업을 "무음 처리"하면 "완료된 작업" 목록에서 공간을 차지하지 않습니다. 먼저, 무음 처리할 작업의 클래스명을 `horizon` 구성 파일의 `silenced` 옵션 배열에 추가하세요:
 
     'silenced' => [
         App\Jobs\ProcessPodcast::class,
     ],
 
-Alternatively, the job you wish to silence can implement the `Laravel\Horizon\Contracts\Silenced` interface. If a job implements this interface, it will automatically be silenced, even if it is not present in the `silenced` configuration array:
+또는, 무음 처리하려는 작업이 `Laravel\Horizon\Contracts\Silenced` 인터페이스를 구현하게 할 수도 있습니다. 이 인터페이스를 구현한 작업은 `silenced` 배열에 명시하지 않아도 자동으로 무음 처리됩니다:
 
     use Laravel\Horizon\Contracts\Silenced;
 
@@ -195,20 +195,20 @@ Alternatively, the job you wish to silence can implement the `Laravel\Horizon\Co
     }
 
 <a name="upgrading-horizon"></a>
-## Upgrading Horizon
+## Horizon 업그레이드
 
-When upgrading to a new major version of Horizon, it's important that you carefully review [the upgrade guide](https://github.com/laravel/horizon/blob/master/UPGRADE.md).
+Horizon의 새로운 주요 버전으로 업그레이드할 경우, 반드시 [업그레이드 가이드](https://github.com/laravel/horizon/blob/master/UPGRADE.md)를 꼼꼼히 읽어보시기 바랍니다.
 
 <a name="running-horizon"></a>
-## Running Horizon
+## Horizon 실행
 
-Once you have configured your supervisors and workers in your application's `config/horizon.php` configuration file, you may start Horizon using the `horizon` Artisan command. This single command will start all of the configured worker processes for the current environment:
+`config/horizon.php`에서 슈퍼바이저 및 워커를 구성하면, `horizon` Artisan 명령어로 Horizon을 시작할 수 있습니다. 이 한 번의 명령으로 현재 환경에 맞는 모든 워커 프로세스가 시작됩니다:
 
 ```shell
 php artisan horizon
 ```
 
-You may pause the Horizon process and instruct it to continue processing jobs using the `horizon:pause` and `horizon:continue` Artisan commands:
+`horizon:pause` 및 `horizon:continue` 명령어로 Horizon을 일시 중지했다가 다시 실행하도록 지시할 수 있습니다:
 
 ```shell
 php artisan horizon:pause
@@ -216,7 +216,7 @@ php artisan horizon:pause
 php artisan horizon:continue
 ```
 
-You may also pause and continue specific Horizon [supervisors](#supervisors) using the `horizon:pause-supervisor` and `horizon:continue-supervisor` Artisan commands:
+특정 Horizon [슈퍼바이저](#supervisors)만을 별도로 일시 중지하거나 이어서 실행하려면 `horizon:pause-supervisor` 및 `horizon:continue-supervisor` 명령어를 사용하세요:
 
 ```shell
 php artisan horizon:pause-supervisor supervisor-1
@@ -224,51 +224,51 @@ php artisan horizon:pause-supervisor supervisor-1
 php artisan horizon:continue-supervisor supervisor-1
 ```
 
-You may check the current status of the Horizon process using the `horizon:status` Artisan command:
+`horizon:status` 명령어로 Horizon 프로세스의 현재 상태를 확인할 수 있습니다:
 
 ```shell
 php artisan horizon:status
 ```
 
-You may check the current status of a specific Horizon [supervisor](#supervisors) using the `horizon:supervisor-status` Artisan command:
+특정 Horizon [슈퍼바이저](#supervisors)의 상태를 확인하려면 `horizon:supervisor-status` 명령어를 사용하세요:
 
 ```shell
 php artisan horizon:supervisor-status supervisor-1
 ```
 
-You may gracefully terminate the Horizon process using the `horizon:terminate` Artisan command. Any jobs that are currently being processed will be completed and then Horizon will stop executing:
+`horizon:terminate` 명령어로 Horizon 프로세스를 정상적으로 종료할 수 있습니다. 현재 처리 중인 작업을 완료한 후 종료됩니다:
 
 ```shell
 php artisan horizon:terminate
 ```
 
 <a name="deploying-horizon"></a>
-### Deploying Horizon
+### Horizon 배포
 
-When you're ready to deploy Horizon to your application's actual server, you should configure a process monitor to monitor the `php artisan horizon` command and restart it if it exits unexpectedly. Don't worry, we'll discuss how to install a process monitor below.
+Horizon을 실제 배포 서버에 올릴 준비가 되면, `php artisan horizon` 명령어가 비정상 종료되었을 때 자동으로 재시작할 수 있도록 프로세스 모니터를 설정해야 합니다. 아래에서 프로세스 모니터 설정 방법을 안내하겠습니다.
 
-During your application's deployment process, you should instruct the Horizon process to terminate so that it will be restarted by your process monitor and receive your code changes:
+배포 과정 중에는 Horizon 프로세스가 재시작되어 코드 변경 사항을 반영할 수 있도록 명령을 내리세요:
 
 ```shell
 php artisan horizon:terminate
 ```
 
 <a name="installing-supervisor"></a>
-#### Installing Supervisor
+#### Supervisor 설치
 
-Supervisor is a process monitor for the Linux operating system and will automatically restart your `horizon` process if it stops executing. To install Supervisor on Ubuntu, you may use the following command. If you are not using Ubuntu, you can likely install Supervisor using your operating system's package manager:
+Supervisor는 Linux 운영체제용 프로세스 모니터입니다. `horizon` 프로세스가 중단되었을 때 자동으로 재시작해줍니다. Ubuntu에서 설치하려면 아래 명령을 사용하세요. Ubuntu가 아니라면 운영체제의 패키지 관리자를 사용하시기 바랍니다:
 
 ```shell
 sudo apt-get install supervisor
 ```
 
 > [!NOTE]  
-> If configuring Supervisor yourself sounds overwhelming, consider using [Laravel Forge](https://forge.laravel.com), which will automatically install and configure Supervisor for your Laravel projects.
+> Supervisor 직접 구성에 부담이 된다면, [Laravel Forge](https://forge.laravel.com)를 사용해보세요. 자동으로 Supervisor를 설치하고 설정해줍니다.
 
 <a name="supervisor-configuration"></a>
-#### Supervisor Configuration
+#### Supervisor 설정
 
-Supervisor configuration files are typically stored within your server's `/etc/supervisor/conf.d` directory. Within this directory, you may create any number of configuration files that instruct supervisor how your processes should be monitored. For example, let's create a `horizon.conf` file that starts and monitors a `horizon` process:
+Supervisor 설정 파일은 일반적으로 서버의 `/etc/supervisor/conf.d` 디렉터리에 위치합니다. 여기서 원하는 만큼 설정 파일을 만들어 모니터링할 프로세스를 지정할 수 있습니다. 예시로, `horizon.conf` 파일을 만들어 `horizon` 프로세스를 시작 및 감시할 수 있습니다:
 
 ```ini
 [program:horizon]
@@ -282,15 +282,15 @@ stdout_logfile=/home/forge/example.com/horizon.log
 stopwaitsecs=3600
 ```
 
-When defining your Supervisor configuration, you should ensure that the value of `stopwaitsecs` is greater than the number of seconds consumed by your longest running job. Otherwise, Supervisor may kill the job before it is finished processing.
+Supervisor 설정 시, `stopwaitsecs` 값을 가장 오래 걸리는 작업 소요 시간보다 크게 설정해야 합니다. 그렇지 않으면 Supervisor가 작업 완료 전에 프로세스를 강제 종료할 수 있습니다.
 
 > [!WARNING]  
-> While the examples above are valid for Ubuntu based servers, the location and file extension expected of Supervisor configuration files may vary between other server operating systems. Please consult your server's documentation for more information.
+> 위 예시는 Ubuntu 기반 서버에 적합하지만, 다른 운영체제에서는 Supervisor 설정 파일의 위치나 확장자가 다를 수 있습니다. 서버별 공식 문서를 참고하세요.
 
 <a name="starting-supervisor"></a>
-#### Starting Supervisor
+#### Supervisor 시작
 
-Once the configuration file has been created, you may update the Supervisor configuration and start the monitored processes using the following commands:
+설정 파일을 작성한 후, 아래 명령으로 Supervisor 구성을 갱신하고 모니터링을 시작할 수 있습니다:
 
 ```shell
 sudo supervisorctl reread
@@ -301,12 +301,12 @@ sudo supervisorctl start horizon
 ```
 
 > [!NOTE]  
-> For more information on running Supervisor, consult the [Supervisor documentation](http://supervisord.org/index.html).
+> Supervisor 사용에 대한 자세한 내용은 [Supervisor 공식 문서](http://supervisord.org/index.html)를 참고하세요.
 
 <a name="tags"></a>
-## Tags
+## 태그
 
-Horizon allows you to assign “tags” to jobs, including mailables, broadcast events, notifications, and queued event listeners. In fact, Horizon will intelligently and automatically tag most jobs depending on the Eloquent models that are attached to the job. For example, take a look at the following job:
+Horizon은 작업, 메일 발송 객체, 브로드캐스트 이벤트, 알림, 큐에 등록된 이벤트 리스너 등에 "태그"를 지정할 수 있습니다. 실제로, Horizon은 Eloquent 모델이 작업에 첨부되어 있으면 대부분의 작업을 자동으로 지능적으로 태그합니다. 예를 들어 다음 작업을 살펴보겠습니다:
 
     <?php
 
@@ -321,14 +321,14 @@ Horizon allows you to assign “tags” to jobs, including mailables, broadcast 
         use Queueable;
 
         /**
-         * Create a new job instance.
+         * 새로운 작업 인스턴스 생성
          */
         public function __construct(
             public Video $video,
         ) {}
 
         /**
-         * Execute the job.
+         * 작업 실행
          */
         public function handle(): void
         {
@@ -336,7 +336,7 @@ Horizon allows you to assign “tags” to jobs, including mailables, broadcast 
         }
     }
 
-If this job is queued with an `App\Models\Video` instance that has an `id` attribute of `1`, it will automatically receive the tag `App\Models\Video:1`. This is because Horizon will search the job's properties for any Eloquent models. If Eloquent models are found, Horizon will intelligently tag the job using the model's class name and primary key:
+이 작업이 `id`가 1인 `App\Models\Video` 인스턴스와 함께 큐에 등록되면 자동으로 `App\Models\Video:1`이라는 태그를 부여받습니다. 이는 Horizon이 작업 내 프로퍼티에서 Eloquent 모델을 찾아, 모델의 클래스명과 기본 키를 조합해 태그를 생성하기 때문입니다:
 
     use App\Jobs\RenderVideo;
     use App\Models\Video;
@@ -346,14 +346,14 @@ If this job is queued with an `App\Models\Video` instance that has an `id` attri
     RenderVideo::dispatch($video);
 
 <a name="manually-tagging-jobs"></a>
-#### Manually Tagging Jobs
+#### 작업에 태그 수동 지정
 
-If you would like to manually define the tags for one of your queueable objects, you may define a `tags` method on the class:
+큐잉 객체에 대해 태그를 직접 정의하고 싶다면 클래스에 `tags` 메서드를 구현하면 됩니다:
 
     class RenderVideo implements ShouldQueue
     {
         /**
-         * Get the tags that should be assigned to the job.
+         * 작업에 지정할 태그 반환
          *
          * @return array<int, string>
          */
@@ -364,14 +364,14 @@ If you would like to manually define the tags for one of your queueable objects,
     }
 
 <a name="manually-tagging-event-listeners"></a>
-#### Manually Tagging Event Listeners
+#### 이벤트 리스너에 태그 수동 지정
 
-When retrieving the tags for a queued event listener, Horizon will automatically pass the event instance to the `tags` method, allowing you to add event data to the tags:
+큐에 등록된 이벤트 리스너의 태그를 가져올 때 Horizon은 이벤트 인스턴스를 `tags` 메서드에 전달합니다. 이를 이용해 이벤트 데이터를 태그에 포함할 수 있습니다:
 
     class SendRenderNotifications implements ShouldQueue
     {
         /**
-         * Get the tags that should be assigned to the listener.
+         * 리스너에 지정할 태그 반환
          *
          * @return array<int, string>
          */
@@ -382,15 +382,15 @@ When retrieving the tags for a queued event listener, Horizon will automatically
     }
 
 <a name="notifications"></a>
-## Notifications
+## 알림
 
 > [!WARNING]  
-> When configuring Horizon to send Slack or SMS notifications, you should review the [prerequisites for the relevant notification channel](/docs/{{version}}/notifications).
+> Horizon에서 Slack 또는 SMS 알림을 설정할 때는 [해당 알림 채널의 선행 조건](/docs/{{version}}/notifications)을 반드시 확인하세요.
 
-If you would like to be notified when one of your queues has a long wait time, you may use the `Horizon::routeMailNotificationsTo`, `Horizon::routeSlackNotificationsTo`, and `Horizon::routeSmsNotificationsTo` methods. You may call these methods from the `boot` method of your application's `App\Providers\HorizonServiceProvider`:
+특정 큐의 대기 시간이 길어질 때 알림을 받고 싶다면, `Horizon::routeMailNotificationsTo`, `Horizon::routeSlackNotificationsTo`, `Horizon::routeSmsNotificationsTo` 메서드를 사용할 수 있습니다. 이들은 애플리케이션의 `App\Providers\HorizonServiceProvider`의 `boot` 메서드에서 호출할 수 있습니다:
 
     /**
-     * Bootstrap any application services.
+     * 애플리케이션 서비스를 부팅합니다.
      */
     public function boot(): void
     {
@@ -402,9 +402,9 @@ If you would like to be notified when one of your queues has a long wait time, y
     }
 
 <a name="configuring-notification-wait-time-thresholds"></a>
-#### Configuring Notification Wait Time Thresholds
+#### 알림 대기 시간 임계값 설정
 
-You may configure how many seconds are considered a "long wait" within your application's `config/horizon.php` configuration file. The `waits` configuration option within this file allows you to control the long wait threshold for each connection / queue combination. Any undefined connection / queue combinations will default to a long wait threshold of 60 seconds:
+대기 시간이 "길다"고 간주되는 기준은 `config/horizon.php` 파일에서 설정할 수 있습니다. `waits` 옵션에서 각 연결/큐 조합별로 임계값(초)을 지정합니다. 지정되지 않은 조합은 기본값인 60초가 사용됩니다:
 
     'waits' => [
         'redis:critical' => 30,
@@ -413,39 +413,39 @@ You may configure how many seconds are considered a "long wait" within your appl
     ],
 
 <a name="metrics"></a>
-## Metrics
+## 메트릭
 
-Horizon includes a metrics dashboard which provides information regarding your job and queue wait times and throughput. In order to populate this dashboard, you should configure Horizon's `snapshot` Artisan command to run every five minutes in your application's `routes/console.php` file:
+Horizon에는 큐와 작업의 대기 시간, 처리량에 대한 정보를 제공하는 메트릭 대시보드가 포함되어 있습니다. 이 대시보드에 데이터를 채우려면, `routes/console.php`에서 Horizon의 `snapshot` Artisan 명령어가 5분마다 실행되도록 설정해야 합니다:
 
     use Illuminate\Support\Facades\Schedule;
 
     Schedule::command('horizon:snapshot')->everyFiveMinutes();
 
 <a name="deleting-failed-jobs"></a>
-## Deleting Failed Jobs
+## 실패한 작업 삭제
 
-If you would like to delete a failed job, you may use the `horizon:forget` command. The `horizon:forget` command accepts the ID or UUID of the failed job as its only argument:
+실패한 작업을 삭제하려면 `horizon:forget` 명령어를 사용할 수 있습니다. 인수로는 실패한 작업의 ID 혹은 UUID만 입력하면 됩니다:
 
 ```shell
 php artisan horizon:forget 5
 ```
 
-If you would like to delete all failed jobs, you may provide the `--all` option to the `horizon:forget` command:
+모든 실패한 작업을 삭제하려면 `--all` 옵션을 사용하세요:
 
 ```shell
 php artisan horizon:forget --all
 ```
 
 <a name="clearing-jobs-from-queues"></a>
-## Clearing Jobs From Queues
+## 큐에서 작업 비우기
 
-If you would like to delete all jobs from your application's default queue, you may do so using the `horizon:clear` Artisan command:
+애플리케이션의 기본 큐에 있는 모든 작업을 삭제하려면 `horizon:clear` Artisan 명령어를 사용하면 됩니다:
 
 ```shell
 php artisan horizon:clear
 ```
 
-You may provide the `queue` option to delete jobs from a specific queue:
+특정 큐에 있는 작업만 삭제하려면 `queue` 옵션을 전달하세요:
 
 ```shell
 php artisan horizon:clear --queue=emails

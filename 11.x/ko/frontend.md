@@ -1,29 +1,29 @@
-# Frontend
+# 프론트엔드
 
-- [Introduction](#introduction)
-- [Using PHP](#using-php)
-    - [PHP and Blade](#php-and-blade)
+- [소개](#introduction)
+- [PHP 활용하기](#using-php)
+    - [PHP와 Blade](#php-and-blade)
     - [Livewire](#livewire)
-    - [Starter Kits](#php-starter-kits)
-- [Using Vue / React](#using-vue-react)
+    - [스타터 키트](#php-starter-kits)
+- [Vue / React 활용하기](#using-vue-react)
     - [Inertia](#inertia)
-    - [Starter Kits](#inertia-starter-kits)
-- [Bundling Assets](#bundling-assets)
+    - [스타터 키트](#inertia-starter-kits)
+- [에셋 번들링](#bundling-assets)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel is a backend framework that provides all of the features you need to build modern web applications, such as [routing](/docs/{{version}}/routing), [validation](/docs/{{version}}/validation), [caching](/docs/{{version}}/cache), [queues](/docs/{{version}}/queues), [file storage](/docs/{{version}}/filesystem), and more. However, we believe it's important to offer developers a beautiful full-stack experience, including powerful approaches for building your application's frontend.
+Laravel은 [라우팅](/docs/{{version}}/routing), [유효성 검사](/docs/{{version}}/validation), [캐싱](/docs/{{version}}/cache), [큐](/docs/{{version}}/queues), [파일 저장소](/docs/{{version}}/filesystem) 등 현대적인 웹 애플리케이션을 구축하는 데 필요한 모든 기능을 제공하는 백엔드 프레임워크입니다. 그러나 저희는 개발자에게 프론트엔드 구축을 위한 강력하고 아름다운 풀스택 경험 또한 제공하는 것이 중요하다고 믿습니다.
 
-There are two primary ways to tackle frontend development when building an application with Laravel, and which approach you choose is determined by whether you would like to build your frontend by leveraging PHP or by using JavaScript frameworks such as Vue and React. We'll discuss both of these options below so that you can make an informed decision regarding the best approach to frontend development for your application.
+Laravel로 애플리케이션을 개발할 때 프론트엔드를 구축하는 두 가지 주요 방식이 있으며, 어떤 방법을 선택할지는 PHP를 활용할지, 아니면 Vue 및 React와 같은 자바스크립트 프레임워크를 사용할지에 따라 달라집니다. 아래에서 각각의 옵션을 다루므로, 자신의 애플리케이션 프론트엔드 개발에 적합한 방법을 선택할 수 있습니다.
 
 <a name="using-php"></a>
-## Using PHP
+## PHP 활용하기
 
 <a name="php-and-blade"></a>
-### PHP and Blade
+### PHP와 Blade
 
-In the past, most PHP applications rendered HTML to the browser using simple HTML templates interspersed with PHP `echo` statements which render data that was retrieved from a database during the request:
+과거에는 대부분의 PHP 애플리케이션이 데이터베이스에서 요청 시 가져온 데이터를 PHP `echo` 문으로 간단히 HTML 템플릿에 삽입하여 HTML을 브라우저에 렌더링했습니다.
 
 ```blade
 <div>
@@ -33,7 +33,7 @@ In the past, most PHP applications rendered HTML to the browser using simple HTM
 </div>
 ```
 
-In Laravel, this approach to rendering HTML can still be achieved using [views](/docs/{{version}}/views) and [Blade](/docs/{{version}}/blade). Blade is an extremely light-weight templating language that provides convenient, short syntax for displaying data, iterating over data, and more:
+Laravel에서는 [뷰](/docs/{{version}}/views)와 [Blade](/docs/{{version}}/blade)를 사용하여 여전히 이 방식으로 HTML을 렌더링할 수 있습니다. Blade는 데이터를 출력하고, 데이터를 반복하는 등의 작업을 간편하게 처리할 수 있는 매우 경량의 템플릿 언어입니다.
 
 ```blade
 <div>
@@ -43,23 +43,23 @@ In Laravel, this approach to rendering HTML can still be achieved using [views](
 </div>
 ```
 
-When building applications in this fashion, form submissions and other page interactions typically receive an entirely new HTML document from the server and the entire page is re-rendered by the browser. Even today, many applications may be perfectly suited to having their frontends constructed in this way using simple Blade templates.
+이러한 방식으로 애플리케이션을 만들면 폼 제출이나 기타 페이지 상호작용 시 서버에서 아예 새로운 HTML 문서를 받아와 브라우저에서 전체 페이지를 다시 렌더링합니다. 오늘날에도 많은 애플리케이션이 이처럼 단순한 Blade 템플릿을 활용하여 프론트엔드를 구성해도 충분히 적합할 수 있습니다.
 
 <a name="growing-expectations"></a>
-#### Growing Expectations
+#### 높아진 기대치
 
-However, as user expectations regarding web applications have matured, many developers have found the need to build more dynamic frontends with interactions that feel more polished. In light of this, some developers choose to begin building their application's frontend using JavaScript frameworks such as Vue and React.
+그러나 웹 애플리케이션에 대한 사용자 기대치가 높아짐에 따라, 더욱 역동적이고 세련된 상호작용이 가능한 프론트엔드를 개발해야 할 필요성을 느끼는 개발자들이 많아졌습니다. 이러한 점을 감안하여, 일부 개발자들은 Vue나 React와 같은 자바스크립트 프레임워크를 이용해 프론트엔드를 구축하기 시작했습니다.
 
-Others, preferring to stick with the backend language they are comfortable with, have developed solutions that allow the construction of modern web application UIs while still primarily utilizing their backend language of choice. For example, in the [Rails](https://rubyonrails.org/) ecosystem, this has spurred the creation of libraries such as [Turbo](https://turbo.hotwired.dev/) [Hotwire](https://hotwired.dev/), and [Stimulus](https://stimulus.hotwired.dev/).
+반면, 익숙한 백엔드 언어의 사용을 선호하는 개발자들은 주로 백엔드 언어를 활용하면서도 현대적인 웹 애플리케이션 UI를 개발할 수 있는 솔루션을 개발해 왔습니다. 예를 들어 [Rails](https://rubyonrails.org/) 생태계에는 [Turbo](https://turbo.hotwired.dev/), [Hotwire](https://hotwired.dev/), [Stimulus](https://stimulus.hotwired.dev/)와 같은 라이브러리가 등장했습니다.
 
-Within the Laravel ecosystem, the need to create modern, dynamic frontends by primarily using PHP has led to the creation of [Laravel Livewire](https://livewire.laravel.com) and [Alpine.js](https://alpinejs.dev/).
+Laravel 생태계에서도 PHP 중심으로 현대적이고 역동적인 프론트엔드를 만들고자 하는 요구에서 [Laravel Livewire](https://livewire.laravel.com)와 [Alpine.js](https://alpinejs.dev/)가 개발되었습니다.
 
 <a name="livewire"></a>
 ### Livewire
 
-[Laravel Livewire](https://livewire.laravel.com) is a framework for building Laravel powered frontends that feel dynamic, modern, and alive just like frontends built with modern JavaScript frameworks like Vue and React.
+[Laravel Livewire](https://livewire.laravel.com)는 Vue나 React와 같은 현대적인 자바스크립트 프레임워크로 개발한 프론트엔드처럼 동적이고 살아있는 경험을 제공하는 Laravel 기반 프론트엔드 개발 프레임워크입니다.
 
-When using Livewire, you will create Livewire "components" that render a discrete portion of your UI and expose methods and data that can be invoked and interacted with from your application's frontend. For example, a simple "Counter" component might look like the following:
+Livewire를 사용할 때는 UI의 개별 영역을 렌더링하고, 프론트엔드와 상호작용할 수 있도록 메서드와 데이터를 노출하는 Livewire "컴포넌트"를 만듭니다. 예를 들어, 간단한 "카운터" 컴포넌트는 다음과 같습니다.
 
 ```php
 <?php
@@ -84,7 +84,7 @@ class Counter extends Component
 }
 ```
 
-And, the corresponding template for the counter would be written like so:
+카운터에 대응하는 템플릿은 다음과 같이 작성할 수 있습니다.
 
 ```blade
 <div>
@@ -93,32 +93,32 @@ And, the corresponding template for the counter would be written like so:
 </div>
 ```
 
-As you can see, Livewire enables you to write new HTML attributes such as `wire:click` that connect your Laravel application's frontend and backend. In addition, you can render your component's current state using simple Blade expressions.
+보시다시피 Livewire는 `wire:click`과 같은 새로운 HTML 속성을 작성할 수 있게 해주어, Laravel 애플리케이션의 프론트엔드와 백엔드를 연결합니다. 또한 Blade 표현식을 통해 컴포넌트의 현재 상태를 렌더링할 수 있습니다.
 
-For many, Livewire has revolutionized frontend development with Laravel, allowing them to stay within the comfort of Laravel while constructing modern, dynamic web applications. Typically, developers using Livewire will also utilize [Alpine.js](https://alpinejs.dev/) to "sprinkle" JavaScript onto their frontend only where it is needed, such as in order to render a dialog window.
+Livewire는 많은 개발자들에게 Laravel 프론트엔드 개발에 혁신을 가져다주었고, 그들은 Laravel의 익숙한 환경을 벗어나지 않고도 현대적이고 동적인 웹 애플리케이션을 구축할 수 있게 되었습니다. Livewire를 사용하는 개발자들은 [Alpine.js](https://alpinejs.dev/)도 함께 활용하여, 대화창 렌더링처럼 프론트엔드에서 정말 필요한 부분에만 자바스크립트를 간결하게 사용할 수 있습니다.
 
-If you're new to Laravel, we recommend getting familiar with the basic usage of [views](/docs/{{version}}/views) and [Blade](/docs/{{version}}/blade). Then, consult the official [Laravel Livewire documentation](https://livewire.laravel.com/docs) to learn how to take your application to the next level with interactive Livewire components.
+Laravel을 처음 접한다면 [뷰](/docs/{{version}}/views)와 [Blade](/docs/{{version}}/blade)의 기본 사용법을 익히시길 권장합니다. 그런 다음, 공식 [Laravel Livewire 문서](https://livewire.laravel.com/docs)를 참고하여 상호작용이 풍부한 Livewire 컴포넌트로 애플리케이션을 한 단계 발전시켜 보세요.
 
 <a name="php-starter-kits"></a>
-### Starter Kits
+### 스타터 키트
 
-If you would like to build your frontend using PHP and Livewire, you can leverage our Breeze or Jetstream [starter kits](/docs/{{version}}/starter-kits) to jump-start your application's development. Both of these starter kits scaffold your application's backend and frontend authentication flow using [Blade](/docs/{{version}}/blade) and [Tailwind](https://tailwindcss.com) so that you can simply start building your next big idea.
+PHP와 Livewire를 활용하여 프론트엔드를 구축하고 싶다면 Breeze 또는 Jetstream [스타터 키트](/docs/{{version}}/starter-kits)를 활용하여 애플리케이션 개발을 빠르게 시작할 수 있습니다. 이 스타터 키트들은 [Blade](/docs/{{version}}/blade)와 [Tailwind](https://tailwindcss.com)를 이용해 백엔드 및 프론트엔드 인증 흐름을 자동으로 구성해 주어, 여러분이 곧바로 새로운 아이디어에 집중할 수 있도록 도와줍니다.
 
 <a name="using-vue-react"></a>
-## Using Vue / React
+## Vue / React 활용하기
 
-Although it's possible to build modern frontends using Laravel and Livewire, many developers still prefer to leverage the power of a JavaScript framework like Vue or React. This allows developers to take advantage of the rich ecosystem of JavaScript packages and tools available via NPM.
+Laravel과 Livewire로도 현대적인 프론트엔드를 만들 수 있지만, 많은 개발자들은 여전히 Vue나 React와 같은 자바스크립트 프레임워크의 강력함을 활용하길 원합니다. 이를 통해 NPM에서 제공되는 다양한 자바스크립트 패키지와 도구의 풍부한 생태계를 이용할 수 있습니다.
 
-However, without additional tooling, pairing Laravel with Vue or React would leave us needing to solve a variety of complicated problems such as client-side routing, data hydration, and authentication. Client-side routing is often simplified by using opinionated Vue / React frameworks such as [Nuxt](https://nuxt.com/) and [Next](https://nextjs.org/); however, data hydration and authentication remain complicated and cumbersome problems to solve when pairing a backend framework like Laravel with these frontend frameworks.
+그러나 추가 도구 없이 Laravel과 Vue 또는 React를 결합하면 클라이언트 사이드 라우팅, 데이터 하이드레이션, 인증 등 복잡한 문제를 직접 해결해야 합니다. 클라이언트 사이드 라우팅은 [Nuxt](https://nuxt.com/)나 [Next](https://nextjs.org/)와 같은 Vue / React 전용 프레임워크로 간소화될 수 있지만, 데이터 하이드레이션과 인증은 백엔드 프레임워크인 Laravel과 프론트엔드 프레임워크를 결합할 때 여전히 까다롭고 번거로운 과제입니다.
 
-In addition, developers are left maintaining two separate code repositories, often needing to coordinate maintenance, releases, and deployments across both repositories. While these problems are not insurmountable, we don't believe it's a productive or enjoyable way to develop applications.
+또한, 개발자들은 두 개의 별도 코드 저장소를 관리해야 하므로, 관리, 릴리즈, 배포를 양쪽 저장소에서 조율해야 할 수 있습니다. 이러한 문제들이 극복 불가능한 것은 아니지만, 저희는 이것이 생산적이거나 즐거운 개발 방식이라고 생각하지 않습니다.
 
 <a name="inertia"></a>
 ### Inertia
 
-Thankfully, Laravel offers the best of both worlds. [Inertia](https://inertiajs.com) bridges the gap between your Laravel application and your modern Vue or React frontend, allowing you to build full-fledged, modern frontends using Vue or React while leveraging Laravel routes and controllers for routing, data hydration, and authentication — all within a single code repository. With this approach, you can enjoy the full power of both Laravel and Vue / React without crippling the capabilities of either tool.
+다행히도 Laravel은 양쪽의 장점을 동시에 제공합니다. [Inertia](https://inertiajs.com)는 Laravel 애플리케이션과 현대적인 Vue 또는 React 프론트엔드 사이를 연결해 주며, 라우팅, 데이터 하이드레이션, 인증을 위한 Laravel의 라우트와 컨트롤러를 그대로 활용하면서 Vue / React를 통해 완성도 높은 프론트엔드를 구축할 수 있게 합니다. 이 모든 작업이 하나의 코드 저장소에서 이루어집니다. 이 방식으로 Laravel과 Vue / React 양쪽의 장점을 온전히 누릴 수 있습니다.
 
-After installing Inertia into your Laravel application, you will write routes and controllers like normal. However, instead of returning a Blade template from your controller, you will return an Inertia page:
+Laravel 애플리케이션에 Inertia를 설치한 후에는 기존과 동일하게 라우트와 컨트롤러를 작성합니다. 다만 컨트롤러에서 Blade 템플릿을 반환하는 대신 Inertia 페이지를 반환합니다.
 
 ```php
 <?php
@@ -133,7 +133,7 @@ use Inertia\Response;
 class UserController extends Controller
 {
     /**
-     * Show the profile for a given user.
+     * 지정한 사용자의 프로필을 표시합니다.
      */
     public function show(string $id): Response
     {
@@ -144,7 +144,7 @@ class UserController extends Controller
 }
 ```
 
-An Inertia page corresponds to a Vue or React component, typically stored within the `resources/js/Pages` directory of your application. The data given to the page via the `Inertia::render` method will be used to hydrate the "props" of the page component:
+Inertia 페이지는 일반적으로 애플리케이션의 `resources/js/Pages` 디렉터리에 저장되는 Vue 또는 React 컴포넌트와 대응합니다. `Inertia::render` 메서드를 통해 페이지로 전달한 데이터는 해당 컴포넌트의 "props"로 사용됩니다.
 
 ```vue
 <script setup>
@@ -171,25 +171,25 @@ const props = defineProps(['user']);
 </template>
 ```
 
-As you can see, Inertia allows you to leverage the full power of Vue or React when building your frontend, while providing a light-weight bridge between your Laravel powered backend and your JavaScript powered frontend.
+보시다시피 Inertia 덕분에 Vue 또는 React의 모든 기능을 활용해 프론트엔드를 개발하면서, Laravel 기반 백엔드와 자바스크립트 기반 프론트엔드를 가볍게 연결할 수 있습니다.
 
-#### Server-Side Rendering
+#### 서버 사이드 렌더링
 
-If you're concerned about diving into Inertia because your application requires server-side rendering, don't worry. Inertia offers [server-side rendering support](https://inertiajs.com/server-side-rendering). And, when deploying your application via [Laravel Forge](https://forge.laravel.com), it's a breeze to ensure that Inertia's server-side rendering process is always running.
+애플리케이션에 서버 사이드 렌더링이 필요해서 Inertia 도입을 망설이고 있다면 걱정하지 마세요. Inertia는 [서버 사이드 렌더링 지원](https://inertiajs.com/server-side-rendering)을 제공합니다. 또, [Laravel Forge](https://forge.laravel.com)를 통해 애플리케이션을 배포할 때 Inertia의 서버 사이드 렌더링 프로세스가 항상 실행되도록 쉽게 설정할 수 있습니다.
 
 <a name="inertia-starter-kits"></a>
-### Starter Kits
+### 스타터 키트
 
-If you would like to build your frontend using Inertia and Vue / React, you can leverage our Breeze or Jetstream [starter kits](/docs/{{version}}/starter-kits#breeze-and-inertia) to jump-start your application's development. Both of these starter kits scaffold your application's backend and frontend authentication flow using Inertia, Vue / React, [Tailwind](https://tailwindcss.com), and [Vite](https://vitejs.dev) so that you can start building your next big idea.
+Inertia와 Vue / React를 활용해 프론트엔드를 구성하고 싶다면 Breeze 또는 Jetstream [스타터 키트](/docs/{{version}}/starter-kits#breeze-and-inertia)를 통해 애플리케이션 개발을 빠르게 시작할 수 있습니다. 이 스타터 키트들은 Inertia, Vue / React, [Tailwind](https://tailwindcss.com), [Vite](https://vitejs.dev)를 이용해 백엔드와 프론트엔드 인증 흐름을 자동으로 구성하므로, 새로운 아이디어 개발에 즉시 착수할 수 있습니다.
 
 <a name="bundling-assets"></a>
-## Bundling Assets
+## 에셋 번들링
 
-Regardless of whether you choose to develop your frontend using Blade and Livewire or Vue / React and Inertia, you will likely need to bundle your application's CSS into production ready assets. Of course, if you choose to build your application's frontend with Vue or React, you will also need to bundle your components into browser ready JavaScript assets.
+Blade와 Livewire, 또는 Vue / React와 Inertia 중 어떤 것으로 프론트엔드를 개발하든, 애플리케이션의 CSS를 배포용 에셋으로 번들링해야 할 필요가 있습니다. 물론, Vue나 React로 프론트엔드를 개발한다면 컴포넌트 또한 브라우저에서 실행 가능한 자바스크립트 에셋으로 번들링해야 합니다.
 
-By default, Laravel utilizes [Vite](https://vitejs.dev) to bundle your assets. Vite provides lightning-fast build times and near instantaneous Hot Module Replacement (HMR) during local development. In all new Laravel applications, including those using our [starter kits](/docs/{{version}}/starter-kits), you will find a `vite.config.js` file that loads our light-weight Laravel Vite plugin that makes Vite a joy to use with Laravel applications.
+Laravel은 기본적으로 [Vite](https://vitejs.dev)를 이용해 에셋을 번들링합니다. Vite는 매우 빠른 빌드 속도와 거의 즉각적인 Hot Module Replacement(HMR)를 제공합니다. 새롭게 생성된 모든 Laravel 애플리케이션(스타터 키트 포함)에는 Vite 사용을 간편하게 만들어 주는 `vite.config.js` 파일과 Laravel 전용 Vite 플러그인이 포함되어 있습니다.
 
-The fastest way to get started with Laravel and Vite is by beginning your application's development using [Laravel Breeze](/docs/{{version}}/starter-kits#laravel-breeze), our simplest starter kit that jump-starts your application by providing frontend and backend authentication scaffolding.
+Laravel과 Vite를 가장 빠르게 시작하는 방법은 [Laravel Breeze](/docs/{{version}}/starter-kits#laravel-breeze) 스타터 키트를 사용해 프로젝트를 시작하는 것입니다. Breeze는 프론트엔드와 백엔드 인증 구성을 제공하여 애플리케이션 개발을 빠르게 시작할 수 있게 도와줍니다.
 
 > [!NOTE]  
-> For more detailed documentation on utilizing Vite with Laravel, please see our [dedicated documentation on bundling and compiling your assets](/docs/{{version}}/vite).
+> Laravel에서 Vite를 활용하는 방법에 대한 자세한 문서는 [에셋 번들링 및 컴파일 전용 문서](/docs/{{version}}/vite)를 참고하세요.

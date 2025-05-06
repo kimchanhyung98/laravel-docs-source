@@ -1,79 +1,81 @@
-# Contracts
+# 계약(Contracts)
 
-- [Introduction](#introduction)
-    - [Contracts vs. Facades](#contracts-vs-facades)
-- [When to Use Contracts](#when-to-use-contracts)
-- [How to Use Contracts](#how-to-use-contracts)
-- [Contract Reference](#contract-reference)
+- [소개](#introduction)
+    - [계약 vs 파사드](#contracts-vs-facades)
+- [계약을 언제 사용해야 할까요?](#when-to-use-contracts)
+- [계약 활용 방법](#how-to-use-contracts)
+- [계약 레퍼런스](#contract-reference)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel's "contracts" are a set of interfaces that define the core services provided by the framework. For example, an `Illuminate\Contracts\Queue\Queue` contract defines the methods needed for queueing jobs, while the `Illuminate\Contracts\Mail\Mailer` contract defines the methods needed for sending e-mail.
+Laravel의 "계약(Contracts)"은 프레임워크에서 제공하는 핵심 서비스를 정의하는 일련의 인터페이스입니다. 예를 들어, `Illuminate\Contracts\Queue\Queue` 계약은 작업 큐잉을 위해 필요한 메서드를 정의하고, `Illuminate\Contracts\Mail\Mailer` 계약은 이메일 전송을 위한 메서드를 정의합니다.
 
-Each contract has a corresponding implementation provided by the framework. For example, Laravel provides a queue implementation with a variety of drivers, and a mailer implementation that is powered by [Symfony Mailer](https://symfony.com/doc/7.0/mailer.html).
+각 계약에는 프레임워크에서 제공하는 대응 구현체가 있습니다. 예를 들어, Laravel은 다양한 드라이버를 지원하는 큐 시스템 구현체와 [Symfony Mailer](https://symfony.com/doc/7.0/mailer.html) 기반의 메일러 구현체를 제공합니다.
 
-All of the Laravel contracts live in [their own GitHub repository](https://github.com/illuminate/contracts). This provides a quick reference point for all available contracts, as well as a single, decoupled package that may be utilized when building packages that interact with Laravel services.
+모든 Laravel 계약은 [별도의 GitHub 저장소](https://github.com/illuminate/contracts)에 존재합니다. 이를 통해 사용 가능한 모든 계약을 빠르게 참고할 수 있으며, Laravel 서비스와 연동되는 패키지를 개발할 때 활용할 수 있는 하나의 분리된 패키지로도 사용할 수 있습니다.
 
 <a name="contracts-vs-facades"></a>
-### Contracts vs. Facades
+### 계약 vs 파사드
 
-Laravel's [facades](/docs/{{version}}/facades) and helper functions provide a simple way of utilizing Laravel's services without needing to type-hint and resolve contracts out of the service container. In most cases, each facade has an equivalent contract.
+Laravel의 [파사드](/docs/{{version}}/facades) 및 헬퍼 함수는 서비스 컨테이너에서 계약을 타입힌트하고 직접 해결하지 않아도 Laravel의 서비스를 간편하게 사용할 수 있도록 해줍니다. 대부분의 경우, 각 파사드는 동등한 계약을 가지고 있습니다.
 
-Unlike facades, which do not require you to require them in your class' constructor, contracts allow you to define explicit dependencies for your classes. Some developers prefer to explicitly define their dependencies in this way and therefore prefer to use contracts, while other developers enjoy the convenience of facades. **In general, most applications can use facades without issue during development.**
+파사드는 클래스 생성자에서 명시적으로 의존성을 요구하지 않아도 되지만, 계약은 클래스의 명시적인 의존성을 정의할 수 있도록 해줍니다. 일부 개발자들은 이러한 방식으로 의존성을 명확하게 정의하는 것을 선호하여 계약 사용을 선호하기도 하고, 또 다른 개발자들은 파사드의 편리함을 더 선호하기도 합니다. **일반적으로 대부분의 애플리케이션은 개발 시 파사드를 사용하는 데 아무런 문제가 없습니다.**
 
 <a name="when-to-use-contracts"></a>
-## When to Use Contracts
+## 계약을 언제 사용해야 할까요?
 
-The decision to use contracts or facades will come down to personal taste and the tastes of your development team. Both contracts and facades can be used to create robust, well-tested Laravel applications. Contracts and facades are not mutually exclusive. Some parts of your applications may use facades while others depend on contracts. As long as you are keeping your class' responsibilities focused, you will notice very few practical differences between using contracts and facades.
+계약과 파사드 중 어느 것을 사용할지는 개발자 개인 또는 팀의 선호에 따라 달라집니다. 두 방식 모두 견고하고 잘 테스트된 Laravel 애플리케이션을 만드는 데 사용할 수 있습니다. 계약과 파사드는 서로 배타적인 것이 아닙니다. 애플리케이션의 일부는 파사드를, 다른 일부는 계약을 사용할 수도 있습니다. 클래스의 책임을 잘 나누고 있다면, 계약과 파사드 중 무엇을 사용하든 실제로 큰 차이를 느끼기 어렵습니다.
 
-In general, most applications can use facades without issue during development. If you are building a package that integrates with multiple PHP frameworks you may wish to use the `illuminate/contracts` package to define your integration with Laravel's services without the need to require Laravel's concrete implementations in your package's `composer.json` file.
+대부분의 애플리케이션은 개발 시 파사드만 사용해도 문제가 없습니다. 만약 여러 PHP 프레임워크와 연동되는 패키지를 개발하는 경우, `illuminate/contracts` 패키지를 통해 Laravel의 구체 구현체를 패키지의 `composer.json`에 명시하지 않고도 서비스 연동을 정의할 수 있습니다.
 
 <a name="how-to-use-contracts"></a>
-## How to Use Contracts
+## 계약 활용 방법
 
-So, how do you get an implementation of a contract? It's actually quite simple.
+그렇다면 계약의 구현체는 어떻게 얻을까요? 매우 간단합니다.
 
-Many types of classes in Laravel are resolved through the [service container](/docs/{{version}}/container), including controllers, event listeners, middleware, queued jobs, and even route closures. So, to get an implementation of a contract, you can just "type-hint" the interface in the constructor of the class being resolved.
+Laravel에서는 컨트롤러, 이벤트 리스너, 미들웨어, 큐 작업, 라우트 클로저 등 다양한 클래스들이 [서비스 컨테이너](/docs/{{version}}/container)를 통해 해결(resolved)됩니다. 따라서, 해결되는 클래스의 생성자에 인터페이스를 "타입힌트"하면 손쉽게 계약의 구현체를 주입받을 수 있습니다.
 
-For example, take a look at this event listener:
+예를 들어, 다음과 같은 이벤트 리스너를 보겠습니다.
 
-    <?php
+```php
+<?php
 
-    namespace App\Listeners;
+namespace App\Listeners;
 
-    use App\Events\OrderWasPlaced;
-    use App\Models\User;
-    use Illuminate\Contracts\Redis\Factory;
+use App\Events\OrderWasPlaced;
+use App\Models\User;
+use Illuminate\Contracts\Redis\Factory;
 
-    class CacheOrderInformation
+class CacheOrderInformation
+{
+    /**
+     * 새로운 이벤트 핸들러 인스턴스를 생성합니다.
+     */
+    public function __construct(
+        protected Factory $redis,
+    ) {}
+
+    /**
+     * 이벤트를 처리합니다.
+     */
+    public function handle(OrderWasPlaced $event): void
     {
-        /**
-         * Create a new event handler instance.
-         */
-        public function __construct(
-            protected Factory $redis,
-        ) {}
-
-        /**
-         * Handle the event.
-         */
-        public function handle(OrderWasPlaced $event): void
-        {
-            // ...
-        }
+        // ...
     }
+}
+```
 
-When the event listener is resolved, the service container will read the type-hints on the constructor of the class, and inject the appropriate value. To learn more about registering things in the service container, check out [its documentation](/docs/{{version}}/container).
+이 이벤트 리스너가 해결될 때, 서비스 컨테이너는 생성자에 지정된 타입힌트를 읽고 적절한 값을 주입합니다. 서비스 컨테이너에 대한 더 자세한 사용법은 [공식 문서](/docs/{{version}}/container)를 참고하세요.
 
 <a name="contract-reference"></a>
-## Contract Reference
+## 계약 레퍼런스
 
-This table provides a quick reference to all of the Laravel contracts and their equivalent facades:
+다음 표는 모든 Laravel 계약과 그에 상응하는 파사드의 빠른 참고용 목록입니다:
 
 <div class="overflow-auto">
 
-| Contract | References Facade |
+| 계약(Contract) | 대응 파사드 |
 | --- | --- |
 | [Illuminate\Contracts\Auth\Access\Authorizable](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Authorizable.php) | &nbsp; |
 | [Illuminate\Contracts\Auth\Access\Gate](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Gate.php) | `Gate` |
