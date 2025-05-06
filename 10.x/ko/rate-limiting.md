@@ -1,34 +1,34 @@
-# Rate Limiting
+# 속도 제한(Rate Limiting)
 
-- [Introduction](#introduction)
-    - [Cache Configuration](#cache-configuration)
-- [Basic Usage](#basic-usage)
-    - [Manually Incrementing Attempts](#manually-incrementing-attempts)
-    - [Clearing Attempts](#clearing-attempts)
+- [소개](#introduction)
+    - [캐시 구성](#cache-configuration)
+- [기본 사용법](#basic-usage)
+    - [시도 수 수동 증가](#manually-incrementing-attempts)
+    - [시도 수 초기화](#clearing-attempts)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel includes a simple to use rate limiting abstraction which, in conjunction with your application's [cache](cache), provides an easy way to limit any action during a specified window of time.
+Laravel은 애플리케이션의 [캐시](cache)와 함께 사용할 수 있는 간단한 속도 제한 추상화를 포함하고 있어, 지정된 시간 내에 어떤 동작이라도 손쉽게 제한할 수 있도록 지원합니다.
 
 > [!NOTE]  
-> If you are interested in rate limiting incoming HTTP requests, please consult the [rate limiter middleware documentation](routing#rate-limiting).
+> 들어오는 HTTP 요청에 대한 속도 제한이 궁금하다면 [속도 제한 미들웨어 문서](routing#rate-limiting)를 참고하세요.
 
 <a name="cache-configuration"></a>
-### Cache Configuration
+### 캐시 구성
 
-Typically, the rate limiter utilizes your default application cache as defined by the `default` key within your application's `cache` configuration file. However, you may specify which cache driver the rate limiter should use by defining a `limiter` key within your application's `cache` configuration file:
+일반적으로 속도 제한기는 애플리케이션의 `cache` 구성 파일 내 `default` 키에 정의된 기본 캐시 드라이버를 사용합니다. 하지만, 애플리케이션의 `cache` 구성 파일에서 `limiter` 키를 정의하여 속도 제한에 사용할 캐시 드라이버를 지정할 수도 있습니다:
 
     'default' => 'memcached',
 
     'limiter' => 'redis',
 
 <a name="basic-usage"></a>
-## Basic Usage
+## 기본 사용법
 
-The `Illuminate\Support\Facades\RateLimiter` facade may be used to interact with the rate limiter. The simplest method offered by the rate limiter is the `attempt` method, which rate limits a given callback for a given number of seconds.
+`Illuminate\Support\Facades\RateLimiter` 파사드(facade)를 사용하여 속도 제한 기능과 상호작용할 수 있습니다. 가장 간단하게 사용할 수 있는 메서드는 `attempt` 메서드로, 주어진 콜백을 지정한 초 동안 제한합니다.
 
-The `attempt` method returns `false` when the callback has no remaining attempts available; otherwise, the `attempt` method will return the callback's result or `true`. The first argument accepted by the `attempt` method is a rate limiter "key", which may be any string of your choosing that represents the action being rate limited:
+`attempt` 메서드는 콜백을 실행할 수 있는 남은 횟수가 없으면 `false`를 반환합니다. 남은 횟수가 있다면 콜백의 실행 결과나 `true`를 반환합니다. `attempt` 메서드가 받는 첫 번째 인자는 속도 제한의 “키”로, 제한할 동작을 나타내는 임의의 문자열이면 됩니다:
 
     use Illuminate\Support\Facades\RateLimiter;
 
@@ -36,81 +36,81 @@ The `attempt` method returns `false` when the callback has no remaining attempts
         'send-message:'.$user->id,
         $perMinute = 5,
         function() {
-            // Send message...
+            // 메세지 전송...
         }
     );
 
     if (! $executed) {
-      return 'Too many messages sent!';
+      return '너무 많은 메세지를 전송했습니다!';
     }
 
-If necessary, you may provide a fourth argument to the `attempt` method, which is the "decay rate", or the number of seconds until the available attempts are reset. For example, we can modify the example above to allow five attempts every two minutes:
+필요하다면 네 번째 인자로 “감쇠율(decay rate)”, 즉 남은 시도 횟수가 리셋되기까지의 초(second)를 지정할 수 있습니다. 예를 들어, 위 예제를 2분마다 5회 시도로 변경할 수 있습니다:
 
     $executed = RateLimiter::attempt(
         'send-message:'.$user->id,
         $perTwoMinutes = 5,
         function() {
-            // Send message...
+            // 메세지 전송...
         },
         $decayRate = 120,
     );
 
 <a name="manually-incrementing-attempts"></a>
-### Manually Incrementing Attempts
+### 시도 수 수동 증가
 
-If you would like to manually interact with the rate limiter, a variety of other methods are available. For example, you may invoke the `tooManyAttempts` method to determine if a given rate limiter key has exceeded its maximum number of allowed attempts per minute:
+속도 제한기를 직접 제어하려면 다양한 메서드를 사용할 수 있습니다. 예를 들어, `tooManyAttempts` 메서드를 사용해 특정 키가 분당 최대 허용 시도를 초과했는지 확인할 수 있습니다:
 
     use Illuminate\Support\Facades\RateLimiter;
 
     if (RateLimiter::tooManyAttempts('send-message:'.$user->id, $perMinute = 5)) {
-        return 'Too many attempts!';
+        return '시도 횟수가 너무 많습니다!';
     }
 
     RateLimiter::increment('send-message:'.$user->id);
 
-    // Send message...
+    // 메세지 전송...
 
-Alternatively, you may use the `remaining` method to retrieve the number of attempts remaining for a given key. If a given key has retries remaining, you may invoke the `increment` method to increment the number of total attempts:
+또는, `remaining` 메서드를 사용해 주어진 키의 남은 횟수를 확인할 수 있습니다. 재시도할 수 있다면, `increment` 메서드를 호출하여 시도 횟수를 증가시킬 수 있습니다:
 
     use Illuminate\Support\Facades\RateLimiter;
 
     if (RateLimiter::remaining('send-message:'.$user->id, $perMinute = 5)) {
         RateLimiter::increment('send-message:'.$user->id);
 
-        // Send message...
+        // 메세지 전송...
     }
 
-If you would like to increment the value for a given rate limiter key by more than one, you may provide the desired amount to the `increment` method:
+특정 키의 시도 횟수를 한 번 이상 증가시키고 싶다면, `increment` 메서드에 원하는 수치(숫자)를 전달하면 됩니다:
 
     RateLimiter::increment('send-message:'.$user->id, amount: 5);
 
 <a name="determining-limiter-availability"></a>
-#### Determining Limiter Availability
+#### 제한 가능 여부 판단
 
-When a key has no more attempts left, the `availableIn` method returns the number of seconds remaining until more attempts will be available:
+더 이상 시도할 수 없는 경우, `availableIn` 메서드는 다음 시도가 가능해지기까지 남은 초(second)를 반환합니다:
 
     use Illuminate\Support\Facades\RateLimiter;
 
     if (RateLimiter::tooManyAttempts('send-message:'.$user->id, $perMinute = 5)) {
         $seconds = RateLimiter::availableIn('send-message:'.$user->id);
 
-        return 'You may try again in '.$seconds.' seconds.';
+        return '다시 시도하려면 '.$seconds.'초 기다려야 합니다.';
     }
 
     RateLimiter::increment('send-message:'.$user->id);
 
-    // Send message...
+    // 메세지 전송...
 
 <a name="clearing-attempts"></a>
-### Clearing Attempts
+### 시도 수 초기화
 
-You may reset the number of attempts for a given rate limiter key using the `clear` method. For example, you may reset the number of attempts when a given message is read by the receiver:
+`clear` 메서드를 사용하여 특정 속도 제한 키의 시도 횟수를 초기화할 수 있습니다. 예를 들어, 수신자가 메세지를 읽었을 경우에 시도 횟수를 초기화할 수 있습니다:
 
     use App\Models\Message;
     use Illuminate\Support\Facades\RateLimiter;
 
     /**
-     * Mark the message as read.
+     * 메세지를 읽음 처리합니다.
      */
     public function read(Message $message): Message
     {

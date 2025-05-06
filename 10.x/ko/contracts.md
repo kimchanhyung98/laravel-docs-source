@@ -1,78 +1,80 @@
-# Contracts
+# 계약(Contracts)
 
-- [Introduction](#introduction)
-    - [Contracts vs. Facades](#contracts-vs-facades)
-- [When to Use Contracts](#when-to-use-contracts)
-- [How to Use Contracts](#how-to-use-contracts)
-- [Contract Reference](#contract-reference)
+- [소개](#introduction)
+    - [계약 vs. 파사드](#contracts-vs-facades)
+- [언제 계약을 사용해야 하는가](#when-to-use-contracts)
+- [계약 사용 방법](#how-to-use-contracts)
+- [계약 참고 자료](#contract-reference)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Laravel's "contracts" are a set of interfaces that define the core services provided by the framework. For example, an `Illuminate\Contracts\Queue\Queue` contract defines the methods needed for queueing jobs, while the `Illuminate\Contracts\Mail\Mailer` contract defines the methods needed for sending e-mail.
+Laravel의 "계약(Contracts)"은 프레임워크에서 제공하는 핵심 서비스들의 동작을 정의하는 인터페이스 집합입니다. 예를 들어, `Illuminate\Contracts\Queue\Queue` 계약은 작업 큐잉에 필요한 메서드들을 정의하며, `Illuminate\Contracts\Mail\Mailer` 계약은 이메일 발송에 필요한 메서드들을 정의합니다.
 
-Each contract has a corresponding implementation provided by the framework. For example, Laravel provides a queue implementation with a variety of drivers, and a mailer implementation that is powered by [Symfony Mailer](https://symfony.com/doc/6.0/mailer.html).
+각 계약에는 프레임워크가 제공하는 해당 구현체가 존재합니다. 예를 들어, Laravel은 다양한 드라이버를 지원하는 큐 구현체와 [Symfony Mailer](https://symfony.com/doc/6.0/mailer.html) 기반의 메일러 구현체를 제공합니다.
 
-All of the Laravel contracts live in [their own GitHub repository](https://github.com/illuminate/contracts). This provides a quick reference point for all available contracts, as well as a single, decoupled package that may be utilized when building packages that interact with Laravel services.
+모든 Laravel 계약은 [별도의 GitHub 저장소](https://github.com/illuminate/contracts)에 위치해 있습니다. 이를 통해 사용 가능한 모든 계약 목록을 빠르게 참고할 수 있으며, Laravel 서비스와 상호작용하는 패키지 개발 시 사용할 수 있는 독립적인 패키지로 활용할 수 있습니다.
 
 <a name="contracts-vs-facades"></a>
-### Contracts vs. Facades
+### 계약 vs. 파사드
 
-Laravel's [facades](/docs/{{version}}/facades) and helper functions provide a simple way of utilizing Laravel's services without needing to type-hint and resolve contracts out of the service container. In most cases, each facade has an equivalent contract.
+Laravel의 [파사드](/docs/{{version}}/facades)와 헬퍼 함수는 계약을 서비스 컨테이너에서 타입힌트로 추출하거나 해결하지 않고도 Laravel의 서비스를 간단하게 사용할 수 있는 방법을 제공합니다. 대부분의 경우, 각 파사드는 동등한 계약이 존재합니다.
 
-Unlike facades, which do not require you to require them in your class' constructor, contracts allow you to define explicit dependencies for your classes. Some developers prefer to explicitly define their dependencies in this way and therefore prefer to use contracts, while other developers enjoy the convenience of facades. **In general, most applications can use facades without issue during development.**
+파사드는 클래스 생성자에서 반드시 의존성을 명시하지 않아도 되지만, 계약은 클래스의 명시적인 의존성을 정의할 수 있도록 해줍니다. 일부 개발자는 이렇게 명확히 의존성을 지정하는 방식을 선호해 계약 사용을 선호하기도 하며, 다른 개발자들은 파사드의 편리함을 좋아할 수 있습니다. **일반적으로 대부분의 애플리케이션은 개발 시 파사드를 문제없이 사용할 수 있습니다.**
 
 <a name="when-to-use-contracts"></a>
-## When to Use Contracts
+## 언제 계약을 사용해야 하는가
 
-The decision to use contracts or facades will come down to personal taste and the tastes of your development team. Both contracts and facades can be used to create robust, well-tested Laravel applications. Contracts and facades are not mutually exclusive. Some parts of your applications may use facades while others depend on contracts. As long as you are keeping your class' responsibilities focused, you will notice very few practical differences between using contracts and facades.
+계약이나 파사드를 사용할지는 개발자 및 팀의 스타일에 따라 달라질 수 있습니다. 두 방식 모두 강력하고 테스트하기 쉬운 Laravel 애플리케이션을 만들 수 있습니다. 계약과 파사드는 상호 배타적이지 않으므로, 애플리케이션의 일부는 파사드를 사용하고, 일부는 계약에 의존하도록 설계할 수 있습니다. 클래스의 책임이 명확하다면, 계약과 파사드 사용 간에 실질적인 차이점은 거의 없을 것입니다.
 
-In general, most applications can use facades without issue during development. If you are building a package that integrates with multiple PHP frameworks you may wish to use the `illuminate/contracts` package to define your integration with Laravel's services without the need to require Laravel's concrete implementations in your package's `composer.json` file.
+일반적으로 대부분의 애플리케이션은 파사드를 문제없이 사용할 수 있습니다. 만약 여러 PHP 프레임워크와 통합되는 패키지를 개발 중이라면, Laravel의 구체적인 구현체를 패키지의 `composer.json`에 의존하지 않고도 Laravel 서비스와 연동할 수 있게 `illuminate/contracts` 패키지를 사용하는 것이 유용할 수 있습니다.
 
 <a name="how-to-use-contracts"></a>
-## How to Use Contracts
+## 계약 사용 방법
 
-So, how do you get an implementation of a contract? It's actually quite simple.
+그렇다면 계약의 구현체를 어떻게 얻을 수 있을까요? 사실 매우 간단합니다.
 
-Many types of classes in Laravel are resolved through the [service container](/docs/{{version}}/container), including controllers, event listeners, middleware, queued jobs, and even route closures. So, to get an implementation of a contract, you can just "type-hint" the interface in the constructor of the class being resolved.
+Laravel의 다양한 유형의 클래스는 [서비스 컨테이너](/docs/{{version}}/container)를 통해 해결됩니다. 해당 클래스에는 컨트롤러, 이벤트 리스너, 미들웨어, 큐 작업, 라우트 클로저 등이 포함됩니다. 따라서 계약을 구현한 인스턴스를 받으려면, 해당 클래스의 생성자에 인터페이스를 타입힌트로 명시하기만 하면 됩니다.
 
-For example, take a look at this event listener:
+예시로, 다음 이벤트 리스너를 참고하세요:
 
-    <?php
+```php
+<?php
 
-    namespace App\Listeners;
+namespace App\Listeners;
 
-    use App\Events\OrderWasPlaced;
-    use App\Models\User;
-    use Illuminate\Contracts\Redis\Factory;
+use App\Events\OrderWasPlaced;
+use App\Models\User;
+use Illuminate\Contracts\Redis\Factory;
 
-    class CacheOrderInformation
+class CacheOrderInformation
+{
+    /**
+     * 새 이벤트 핸들러 인스턴스 생성
+     */
+    public function __construct(
+        protected Factory $redis,
+    ) {}
+
+    /**
+     * 이벤트를 처리
+     */
+    public function handle(OrderWasPlaced $event): void
     {
-        /**
-         * Create a new event handler instance.
-         */
-        public function __construct(
-            protected Factory $redis,
-        ) {}
-
-        /**
-         * Handle the event.
-         */
-        public function handle(OrderWasPlaced $event): void
-        {
-            // ...
-        }
+        // ...
     }
+}
+```
 
-When the event listener is resolved, the service container will read the type-hints on the constructor of the class, and inject the appropriate value. To learn more about registering things in the service container, check out [its documentation](/docs/{{version}}/container).
+이 이벤트 리스너가 서비스 컨테이너에 의해 해석될 때, 컨테이너는 생성자의 타입힌트를 읽어 적절한 값을 주입합니다. 서비스 컨테이너에 대한 더 자세한 내용은 [관련 문서](/docs/{{version}}/container)를 참고하세요.
 
 <a name="contract-reference"></a>
-## Contract Reference
+## 계약 참고 자료
 
-This table provides a quick reference to all of the Laravel contracts and their equivalent facades:
+이 표는 Laravel의 모든 계약과 이에 대응하는 파사드를 빠르게 참고할 수 있도록 제공합니다:
 
-| Contract                                                                                                                                               | References Facade         |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
+| 계약(Contract)                                                                                                                                        | 대응 파사드(References Facade)    |
+|--------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
 | [Illuminate\Contracts\Auth\Access\Authorizable](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Authorizable.php)                 |  &nbsp;                   |
 | [Illuminate\Contracts\Auth\Access\Gate](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Gate.php)                                 | `Gate`                    |
 | [Illuminate\Contracts\Auth\Authenticatable](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Authenticatable.php)                         |  &nbsp;                   |
@@ -119,7 +121,7 @@ This table provides a quick reference to all of the Laravel contracts and their 
 | [Illuminate\Contracts\Pagination\LengthAwarePaginator](https://github.com/illuminate/contracts/blob/{{version}}/Pagination/LengthAwarePaginator.php)   | &nbsp;                    |
 | [Illuminate\Contracts\Pagination\Paginator](https://github.com/illuminate/contracts/blob/{{version}}/Pagination/Paginator.php)                         | &nbsp;                    |
 | [Illuminate\Contracts\Pipeline\Hub](https://github.com/illuminate/contracts/blob/{{version}}/Pipeline/Hub.php)                                         | &nbsp;                    |
-| [Illuminate\Contracts\Pipeline\Pipeline](https://github.com/illuminate/contracts/blob/{{version}}/Pipeline/Pipeline.php)                               | `Pipeline`;                    |
+| [Illuminate\Contracts\Pipeline\Pipeline](https://github.com/illuminate/contracts/blob/{{version}}/Pipeline/Pipeline.php)                               | `Pipeline`                |
 | [Illuminate\Contracts\Queue\EntityResolver](https://github.com/illuminate/contracts/blob/{{version}}/Queue/EntityResolver.php)                         | &nbsp;                    |
 | [Illuminate\Contracts\Queue\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Queue/Factory.php)                                       | `Queue`                   |
 | [Illuminate\Contracts\Queue\Job](https://github.com/illuminate/contracts/blob/{{version}}/Queue/Job.php)                                               | &nbsp;                    |

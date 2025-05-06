@@ -1,271 +1,295 @@
-# Facades
+# 파사드(Facades)
 
-- [Introduction](#introduction)
-- [When to Utilize Facades](#when-to-use-facades)
-    - [Facades vs. Dependency Injection](#facades-vs-dependency-injection)
-    - [Facades vs. Helper Functions](#facades-vs-helper-functions)
-- [How Facades Work](#how-facades-work)
-- [Real-Time Facades](#real-time-facades)
-- [Facade Class Reference](#facade-class-reference)
+- [소개](#introduction)
+- [파사드 사용 시점](#when-to-use-facades)
+    - [파사드 vs. 의존성 주입](#facades-vs-dependency-injection)
+    - [파사드 vs. 헬퍼 함수](#facades-vs-helper-functions)
+- [파사드의 동작 원리](#how-facades-work)
+- [실시간(Real-Time) 파사드](#real-time-facades)
+- [파사드 클래스 참조](#facade-class-reference)
 
 <a name="introduction"></a>
-## Introduction
+## 소개
 
-Throughout the Laravel documentation, you will see examples of code that interacts with Laravel's features via "facades". Facades provide a "static" interface to classes that are available in the application's [service container](/docs/{{version}}/container). Laravel ships with many facades which provide access to almost all of Laravel's features.
+Laravel 공식 문서 전체에서는 "파사드"를 통해 Laravel의 다양한 기능과 상호작용하는 코드 예시가 자주 등장합니다. 파사드는 애플리케이션의 [서비스 컨테이너](/docs/{{version}}/container)에 등록된 클래스를 "정적" 인터페이스로 접근할 수 있도록 해줍니다. Laravel은 거의 모든 주요 기능에 접근할 수 있는 다양한 파사드를 기본 제공하고 있습니다.
 
-Laravel facades serve as "static proxies" to underlying classes in the service container, providing the benefit of a terse, expressive syntax while maintaining more testability and flexibility than traditional static methods. It's perfectly fine if you don't totally understand how facades work - just go with the flow and continue learning about Laravel.
+Laravel 파사드는 서비스 컨테이너의 기반 클래스에 대한 "정적 프록시" 역할을 하며, 전통적인 정적 메서드 방식에 비해 짧고, 표현력이 뛰어난 문법을 제공하면서도 더 나은 테스트 용이성과 유연성을 보장합니다. 만약 파사드가 정확히 어떻게 동작하는지 완전히 이해하지 못해도 괜찮습니다. 그냥 계속해서 Laravel을 배우면서 익숙해지면 됩니다.
 
-All of Laravel's facades are defined in the `Illuminate\Support\Facades` namespace. So, we can easily access a facade like so:
+Laravel의 모든 파사드는 `Illuminate\Support\Facades` 네임스페이스에 정의되어 있습니다. 따라서 아래와 같이 간단하게 파사드를 사용할 수 있습니다:
 
-    use Illuminate\Support\Facades\Cache;
-    use Illuminate\Support\Facades\Route;
+```php
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 
-    Route::get('/cache', function () {
-        return Cache::get('key');
-    });
+Route::get('/cache', function () {
+    return Cache::get('key');
+});
+```
 
-Throughout the Laravel documentation, many of the examples will use facades to demonstrate various features of the framework.
+Laravel 공식 문서 전반에 걸쳐, 여러 예제들이 프레임워크 기능을 설명할 때 파사드를 활용하고 있습니다.
 
 <a name="helper-functions"></a>
-#### Helper Functions
+#### 헬퍼 함수
 
-To complement facades, Laravel offers a variety of global "helper functions" that make it even easier to interact with common Laravel features. Some of the common helper functions you may interact with are `view`, `response`, `url`, `config`, and more. Each helper function offered by Laravel is documented with their corresponding feature; however, a complete list is available within the dedicated [helper documentation](/docs/{{version}}/helpers).
+파사드 이외에도 Laravel은 다양한 글로벌 "헬퍼 함수"들을 제공합니다. 이 함수들은 일반적으로 자주 사용하는 Laravel 기능과 더욱 간편하게 상호작용할 수 있게 해줍니다. 자주 사용되는 헬퍼 함수로는 `view`, `response`, `url`, `config` 등이 있습니다. 각 헬퍼 함수는 해당 기능 문서에서 안내하고 있으며, 전체 목록은 [헬퍼 문서](/docs/{{version}}/helpers)에서 확인할 수 있습니다.
 
-For example, instead of using the `Illuminate\Support\Facades\Response` facade to generate a JSON response, we may simply use the `response` function. Because helper functions are globally available, you do not need to import any classes in order to use them:
+예를 들어, `Illuminate\Support\Facades\Response` 파사드를 사용하여 JSON 응답을 생성하는 대신, `response` 헬퍼 함수를 사용할 수 있습니다. 헬퍼 함수는 전역적으로 사용할 수 있으므로 클래스를 따로 import할 필요가 없습니다.
 
-    use Illuminate\Support\Facades\Response;
+```php
+use Illuminate\Support\Facades\Response;
 
-    Route::get('/users', function () {
-        return Response::json([
-            // ...
-        ]);
-    });
+Route::get('/users', function () {
+    return Response::json([
+        // ...
+    ]);
+});
 
-    Route::get('/users', function () {
-        return response()->json([
-            // ...
-        ]);
-    });
+Route::get('/users', function () {
+    return response()->json([
+        // ...
+    ]);
+});
+```
 
 <a name="when-to-use-facades"></a>
-## When to Utilize Facades
+## 파사드 사용 시점
 
-Facades have many benefits. They provide a terse, memorable syntax that allows you to use Laravel's features without remembering long class names that must be injected or configured manually. Furthermore, because of their unique usage of PHP's dynamic methods, they are easy to test.
+파사드는 많은 이점을 가지고 있습니다. 길고 복잡한 클래스 이름을 기억하거나 수동으로 주입/설정하지 않고도, 간결하고 기억하기 쉬운 문법으로 Laravel의 기능을 사용할 수 있게 합니다. 또한, PHP의 동적 메서드 사용 덕분에 테스트하기도 편리합니다.
 
-However, some care must be taken when using facades. The primary danger of facades is class "scope creep". Since facades are so easy to use and do not require injection, it can be easy to let your classes continue to grow and use many facades in a single class. Using dependency injection, this potential is mitigated by the visual feedback a large constructor gives you that your class is growing too large. So, when using facades, pay special attention to the size of your class so that its scope of responsibility stays narrow. If your class is getting too large, consider splitting it into multiple smaller classes.
+하지만 파사드를 사용할 때 주의해야 할 사항도 있습니다. 파사드를 사용하면 너무 쉽게 기능을 사용할 수 있고 의존성 주입이 필요 없기 때문에, 한 클래스에서 여러 파사드를 남발하면서 클래스의 역할이 지나치게 커지는 "스코프 확장(scope creep)" 문제가 생길 수 있습니다. 의존성 주입을 쓰면 생성자에 여러 의존성이 시각적으로 드러나므로 클래스가 너무 커지고 있다는 경고를 받을 수 있습니다. 반면, 파사드를 쓸 때는 반드시 클래스가 너무 커지지 않도록 클래스의 책임 범위를 주의 깊게 관리해야 합니다. 클래스가 덩치가 커진다면, 여러 개의 작은 클래스로 분할하는 것을 고려하세요.
 
 <a name="facades-vs-dependency-injection"></a>
-### Facades vs. Dependency Injection
+### 파사드 vs. 의존성 주입
 
-One of the primary benefits of dependency injection is the ability to swap implementations of the injected class. This is useful during testing since you can inject a mock or stub and assert that various methods were called on the stub.
+의존성 주입의 가장 큰 장점 중 하나는, 주입된 클래스의 구현을 쉽게 교체할 수 있다는 점입니다. 이는 테스트 시에, 주입된 클래스를 모킹(mock)하거나 스텁(stub)으로 대체해서 특정 메서드의 호출 여부 등을 검증할 수 있기에 유용합니다.
 
-Typically, it would not be possible to mock or stub a truly static class method. However, since facades use dynamic methods to proxy method calls to objects resolved from the service container, we actually can test facades just as we would test an injected class instance. For example, given the following route:
+일반적으로 정적 클래스의 메서드는 모킹이나 스텁 처리가 어렵지만, 파사드는 동적 메서드를 통해 서비스 컨테이너에서 객체를 해결하므로, 의존성 주입과 동일한 방식으로 테스트가 가능합니다. 예를 들어, 아래와 같은 라우트가 있다고 가정해봅시다.
 
-    use Illuminate\Support\Facades\Cache;
+```php
+use Illuminate\Support\Facades\Cache;
 
-    Route::get('/cache', function () {
-        return Cache::get('key');
-    });
+Route::get('/cache', function () {
+    return Cache::get('key');
+});
+```
 
-Using Laravel's facade testing methods, we can write the following test to verify that the `Cache::get` method was called with the argument we expected:
+Laravel의 파사드 테스트 기능을 활용하면, `Cache::get` 메서드가 우리가 기대한 인자로 호출되었는지 다음과 같이 검증할 수 있습니다.
 
-    use Illuminate\Support\Facades\Cache;
+```php
+use Illuminate\Support\Facades\Cache;
 
-    /**
-     * A basic functional test example.
-     */
-    public function test_basic_example(): void
-    {
-        Cache::shouldReceive('get')
-             ->with('key')
-             ->andReturn('value');
+/**
+ * 기본적인 기능 테스트 예시.
+ */
+public function test_basic_example(): void
+{
+    Cache::shouldReceive('get')
+         ->with('key')
+         ->andReturn('value');
 
-        $response = $this->get('/cache');
+    $response = $this->get('/cache');
 
-        $response->assertSee('value');
-    }
+    $response->assertSee('value');
+}
+```
 
 <a name="facades-vs-helper-functions"></a>
-### Facades vs. Helper Functions
+### 파사드 vs. 헬퍼 함수
 
-In addition to facades, Laravel includes a variety of "helper" functions which can perform common tasks like generating views, firing events, dispatching jobs, or sending HTTP responses. Many of these helper functions perform the same function as a corresponding facade. For example, this facade call and helper call are equivalent:
+파사드 외에도, Laravel에는 뷰 생성, 이벤트 발생, 작업 디스패치, HTTP 응답 전송 등 일반 작업을 수행할 수 있는 다양한 "헬퍼 함수"가 있습니다. 이들 헬퍼 함수 중 다수는 대응하는 파사드와 동일한 역할을 합니다. 예를 들어, 다음 두 코드는 완전히 같습니다.
 
-    return Illuminate\Support\Facades\View::make('profile');
+```php
+return Illuminate\Support\Facades\View::make('profile');
 
-    return view('profile');
+return view('profile');
+```
 
-There is absolutely no practical difference between facades and helper functions. When using helper functions, you may still test them exactly as you would the corresponding facade. For example, given the following route:
+파사드와 헬퍼 함수의 실질적인 차이는 없습니다. 헬퍼 함수를 사용하더라도, 파사드와 동일한 방식으로 테스트할 수 있습니다. 예를 들면 아래 라우트에서,
 
-    Route::get('/cache', function () {
-        return cache('key');
-    });
+```php
+Route::get('/cache', function () {
+    return cache('key');
+});
+```
 
-The `cache` helper is going to call the `get` method on the class underlying the `Cache` facade. So, even though we are using the helper function, we can write the following test to verify that the method was called with the argument we expected:
+`cache` 헬퍼는 내부적으로 `Cache` 파사드를 구현하는 클래스의 `get` 메서드를 호출하게 됩니다. 따라서 헬퍼 함수를 사용해도, 다음과 같은 방식으로 해당 메서드가 기대한 인자로 호출됐는지 테스트할 수 있습니다.
 
-    use Illuminate\Support\Facades\Cache;
+```php
+use Illuminate\Support\Facades\Cache;
 
-    /**
-     * A basic functional test example.
-     */
-    public function test_basic_example(): void
-    {
-        Cache::shouldReceive('get')
-             ->with('key')
-             ->andReturn('value');
+/**
+ * 기본적인 기능 테스트 예시.
+ */
+public function test_basic_example(): void
+{
+    Cache::shouldReceive('get')
+         ->with('key')
+         ->andReturn('value');
 
-        $response = $this->get('/cache');
+    $response = $this->get('/cache');
 
-        $response->assertSee('value');
-    }
+    $response->assertSee('value');
+}
+```
 
 <a name="how-facades-work"></a>
-## How Facades Work
+## 파사드의 동작 원리
 
-In a Laravel application, a facade is a class that provides access to an object from the container. The machinery that makes this work is in the `Facade` class. Laravel's facades, and any custom facades you create, will extend the base `Illuminate\Support\Facades\Facade` class.
+Laravel 애플리케이션에서 파사드는 컨테이너에서 객체에 접근할 수 있도록 해주는 클래스입니다. 이 기능의 핵심은 `Facade` 클래스에 있습니다. Laravel의 모든 기본 파사드(그리고 여러분이 직접 만드는 커스텀 파사드)는 `Illuminate\Support\Facades\Facade` 기본 클래스를 확장(extend)합니다.
 
-The `Facade` base class makes use of the `__callStatic()` magic-method to defer calls from your facade to an object resolved from the container. In the example below, a call is made to the Laravel cache system. By glancing at this code, one might assume that the static `get` method is being called on the `Cache` class:
+`Facade` 기본 클래스는 PHP의 매직 메서드 `__callStatic()`을 활용하여, 파사드로부터 발생한 호출을 서비스 컨테이너 내에서 객체를 가져온 후 그 객체로 전달합니다. 아래 예시에서, Laravel 캐시 시스템에 호출이 이루어집니다. 이 코드를 보면, 마치 `Cache` 클래스의 정적 메서드 `get`이 직접 호출되는 것처럼 보입니다.
 
-    <?php
+```php
+<?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use Illuminate\Support\Facades\Cache;
-    use Illuminate\View\View;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\View\View;
 
-    class UserController extends Controller
+class UserController extends Controller
+{
+    /**
+     * 주어진 사용자의 프로필 보여주기.
+     */
+    public function showProfile(string $id): View
     {
-        /**
-         * Show the profile for the given user.
-         */
-        public function showProfile(string $id): View
-        {
-            $user = Cache::get('user:'.$id);
+        $user = Cache::get('user:'.$id);
 
-            return view('profile', ['user' => $user]);
-        }
+        return view('profile', ['user' => $user]);
     }
+}
+```
 
-Notice that near the top of the file we are "importing" the `Cache` facade. This facade serves as a proxy for accessing the underlying implementation of the `Illuminate\Contracts\Cache\Factory` interface. Any calls we make using the facade will be passed to the underlying instance of Laravel's cache service.
+상단에서 `Cache` 파사드를 import한 것을 볼 수 있습니다. 이 파사드는 결국 `Illuminate\Contracts\Cache\Factory` 인터페이스 실체에 대한 프록시 역할을 합니다. 즉, 파사드로 실행하는 모든 호출은 실제로는 Laravel 캐시 서비스 인스턴스에 위임됩니다.
 
-If we look at that `Illuminate\Support\Facades\Cache` class, you'll see that there is no static method `get`:
+`Illuminate\Support\Facades\Cache` 클래스를 들여다보면, 실제로는 정적 메서드 `get`이 정의되어 있지 않습니다.
 
-    class Cache extends Facade
+```php
+class Cache extends Facade
+{
+    /**
+     * 해당 컴포넌트의 등록된 이름 가져오기.
+     */
+    protected static function getFacadeAccessor(): string
     {
-        /**
-         * Get the registered name of the component.
-         */
-        protected static function getFacadeAccessor(): string
-        {
-            return 'cache';
-        }
+        return 'cache';
     }
+}
+```
 
-Instead, the `Cache` facade extends the base `Facade` class and defines the method `getFacadeAccessor()`. This method's job is to return the name of a service container binding. When a user references any static method on the `Cache` facade, Laravel resolves the `cache` binding from the [service container](/docs/{{version}}/container) and runs the requested method (in this case, `get`) against that object.
+대신, `Cache` 파사드는 `Facade` 기본 클래스를 상속하고, `getFacadeAccessor()` 메서드를 정의합니다. 이 메서드는 서비스 컨테이너에서 바인딩된 서비스의 이름을 반환하는 역할을 합니다. 사용자가 `Cache` 파사드의 어떤 정적 메서드를 호출하면, Laravel은 [서비스 컨테이너](/docs/{{version}}/container)에서 `cache` 바인딩을 해결한 뒤, 해당 객체에 대해 요청한 메서드(여기서는 `get`)를 실행합니다.
 
 <a name="real-time-facades"></a>
-## Real-Time Facades
+## 실시간(Real-Time) 파사드
 
-Using real-time facades, you may treat any class in your application as if it was a facade. To illustrate how this can be used, let's first examine some code that does not use real-time facades. For example, let's assume our `Podcast` model has a `publish` method. However, in order to publish the podcast, we need to inject a `Publisher` instance:
+실시간 파사드를 활용하면, 애플리케이션 내 어떤 클래스든 파사드처럼 사용할 수 있습니다. 어떻게 사용하는지 살펴보기 위해 먼저 실시간 파사드를 사용하지 않는 코드를 보겠습니다. 예를 들어, `Podcast` 모델에 `publish` 메서드가 있고, 팟캐스트를 발행하기 위해 `Publisher` 인스턴스를 주입해야 한다고 가정합시다.
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use App\Contracts\Publisher;
-    use Illuminate\Database\Eloquent\Model;
+use App\Contracts\Publisher;
+use Illuminate\Database\Eloquent\Model;
 
-    class Podcast extends Model
+class Podcast extends Model
+{
+    /**
+     * 팟캐스트 발행.
+     */
+    public function publish(Publisher $publisher): void
     {
-        /**
-         * Publish the podcast.
-         */
-        public function publish(Publisher $publisher): void
-        {
-            $this->update(['publishing' => now()]);
+        $this->update(['publishing' => now()]);
 
-            $publisher->publish($this);
-        }
+        $publisher->publish($this);
     }
+}
+```
 
-Injecting a publisher implementation into the method allows us to easily test the method in isolation since we can mock the injected publisher. However, it requires us to always pass a publisher instance each time we call the `publish` method. Using real-time facades, we can maintain the same testability while not being required to explicitly pass a `Publisher` instance. To generate a real-time facade, prefix the namespace of the imported class with `Facades`:
+이렇게 구현하면, 테스트 시 `Publisher`를 모킹하여 메서드 동작을 쉽게 검증할 수 있지만, 매번 `publish` 메서드를 호출할 때마다 `Publisher` 인스턴스를 직접 전달해야 하는 번거로움이 있습니다. 실시간 파사드를 사용하면, 테스트 용이성을 그대로 유지하면서도 `Publisher` 인스턴스를 명시적으로 전달할 필요가 없습니다. 실시간 파사드를 생성하려면 import하는 클래스의 네임스페이스 앞에 `Facades`를 붙여주세요.
 
-    <?php
+```php
+<?php
 
-    namespace App\Models;
+namespace App\Models;
 
-    use App\Contracts\Publisher; // [tl! remove]
-    use Facades\App\Contracts\Publisher; // [tl! add]
-    use Illuminate\Database\Eloquent\Model;
+use App\Contracts\Publisher; // [tl! remove]
+use Facades\App\Contracts\Publisher; // [tl! add]
+use Illuminate\Database\Eloquent\Model;
 
-    class Podcast extends Model
+class Podcast extends Model
+{
+    /**
+     * 팟캐스트 발행.
+     */
+    public function publish(Publisher $publisher): void // [tl! remove]
+    public function publish(): void // [tl! add]
     {
-        /**
-         * Publish the podcast.
-         */
-        public function publish(Publisher $publisher): void // [tl! remove]
-        public function publish(): void // [tl! add]
-        {
-            $this->update(['publishing' => now()]);
+        $this->update(['publishing' => now()]);
 
-            $publisher->publish($this); // [tl! remove]
-            Publisher::publish($this); // [tl! add]
-        }
+        $publisher->publish($this); // [tl! remove]
+        Publisher::publish($this); // [tl! add]
     }
+}
+```
 
-When the real-time facade is used, the publisher implementation will be resolved out of the service container using the portion of the interface or class name that appears after the `Facades` prefix. When testing, we can use Laravel's built-in facade testing helpers to mock this method call:
+실시간 파사드를 사용하면, 서비스 컨테이너에서 `Facades` 접두사 이후의 인터페이스 또는 클래스 이름을 이용해 구현체를 해결합니다. 테스트 시에는 Laravel의 내장 파사드 테스트 헬퍼를 활용해 메서드 호출을 모킹할 수 있습니다.
 
-    <?php
+```php
+<?php
 
-    namespace Tests\Feature;
+namespace Tests\Feature;
 
-    use App\Models\Podcast;
-    use Facades\App\Contracts\Publisher;
-    use Illuminate\Foundation\Testing\RefreshDatabase;
-    use Tests\TestCase;
+use App\Models\Podcast;
+use Facades\App\Contracts\Publisher;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-    class PodcastTest extends TestCase
+class PodcastTest extends TestCase
+{
+    use RefreshDatabase;
+
+    /**
+     * 테스트 예시.
+     */
+    public function test_podcast_can_be_published(): void
     {
-        use RefreshDatabase;
+        $podcast = Podcast::factory()->create();
 
-        /**
-         * A test example.
-         */
-        public function test_podcast_can_be_published(): void
-        {
-            $podcast = Podcast::factory()->create();
+        Publisher::shouldReceive('publish')->once()->with($podcast);
 
-            Publisher::shouldReceive('publish')->once()->with($podcast);
-
-            $podcast->publish();
-        }
+        $podcast->publish();
     }
+}
+```
 
 <a name="facade-class-reference"></a>
-## Facade Class Reference
+## 파사드 클래스 참조
 
-Below you will find every facade and its underlying class. This is a useful tool for quickly digging into the API documentation for a given facade root. The [service container binding](/docs/{{version}}/container) key is also included where applicable.
+아래 표에서는 모든 파사드와 대응하는 내부 클래스를 찾아볼 수 있습니다. 특정 파사드의 루트 클래스 API 문서를 빠르게 참조하고자 할 때 유용합니다. 또한, (해당하는 경우) [서비스 컨테이너 바인딩](/docs/{{version}}/container) 키도 함께 기재되어 있습니다.
 
 <div class="overflow-auto">
 
-Facade  |  Class  |  Service Container Binding
+파사드  |  클래스  |  서비스 컨테이너 바인딩
 ------------- | ------------- | -------------
 App  |  [Illuminate\Foundation\Application](https://laravel.com/api/{{version}}/Illuminate/Foundation/Application.html)  |  `app`
 Artisan  |  [Illuminate\Contracts\Console\Kernel](https://laravel.com/api/{{version}}/Illuminate/Contracts/Console/Kernel.html)  |  `artisan`
 Auth  |  [Illuminate\Auth\AuthManager](https://laravel.com/api/{{version}}/Illuminate/Auth/AuthManager.html)  |  `auth`
-Auth (Instance)  |  [Illuminate\Contracts\Auth\Guard](https://laravel.com/api/{{version}}/Illuminate/Contracts/Auth/Guard.html)  |  `auth.driver`
+Auth (인스턴스)  |  [Illuminate\Contracts\Auth\Guard](https://laravel.com/api/{{version}}/Illuminate/Contracts/Auth/Guard.html)  |  `auth.driver`
 Blade  |  [Illuminate\View\Compilers\BladeCompiler](https://laravel.com/api/{{version}}/Illuminate/View/Compilers/BladeCompiler.html)  |  `blade.compiler`
 Broadcast  |  [Illuminate\Contracts\Broadcasting\Factory](https://laravel.com/api/{{version}}/Illuminate/Contracts/Broadcasting/Factory.html)  |  &nbsp;
-Broadcast (Instance)  |  [Illuminate\Contracts\Broadcasting\Broadcaster](https://laravel.com/api/{{version}}/Illuminate/Contracts/Broadcasting/Broadcaster.html)  |  &nbsp;
+Broadcast (인스턴스)  |  [Illuminate\Contracts\Broadcasting\Broadcaster](https://laravel.com/api/{{version}}/Illuminate/Contracts/Broadcasting/Broadcaster.html)  |  &nbsp;
 Bus  |  [Illuminate\Contracts\Bus\Dispatcher](https://laravel.com/api/{{version}}/Illuminate/Contracts/Bus/Dispatcher.html)  |  &nbsp;
 Cache  |  [Illuminate\Cache\CacheManager](https://laravel.com/api/{{version}}/Illuminate/Cache/CacheManager.html)  |  `cache`
-Cache (Instance)  |  [Illuminate\Cache\Repository](https://laravel.com/api/{{version}}/Illuminate/Cache/Repository.html)  |  `cache.store`
+Cache (인스턴스)  |  [Illuminate\Cache\Repository](https://laravel.com/api/{{version}}/Illuminate/Cache/Repository.html)  |  `cache.store`
 Config  |  [Illuminate\Config\Repository](https://laravel.com/api/{{version}}/Illuminate/Config/Repository.html)  |  `config`
 Cookie  |  [Illuminate\Cookie\CookieJar](https://laravel.com/api/{{version}}/Illuminate/Cookie/CookieJar.html)  |  `cookie`
 Crypt  |  [Illuminate\Encryption\Encrypter](https://laravel.com/api/{{version}}/Illuminate/Encryption/Encrypter.html)  |  `encrypter`
 Date  |  [Illuminate\Support\DateFactory](https://laravel.com/api/{{version}}/Illuminate/Support/DateFactory.html)  |  `date`
 DB  |  [Illuminate\Database\DatabaseManager](https://laravel.com/api/{{version}}/Illuminate/Database/DatabaseManager.html)  |  `db`
-DB (Instance)  |  [Illuminate\Database\Connection](https://laravel.com/api/{{version}}/Illuminate/Database/Connection.html)  |  `db.connection`
+DB (인스턴스)  |  [Illuminate\Database\Connection](https://laravel.com/api/{{version}}/Illuminate/Database/Connection.html)  |  `db.connection`
 Event  |  [Illuminate\Events\Dispatcher](https://laravel.com/api/{{version}}/Illuminate/Events/Dispatcher.html)  |  `events`
 File  |  [Illuminate\Filesystem\Filesystem](https://laravel.com/api/{{version}}/Illuminate/Filesystem/Filesystem.html)  |  `files`
 Gate  |  [Illuminate\Contracts\Auth\Access\Gate](https://laravel.com/api/{{version}}/Illuminate/Contracts/Auth/Access/Gate.html)  |  &nbsp;
@@ -276,30 +300,30 @@ Log  |  [Illuminate\Log\LogManager](https://laravel.com/api/{{version}}/Illumina
 Mail  |  [Illuminate\Mail\Mailer](https://laravel.com/api/{{version}}/Illuminate/Mail/Mailer.html)  |  `mailer`
 Notification  |  [Illuminate\Notifications\ChannelManager](https://laravel.com/api/{{version}}/Illuminate/Notifications/ChannelManager.html)  |  &nbsp;
 Password  |  [Illuminate\Auth\Passwords\PasswordBrokerManager](https://laravel.com/api/{{version}}/Illuminate/Auth/Passwords/PasswordBrokerManager.html)  |  `auth.password`
-Password (Instance)  |  [Illuminate\Auth\Passwords\PasswordBroker](https://laravel.com/api/{{version}}/Illuminate/Auth/Passwords/PasswordBroker.html)  |  `auth.password.broker`
-Pipeline (Instance)  |  [Illuminate\Pipeline\Pipeline](https://laravel.com/api/{{version}}/Illuminate/Pipeline/Pipeline.html)  |  &nbsp;
+Password (인스턴스)  |  [Illuminate\Auth\Passwords\PasswordBroker](https://laravel.com/api/{{version}}/Illuminate/Auth/Passwords/PasswordBroker.html)  |  `auth.password.broker`
+Pipeline (인스턴스)  |  [Illuminate\Pipeline\Pipeline](https://laravel.com/api/{{version}}/Illuminate/Pipeline/Pipeline.html)  |  &nbsp;
 Process  |  [Illuminate\Process\Factory](https://laravel.com/api/{{version}}/Illuminate/Process/Factory.html)  |  &nbsp;
 Queue  |  [Illuminate\Queue\QueueManager](https://laravel.com/api/{{version}}/Illuminate/Queue/QueueManager.html)  |  `queue`
-Queue (Instance)  |  [Illuminate\Contracts\Queue\Queue](https://laravel.com/api/{{version}}/Illuminate/Contracts/Queue/Queue.html)  |  `queue.connection`
-Queue (Base Class)  |  [Illuminate\Queue\Queue](https://laravel.com/api/{{version}}/Illuminate/Queue/Queue.html)  |  &nbsp;
+Queue (인스턴스)  |  [Illuminate\Contracts\Queue\Queue](https://laravel.com/api/{{version}}/Illuminate/Contracts/Queue/Queue.html)  |  `queue.connection`
+Queue (기본 클래스)  |  [Illuminate\Queue\Queue](https://laravel.com/api/{{version}}/Illuminate/Queue/Queue.html)  |  &nbsp;
 RateLimiter  |  [Illuminate\Cache\RateLimiter](https://laravel.com/api/{{version}}/Illuminate/Cache/RateLimiter.html)  |  &nbsp;
 Redirect  |  [Illuminate\Routing\Redirector](https://laravel.com/api/{{version}}/Illuminate/Routing/Redirector.html)  |  `redirect`
 Redis  |  [Illuminate\Redis\RedisManager](https://laravel.com/api/{{version}}/Illuminate/Redis/RedisManager.html)  |  `redis`
-Redis (Instance)  |  [Illuminate\Redis\Connections\Connection](https://laravel.com/api/{{version}}/Illuminate/Redis/Connections/Connection.html)  |  `redis.connection`
+Redis (인스턴스)  |  [Illuminate\Redis\Connections\Connection](https://laravel.com/api/{{version}}/Illuminate/Redis/Connections/Connection.html)  |  `redis.connection`
 Request  |  [Illuminate\Http\Request](https://laravel.com/api/{{version}}/Illuminate/Http/Request.html)  |  `request`
 Response  |  [Illuminate\Contracts\Routing\ResponseFactory](https://laravel.com/api/{{version}}/Illuminate/Contracts/Routing/ResponseFactory.html)  |  &nbsp;
-Response (Instance)  |  [Illuminate\Http\Response](https://laravel.com/api/{{version}}/Illuminate/Http/Response.html)  |  &nbsp;
+Response (인스턴스)  |  [Illuminate\Http\Response](https://laravel.com/api/{{version}}/Illuminate/Http/Response.html)  |  &nbsp;
 Route  |  [Illuminate\Routing\Router](https://laravel.com/api/{{version}}/Illuminate/Routing/Router.html)  |  `router`
 Schema  |  [Illuminate\Database\Schema\Builder](https://laravel.com/api/{{version}}/Illuminate/Database/Schema/Builder.html)  |  &nbsp;
 Session  |  [Illuminate\Session\SessionManager](https://laravel.com/api/{{version}}/Illuminate/Session/SessionManager.html)  |  `session`
-Session (Instance)  |  [Illuminate\Session\Store](https://laravel.com/api/{{version}}/Illuminate/Session/Store.html)  |  `session.store`
+Session (인스턴스)  |  [Illuminate\Session\Store](https://laravel.com/api/{{version}}/Illuminate/Session/Store.html)  |  `session.store`
 Storage  |  [Illuminate\Filesystem\FilesystemManager](https://laravel.com/api/{{version}}/Illuminate/Filesystem/FilesystemManager.html)  |  `filesystem`
-Storage (Instance)  |  [Illuminate\Contracts\Filesystem\Filesystem](https://laravel.com/api/{{version}}/Illuminate/Contracts/Filesystem/Filesystem.html)  |  `filesystem.disk`
+Storage (인스턴스)  |  [Illuminate\Contracts\Filesystem\Filesystem](https://laravel.com/api/{{version}}/Illuminate/Contracts/Filesystem/Filesystem.html)  |  `filesystem.disk`
 URL  |  [Illuminate\Routing\UrlGenerator](https://laravel.com/api/{{version}}/Illuminate/Routing/UrlGenerator.html)  |  `url`
 Validator  |  [Illuminate\Validation\Factory](https://laravel.com/api/{{version}}/Illuminate/Validation/Factory.html)  |  `validator`
-Validator (Instance)  |  [Illuminate\Validation\Validator](https://laravel.com/api/{{version}}/Illuminate/Validation/Validator.html)  |  &nbsp;
+Validator (인스턴스)  |  [Illuminate\Validation\Validator](https://laravel.com/api/{{version}}/Illuminate/Validation/Validator.html)  |  &nbsp;
 View  |  [Illuminate\View\Factory](https://laravel.com/api/{{version}}/Illuminate/View/Factory.html)  |  `view`
-View (Instance)  |  [Illuminate\View\View](https://laravel.com/api/{{version}}/Illuminate/View/View.html)  |  &nbsp;
+View (인스턴스)  |  [Illuminate\View\View](https://laravel.com/api/{{version}}/Illuminate/View/View.html)  |  &nbsp;
 Vite  |  [Illuminate\Foundation\Vite](https://laravel.com/api/{{version}}/Illuminate/Foundation/Vite.html)  |  &nbsp;
 
 </div>
