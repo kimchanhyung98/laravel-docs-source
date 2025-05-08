@@ -2,6 +2,82 @@
 import os
 import shutil
 import subprocess
+import time
+from functools import wraps
+
+import dotenv
+import openai
+from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
+
+
+def retry(max_attempts=3, delay=1, backoff=2, exceptions=(Exception,)):
+    """예외 발생 시 함수를 재시도하는 데코레이터
+
+    Args:
+        max_attempts: 최대 시도 횟수
+        delay: 초기 대기 시간(초)
+        backoff: 대기 시간 증가 요소(다음 시도에서는 delay * backoff)
+        exceptions: 재시도할 예외 클래스 튜플
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            attempt = 0
+            current_delay = delay
+
+            while attempt < max_attempts:
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    attempt += 1
+                    if attempt >= max_attempts:
+                        print(f"최대 시도 횟수({max_attempts})를 초과했습니다. 마지막 오류: {e}")
+                        raise
+
+                    print(f"오류 발생: {e}. {current_delay}초 후 재시도 ({attempt}/{max_attempts})...")
+                    time.sleep(current_delay)
+                    current_delay *= backoff  # 대기 시간 증가
+
+            return None  # 이 코드는 실행되지 않지만 형식적으로 필요
+
+        return wrapper
+
+    return decorator
+
+
+def timeout(seconds=420):
+    """함수 실행 시 타임아웃을 적용하는 데코레이터
+
+    Args:
+        seconds: 타임아웃 시간(초)
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            import signal
+
+            def handler(signum, frame):
+                raise TimeoutError(f"함수 실행이 {seconds}초를 초과했습니다.")
+
+            # 타임아웃 설정
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(seconds)
+
+            try:
+                result = func(*args, **kwargs)
+                signal.alarm(0)  # 타이머 재설정
+                return result
+            except TimeoutError as e:
+                print(f"타임아웃: {e}")
+                raise
+            finally:
+                signal.alarm(0)  # 타이머 재설정
+
+        return wrapper
+
+    return decorator
 
 
 def run_command(command, cwd=None):
@@ -15,6 +91,53 @@ def run_command(command, cwd=None):
         cwd=cwd
     )
     return result.stdout.strip()
+
+
+@retry(max_attempts=3, delay=5, backoff=2, exceptions=(Exception,))
+@timeout(seconds=300)
+def translate_with_openai(content):
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        return content
+
+    openai.api_key = api_key
+    client = openai.OpenAI()
+
+    system_prompt = """당신은 전문 번역가입니다. EN에서 ko로 마크다운 문서를 번역해주세요.
+중요한 지침:
+1. 코드 블록, HTML 태그, 링크 URL은 번역하지 마세요.
+2. 마크다운 형식을 유지하세요.
+3. 전문 용어는 적절하게 번역하세요."""
+
+    try:
+        system_message = ChatCompletionSystemMessageParam(role="system", content=system_prompt)
+        user_message = ChatCompletionUserMessageParam(role="user", content=f"다음 마크다운 문서를 번역해주세요:\n\n{content}")
+
+        response = client.chat.completions.create(
+            model=os.environ.get("TRANSLATION_MODEL", "gpt-4.1"),
+            messages=[system_message, user_message]
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"번역 오류: {e}")
+        return content
+
+
+def translate_markdown_file(source_file, target_file):
+    try:
+        with open(source_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        translated_content = translate_with_openai(content)
+
+        with open(target_file, 'w', encoding='utf-8') as f:
+            f.write(translated_content)
+
+        return True
+
+    except Exception as e:
+        print(f"번역 오류: {str(e)}")
+        return False
 
 
 def get_git_changes():
@@ -50,6 +173,8 @@ def get_git_changes():
 def main():
     """Laravel 원본 문서를 현재 프로젝트에 덮어쓰는 함수"""
     # 원본 저장소 URL 및 작업 디렉토리 설정
+    dotenv.load_dotenv()
+
     original_repo = "https://github.com/laravel/docs.git"
     temp_dir = "laravel-docs-temp"
     branches = ["master", "12.x", "11.x", "10.x", "9.x", "8.x"]
@@ -92,23 +217,25 @@ def main():
 
         # 변경사항을 git에 추가
         run_command(f"git add {branch}/en/*.md", cwd=os.getcwd())
-
-        # 브랜치 업데이트 완료 메시지
-        print(f"{branch} 브랜치 업데이트 완료")
+        print(f"{branch} 업데이트 완료")
 
     # 작업 완료 후 임시 디렉토리 삭제
     shutil.rmtree(temp_dir)
 
-    # 모든 브랜치 처리가 끝난 후 변경사항 확인
-    print("\n변경 사항")
     changed_files = get_git_changes()
 
-    # 변경 사항 출력
-    if changed_files:
-        for file in changed_files:
-            print(f"- {file}")
-    else:
-        print("- 변경 사항 없음")
+    for file_path in changed_files:
+        path_parts = file_path.split('/')
+        if len(path_parts) >= 3 and path_parts[1] == 'en':
+            branch = path_parts[0]
+            filename = path_parts[2]
+
+            source_file = os.path.join(os.getcwd(), branch, 'en', filename)
+            target_file = os.path.join(os.getcwd(), branch, 'ko', filename)
+
+            print(f"번역: {filename}")
+            translate_markdown_file(source_file, target_file)
+            run_command(f"git add {branch}/ko/{filename}", cwd=os.getcwd())
 
 
 if __name__ == "__main__":
