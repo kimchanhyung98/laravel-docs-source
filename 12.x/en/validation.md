@@ -1677,6 +1677,14 @@ You may explicitly specify the database column name that should be used by the `
 'state' => Rule::exists('states', 'abbreviation'),
 ```
 
+Sometimes, you may wish to validate whether an array of values exists in the database. You can do so by adding both the `exists` and [array](#rule-array) rules to the field being validated:
+
+```php
+'states' => ['array', Rule::exists('states', 'abbreviation')],
+```
+
+When both of these rules are assigned to a field, Laravel will automatically build a single query to determine if all of the given values exist in the specified table.
+
 <a name="rule-extensions"></a>
 #### extensions:_foo_,_bar_,...
 
