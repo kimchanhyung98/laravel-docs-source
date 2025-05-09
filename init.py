@@ -15,7 +15,7 @@ def main():
     branches = ["master", "12.x", "11.x", "10.x", "9.x", "8.x"]
 
     # 작업 디렉토리 설정
-    work_dir = os.path.join(os.getcwd(), "laravel-docs-temp")
+    work_dir = os.path.join(os.getcwd(), "temp")
     if os.path.exists(work_dir):
         shutil.rmtree(work_dir)
 

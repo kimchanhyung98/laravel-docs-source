@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import shutil
+import subprocess
 
 from dotenv import load_dotenv
 
@@ -49,7 +50,7 @@ def main():
     load_dotenv()
 
     original_repo = "https://github.com/laravel/docs.git"
-    temp_dir = "laravel-docs-temp"
+    temp_dir = "temp"
     branches = ["master", "12.x", "11.x", "10.x", "9.x", "8.x"]
 
     # 임시 디렉토리 삭제 후 새로 클론
