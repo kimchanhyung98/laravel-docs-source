@@ -137,9 +137,8 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
         client = openai.OpenAI()
 
         # 시스템 프롬프트 설정
-        prompt_file = os.environ.get("TRANSLATION_PROMPT_FILE", "translation_prompt.txt")
         try:
-            with open(prompt_file, 'r', encoding='utf-8') as f:
+            with open("translation_prompt.txt", 'r', encoding='utf-8') as f:
                 system_prompt_template = f.read()
         except Exception as e:
             print(f"프롬프트 파일 읽기 오류: {e}")
