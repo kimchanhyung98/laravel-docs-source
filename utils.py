@@ -8,7 +8,7 @@ import openai
 from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
 
-def retry(max_attempts=3, delay=1, backoff=2, exceptions=(Exception,)):
+def retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,)):
     """예외 발생 시 함수를 재시도하는 데코레이터
 
     Args:
@@ -29,13 +29,14 @@ def retry(max_attempts=3, delay=1, backoff=2, exceptions=(Exception,)):
                     return func(*args, **kwargs)
                 except exceptions as e:
                     attempt += 1
+                    error_type = type(e).__name__
                     if attempt >= max_attempts:
-                        print(f"최대 시도 횟수({max_attempts})를 초과했습니다. 마지막 오류: {e}")
+                        print(f"최대 시도 횟수 초과. 오류: {error_type} - {e}")
                         raise
 
-                    print(f"오류 발생: {e}. {current_delay}초 후 재시도 ({attempt}/{max_attempts})...")
+                    print(f"오류: {error_type} - {e}")
                     time.sleep(current_delay)
-                    current_delay *= backoff  # 대기 시간 증가
+                    current_delay *= backoff
 
             return None  # 이 코드는 실행되지 않지만 형식적으로 필요
 
@@ -99,7 +100,7 @@ def run_command(command, cwd=None):
     return result.stdout.strip()
 
 
-@retry(max_attempts=3, delay=5, backoff=2, exceptions=(Exception,))
+@retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,))
 @timeout(seconds=300)
 def translate_file(source_file, target_file, source_lang="en", target_lang="ko"):
     """OpenAI API를 사용하여, 마크다운 파일을 번역하고 저장
@@ -161,6 +162,16 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
         print(f"번역 완료: {source_file} -> {target_file}")
         return True
 
+    except openai.APITimeoutError as e:
+        print(f"APITimeoutError - {str(e)}")
+        raise
+    except openai.APIConnectionError as e:
+        print(f"APIConnectionError - {str(e)}")
+        raise
+    except openai.RateLimitError as e:
+        print(f"RateLimitError - {str(e)}")
+        time.sleep(30)
+        raise
     except Exception as e:
-        print(f"번역 오류: {str(e)}")
-        return False
+        print(f"Exception - {type(e).__name__} - {str(e)}")
+        raise
