@@ -16,8 +16,7 @@ def get_git_changes():
         # git status 명령어 실행
         status_output = run_command("git status --porcelain", cwd=os.getcwd())
 
-        # 변경된 파일만 필터링
-        changed_files = []
+        changed_files = set()
 
         for line in status_output.split('\n'):
             if not line.strip():
@@ -25,14 +24,13 @@ def get_git_changes():
 
             file_path = line[3:].strip()
 
-            # 마크다운 파일만 처리
             if file_path.endswith('.md'):
-                # 파일 경로에서 브랜치 정보 추출
+                # 파일 경로에서 브랜치 추출
                 path_parts = file_path.split('/')
                 if len(path_parts) >= 3 and path_parts[1] == 'en':
-                    changed_files.append(file_path)
+                    changed_files.add(file_path)
 
-        return sorted(changed_files)
+        return sorted(list(changed_files))
     except subprocess.CalledProcessError:
         # git 명령어 실패 시 빈 목록 반환
         return []
@@ -43,15 +41,16 @@ def main():
 
     주요 기능:
         1. Laravel 원본 문서를 클론하여 현재 프로젝트에 덮어씀.
-        2. 변경된 마크다운 파일을 자동으로 번역.
+        2. 변경된 마크다운 파일을 자동으로 번역. (예외: license.md, readme.md는 번역하지 않음)
         3. Git을 사용하여 변경사항을 동기화.
     """
-    # 원본 저장소 URL 및 작업 디렉토리 설정
+    # 환경 변수 및 기본 설정
     load_dotenv()
 
     original_repo = "https://github.com/laravel/docs.git"
     temp_dir = "temp"
     branches = ["master", "12.x", "11.x", "10.x", "9.x", "8.x"]
+    excluded_files = ["license.md", "readme.md"]
 
     # 임시 디렉토리 삭제 후 새로 클론
     if os.path.exists(temp_dir):
@@ -73,44 +72,49 @@ def main():
         os.makedirs(en_dir, exist_ok=True)
         os.makedirs(ko_dir, exist_ok=True)
 
-        # 원본 저장소의 마크다운 파일 목록 가져오기
+        # 원본 마크다운 파일 목록 가져오기
         md_files = [f for f in os.listdir(temp_dir) if f.endswith(".md")]
 
         # 각 마크다운 파일 복사
-        for file in md_files:
-            source_path = os.path.join(temp_dir, file)
-            en_target_path = os.path.join(en_dir, file)
-            ko_target_path = os.path.join(ko_dir, file)
+        for file_name in md_files:
+            source_path = os.path.join(temp_dir, file_name)
+            shutil.copy2(source_path, os.path.join(en_dir, file_name))
+            # 번역 제외 파일은 그대로 복사
+            if file_name.lower() in excluded_files:
+                shutil.copy2(source_path, os.path.join(ko_dir, file_name))
 
-            # en 디렉토리에 파일 복사
-            shutil.copy2(source_path, en_target_path)
-
-            # ko 디렉토리에 파일 복사 (없을 경우에만)
-            if not os.path.exists(ko_target_path):
-                shutil.copy2(source_path, ko_target_path)
-
-        # 변경사항을 git에 추가
-        run_command(f"git add {branch}/en/*.md", cwd=os.getcwd())
         print(f"{branch} 업데이트 완료")
 
-    # 작업 완료 후 임시 디렉토리 삭제
+    # 임시 디렉토리 삭제
     shutil.rmtree(temp_dir)
 
-    changed_files = get_git_changes()
-
-    for file_path in changed_files:
+    processed_files = set()
+    for file_path in get_git_changes():
         path_parts = file_path.split('/')
         if len(path_parts) >= 3 and path_parts[1] == 'en':
             branch = path_parts[0]
             filename = path_parts[2]
 
-            source_file = os.path.join(os.getcwd(), branch, 'en', filename)
-            target_file = os.path.join(os.getcwd(), branch, 'ko', filename)
+            # 이미 처리한 파일인지 확인
+            file_key = f"{branch}/{filename}"
+            if file_key in processed_files:
+                continue
 
-            print(f"번역: {filename}")
-            # 번역 실행
-            translate_file(source_file, target_file)
-            run_command(f"git add {branch}/ko/{filename}", cwd=os.getcwd())
+            processed_files.add(file_key)
+
+            if filename.lower() in excluded_files:
+                continue
+
+            translate_file(
+                os.path.join(os.getcwd(), branch, 'en', filename),
+                os.path.join(os.getcwd(), branch, 'ko', filename)
+            )
+
+    try:
+        run_command("git add *.md */*.md */*/*.md", cwd=os.getcwd())
+        print("완료")
+    except subprocess.CalledProcessError:
+        print("오류")
 
 
 if __name__ == "__main__":
