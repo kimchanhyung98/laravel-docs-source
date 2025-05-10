@@ -7,6 +7,8 @@ from functools import wraps
 import openai
 from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
+from filtering import filter_markdown
+
 
 def retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,)):
     """예외 발생 시 함수를 재시도하는 데코레이터
@@ -115,19 +117,6 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
         bool: 번역 성공 여부
     """
     try:
-        # 파일 읽기
-        with open(source_file, 'r', encoding='utf-8') as f:
-            content = f.read()
-
-        # 파일이 비어있는지 확인
-        if not content.strip():
-            print(f"빈 파일이 발견되었습니다: {source_file}")
-            # 빈 파일을 그대로 복사
-            with open(target_file, 'w', encoding='utf-8') as f:
-                f.write(content)
-            return True
-
-        # OpenAI API 키 가져오기
         api_key = os.environ.get("OPENAI_API_KEY")
         if not api_key:
             print("OPENAI_API_KEY가 설정되지 않았습니다.")
@@ -136,6 +125,15 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
         # OpenAI 클라이언트 설정
         openai.api_key = api_key
         client = openai.OpenAI()
+
+        # 파일 읽기
+        with open(source_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        if not content.strip():
+            print(f"빈 파일: {source_file}")
+            return False
+        content = filter_markdown(content)
 
         # 시스템 프롬프트 설정
         try:
