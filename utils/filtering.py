@@ -146,13 +146,46 @@ def ensure_ends_with_blank_line(content: str) -> str:
     return processed_content
 
 
-def filter_markdown(content: str) -> str:
+def fix_unclosed_img_tags(content: str) -> str:
+    """마크다운 내용에서 닫히지 않은 이미지 태그를 자동으로 닫는 태그로 변환
+
+    <img src="..."> 형태를 <img src="..." /> 형태로 변환하여 MDX 빌드 오류 방지
+
+    Args:
+        content: 처리할 마크다운 원본 문자열
+
+    Returns:
+        이미지 태그가 올바르게 닫힌 마크다운 문자열
+    """
+    pattern = r'<img([^>]*?)(?<!/)>'
+    replacement = r'<img\1 />'
+    return re.sub(pattern, replacement, content)
+
+
+def replace_version_placeholder(content: str, version: str) -> str:
+    """마크다운 내용에서 {{version}} 플레이스홀더를 지정된 버전으로 치환
+
+    Args:
+        content: 처리할 마크다운 원본 문자열
+        version: 치환할 버전 문자열 ("master", "12.x" 등)
+
+    Returns:
+        버전 플레이스홀더가 치환된 마크다운 문자열
+    """
+    # {{version}} 플레이스홀더를 지정된 버전으로 치환
+    pattern = r'\{\{\s*version\s*\}\}'
+    return re.sub(pattern, version, content)
+
+
+def filter_markdown(content: str, version: str = None) -> str:
     """마크다운 내용에 여러 필터링 함수를 순차적으로 적용
 
     적용되는 필터:
     1. 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환 (언어 태그 없음)
     2. HTML <style> 태그와 그 내용을 완전히 제거
-    3. 파일 끝을 하나의 빈 줄로 표준화 (문서 중간의 빈 줄은 유지)
+    3. 닫히지 않은 이미지 태그(<img>)를 자동으로 닫는 태그(<img />)로 변환
+    4. {{version}} 플레이스홀더를 지정된 버전으로 치환 (version 매개변수가 제공된 경우)
+    5. 파일 끝을 하나의 빈 줄로 표준화 (문서 중간의 빈 줄은 유지)
 
     Args:
         content: 필터링할 원본 마크다운 문자열
@@ -162,5 +195,11 @@ def filter_markdown(content: str) -> str:
     """
     content = convert_indented_code_blocks(content)
     content = remove_style_tags(content)
+    content = fix_unclosed_img_tags(content)
+
+    # 버전 플레이스홀더 치환 (버전이 제공된 경우에만)
+    if version is not None:
+        content = replace_version_placeholder(content, version)
+
     content = ensure_ends_with_blank_line(content)
     return content

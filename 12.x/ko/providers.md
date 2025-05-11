@@ -1,32 +1,32 @@
-# 서비스 프로바이더
+# 서비스 프로바이더 (Service Providers)
 
 - [소개](#introduction)
 - [서비스 프로바이더 작성하기](#writing-service-providers)
     - [Register 메서드](#the-register-method)
     - [Boot 메서드](#the-boot-method)
 - [프로바이더 등록하기](#registering-providers)
-- [지연(Deferred) 프로바이더](#deferred-providers)
+- [지연 로딩(Deferred) 프로바이더](#deferred-providers)
 
 <a name="introduction"></a>
 ## 소개
 
-서비스 프로바이더는 모든 Laravel 애플리케이션의 부트스트래핑(시동)을 담당하는 핵심 역할을 합니다. 여러분의 애플리케이션뿐만 아니라, Laravel의 코어 서비스들 역시 서비스 프로바이더를 통해 부트스트랩됩니다.
+서비스 프로바이더는 모든 라라벨 애플리케이션의 부트스트래핑(초기 설정 및 실행 준비)의 중심입니다. 여러분이 작성한 애플리케이션은 물론, 라라벨의 핵심 서비스들도 모두 서비스 프로바이더를 통해 부트스트랩됩니다.
 
-여기서 "부트스트랩한다"는 것은 무엇을 의미할까요? 일반적으로 이것은 **등록(등록)**하는 모든 작업을 의미합니다. 예를 들어, 서비스 컨테이너 바인딩, 이벤트 리스너, 미들웨어, 라우트의 등록 등이 있습니다. 서비스 프로바이더는 이러한 애플리케이션 설정의 중심지가 됩니다.
+그렇다면 여기서 "부트스트랩(bootstrapped)"된다는 의미는 무엇일까요? 일반적으로, **서비스 컨테이너에 바인딩 등록하기**, 이벤트 리스너, 미들웨어, 라우트 등 다양한 요소를 등록하는 작업을 포함합니다. 서비스 프로바이더는 애플리케이션의 설정과 구성을 모아서 관리하는 역할을 합니다.
 
-Laravel 내부적으로는 메일러, 큐, 캐시 등과 같은 코어 서비스를 부트스트랩하기 위해 수십 개의 서비스 프로바이더를 사용합니다. 이들 중 다수는 "지연(Deferred)" 프로바이더로, 이들이 제공하는 서비스가 실제로 필요할 때만 로드되고, 모든 요청마다 로드되지는 않습니다.
+라라벨은 메일러, 큐, 캐시 등 다양한 핵심 서비스를 부트스트랩하기 위해 내부적으로 수십 개의 서비스 프로바이더를 사용합니다. 이 중 상당수는 "지연 로딩(Deferred)" 프로바이더로, 실제로 해당 서비스가 필요할 때만 로딩됩니다. 즉, 모든 요청에서 매번 로드되지 않으므로 성능 향상에 도움이 됩니다.
 
-모든 사용자 정의 서비스 프로바이더는 `bootstrap/providers.php` 파일에 등록됩니다. 이후의 문서에서는 자체 서비스 프로바이더를 작성하고 Laravel 애플리케이션에 등록하는 방법을 배우게 됩니다.
+여러분이 정의한 사용자 서비스 프로바이더는 모두 `bootstrap/providers.php` 파일에 등록됩니다. 아래의 문서에서는 서비스 프로바이더를 직접 작성하고 라라벨 애플리케이션에 등록하는 방법을 다룹니다.
 
 > [!NOTE]
-> Laravel이 어떻게 요청을 처리하고 내부적으로 동작하는지 더 알아보고 싶다면, Laravel [요청 라이프사이클](/docs/{{version}}/lifecycle) 문서를 참고하세요.
+> 라라벨이 요청을 어떻게 처리하고 내부적으로 동작하는지 더 깊이 알고 싶다면, 라라벨 [요청 생명주기](/docs/12.x/lifecycle) 문서를 참고하시기 바랍니다.
 
 <a name="writing-service-providers"></a>
 ## 서비스 프로바이더 작성하기
 
-모든 서비스 프로바이더는 `Illuminate\Support\ServiceProvider` 클래스를 확장합니다. 대부분의 서비스 프로바이더는 `register`와 `boot` 메서드를 포함합니다. `register` 메서드 내에서는 **[서비스 컨테이너](/docs/{{version}}/container)에 오직 바인딩만** 해야 합니다. `register` 메서드 내에서는 이벤트 리스너, 라우트 등 다른 기능들은 등록해서는 안 됩니다.
+모든 서비스 프로바이더는 `Illuminate\Support\ServiceProvider` 클래스를 확장(extends)합니다. 대부분의 서비스 프로바이더에는 `register`와 `boot` 두 가지 메서드가 포함되어 있습니다. `register` 메서드 안에서는 **반드시 [서비스 컨테이너](/docs/12.x/container)에 필요한 항목만 바인딩**해야 합니다. 이벤트 리스너, 라우트, 그 외의 다른 기능 등록을 이 메서드 안에서 시도해서는 안 됩니다.
 
-Artisan CLI를 통해 `make:provider` 명령어로 새로운 프로바이더를 생성할 수 있습니다. Laravel은 자동으로 이 프로바이더를 `bootstrap/providers.php` 파일에 등록합니다.
+아티즌 CLI를 사용해 `make:provider` 명령어로 새 프로바이더를 쉽게 생성할 수 있습니다. 이때 라라벨은 생성한 프로바이더를 자동으로 애플리케이션의 `bootstrap/providers.php` 파일에 등록해줍니다.
 
 ```shell
 php artisan make:provider RiakServiceProvider
@@ -35,9 +35,9 @@ php artisan make:provider RiakServiceProvider
 <a name="the-register-method"></a>
 ### Register 메서드
 
-앞서 언급했듯이, `register` 메서드 내에서는 오직 [서비스 컨테이너](/docs/{{version}}/container)에 바인딩만 해야 합니다. 이벤트 리스너, 라우트, 기타 기능을 이 메서드 안에서 등록하면 안 됩니다. 그렇지 않으면 아직 로드되지 않은 서비스 프로바이더에 의존하는 서비스를 실수로 사용할 수 있습니다.
+앞서 설명한 것처럼, `register` 메서드 안에서는 반드시 [서비스 컨테이너](/docs/12.x/container)에 바인딩만 등록해야 합니다. 이벤트 리스너나 라우트, 기타 기능을 이곳에서 등록하면 안 됩니다. 그렇지 않으면, 아직 로드되지 않은 서비스 프로바이더에서 제공하는 기능을 실수로 사용하게 되어 의도치 않은 에러가 발생할 수 있습니다.
 
-아래는 기본적인 서비스 프로바이더 예시입니다. 서비스 프로바이더의 모든 메서드 내에서 항상 `$app` 프로퍼티를 사용할 수 있으며, 이를 통해 서비스 컨테이너에 접근할 수 있습니다.
+아래는 기본적인 서비스 프로바이더의 예시입니다. 서비스 프로바이더의 모든 메서드에서는 `$app` 속성(서비스 컨테이너에 접근할 수 있는 속성)을 사용할 수 있습니다.
 
 ```php
 <?php
@@ -51,7 +51,7 @@ use Illuminate\Support\ServiceProvider;
 class RiakServiceProvider extends ServiceProvider
 {
     /**
-     * 애플리케이션 서비스를 등록합니다.
+     * Register any application services.
      */
     public function register(): void
     {
@@ -62,12 +62,12 @@ class RiakServiceProvider extends ServiceProvider
 }
 ```
 
-이 서비스 프로바이더는 `register` 메서드만을 정의하고, 해당 메서드에서 `App\Services\Riak\Connection`의 구현체를 서비스 컨테이너에 바인딩합니다. Laravel의 서비스 컨테이너에 익숙하지 않다면 [관련 문서](/docs/{{version}}/container)를 참고하세요.
+이 서비스 프로바이더는 `register` 메서드만 정의하며, 여기서 `App\Services\Riak\Connection`에 대한 구현체를 서비스 컨테이너에 바인딩합니다. 라라벨의 서비스 컨테이너에 대해 더 익숙하지 않다면, [관련 문서](/docs/12.x/container)를 참고하세요.
 
 <a name="the-bindings-and-singletons-properties"></a>
-#### `bindings`와 `singletons` 프로퍼티
+#### `bindings`와 `singletons` 속성
 
-여러 개의 단순한 바인딩을 서비스 프로바이더에서 등록해야 한다면, 각 바인딩을 개별적으로 등록하는 대신 `bindings` 및 `singletons` 프로퍼티를 활용할 수 있습니다. 프레임워크가 서비스 프로바이더를 로드할 때, 이 프로퍼티들을 자동으로 확인해 바인딩을 등록합니다.
+서비스 프로바이더에서 여러 개의 간단한 바인딩을 등록해야 할 때는, 각각을 일일이 코드로 바인딩하는 대신 `bindings`와 `singletons` 속성을 사용할 수 있습니다. 서비스 프로바이더가 로드될 때, 프레임워크가 자동으로 이 속성들을 확인하고 해당 바인딩을 등록해줍니다.
 
 ```php
 <?php
@@ -84,7 +84,7 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * 등록할 컨테이너 바인딩 전체 목록
+     * 등록할 모든 컨테이너 바인딩.
      *
      * @var array
      */
@@ -93,7 +93,7 @@ class AppServiceProvider extends ServiceProvider
     ];
 
     /**
-     * 등록할 컨테이너 싱글톤 전체 목록
+     * 등록할 모든 컨테이너 싱글톤.
      *
      * @var array
      */
@@ -107,7 +107,7 @@ class AppServiceProvider extends ServiceProvider
 <a name="the-boot-method"></a>
 ### Boot 메서드
 
-서비스 프로바이더 내에서 [뷰 컴포저](/docs/{{version}}/views#view-composers)와 같은 기능을 등록해야 하는 경우가 있을 수 있습니다. 이런 작업은 `boot` 메서드 내에서 처리해야 합니다. **이 메서드는 모든 서비스 프로바이더가 등록된 후에 호출**되므로, 프레임워크에 의해 등록된 모든 서비스에 접근할 수 있습니다.
+만약 서비스 프로바이더에서 [뷰 컴포저](/docs/12.x/views#view-composers)와 같은 기능을 등록해야 한다면, 이러한 작업은 `boot` 메서드에서 처리해야 합니다. **`boot` 메서드는 다른 모든 서비스 프로바이더가 등록된 후에 호출**되므로, 프레임워크에 이미 등록된 모든 서비스에 접근할 수 있습니다.
 
 ```php
 <?php
@@ -120,7 +120,7 @@ use Illuminate\Support\ServiceProvider;
 class ComposerServiceProvider extends ServiceProvider
 {
     /**
-     * 애플리케이션 서비스를 부트스트랩합니다.
+     * Bootstrap any application services.
      */
     public function boot(): void
     {
@@ -132,15 +132,15 @@ class ComposerServiceProvider extends ServiceProvider
 ```
 
 <a name="boot-method-dependency-injection"></a>
-#### Boot 메서드 의존성 주입
+#### Boot 메서드의 의존성 주입
 
-서비스 프로바이더의 `boot` 메서드에서 타입힌트를 통해 의존성을 주입할 수 있습니다. [서비스 컨테이너](/docs/{{version}}/container)는 필요한 모든 의존성을 자동으로 주입해줍니다.
+서비스 프로바이더의 `boot` 메서드에 필요한 의존성을 타입 힌트로 선언할 수 있습니다. [서비스 컨테이너](/docs/12.x/container)가 자동으로 해당 의존성을 주입해줍니다.
 
 ```php
 use Illuminate\Contracts\Routing\ResponseFactory;
 
 /**
- * 애플리케이션 서비스를 부트스트랩합니다.
+ * Bootstrap any application services.
  */
 public function boot(ResponseFactory $response): void
 {
@@ -153,7 +153,7 @@ public function boot(ResponseFactory $response): void
 <a name="registering-providers"></a>
 ## 프로바이더 등록하기
 
-모든 서비스 프로바이더는 `bootstrap/providers.php` 설정 파일에 등록되어 있습니다. 이 파일은 애플리케이션의 서비스 프로바이더 클래스 이름들의 배열을 반환합니다.
+모든 서비스 프로바이더는 `bootstrap/providers.php` 설정 파일에 등록합니다. 이 파일은 애플리케이션에서 사용할 서비스 프로바이더 클래스 이름을 배열형태로 반환합니다.
 
 ```php
 <?php
@@ -163,7 +163,7 @@ return [
 ];
 ```
 
-`make:provider` Artisan 명령어를 실행하면, Laravel이 자동으로 새로 만들어진 프로바이더를 `bootstrap/providers.php` 파일에 추가합니다. 만약 직접 클래스 파일을 만든 경우, 배열에 직접 프로바이더 클래스를 추가해야 합니다.
+`make:provider` 아티즌 명령어를 사용하면, 라라벨이 새로 생성한 프로바이더를 `bootstrap/providers.php` 파일에 자동으로 추가해줍니다. 하지만, 만약 직접 프로바이더 클래스를 생성했다면, 이 배열에 수동으로 추가해야 합니다.
 
 ```php
 <?php
@@ -175,13 +175,13 @@ return [
 ```
 
 <a name="deferred-providers"></a>
-## 지연(Deferred) 프로바이더
+## 지연 로딩(Deferred) 프로바이더
 
-프로바이더가 오직 [서비스 컨테이너](/docs/{{version}}/container) 바인딩만을 등록한다면, 이러한 프로바이더의 등록을 바인딩이 실제로 필요해질 때까지 지연(defer)할 수 있습니다. 이러한 프로바이더를 지연 로드하면, 매 요청마다 파일 시스템에서 불러오는 작업이 없어 애플리케이션의 성능이 향상됩니다.
+만약 여러분의 프로바이더가 **오직** [서비스 컨테이너](/docs/12.x/container)에 바인딩만 등록한다면, 실제로 해당 바인딩이 필요할 때까지 등록을 지연시키는 옵션을 선택할 수 있습니다. 이렇게 하면 애플리케이션의 성능이 향상되는데, 그 이유는 서비스가 실제로 필요할 때만 파일 시스템에서 로드되기 때문입니다.
 
-Laravel은 지연 서비스 프로바이더가 제공하는 서비스 이름과 해당 서비스 프로바이더 클래스의 리스트를 컴파일하여 저장합니다. 그런 다음 이러한 서비스 중 하나를 해석(resolve)하려 할 때만 Laravel이 해당 서비스 프로바이더를 불러옵니다.
+라라벨은 지연 로딩되는 서비스 프로바이더가 제공하는 모든 서비스의 목록을 컴파일하고 보관합니다. 그리고 실제로 이 서비스 중 하나를 resolve(해결)하려 할 때만, 프로바이더를 로드합니다.
 
-프로바이더의 로드를 지연시키려면, `\Illuminate\Contracts\Support\DeferrableProvider` 인터페이스를 구현하고, `provides` 메서드를 정의해야 합니다. `provides` 메서드는 해당 프로바이더에서 등록한 서비스 컨테이너 바인딩을 반환해야 합니다.
+프로바이더의 로딩을 지연하려면, `\Illuminate\Contracts\Support\DeferrableProvider` 인터페이스를 구현하고, `provides` 메서드를 정의해야 합니다. `provides` 메서드는 프로바이더가 서비스 컨테이너에 등록하는 바인딩 목록을 반환해야 합니다.
 
 ```php
 <?php
@@ -196,7 +196,7 @@ use Illuminate\Support\ServiceProvider;
 class RiakServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     /**
-     * 애플리케이션 서비스를 등록합니다.
+     * Register any application services.
      */
     public function register(): void
     {
@@ -206,7 +206,7 @@ class RiakServiceProvider extends ServiceProvider implements DeferrableProvider
     }
 
     /**
-     * 프로바이더가 제공하는 서비스 목록을 반환합니다.
+     * Get the services provided by the provider.
      *
      * @return array<int, string>
      */

@@ -69,8 +69,16 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
             print(f"빈 파일: {source_file}")
             return False
 
-        # 마크다운 필터링 적용
-        content = filter_markdown(content)
+        # 파일 경로에서 버전 정보 추출
+        version = None
+        path_parts = source_file.split(os.sep)
+        for part in path_parts:
+            if part in ["master", "8.x", "9.x", "10.x", "11.x", "12.x"]:
+                version = part
+                break
+
+        # 마크다운 필터링 적용 (버전 정보 포함)
+        content = filter_markdown(content, version)
 
         # 시스템 프롬프트 설정
         try:
