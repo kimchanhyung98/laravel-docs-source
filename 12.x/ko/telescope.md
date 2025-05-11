@@ -37,7 +37,7 @@
 
 [Laravel Telescope](https://github.com/laravel/telescope)는 로컬 라라벨 개발 환경에서 매우 유용하게 사용할 수 있는 도구입니다. Telescope를 사용하면 애플리케이션으로 들어오는 요청, 발생한 예외, 로그 기록, 데이터베이스 쿼리, 대기열 작업, 메일, 알림, 캐시 작업, 예약된 작업, 변수 덤프 등 다양한 정보를 한눈에 확인할 수 있습니다.
 
-<img src="https://laravel.com/img/docs/telescope-example.png">
+<img src="https://laravel.com/img/docs/telescope-example.png" />
 
 <a name="installation"></a>
 ## 설치

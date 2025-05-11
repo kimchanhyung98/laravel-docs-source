@@ -634,7 +634,7 @@ public function attachments(): array
 <body>
     Here is an image:
 
-    <img src="{{ $message->embed($pathToImage) }}">
+    <img src="{{ $message->embed($pathToImage) }}" />
 </body>
 ```
 
@@ -650,7 +650,7 @@ public function attachments(): array
 <body>
     Here is an image from raw data:
 
-    <img src="{{ $message->embedData($data, 'example-image.jpg') }}">
+    <img src="{{ $message->embedData($data, 'example-image.jpg') }}" />
 </body>
 ```
 

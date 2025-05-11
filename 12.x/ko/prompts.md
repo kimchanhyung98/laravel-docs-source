@@ -28,7 +28,7 @@
 
 [Laravel Prompts](https://github.com/laravel/prompts)는 커맨드라인 애플리케이션에 아름답고 사용자 친화적인 폼을 추가할 수 있도록 해주는 PHP 패키지입니다. 플레이스홀더 텍스트와 유효성 검증 등, 브라우저와 유사한 다양한 기능을 제공합니다.
 
-<img src="https://laravel.com/img/docs/prompts-example.png">
+<img src="https://laravel.com/img/docs/prompts-example.png" />
 
 Laravel Prompts는 [Artisan 콘솔 명령어](/docs/{{version}}/artisan#writing-commands)에서 사용자 입력을 받을 때 매우 적합하며, 그 외의 어떤 커맨드라인 PHP 프로젝트에서도 활용할 수 있습니다.
 

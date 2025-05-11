@@ -422,7 +422,7 @@ public function toMail(object $notifiable): MailMessage
 
 위 예제는 인사말, 텍스트 줄, 콜 투 액션 버튼, 마지막 텍스트 라인까지 포함해서 메일 메시지를 간결하고 빠르게 작성할 수 있음을 보여줍니다. 메일 채널은 이 메시지 구성을 아름다운 반응형 HTML 이메일 템플릿과 텍스트 버전으로 변환해줍니다. 아래는 `mail` 채널로 생성된 이메일 예시입니다.
 
-<img src="https://laravel.com/img/docs/notification-example-2.png">
+<img src="https://laravel.com/img/docs/notification-example-2.png" />
 
 > [!NOTE]
 > 메일 알림을 전송할 때는, `config/app.php` 설정 파일에서 `name` 옵션이 반드시 설정되어 있어야 합니다. 이 값은 메일 알림 메시지의 헤더와 푸터에 사용됩니다.

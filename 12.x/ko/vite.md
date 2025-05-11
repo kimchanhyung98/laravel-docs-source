@@ -430,10 +430,10 @@ resources/
 
 ```html
 <!-- 이 에셋은 Vite가 처리하지 않으므로, 빌드에 포함되지 않습니다 -->
-<img src="/taylor.png">
+<img src="/taylor.png" />
 
 <!-- 이 에셋은 Vite가 경로를 다시 작성하고, 버저닝 및 번들링합니다 -->
-<img src="../../images/abigail.png">
+<img src="../../images/abigail.png" />
 ```
 
 <a name="working-with-stylesheets"></a>
@@ -470,7 +470,7 @@ import.meta.glob([
 이제 `npm run build` 시 Vite가 해당 에셋들을 빌드에 포함합니다. Blade 템플릿에서는 `Vite::asset` 메서드로 버저닝된 URL을 가져와 사용할 수 있습니다.
 
 ```blade
-<img src="{{ Vite::asset('resources/images/logo.png') }}">
+<img src="{{ Vite::asset('resources/images/logo.png') }}" />
 ```
 
 <a name="blade-refreshing-on-save"></a>
@@ -556,7 +556,7 @@ public function boot(): void
 매크로를 정의하면, 템플릿에서 해당 매크로를 아래처럼 사용할 수 있습니다. 예를 들어 위에서 정의한 `image` 매크로로 `resources/images/logo.png` 에셋을 참조할 수 있습니다.
 
 ```blade
-<img src="{{ Vite::image('logo.png') }}" alt="Laravel Logo">
+<img src="{{ Vite::image('logo.png') }}" alt="Laravel Logo" />
 ```
 
 <a name="asset-prefetching"></a>
@@ -997,7 +997,7 @@ Vite 에코시스템 내 일부 플러그인들은 슬래시(`/`)로 시작하�
 예를 들어, `vite-imagetools` 플러그인은 Vite가 에셋을 서비스할 때 아래와 같이 URL을 생성합니다.
 
 ```html
-<img src="/@imagetools/f0b2f404b13f052c604e632f2fb60381bf61a520">
+<img src="/@imagetools/f0b2f404b13f052c604e632f2fb60381bf61a520" />
 ```
 
 `vite-imagetools` 플러그인은 `/@imagetools`로 시작하는 URL을 Vite가 가로채 처리할 것으로 기대합니다. 만약 이런 동작을 기대하는 플러그인을 사용한다면 직접 URL을 수정해야 합니다. `vite.config.js`에서 `transformOnServe` 옵션을 사용해 해결할 수 있습니다.
@@ -1023,6 +1023,6 @@ export default defineConfig({
 이제 Vite가 에셋을 서비스하는 동안에는 다음과 같이 개발 서버 주소를 포함한 URL로 출력됩니다.
 
 ```html
-- <img src="/@imagetools/f0b2f404b13f052c604e632f2fb60381bf61a520"><!-- [tl! remove] -->
-+ <img src="http://[::1]:5173/@imagetools/f0b2f404b13f052c604e632f2fb60381bf61a520"><!-- [tl! add] -->
+- <img src="/@imagetools/f0b2f404b13f052c604e632f2fb60381bf61a520" /><!-- [tl! remove] -->
++ <img src="http://[::1]:5173/@imagetools/f0b2f404b13f052c604e632f2fb60381bf61a520" /><!-- [tl! add] -->
 ```

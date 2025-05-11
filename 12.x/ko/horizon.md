@@ -25,7 +25,7 @@
 
 Horizon을 사용하면 모든 큐 워커(작업자) 설정이 하나의 간단한 구성 파일에 보관됩니다. 애플리케이션의 워커 설정을 버전 관리되는 파일로 정의함으로써, 배포 시 손쉽게 큐 작업자 수를 조절하거나 설정을 수정할 수 있습니다.
 
-<img src="https://laravel.com/img/docs/horizon-example.png">
+<img src="https://laravel.com/img/docs/horizon-example.png" />
 
 <a name="installation"></a>
 ## 설치

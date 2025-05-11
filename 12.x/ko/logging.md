@@ -523,7 +523,7 @@ class CreateCustomLogger
 
 Laravel Pail은 명령줄에서 라라벨 애플리케이션의 로그 파일을 쉽게 살펴볼 수 있도록 도와주는 패키지입니다. 기존 `tail` 명령과 달리, Pail은 Sentry나 Flare 같은 어떠한 로그 드라이버와도 함께 사용할 수 있도록 설계되어 있습니다. 그뿐만 아니라, 빠르게 원하는 로그만 찾을 수 있도록 여러 유용한 필터도 제공합니다.
 
-<img src="https://laravel.com/img/docs/pail-example.png">
+<img src="https://laravel.com/img/docs/pail-example.png" />
 
 <a name="pail-installation"></a>
 ### 설치
