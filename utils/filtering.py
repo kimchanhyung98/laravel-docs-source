@@ -1,15 +1,18 @@
-# filtering.py
+#!/usr/bin/env python3
+"""
+마크다운 필터링 관련 유틸리티 함수 모듈
+"""
 import re
 
 
 def is_list_item(line: str) -> bool:
-    """마크다운 줄이 리스트 항목인지 확인합니다.
+    """마크다운 줄이 리스트 항목인지 확인
 
     Args:
-        line: 확인할 마크다운 줄 문자열입니다.
+        line: 확인할 마크다운 줄 문자열
 
     Returns:
-        줄이 리스트 항목이면 True, 그렇지 않으면 False를 반환합니다.
+        줄이 리스트 항목이면 True, 그렇지 않으면 False
     """
     stripped_line = line.lstrip()
     if stripped_line.startswith(("- ", "* ", "+ ")):
@@ -22,16 +25,15 @@ def is_list_item(line: str) -> bool:
 
 
 def convert_indented_code_blocks(content: str) -> str:
-    """마크다운 내용에서 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환합니다.
+    """마크다운 내용에서 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환
 
-    언어 태그 없이 단순 백틱(```)만을 사용합니다.
+    언어 태그 없이 단순 백틱(```)만을 사용
 
     Args:
-        content: 처리할 마크다운 원본 문자열입니다.
+        content: 처리할 마크다운 원본 문자열
 
     Returns:
-        들여쓰기 코드 블록이 언어 태그 없는 펜스 코드 블록으로 변환된
-        마크다운 문자열입니다.
+        들여쓰기 코드 블록이 언어 태그 없는 펜스 코드 블록으로 변환된 마크다운 문자열
     """
     lines = content.splitlines()
     new_lines = []
@@ -101,33 +103,33 @@ def convert_indented_code_blocks(content: str) -> str:
 
 
 def remove_style_tags(content: str) -> str:
-    """마크다운 내용에서 <style> 태그와 그 내부 내용을 모두 제거합니다.
+    """마크다운 내용에서 <style> 태그와 그 내부 내용을 모두 제거
 
-    제거 시 추가적인 개행 문자나 빈 줄을 남기지 않고, 태그와 내용만 완전히 삭제합니다.
+    제거 시 추가적인 개행 문자나 빈 줄을 남기지 않고, 태그와 내용만 완전히 삭제
 
     Args:
-        content: 처리할 마크다운 원본 문자열입니다.
+        content: 처리할 마크다운 원본 문자열
 
     Returns:
-        <style> 태그와 그 내용이 완전히 제거된 마크다운 문자열입니다.
+        <style> 태그와 그 내용이 완전히 제거된 마크다운 문자열
     """
     pattern = r"<style.*?>.*?</style>"
     return re.sub(pattern, "", content, flags=re.DOTALL | re.IGNORECASE)
 
 
 def ensure_ends_with_blank_line(content: str) -> str:
-    """파일 끝이 하나의 빈 줄로 끝나도록 표준화합니다.
+    """파일 끝이 하나의 빈 줄로 끝나도록 표준화
 
     - 파일에 내용이 있다면, 마지막 내용 줄 뒤에 두 개의 개행 문자(\\n\\n)를 두어
-      하나의 빈 줄이 보이도록 합니다.
-    - 파일 끝의 여러 빈 줄이나 공백은 이 규칙에 맞게 조정됩니다.
-    - 파일이 완전히 비어있거나 공백으로만 이루어져 있다면 빈 문자열을 반환합니다.
+      하나의 빈 줄이 보이도록 함
+    - 파일 끝의 여러 빈 줄이나 공백은 이 규칙에 맞게 조정
+    - 파일이 완전히 비어있거나 공백으로만 이루어져 있다면 빈 문자열을 반환
 
     Args:
-        content: 처리할 마크다운 원본 문자열입니다.
+        content: 처리할 마크다운 원본 문자열
 
     Returns:
-        파일 끝이 하나의 빈 줄로 표준화된 마크다운 문자열입니다.
+        파일 끝이 하나의 빈 줄로 표준화된 마크다운 문자열
     """
     if not content.strip():  # 내용이 전혀 없거나 공백만 있다면 빈 문자열 반환
         return ""
@@ -136,32 +138,29 @@ def ensure_ends_with_blank_line(content: str) -> str:
     processed_content = content.rstrip()
 
     # 내용이 있다면, 파일 끝에 두 개의 개행 문자 추가 (하나의 빈 줄 생성)
-    # 이렇게 하면 파일의 마지막은 항상 비어있는 한 줄이 됩니다.
     if processed_content:  # 이 조건은 rstrip() 후에도 내용이 남아있는지 확인
         processed_content += "\n\n"
     else:  # rstrip() 후 내용이 모두 사라졌다면 (원래 공백만 있던 문자열)
-        # 그리고 원래 content.strip()이 False가 아니었다면 (즉, 원래 빈 문자열이 아니었다면)
-        # 이 경우는 거의 발생하지 않지만, 안전을 위해 빈 문자열로 처리
         return ""
 
     return processed_content
 
 
 def filter_markdown(content: str) -> str:
-    """마크다운 내용에 여러 필터링 함수를 순차적으로 적용합니다.
+    """마크다운 내용에 여러 필터링 함수를 순차적으로 적용
 
     적용되는 필터:
-    1. 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환 (언어 태그 없음).
-    2. HTML <style> 태그와 그 내용을 완전히 제거.
-    3. 파일 끝을 하나의 빈 줄로 표준화 (문서 중간의 빈 줄은 유지).
+    1. 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환 (언어 태그 없음)
+    2. HTML <style> 태그와 그 내용을 완전히 제거
+    3. 파일 끝을 하나의 빈 줄로 표준화 (문서 중간의 빈 줄은 유지)
 
     Args:
-        content: 필터링할 원본 마크다운 문자열입니다.
+        content: 필터링할 원본 마크다운 문자열
 
     Returns:
-        모든 필터링이 적용된 마크다운 문자열입니다.
+        모든 필터링이 적용된 마크다운 문자열
     """
     content = convert_indented_code_blocks(content)
     content = remove_style_tags(content)
-    content = ensure_ends_with_blank_line(content)  # 함수 이름 및 로직 반영
+    content = ensure_ends_with_blank_line(content)
     return content
