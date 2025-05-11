@@ -1,29 +1,29 @@
-# 릴리즈 노트
+# 릴리스 노트 (Release Notes)
 
 - [버전 관리 방식](#versioning-scheme)
 - [지원 정책](#support-policy)
-- [Laravel 12](#laravel-12)
+- [라라벨 12](#laravel-12)
 
 <a name="versioning-scheme"></a>
 ## 버전 관리 방식
 
-Laravel 및 그 외 공식 패키지들은 [Semantic Versioning](https://semver.org)(시맨틱 버저닝)을 따릅니다. 주요 프레임워크 릴리즈는 매년(대략 1분기)에 출시되며, 마이너 및 패치 릴리즈는 매주 출시될 수 있습니다. 마이너 및 패치 릴리즈에는 **절대로** 하위 호환성에 영향을 주는 변경 사항이 포함되지 않아야 합니다.
+라라벨과 라라벨의 공식 패키지들은 [시맨틱 버전 규칙(Semantic Versioning)](https://semver.org)을 따릅니다. 프레임워크의 주요 버전(Major)은 매년(대략 1분기)에 출시되며, 마이너 버전과 패치 버전은 매주처럼 자주 출시될 수 있습니다. 마이너 또는 패치 릴리스에는 **절대로** 호환성에 영향을 주는 변경사항(브레이킹 체인지)이 포함되지 않습니다.
 
-애플리케이션이나 패키지에서 Laravel 프레임워크 혹은 컴포넌트를 참조할 때는, `^12.0`과 같은 버전 제약 조건을 사용하는 것이 좋습니다. Laravel의 주요 릴리즈에는 하위 호환성에 영향을 주는 변경이 포함될 수 있기 때문입니다. 하지만, 새로운 주요 릴리즈로 하루 이내에 업데이트할 수 있도록 항상 최선을 다하고 있습니다.
+여러분의 애플리케이션이나 패키지에서 라라벨 프레임워크 또는 그 구성요소를 참조할 때는 항상 `^12.0`과 같은 버전 제약 조건을 사용하는 것이 좋습니다. 라라벨의 주요 릴리스에는 브레이킹 체인지가 포함되기 때문입니다. 하지만, 저희는 새로운 주요 버전으로의 업그레이드가 하루 이내에 끝날 수 있도록 노력하고 있습니다.
 
 <a name="named-arguments"></a>
-#### 네임드 아규먼트
+#### 명명된 인수(Named Arguments)
 
-[네임드 아규먼트](https://www.php.net/manual/en/functions.arguments.php#functions.named-arguments)는 Laravel의 하위 호환성 가이드라인에 포함되지 않습니다. Laravel 코드베이스의 개선을 위해 필요한 경우 함수의 인자명을 변경할 수 있습니다. 따라서, Laravel 메소드 호출 시 네임드 아규먼트를 사용할 때는 신중히 사용해야 하며, 향후 파라미터 이름이 변경될 수 있다는 점을 염두에 두어야 합니다.
+[명명된 인수](https://www.php.net/manual/en/functions.arguments.php#functions.named-arguments)는 라라벨의 하위 호환성 보장 정책에 포함되지 않습니다. 필요하다면 라라벨 코드베이스의 개선을 위해 함수의 인수 이름이 변경될 수 있습니다. 따라서 라라벨 메서드를 호출할 때 명명된 인수를 사용한다면, 향후 인수 이름이 변경될 가능성이 있음을 유념하고 신중하게 사용해야 합니다.
 
 <a name="support-policy"></a>
 ## 지원 정책
 
-모든 Laravel 릴리즈에 대해 버그 수정은 18개월 동안 제공되며, 보안 패치는 2년간 제공됩니다. Lumen을 포함한 추가 라이브러리의 경우, 오직 최신 주요 릴리즈만 버그 수정을 받습니다. 또한, Laravel에서 지원하는 데이터베이스 버전은 [공식 문서](/docs/{{version}}/database#introduction)를 참고하시기 바랍니다.
+모든 라라벨 버전은 18개월간 버그 수정(Bug Fixes)을, 2년간 보안 수정(Security Fixes)을 제공합니다. Lumen을 포함한 추가 라이브러리들은 최신 주요 버전만이 버그 수정을 받습니다. 또한, 라라벨이 지원하는 데이터베이스 버전도 [공식 문서](/docs/{{version}}/database#introduction)에서 꼭 확인해 주세요.
 
 <div class="overflow-auto">
 
-| 버전 | PHP (*) | 릴리즈 | 버그 수정 종료일 | 보안 패치 종료일 |
+| 버전 | PHP (*) | 출시일 | 버그 수정 종료일 | 보안 수정 종료일 |
 | --- | --- | --- | --- | --- |
 | 9 | 8.0 - 8.2 | 2022년 2월 8일 | 2023년 8월 8일 | 2024년 2월 6일 |
 | 10 | 8.1 - 8.3 | 2023년 2월 14일 | 2024년 8월 6일 | 2025년 2월 4일 |
@@ -33,37 +33,39 @@ Laravel 및 그 외 공식 패키지들은 [Semantic Versioning](https://semver.
 </div>
 
 <div class="version-colors">
-    <div class="end-of-life">
-        <div class="color-box"></div>
-        <div>지원 종료</div>
-    </div>
-    <div class="security-fixes">
-        <div class="color-box"></div>
-        <div>보안 패치만 제공</div>
-    </div>
+```
+<div class="end-of-life">
+    <div class="color-box"></div>
+    <div>End of life</div>
+</div>
+<div class="security-fixes">
+    <div class="color-box"></div>
+    <div>Security fixes only</div>
+</div>
+```
 </div>
 
-(*) 지원되는 PHP 버전
+(*) 지원하는 PHP 버전
 
 <a name="laravel-12"></a>
-## Laravel 12
+## 라라벨 12
 
-Laravel 12는 상위 의존성 패키지 업데이트 및 React, Vue, Livewire용 신규 스타터 키트 도입 등 Laravel 11.x에서의 개선을 이어갑니다. 신규 키트에는 [WorkOS AuthKit](https://authkit.com)을 이용한 사용자 인증 옵션도 포함되어 있습니다. WorkOS 기반 스타터 키트는 소셜 인증, 패스키, SSO 지원을 제공합니다.
+라라벨 12는 라라벨 11.x에서 진행된 여러 개선사항을 이어받아 상위 종속성 패키지들을 업데이트하고, React, Vue, Livewire용 신규 스타터 키트(시작용 템플릿 키트)를 도입했습니다. 특히 사용자 인증을 위한 [WorkOS AuthKit](https://authkit.com)까지 선택적으로 사용할 수 있습니다. WorkOS를 활용한 스타터 키트 버전은 소셜 로그인, 패스키, SSO(싱글 사인온)까지 지원합니다.
 
 <a name="minimal-breaking-changes"></a>
-### 최소한의 파괴적 변경
+### 최소한의 브레이킹 체인지
 
-이번 릴리즈에서는 하위 호환성에 영향을 주는 변경을 최소화하는 데 중점을 두었습니다. 그 대신, 연중 기존 애플리케이션에 영향을 주지 않는 지속적인 품질 개선을 제공하는 데 집중했습니다.
+이번 릴리스 주기의 주요 목표는 브레이킹 체인지를 최대한 줄이는 것이었습니다. 그 대신, 기존 애플리케이션을 깨뜨리지 않는 다양한 편의성과 품질 향상 개선을 꾸준히 추가했습니다.
 
-따라서, Laravel 12 릴리즈는 기존 의존성 업그레이드를 위한 비교적 소규모의 "유지보수" 릴리즈입니다. 이로 인해 대부분의 Laravel 애플리케이션은 코드 변경 없이도 Laravel 12로 업그레이드할 수 있습니다.
+이러한 이유로 라라벨 12는 기존 의존성 업그레이드를 위한 비교적 작은 규모의 "유지보수 릴리스"라고 할 수 있습니다. 대부분의 라라벨 애플리케이션은 코드 수정 없이 라라벨 12로 업그레이드할 수 있을 것입니다.
 
 <a name="new-application-starter-kits"></a>
-### 신규 애플리케이션 스타터 키트
+### 새로운 애플리케이션 스타터 키트
 
-Laravel 12에서는 React, Vue, Livewire용 신규 [애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)를 도입했습니다. React, Vue 스타터 키트는 Inertia 2, TypeScript, [shadcn/ui](https://ui.shadcn.com), Tailwind를 사용하며, Livewire 스타터 키트는 Tailwind 기반 [Flux UI](https://fluxui.dev) 컴포넌트 라이브러리와 Laravel Volt를 활용합니다.
+라라벨 12에서는 React, Vue, Livewire를 위한 [새로운 스타터 키트](/docs/{{version}}/starter-kits)가 도입되었습니다. React와 Vue 스타터 키트는 Inertia 2, TypeScript, [shadcn/ui](https://ui.shadcn.com), Tailwind를 활용하며, Livewire 스타터 키트는 Tailwind 기반의 [Flux UI](https://fluxui.dev) 컴포넌트 라이브러리와 Laravel Volt를 사용합니다.
 
-React, Vue, Livewire 스타터 키트 모두 Laravel의 내장 인증 시스템을 활용하여 로그인, 회원가입, 비밀번호 재설정, 이메일 인증 등 다양한 기능을 제공합니다. 또한, 각 스타터 키트의 [WorkOS AuthKit 기반](https://authkit.com) 버전을 도입하여 소셜 인증, 패스키, SSO 지원을 제공합니다. WorkOS는 월 100만 명 활동 사용자까지 무료 인증 서비스를 제공합니다.
+React, Vue, Livewire 스타터 키트 모두 라라벨 내장 인증 시스템을 이용해 로그인, 회원가입, 비밀번호 재설정, 이메일 인증 등 다양한 인증 관련 기능을 제공합니다. 여기에 [WorkOS AuthKit 기반](https://authkit.com) 스타터 키트 버전도 각각 제공되어, 소셜 로그인, 패스키, SSO 인증까지 지원합니다. WorkOS는 월간 100만 명 활동 사용자까지 무료로 인증 기능을 제공합니다.
 
-신규 애플리케이션 스타터 키트가 도입되면서, Laravel Breeze와 Laravel Jetstream은 더 이상 추가 업데이트를 받지 않습니다.
+이러한 새로운 스타터 키트가 출시됨에 따라, 기존의 Laravel Breeze 및 Laravel Jetstream은 더 이상 추가 업데이트를 받지 않습니다.
 
-새로운 스타터 키트 시작 방법은 [스타터 키트 문서](/docs/{{version}}/starter-kits)를 참고하세요.
+신규 스타터 키트의 사용법은 [스타터 키트 공식 문서](/docs/{{version}}/starter-kits)를 참고해 시작해 보세요.

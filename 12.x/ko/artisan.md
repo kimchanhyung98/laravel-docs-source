@@ -2,38 +2,38 @@
 
 - [소개](#introduction)
     - [Tinker (REPL)](#tinker)
-- [명령어 작성하기](#writing-commands)
-    - [명령어 생성하기](#generating-commands)
+- [명령어 작성](#writing-commands)
+    - [명령어 생성](#generating-commands)
     - [명령어 구조](#command-structure)
-    - [클로저 기반 명령어](#closure-commands)
+    - [클로저 명령어](#closure-commands)
     - [Isolatable 명령어](#isolatable-commands)
-- [입력 기대값 정의하기](#defining-input-expectations)
-    - [인수(Arguments)](#arguments)
-    - [옵션(Options)](#options)
-    - [입력 배열(Input Arrays)](#input-arrays)
-    - [입력 설명(Input Descriptions)](#input-descriptions)
+- [입력값 정의](#defining-input-expectations)
+    - [인수](#arguments)
+    - [옵션](#options)
+    - [입력 배열](#input-arrays)
+    - [입력 설명](#input-descriptions)
     - [누락된 입력값 프롬프트](#prompting-for-missing-input)
-- [명령어 I/O](#command-io)
-    - [입력값 가져오기](#retrieving-input)
+- [명령어 입출력](#command-io)
+    - [입력값 조회](#retrieving-input)
     - [입력값 프롬프트](#prompting-for-input)
-    - [출력 작성하기](#writing-output)
-- [명령어 등록하기](#registering-commands)
-- [명령어 코드상 실행하기](#programmatically-executing-commands)
-    - [다른 명령어에서 명령어 호출하기](#calling-commands-from-other-commands)
-- [Signal 처리](#signal-handling)
-- [스타브(Stub) 커스터마이징](#stub-customization)
-- [이벤트(Events)](#events)
+    - [출력 작성](#writing-output)
+- [명령어 등록](#registering-commands)
+- [프로그램적으로 명령어 실행](#programmatically-executing-commands)
+    - [다른 명령어에서 명령어 호출](#calling-commands-from-other-commands)
+- [시그널 핸들링](#signal-handling)
+- [스텁 커스터마이즈](#stub-customization)
+- [이벤트](#events)
 
 <a name="introduction"></a>
 ## 소개
 
-Artisan은 라라벨에 기본적으로 포함되어 있는 명령줄 인터페이스입니다. Artisan은 애플리케이션 루트에 `artisan` 스크립트 형태로 존재하며, 애플리케이션 개발을 도와주는 다양한 유용한 명령어들을 제공합니다. 사용 가능한 모든 Artisan 명령어 목록을 확인하려면 `list` 명령어를 사용할 수 있습니다.
+아티즌(Artisan)은 라라벨에 기본 포함된 명령줄 인터페이스입니다. 아티즌은 애플리케이션 루트 경로에 `artisan` 스크립트로 존재하며, 애플리케이션을 개발할 때 유용하게 사용할 수 있는 다양한 명령어를 제공합니다. 사용 가능한 모든 아티즌 명령어 목록을 확인하려면 `list` 명령어를 사용할 수 있습니다.
 
 ```shell
 php artisan list
 ```
 
-각각의 명령어에는 해당 명령어에서 사용할 수 있는 인수와 옵션을 보여주고 설명하는 "도움말" 화면도 포함되어 있습니다. 도움말을 보려면 명령어 이름 앞에 `help`를 붙여 실행하면 됩니다.
+모든 명령어에는 명령어가 받을 수 있는 인수와 옵션을 보여주는 "도움말(help)" 화면이 있습니다. 도움말 화면을 보려면, 명령어 이름 앞에 `help`를 붙여 실행하면 됩니다.
 
 ```shell
 php artisan help migrate
@@ -42,7 +42,7 @@ php artisan help migrate
 <a name="laravel-sail"></a>
 #### Laravel Sail
 
-[Laravel Sail](/docs/{{version}}/sail)을 로컬 개발 환경으로 사용하고 있다면, Artisan 명령어를 실행할 때는 반드시 `sail` 명령줄을 이용해야 합니다. Sail은 해당 명령어들을 애플리케이션의 Docker 컨테이너 안에서 실행시켜 줍니다.
+로컬 개발 환경으로 [Laravel Sail](/docs/{{version}}/sail)을 사용하는 경우, 아티즌 명령어를 실행할 때는 반드시 `sail` 커맨드를 통해 실행해야 합니다. Sail을 사용하면, 애플리케이션의 Docker 컨테이너 안에서 아티즌 명령어가 실행됩니다.
 
 ```shell
 ./vendor/bin/sail artisan list
@@ -51,42 +51,42 @@ php artisan help migrate
 <a name="tinker"></a>
 ### Tinker (REPL)
 
-[Laravel Tinker](https://github.com/laravel/tinker)는 라라벨 프레임워크를 위한 강력한 REPL 환경(대화형 콘솔)로, [PsySH](https://github.com/bobthecow/psysh) 패키지를 기반으로 동작합니다.
+[Laravel Tinker](https://github.com/laravel/tinker)는 라라벨 프레임워크를 위한 강력한 REPL(대화형 셸) 도구입니다. [PsySH](https://github.com/bobthecow/psysh) 패키지를 기반으로 동작합니다.
 
 <a name="installation"></a>
 #### 설치
 
-모든 라라벨 애플리케이션에는 기본적으로 Tinker가 포함되어 있습니다. 만약 이전에 Tinker를 삭제했다면 Composer를 통해 Tinker를 재설치할 수 있습니다.
+라라벨 애플리케이션에는 기본적으로 Tinker가 포함되어 있습니다. 만약 Tinker를 이전에 제거했다면, Composer를 통해 다시 설치할 수 있습니다.
 
 ```shell
 composer require laravel/tinker
 ```
 
 > [!NOTE]
-> 라라벨 애플리케이션을 터미널에서 다룰 때, 핫 리로딩, 여러 줄 코드 편집, 자동완성 기능이 필요하다면 [Tinkerwell](https://tinkerwell.app)을 참고해보세요!
+> 라라벨 애플리케이션에서 핫 리로딩, 여러 줄 코드 편집, 자동완성 기능을 찾고 계신가요? [Tinkerwell](https://tinkerwell.app)을 확인해보세요!
 
 <a name="usage"></a>
-#### 사용 방법
+#### 사용법
 
-Tinker를 사용하면 Eloquent 모델, 잡(jobs), 이벤트 등 라라벨 애플리케이션 전반을 명령줄에서 직접 다룰 수 있습니다. Tinker 환경에 진입하려면 `tinker` Artisan 명령어를 실행하면 됩니다.
+Tinker를 사용하면 명령줄에서 애플리케이션 전체에 직접 접근할 수 있으며, Eloquent 모델, 잡, 이벤트 등 다양한 라라벨 기능을 실시간으로 다루는 것이 가능합니다. Tinker 환경에 진입하려면 `tinker` 아티즌 명령어를 실행하세요.
 
 ```shell
 php artisan tinker
 ```
 
-Tinker의 설정 파일을 배포하고 싶다면 `vendor:publish` 명령어를 사용할 수 있습니다.
+Tinker의 설정 파일은 `vendor:publish` 명령어로 배포할 수 있습니다.
 
 ```shell
 php artisan vendor:publish --provider="Laravel\Tinker\TinkerServiceProvider"
 ```
 
 > [!WARNING]
-> `dispatch` 헬퍼 함수와 `Dispatchable` 클래스의 `dispatch` 메서드는 가비지 컬렉션에 의존해서 잡을 큐에 올립니다. 따라서 tinker 사용 시에는 잡 디스패치를 위해 반드시 `Bus::dispatch` 또는 `Queue::push`를 사용해야 합니다.
+> `dispatch` 헬퍼 함수와 `Dispatchable` 클래스의 `dispatch` 메서드는 잡을 큐에 올릴 때 가비지 컬렉션에 의존합니다. 따라서 Tinker를 사용할 때는 잡(dispatch)을 위해 `Bus::dispatch`나 `Queue::push`를 사용해야 합니다.
 
 <a name="command-allow-list"></a>
-#### 실행 허용 명령어 목록(Allow List)
+#### 허용 명령어 목록
 
-Tinker는 쉘 내부에서 실행할 수 있는 Artisan 명령어를 "허용 목록(allow list)"으로 관리합니다. 기본적으로 `clear-compiled`, `down`, `env`, `inspire`, `migrate`, `migrate:install`, `up`, `optimize` 명령어만 실행할 수 있습니다. 더 많은 명령어를 허용하려면 `tinker.php` 설정 파일의 `commands` 배열에 추가하면 됩니다.
+Tinker는, Tinker 셸에서 실행 가능한 아티즌 명령어를 판단하기 위해 "허용(allow) 리스트"를 사용합니다. 기본적으로 `clear-compiled`, `down`, `env`, `inspire`, `migrate`, `migrate:install`, `up`, `optimize` 명령어가 실행 가능하도록 허용되어 있습니다. 더 많은 명령어를 허용하고 싶다면, `tinker.php` 설정 파일의 `commands` 배열에 해당 명령어를 추가하면 됩니다.
 
 ```php
 'commands' => [
@@ -95,9 +95,9 @@ Tinker는 쉘 내부에서 실행할 수 있는 Artisan 명령어를 "허용 목
 ```
 
 <a name="classes-that-should-not-be-aliased"></a>
-#### 별칭을 생성하지 않을 클래스 설정
+#### 별칭을 자동으로 생성하지 않을 클래스
 
-일반적으로 Tinker는 사용자가 인터랙션하는 클래스들을 자동으로 별칭(alias) 처리해줍니다. 하지만 특정 클래스들은 절대 별칭을 생성하지 않게 하고 싶을 때도 있습니다. 이 경우 `tinker.php` 설정 파일의 `dont_alias` 배열에 해당 클래스를 추가하면 됩니다.
+일반적으로, Tinker는 Tinker에서 상호작용할 때 클래스의 별칭(alias)을 자동으로 생성합니다. 그러나 일부 클래스는 별칭을 생성하지 않도록 설정할 수 있습니다. 이를 위해 `tinker.php` 설정 파일의 `dont_alias` 배열에 해당 클래스를 추가하면 됩니다.
 
 ```php
 'dont_alias' => [
@@ -106,14 +106,14 @@ Tinker는 쉘 내부에서 실행할 수 있는 Artisan 명령어를 "허용 목
 ```
 
 <a name="writing-commands"></a>
-## 명령어 작성하기
+## 명령어 작성
 
-Artisan에서 기본 제공하는 명령어 이외에도, 직접 커스텀 명령어를 만들어 사용할 수 있습니다. 명령어 클래스는 보통 `app/Console/Commands` 디렉토리에 저장되지만, Composer로 로딩만 가능하다면 다른 위치에 저장해도 무방합니다.
+아티즌이 제공하는 명령어 외에, 사용자 정의 명령어를 직접 만들 수도 있습니다. 명령어 클래스는 일반적으로 `app/Console/Commands` 디렉터리에 저장하며, Composer에서 오토로드할 수 있다면 다른 경로를 사용해도 무방합니다.
 
 <a name="generating-commands"></a>
-### 명령어 생성하기
+### 명령어 생성
 
-새로운 명령어를 만들려면 `make:command` Artisan 명령어를 사용하면 됩니다. 이 명령어는 `app/Console/Commands` 디렉토리에 새로운 명령어 클래스를 생성합니다. 만약 이 디렉토리가 없다면, `make:command`를 처음 실행할 때 자동으로 만들어집니다.
+새로운 명령어를 만들 때는 `make:command` 아티즌 명령어를 사용합니다. 이 명령어를 실행하면 `app/Console/Commands` 디렉터리에 새 명령어 클래스가 생성됩니다. 만약 해당 디렉터리가 없다면, 명령어 실행 시 자동으로 생성됩니다.
 
 ```shell
 php artisan make:command SendEmails
@@ -122,9 +122,9 @@ php artisan make:command SendEmails
 <a name="command-structure"></a>
 ### 명령어 구조
 
-명령어를 생성한 후에는 해당 클래스의 `signature`와 `description` 속성(property)에 적절한 값을 정의해야 합니다. 이 속성들은 `list` 명령어 등에서 명령어 정보를 표시할 때 사용됩니다. 또한 `signature` 속성을 통해 [명령어의 입력값에 대한 기대사항](#defining-input-expectations)도 함께 지정할 수 있습니다. 명령어가 실행되면 `handle` 메서드가 호출되며, 이 안에 명령어의 주요 로직을 작성하면 됩니다.
+명령어를 생성한 후에는, 클래스의 `signature`와 `description` 속성에 적절한 값을 지정해야 합니다. 이 속성들은 `list` 화면에 명령어를 표시할 때 사용됩니다. 또한 `signature` 속성을 통해 [명령어의 입력값 정의](#defining-input-expectations)도 할 수 있습니다. 명령어가 실행되면 `handle` 메서드가 호출되며, 실제 명령어 로직을 이 메서드에 작성하면 됩니다.
 
-아래 예시를 살펴보면, `handle` 메서드를 통해 필요한 의존성도 요청할 수 있다는 점에 주목하세요. 라라벨의 [서비스 컨테이너](/docs/{{version}}/container)가 타입힌트된 모든 의존성을 자동으로 주입해줍니다.
+예제 명령어를 살펴보겠습니다. 여기서는 필요한 의존성을 명령어의 `handle` 메서드로 요청할 수 있다는 것에 주목하세요. 라라벨의 [서비스 컨테이너](/docs/{{version}}/container)는 이 메서드의 시그니처에 타입힌트된 모든 의존성을 자동으로 주입해줍니다.
 
 ```php
 <?php
@@ -162,12 +162,12 @@ class SendEmails extends Command
 ```
 
 > [!NOTE]
-> 코드 재사용성을 높이려면, 콘솔 명령어에는 꼭 필요한 최소한의 로직만 작성하고 복잡한 처리는 애플리케이션 서비스에 위임하는 것이 좋습니다. 위 예시에서도 메일 발송의 실제 처리는 별도의 서비스 클래스에 맡기고 있습니다.
+> 코드 재사용성을 높이려면, 콘솔 명령어 클래스 자체를 최대한 가볍게 작성하고, 실제 작업 수행은 애플리케이션 서비스에 위임하는 것이 좋습니다. 위의 예제에서도 이메일 전송의 "실질적인 로직"은 서비스 클래스로 분리해서 주입하고 있습니다.
 
 <a name="exit-codes"></a>
 #### 종료 코드(Exit Codes)
 
-`handle` 메서드에서 아무것도 반환하지 않고 명령어가 정상적으로 종료되면, 명령어는 기본적으로 `0`의 종료 코드(성공)를 반환합니다. 필요하다면 `handle` 메서드에서 명시적으로 정수 값을 반환해 종료 코드를 지정할 수도 있습니다.
+`handle` 메서드가 아무 것도 반환하지 않으면서 명령어가 정상적으로 실행될 경우, 종료 코드로 `0`이 반환되어 성공을 나타냅니다. 하지만 필요하다면 `handle` 메서드에서 정수(integer)를 반환해 명령어의 종료 코드를 직접 지정할 수도 있습니다.
 
 ```php
 $this->error('Something went wrong.');
@@ -175,18 +175,18 @@ $this->error('Something went wrong.');
 return 1;
 ```
 
-명령어 내의 어느 위치에서든 명령어를 "실패" 상태로 종료하고 싶다면 `fail` 메서드를 사용할 수 있습니다. 이 메서드는 즉시 명령 실행을 중단하고, 종료 코드 `1`을 반환합니다.
+명령어의 어떤 메서드에서든 "실패" 상태로 즉시 종료시키고 싶다면, `fail` 메서드를 사용할 수 있습니다. 이 메서드는 즉시 실행을 중단하고 종료 코드 1을 반환합니다.
 
 ```php
 $this->fail('Something went wrong.');
 ```
 
 <a name="closure-commands"></a>
-### 클로저 기반 명령어
+### 클로저 명령어
 
-클로저(익명 함수) 기반 콘솔 명령어는 명령어 클래스를 따로 만들지 않고 간단하게 정의할 수 있는 방법입니다. HTTP 라우트를 정의할 때 컨트롤러 대신 클로저를 사용할 수 있는 것과 비슷하게, 콘솔 환경에서도 이를 대안으로 사용할 수 있습니다.
+클래스 기반으로 명령어를 정의하는 대신, 클로저 기반으로 명령어를 정의할 수도 있습니다. 라우터에서 컨트롤러 대신 클로저를 사용할 수 있는 것과 비슷하게, 명령어도 클로저를 대안으로 활용할 수 있습니다.
 
-`routes/console.php` 파일은 실제로 HTTP 라우트를 정의하는 곳은 아니지만, 애플리케이션의 콘솔 기반 진입점(경로)들을 정의합니다. 이 파일 안에서 `Artisan::command` 메서드를 사용해 클로저 기반 콘솔 명령어를 등록할 수 있습니다. `command` 메서드는 [명령어 시그니처](#defining-input-expectations)와 클로저(인수와 옵션을 인자로 받는 함수) 두 가지를 인자로 받습니다.
+`routes/console.php` 파일은 HTTP 라우트를 정의하진 않지만, 애플리케이션 내에서 콘솔용 엔트리 포인트(라우트)를 정의합니다. 이 파일에서 `Artisan::command` 메서드를 사용해 클로저 기반 콘솔 명령어를 정의할 수 있습니다. `command` 메서드는 두 개의 인수, 즉 [명령어 시그니처](#defining-input-expectations)와 명령어의 인수와 옵션을 받는 클로저를 입력받습니다.
 
 ```php
 Artisan::command('mail:send {user}', function (string $user) {
@@ -194,12 +194,12 @@ Artisan::command('mail:send {user}', function (string $user) {
 });
 ```
 
-클로저는 기본적으로 해당 명령어 인스턴스에 바인딩되어, 클래스 기반 명령어에서 사용 가능한 모든 헬퍼 메서드를 이용할 수 있습니다.
+클로저는 내부적으로 명령어 인스턴스에 바인딩되어 있으므로, 일반적인 명령어 클래스에서 사용할 수 있는 헬퍼 메서드에 모두 접근할 수 있습니다.
 
 <a name="type-hinting-dependencies"></a>
 #### 의존성 타입힌트
 
-클로저 기반 명령어에서도 인수와 옵션 외에 추가로 필요한 의존성이 있다면, 서비스 컨테이너를 통해 타입힌트로 주입받을 수 있습니다.
+명령어의 인수와 옵션 외에도, 클로저에서 추가적인 의존성을 타입힌트하여 [서비스 컨테이너](/docs/{{version}}/container)에서 주입받을 수 있습니다.
 
 ```php
 use App\Models\User;
@@ -211,9 +211,9 @@ Artisan::command('mail:send {user}', function (DripEmailer $drip, string $user) 
 ```
 
 <a name="closure-command-descriptions"></a>
-#### 클로저 명령어 설명 등록
+#### 클로저 명령어 설명
 
-클로저 기반 명령어를 정의할 때, `purpose` 메서드를 사용해 명령어 설명을 추가할 수 있습니다. 이 설명은 `php artisan list`나 `php artisan help` 명령어 실행 시 함께 표시됩니다.
+클로저 기반 명령어를 정의할 때는, `purpose` 메서드를 사용해 해당 명령어의 설명을 추가할 수 있습니다. 이 설명은 `php artisan list` 또는 `php artisan help` 명령어 실행 시 표시됩니다.
 
 ```php
 Artisan::command('mail:send {user}', function (string $user) {
@@ -225,9 +225,9 @@ Artisan::command('mail:send {user}', function (string $user) {
 ### Isolatable 명령어
 
 > [!WARNING]
-> 이 기능을 사용하려면 애플리케이션의 기본 캐시 드라이버가 `memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 중 하나여야 하며, 모든 서버가 동일한 중앙 캐시 서버와 통신해야 합니다.
+> 이 기능을 사용하려면, 애플리케이션의 기본 캐시 드라이버로 `memcached`, `redis`, `dynamodb`, `database`, `file`, 또는 `array` 캐시 드라이버 중 하나를 사용해야 합니다. 또한, 모든 서버가 동일한 중앙 캐시 서버와 통신해야 합니다.
 
-동일한 명령어의 인스턴스가 동시에 여러 개 실행되지 않게 하려면 `Illuminate\Contracts\Console\Isolatable` 인터페이스를 명령어 클래스에 구현하면 됩니다.
+하나의 명령어 인스턴스만 동시에 실행되도록 제한하고 싶을 때가 있습니다. 이를 위해, 명령어 클래스에서 `Illuminate\Contracts\Console\Isolatable` 인터페이스를 구현하면 됩니다.
 
 ```php
 <?php
@@ -243,13 +243,13 @@ class SendEmails extends Command implements Isolatable
 }
 ```
 
-명령어가 `Isolatable`로 표시되면, 라라벨이 자동으로 `--isolated` 옵션을 명령어에 추가합니다. 이 옵션으로 명령어를 실행하면 실행 중인 동일 명령어가 없는지 확인하여, 이미 실행되고 있다면 실행하지 않고 성공 상태의 종료 코드로 바로 종료됩니다. 라라벨은 이를 위해 애플리케이션의 기본 캐시 드라이버를 이용해 atomic lock을 획득하려 시도합니다.
+명령어가 `Isolatable`로 마크되면, 라라벨은 해당 명령어에 자동으로 `--isolated` 옵션을 추가합니다. 명령어 실행 시 해당 옵션을 붙이면, 이미 실행 중인 인스턴스가 존재하지 않는지 라라벨이 검사합니다. 이 과정에서 애플리케이션의 기본 캐시 드라이버를 이용해 원자적(atomic) 락을 획득하려 시도하며, 만약 이미 실행 중인 인스턴스가 있다면 명령어는 실행되지 않고 성공 상태 코드로 종료됩니다.
 
 ```shell
 php artisan mail:send 1 --isolated
 ```
 
-명령어가 실행되지 못했을 때 반환할 종료 상태 코드를 직접 지정하고 싶다면 `isolated` 옵션에 값을 할당할 수 있습니다.
+명령어 실행이 거부될 때 반환할 종료 코드(status code)를 직접 지정하고 싶다면, `--isolated` 옵션에 원하는 코드값을 지정할 수 있습니다.
 
 ```shell
 php artisan mail:send 1 --isolated=12
@@ -258,7 +258,7 @@ php artisan mail:send 1 --isolated=12
 <a name="lock-id"></a>
 #### Lock ID
 
-기본적으로 라라벨은 명령어의 이름을 사용해 캐시에 atomic lock을 위한 문자열 키를 생성합니다. 이 키를 커스터마이즈하려면 명령어 클래스에 `isolatableId` 메서드를 정의하고, 인수 및 옵션 값을 조합해 반환하면 됩니다.
+기본적으로 라라벨은 명령어 이름을 사용하여 캐시에서 원자적 락에 사용될 문자열 키를 생성합니다. 하지만 명령어의 인수나 옵션을 포함하여 이 키를 직접 커스터마이즈하고 싶으면, 명령어 클래스에 `isolatableId` 메서드를 정의하면 됩니다.
 
 ```php
 /**
@@ -271,9 +271,9 @@ public function isolatableId(): string
 ```
 
 <a name="lock-expiration-time"></a>
-#### Lock 만료 시간
+#### 락 만료 시각 조정
 
-기본적으로 격리(고립) 락은 명령어가 끝나면 해제되거나, 명령어가 중단되어 끝나지 못할 경우 1시간 후 만료됩니다. 락 만료 시점을 조정하고 싶다면 `isolationLockExpiresAt` 메서드를 추가해 원하는 만료 일시나 기간을 반환하면 됩니다.
+기본적으로, 격리(isolation) 락은 명령어가 실행을 마침과 동시에 해제되며, 실행이 중단되었을 경우에도 한 시간 후 자동 만료됩니다. 만약 락의 만료 시점을 조정하고 싶다면, `isolationLockExpiresAt` 메서드를 정의해 반환하면 됩니다.
 
 ```php
 use DateTimeInterface;
@@ -289,14 +289,14 @@ public function isolationLockExpiresAt(): DateTimeInterface|DateInterval
 ```
 
 <a name="defining-input-expectations"></a>
-## 입력 기대값 정의하기
+## 입력값 정의
 
-콘솔 명령어를 작성할 때, 유저로부터 인수나 옵션 등의 입력을 받아야 할 일이 많습니다. 라라벨은 각 명령어의 `signature` 속성을 사용해 기대하는 입력값의 이름, 인수, 옵션을 쉽고 명확하게 한 줄의 라우트 시그니처 형태로 정의할 수 있게 해줍니다.
+콘솔 명령어를 작성할 때, 사용자로부터 인수나 옵션으로 입력값을 받아야 할 일이 많습니다. 라라벨은 명령어 클래스의 `signature` 속성을 이용해, 명령어가 기대하는 입력값(이름, 인수, 옵션 등)을 간단하고 명확하게 한 줄로 정의할 수 있도록 지원합니다.
 
 <a name="arguments"></a>
-### 인수(Arguments)
+### 인수
 
-모든 사용자 인수와 옵션은 중괄호로 감싸서 표시합니다. 아래 예시에서는 필수 인수로 `user`가 정의되어 있습니다.
+사용자로부터 입력받는 모든 인수와 옵션은 중괄호로 감쌉니다. 예를 들어, 아래 명령어는 필수 인수로 `user`를 받도록 정의되어 있습니다.
 
 ```php
 /**
@@ -307,20 +307,20 @@ public function isolationLockExpiresAt(): DateTimeInterface|DateInterval
 protected $signature = 'mail:send {user}';
 ```
 
-인수를 선택적으로 만들거나, 기본값을 지정할 수도 있습니다.
+인수를 선택사항으로 지정하거나, 기본값을 부여할 수도 있습니다.
 
 ```php
-// 선택적 인수...
+// 인수를 선택값으로 지정...
 'mail:send {user?}'
 
-// 기본값을 갖는 선택적 인수...
+// 선택 인수에 기본값 지정...
 'mail:send {user=foo}'
 ```
 
 <a name="options"></a>
-### 옵션(Options)
+### 옵션
 
-옵션도 인수와 마찬가지로 유저 입력의 한 형태입니다. 옵션은 커맨드라인에서 두 개의 하이픈(`--`)으로 시작합니다. 옵션에는 값이 필요한 것과 필요하지 않은 것의 두 종류가 있습니다. 값이 필요하지 않은 옵션은 불리언 "스위치" 역할을 합니다. 예시를 보겠습니다.
+옵션 역시 인수와 유사하게 사용자 입력값의 한 형태입니다. 옵션은 명령줄에서 두 개의 하이픈(`--`)으로 시작해서 전달합니다. 옵션에는 값을 받는 경우와, 값을 받지 않고 단순히 켜고끄는(boolean) "스위치"처럼 동작하는 경우가 있습니다. 아래는 후자의 예입니다.
 
 ```php
 /**
@@ -331,7 +331,7 @@ protected $signature = 'mail:send {user}';
 protected $signature = 'mail:send {user} {--queue}';
 ```
 
-위처럼 `--queue` 스위치를 지정하며 명령어를 실행할 수 있습니다. 스위치가 주어지면 옵션 값은 `true`, 없으면 `false`가 됩니다.
+여기서 `--queue` 옵션을 명령어 실행 시 지정할 수 있으며, 지정되었다면 값은 `true`, 없으면 `false`가 됩니다.
 
 ```shell
 php artisan mail:send 1 --queue
@@ -340,7 +340,7 @@ php artisan mail:send 1 --queue
 <a name="options-with-values"></a>
 #### 값을 받는 옵션
 
-옵션이 값을 반드시 받아야 할 때는, 옵션 이름 뒤에 `=` 기호를 붙여서 표시하면 됩니다.
+이번에는 값을 받아야 하는 옵션 예제를 살펴보겠습니다. 만약 사용자가 반드시 옵션에 값을 지정해야 한다면, 옵션명 뒤에 `=` 기호를 붙여서 정의합니다.
 
 ```php
 /**
@@ -351,13 +351,13 @@ php artisan mail:send 1 --queue
 protected $signature = 'mail:send {user} {--queue=}';
 ```
 
-이렇게 하면 사용자는 CLI에서 옵션에 값을 전달할 수 있습니다. 옵션이 지정되지 않으면 `null` 값을 갖습니다.
+이 예제에서 사용자는 아래처럼 값을 넘길 수 있습니다. 만약 옵션이 지정되지 않으면 그 값은 `null`이 됩니다.
 
 ```shell
 php artisan mail:send 1 --queue=default
 ```
 
-옵션에 기본값을 부여하려면 옵션 이름 뒤에 값으로 직접 쓸 수 있습니다. 사용자가 값을 지정하지 않으면 기본값이 사용됩니다.
+옵션에 기본값을 지정하려면, 옵션명 뒤에 값을 바로 입력하면 됩니다. 사용자가 옵션 값을 넘기지 않으면, 이 기본값이 사용됩니다.
 
 ```php
 'mail:send {user} {--queue=default}'
@@ -366,34 +366,34 @@ php artisan mail:send 1 --queue=default
 <a name="option-shortcuts"></a>
 #### 옵션 단축키
 
-옵션을 정의할 때 단축키(shortcut)를 부여하고 싶다면, 단축키를 옵션명 앞에 두고 `|` 기호로 구분하면 됩니다.
+옵션 정의 시, 단축키를 부여하고 싶다면 옵션명 앞에 단축키를 쓰고, `|` 기호로 구분합니다.
 
 ```php
 'mail:send {user} {--Q|queue}'
 ```
 
-명령어를 실행할 때 단축키는 하나의 하이픈만 붙이고, 값은 `=`를 사용하지 않습니다.
+명령어 실행 시 단축키 옵션은 한 개의 하이픈으로 시작하며, 옵션값에는 `=` 없이 바로 이어 붙입니다.
 
 ```shell
 php artisan mail:send 1 -Qdefault
 ```
 
 <a name="input-arrays"></a>
-### 입력 배열(Input Arrays)
+### 입력 배열
 
-여러 개의 입력값이 가능한 인수나 옵션을 정의하려면 `*` 문자를 사용할 수 있습니다. 먼저 여러 개 값을 받을 수 있는 인수 예시를 살펴보겠습니다.
+여러 입력값을 받아야 하는 인수나 옵션을 정의하고 싶다면, `*` 문자를 사용할 수 있습니다. 우선 인수의 예제를 보겠습니다.
 
 ```php
 'mail:send {user*}'
 ```
 
-아래처럼 명령어에 여러 값을 전달하면, `user` 인수에는 배열 형태로 값이 들어갑니다(예를 들어 `1`과 `2`).
+이렇게 정의하고 명령어를 실행하면, `user` 인수에는 전달한 값들이 배열로 저장됩니다. 예를 들어 아래처럼 입력하면 `user`에는 `[1, 2]`가 들어가게 됩니다.
 
 ```shell
 php artisan mail:send 1 2
 ```
 
-`*` 문자는 선택적 인수와 결합해서, 0개 이상의 입력값을 받을 수도 있습니다.
+또한 `*` 문자를 선택 인수와 결합해, 0개 이상 값을 받을 수 있도록 할 수도 있습니다.
 
 ```php
 'mail:send {user?*}'
@@ -402,22 +402,22 @@ php artisan mail:send 1 2
 <a name="option-arrays"></a>
 #### 옵션 배열
 
-여러 값을 받을 수 있는 옵션을 만들 때는 각 값마다 옵션 이름으로 프리픽스를 붙여 전달해야 합니다.
+여러 값을 받는 옵션을 정의하려면 각 옵션 값마다 옵션명을 붙여 전달해야 합니다.
 
 ```php
 'mail:send {--id=*}'
 ```
 
-명령어를 실행할 때 아래처럼 여러 번 옵션을 전달합니다.
+이 명령어를 실행할 때는 아래처럼 여러 개의 `--id` 옵션을 전달하면 됩니다.
 
 ```shell
 php artisan mail:send --id=1 --id=2
 ```
 
 <a name="input-descriptions"></a>
-### 입력값 설명 달기
+### 입력값 설명
 
-인수나 옵션에 대해 설명을 달고 싶을 때는 이름 뒤에 콜론(:)을 붙여 설명을 추가할 수 있습니다. 명령어 정의가 길어진다면 여러 줄로 나눠 작성해도 괜찮습니다.
+입력값(인수, 옵션)에 대한 설명을 추가하려면 이름과 설명 사이에 콜론을 넣으면 됩니다. 명령어 정의가 길어질 경우 여러 줄로 나누어 작성해도 됩니다.
 
 ```php
 /**
@@ -433,7 +433,7 @@ protected $signature = 'mail:send
 <a name="prompting-for-missing-input"></a>
 ### 누락된 입력값 프롬프트
 
-명령어에 필수 인수가 있지만 사용자가 입력하지 않으면, 일반적으로 에러 메시지가 표시됩니다. 하지만, `PromptsForMissingInput` 인터페이스를 구현하면 누락된 인수가 있을 때 자동으로 프롬프트를 띄워 사용자에게 값을 입력받을 수 있습니다.
+명령어에 필수 인수가 포함되어 있는데 사용자가 입력하지 않을 경우, 기본적으로 에러 메시지가 표시됩니다. 대신, 필수 인수가 없을 때 자동으로 입력을 요청하도록 하려면, 명령어에 `PromptsForMissingInput` 인터페이스를 구현하면 됩니다.
 
 ```php
 <?php
@@ -456,7 +456,7 @@ class SendEmails extends Command implements PromptsForMissingInput
 }
 ```
 
-라라벨은 필요한 인수를 자동으로 질문 형태로 사용자에게 요청합니다. 질문내용은 인수의 이름이나 설명을 기반으로 지능적으로 만들어집니다. 만약 출력되는 질문을 직접 커스터마이즈하고 싶다면, `promptForMissingArgumentsUsing` 메서드를 구현해 인수 이름을 키로 하고 질문을 값으로 갖는 배열을 반환하면 됩니다.
+라라벨은 누락된 입력값을 사용자에게 요청할 때, 인수명 또는 설명을 참고해 질문을 자동으로 만들어 물어봅니다. 질문 문구를 직접 지정하고 싶다면, `promptForMissingArgumentsUsing` 메서드를 구현하여, 인수명으로 키를 가지는 질문 배열을 반환하면 됩니다.
 
 ```php
 /**
@@ -472,7 +472,7 @@ protected function promptForMissingArgumentsUsing(): array
 }
 ```
 
-질문과 함께 예시 입력을 플레이스홀더로 표시하고 싶다면 질문, 플레이스홀더 두 개를 포함하는 튜플 형태로 작성할 수 있습니다.
+예시 입력값(placeholder)이 필요하다면, 질문-예시값 쌍의 튜플도 사용할 수 있습니다.
 
 ```php
 return [
@@ -480,7 +480,7 @@ return [
 ];
 ```
 
-프롬프트를 완전히 제어하고 싶으면, 값을 직접 요청하고 반환하는 클로저를 지정할 수도 있습니다.
+입력 요청 프롬프트를 완전히 제어하고 싶을 땐, 사용자의 입력을 안내하고 그 결과를 반환하는 클로저를 지정할 수도 있습니다.
 
 ```php
 use App\Models\User;
@@ -500,9 +500,9 @@ return [
 ```
 
 > [!NOTE]
-> [Laravel Prompts](/docs/{{version}}/prompts) 공식 문서에서는 다양한 프롬프트의 사용법과 기능에 대해 더 자세히 안내하고 있습니다.
+> 보다 다양한 프롬프트 기능 및 사용법은 [Laravel Prompts](/docs/{{version}}/prompts) 문서를 참고하세요.
 
-옵션([options](#options))을 선택하거나 값을 입력받기 위해 프롬프트를 띄우고 싶다면 명령어의 `handle` 메서드에서 직접 프롬프트 코드를 작성하면 됩니다. 자동 인수 프롬프트와 동시에 옵션도 프롬프트하고 싶다면, `afterPromptingForMissingArguments` 메서드를 구현하여 사용할 수 있습니다.
+[옵션](#options)과 같이 선택지를 입력받는 프롬프트가 필요하다면, `handle` 메서드 안에서 직접 프롬프트를 사용할 수도 있습니다. 하지만 사용자에게 누락된 인수를 자동 프롬프트한 이후에만 옵션 프롬프트를 추가로 띄우고 싶을 때는, `afterPromptingForMissingArguments` 메서드를 구현하면 됩니다.
 
 ```php
 use Symfony\Component\Console\Input\InputInterface;
@@ -524,12 +524,12 @@ protected function afterPromptingForMissingArguments(InputInterface $input, Outp
 ```
 
 <a name="command-io"></a>
-## 명령어 I/O
+## 명령어 입출력
 
 <a name="retrieving-input"></a>
-### 입력값 가져오기
+### 입력값 조회
 
-명령어가 실행되는 동안 인수나 옵션에 전달된 값을 가져와야 할 때가 많습니다. 이때는 `argument` 및 `option` 메서드를 사용할 수 있습니다. 해당 인수/옵션이 없다면 `null`을 반환합니다.
+명령어 실행 중에, 사용자가 입력한 인수와 옵션의 값을 조회해야 할 때가 많습니다. 각각 `argument`와 `option` 메서드를 사용하면 됩니다. 인수나 옵션이 존재하지 않으면 `null`이 반환됩니다.
 
 ```php
 /**
@@ -541,19 +541,19 @@ public function handle(): void
 }
 ```
 
-모든 인수를 배열로 한 번에 가져오려면 `arguments` 메서드를 사용합니다.
+모든 인수 값을 배열로 한번에 가져오려면 `arguments` 메서드를 사용하면 됩니다.
 
 ```php
 $arguments = $this->arguments();
 ```
 
-옵션도 `option` 메서드를 통해 하나만 가져오거나, `options` 메서드로 모두 받아올 수 있습니다.
+옵션 역시 `option` 메서드로 조회할 수 있습니다. 배열 전체를 조회하려면 `options` 메서드를 사용합니다.
 
 ```php
-// 특정 옵션만 가져오기...
+// 특정 옵션값 조회...
 $queueName = $this->option('queue');
 
-// 모든 옵션을 배열로 가져오기...
+// 모든 옵션값을 배열로 조회...
 $options = $this->options();
 ```
 
@@ -561,9 +561,9 @@ $options = $this->options();
 ### 입력값 프롬프트
 
 > [!NOTE]
-> [Laravel Prompts](/docs/{{version}}/prompts)는 아름답고 편리한 폼, 플레이스홀더, 유효성 검증 등 브라우저 같은 기능까지 명령줄에서 쓸 수 있는 PHP 패키지입니다.
+> [Laravel Prompts](/docs/{{version}}/prompts)는 명령줄 애플리케이션에 아름답고 사용자 친화적인 폼을 추가할 수 있도록 해주는 PHP 패키지입니다. 플레이스홀더, 유효성 검사 등 브라우저 유사 기능도 제공합니다.
 
-명령어 실행 중 사용자에게 입력값을 직접 물어보고 싶다면 `ask` 메서드를 사용할 수 있습니다. 사용자가 입력한 값을 질문과 함께 받고, 입력값을 그대로 반환합니다.
+출력만 할 수 있는 것이 아니라, 명령어 실행 중에 사용자에게 직접 입력값을 요청할 수도 있습니다. `ask` 메서드를 사용하면 지정한 질문을 사용자에게 보여주고, 사용자가 입력한 값을 반환합니다.
 
 ```php
 /**
@@ -577,22 +577,22 @@ public function handle(): void
 }
 ```
 
-`ask` 메서드는 두 번째 인자로 기본값을 지정할 수도 있으며, 입력이 없을 경우 이에 따라 반환값이 결정됩니다.
+`ask` 메서드는 사용자가 값을 입력하지 않았을 때 대신 반환할 기본값(두 번째 인자)도 받을 수 있습니다.
 
 ```php
 $name = $this->ask('What is your name?', 'Taylor');
 ```
 
-`secret` 메서드는 `ask`와 비슷하지만, 콘솔에 입력 내용이 보이지 않아 비밀번호 등 민감한 정보를 입력받을 때 유용합니다.
+민감한 정보(비밀번호 등)를 입력받을 때는 입력값이 화면에 보이지 않도록 `secret` 메서드를 사용할 수 있습니다.
 
 ```php
 $password = $this->secret('What is the password?');
 ```
 
 <a name="asking-for-confirmation"></a>
-#### 확인(Yes/No) 프롬프트
+#### 확인(yes/no) 질문
 
-사용자에게 단순한 "예/아니오" 확인이 필요하다면 `confirm` 메서드를 사용할 수 있습니다. 기본적으로 사용자가 프롬프트에 `y` 또는 `yes`를 입력하면 `true`가, 그렇지 않으면 `false`가 반환됩니다.
+간단히 "예/아니오" 확인 입력을 받고 싶다면, `confirm` 메서드를 사용하면 됩니다. 기본적으로 이 메서드는 `false`를 반환하며, 사용자가 `y` 또는 `yes`라고 입력하면 `true`를 반환합니다.
 
 ```php
 if ($this->confirm('Do you wish to continue?')) {
@@ -600,7 +600,7 @@ if ($this->confirm('Do you wish to continue?')) {
 }
 ```
 
-확인 프롬프트의 기본값을 `true`로 지정하고 싶다면, 두 번째 인자로 `true`를 전달할 수 있습니다.
+필요하다면, 두 번째 인자로 `true`를 넘겨 질문의 기본값을 `true`로 설정할 수 있습니다.
 
 ```php
 if ($this->confirm('Do you wish to continue?', true)) {
@@ -609,15 +609,15 @@ if ($this->confirm('Do you wish to continue?', true)) {
 ```
 
 <a name="auto-completion"></a>
-#### 자동 완성(Auto-Completion)
+#### 자동 완성
 
-`anticipate` 메서드는 선택 가능한 값에 대해 자동 완성을 지원합니다. 물론 사용자는 자동 완성 목록에 없는 값도 직접 입력할 수 있습니다.
+사용자에게 입력값을 받을 때, 가능한 선택지를 자동완성 제안으로 보여주고 싶다면 `anticipate` 메서드를 사용할 수 있습니다. 사용자는 자동완성 제안 외의 값도 입력할 수 있습니다.
 
 ```php
 $name = $this->anticipate('What is your name?', ['Taylor', 'Dayle']);
 ```
 
-또는 자동 완성 값 자체를 클로저로 생성해, 사용자가 입력할 때마다 동적으로 옵션 목록을 만들 수도 있습니다.
+또는 두 번째 인자에 클로저를 넘기면, 사용자가 문자를 입력할 때마다 클로저가 호출되어 동적으로 자동완성 제안 목록을 반환할 수 있습니다.
 
 ```php
 use App\Models\Address;
@@ -631,9 +631,9 @@ $name = $this->anticipate('What is your address?', function (string $input) {
 ```
 
 <a name="multiple-choice-questions"></a>
-#### 다중 선택(Multiple Choice) 질문
+#### 다중 선택 질문
 
-미리 정의된 선택지 중에서 사용자가 하나(또는 여러 개)를 고르게 하려면 `choice` 메서드를 사용합니다. 세 번째 인자로 기본값의 배열 인덱스를 전달할 수 있으며, 네 번째/다섯 번째 인자는 최대 시도 횟수와 다중 선택 허용 여부를 지정합니다.
+사전에 정의된 선택지 배열에서 값을 고르도록 하려면, `choice` 메서드를 사용할 수 있습니다. 사용자가 아무 옵션도 선택하지 않았을 때 반환될 기본값의 배열 인덱스를 세 번째 인자로 넘겨줄 수 있습니다.
 
 ```php
 $name = $this->choice(
@@ -643,7 +643,7 @@ $name = $this->choice(
 );
 ```
 
-기타 선택 옵션의 예시:
+또한, `choice` 메서드는 네 번째, 다섯 번째 인자로 최대 시도 횟수와 다중 선택 허용 여부도 지정할 수 있습니다.
 
 ```php
 $name = $this->choice(
@@ -656,9 +656,9 @@ $name = $this->choice(
 ```
 
 <a name="writing-output"></a>
-### 출력 작성하기
+### 출력 작성
 
-콘솔에 출력을 보내려면 `line`, `info`, `comment`, `question`, `warn`, `error` 메서드를 사용할 수 있습니다. 이 메서드들은 목적에 맞는 ANSI 색상을 자동 적용합니다. 예를 들어, 일반 정보를 표시할 때는 보통 `info`를 사용하며, 콘솔에서는 초록색으로 표시됩니다.
+콘솔에 출력을 보낼 땐 `line`, `info`, `comment`, `question`, `warn`, `error` 등의 메서드를 사용할 수 있습니다. 각 메서드는 출력 목적에 따라 적절한 ANSI 색상으로 메시지를 보여줍니다. 예를 들어, 일반적인 정보 출력에는 `info` 메서드를 쓸 수 있으며, 보통 녹색으로 표시됩니다.
 
 ```php
 /**
@@ -672,32 +672,32 @@ public function handle(): void
 }
 ```
 
-에러 메시지는 `error` 메서드를 사용하며, 빨간색으로 표시됩니다.
+오류 메시지를 출력하고 싶다면 `error` 메서드를 사용합니다. 이때 메시지는 빨간색으로 표시됩니다.
 
 ```php
 $this->error('Something went wrong!');
 ```
 
-색상 없이 간단히 메시지를 출력하려면 `line` 메서드를 사용합니다.
+색상 없이 평범한 텍스트를 출력하려면 `line` 메서드를 사용하면 됩니다.
 
 ```php
 $this->line('Display this on the screen');
 ```
 
-빈 줄을 출력하고 싶을 때는 `newLine` 메서드를 사용할 수 있습니다.
+빈 줄을 출력하고 싶다면 `newLine` 메서드를 사용할 수 있습니다.
 
 ```php
-// 빈 줄 한 개 출력...
+// 빈 줄 하나 출력...
 $this->newLine();
 
-// 빈 줄 세 개 출력...
+// 빈 줄 3개 출력...
 $this->newLine(3);
 ```
 
 <a name="tables"></a>
-#### 표 출력(Tables)
+#### 표 출력
 
-`table` 메서드를 사용하면 여러 행/열의 데이터를 손쉽게 표 형태로 출력할 수 있습니다. 컬럼명과 데이터 배열만 넘기면, 라라벨이 표 크기와 형식을 자동 계산해 예쁘게 보여줍니다.
+`table` 메서드를 사용하면, 여러 행/열을 가진 데이터를 표 형태로 보기 좋게 출력할 수 있습니다. 컬럼명과 데이터만 넘기면, 라라벨이 자동으로 표의 크기와 너비를 계산해줍니다.
 
 ```php
 use App\Models\User;
@@ -709,9 +709,9 @@ $this->table(
 ```
 
 <a name="progress-bars"></a>
-#### 진행률(Progress Bars)
+#### 진행 바
 
-작업 시간이 오래 걸릴 때 진행률 바를 표시해서 사용자가 현재 작업 진행 상황을 알 수 있게 할 수 있습니다. `withProgressBar` 메서드를 사용하면 iterable 값을 루프마다 하나씩 처리할 때마다 진행률이 자동으로 표시됩니다.
+실행 시간이 긴 작업에서, 현재 처리 진행 상황을 사용자가 볼 수 있도록 "진행 바(progress bar)"를 표시하는 것이 유용합니다. `withProgressBar` 메서드를 사용하면, 전달한 반복 가능한 값의 각 항목 처리마다 라라벨이 자동으로 진행 바를 갱신합니다.
 
 ```php
 use App\Models\User;
@@ -721,7 +721,7 @@ $users = $this->withProgressBar(User::all(), function (User $user) {
 });
 ```
 
-좀 더 세밀하게 진행률 바의 상태를 제어하고 싶다면, 전체 단계 수를 지정한 뒤, 각각의 항목 처리가 끝날 때마다 수동으로 단계를 넘기면 됩니다.
+진행 바를 수동으로 제어하고 싶으면, 먼저 처리할 항목 개수로 총 스텝을 지정한 뒤, 각 항목 처리 후에 `advance` 메서드로 진행 바를 움직일 수 있습니다.
 
 ```php
 $users = App\Models\User::all();
@@ -740,12 +740,12 @@ $bar->finish();
 ```
 
 > [!NOTE]
-> 보다 다양한 기능 및 고급 진행률 표시 옵션이 궁금하다면 [Symfony Progress Bar component 공식 문서](https://symfony.com/doc/current/components/console/helpers/progressbar.html)를 참고하세요.
+> 더 고급 진행 바 옵션이 필요하다면 [Symfony Progress Bar 컴포넌트 문서](https://symfony.com/doc/current/components/console/helpers/progressbar.html)를 참고하세요.
 
 <a name="registering-commands"></a>
-## 명령어 등록하기
+## 명령어 등록
 
-기본적으로 라라벨은 `app/Console/Commands` 디렉토리 안의 모든 명령어를 자동으로 등록합니다. 만약 다른 디렉토리도 Artisan 명령어 스캔 대상에 추가하고 싶다면, 애플리케이션의 `bootstrap/app.php` 파일에서 `withCommands` 메서드를 사용할 수 있습니다.
+라라벨은 기본적으로 `app/Console/Commands` 디렉터리 내의 모든 명령어를 자동으로 등록합니다. 이 외의 디렉터리도 아티즌 명령어로 스캔하고 싶을 때는, 애플리케이션의 `bootstrap/app.php`에서 `withCommands` 메서드를 사용할 수 있습니다.
 
 ```php
 ->withCommands([
@@ -753,7 +753,7 @@ $bar->finish();
 ])
 ```
 
-필요할 경우, 명령어 클래스명을 직접 지정해서 수동으로 등록할 수도 있습니다.
+직접 명령어 클래스를 등록하고 싶다면, `withCommands` 메서드에 클래스명을 전달합니다.
 
 ```php
 use App\Domain\Orders\Commands\SendEmails;
@@ -763,12 +763,12 @@ use App\Domain\Orders\Commands\SendEmails;
 ])
 ```
 
-Artisan이 부팅될 때 애플리케이션의 모든 명령어가 [서비스 컨테이너](/docs/{{version}}/container)에 의해 해석되어 등록됩니다.
+아티즌(Artisan)이 시작될 때, 애플리케이션의 모든 명령어는 [서비스 컨테이너](/docs/{{version}}/container)에서 해결되고 아티즌에 등록됩니다.
 
 <a name="programmatically-executing-commands"></a>
-## 명령어 코드상 실행하기
+## 프로그램적으로 명령어 실행
 
-때로는 CLI가 아닌 환경(예: 라우트, 컨트롤러 등)에서 Artisan 명령어를 실행하고 싶을 수 있습니다. 이럴 때는 `Artisan` 파사드의 `call` 메서드를 사용할 수 있습니다. `call` 메서드는 첫 번째 인자로 명령어의 시그니처 이름이나 클래스명을, 두 번째 인자에는 명령어 파라미터 배열을 받으며, 반환값으로 종료 코드를 돌려줍니다.
+CLI에서 직접 실행하지 않고, 라우트나 컨트롤러 등 다른 코드에서 아티즌 명령어를 실행하고 싶은 상황이 있을 수 있습니다. 이때는 `Artisan` 파사드의 `call` 메서드를 사용할 수 있습니다. `call`은 첫 번째 인자로 명령어의 시그니처 이름이나 클래스명을, 두 번째 인자로 명령어에 전달할 매개변수 배열을 받으며, 종료 코드를 반환합니다.
 
 ```php
 use Illuminate\Support\Facades\Artisan;
@@ -782,16 +782,16 @@ Route::post('/user/{user}/mail', function (string $user) {
 });
 ```
 
-또한 전체 Artisan 명령어를 문자열 형태로 `call` 메서드에 그대로 넘길 수도 있습니다.
+또는, 아티즌 명령어 전체를 문자열로 한 번에 전달할 수도 있습니다.
 
 ```php
 Artisan::call('mail:send 1 --queue=default');
 ```
 
 <a name="passing-array-values"></a>
-#### 배열 값 전달
+#### 배열값 전달
 
-명령어 옵션이 배열 값을 받을 수 있도록 정의되었다면, 옵션 값에 PHP 배열을 그대로 넘길 수 있습니다.
+만약 명령어에 배열 형태의 옵션을 전달해야 한다면, 값 배열을 해당 옵션에 넘기면 됩니다.
 
 ```php
 use Illuminate\Support\Facades\Artisan;
@@ -806,7 +806,7 @@ Route::post('/mail', function () {
 <a name="passing-boolean-values"></a>
 #### 불리언 값 전달
 
-문자열 값이 아닌 옵션(예: `migrate:refresh` 명령어의 `--force` 플래그 등)에 값을 넘길 때는 `true` 또는 `false`를 전달하면 됩니다.
+문자열 값을 받지 않는 옵션(예: `migrate:refresh` 명령어의 `--force` 플래그 등)에 값을 지정하고 싶다면, 해당 옵션에 `true` 또는 `false` 값을 넘기면 됩니다.
 
 ```php
 $exitCode = Artisan::call('migrate:refresh', [
@@ -815,9 +815,9 @@ $exitCode = Artisan::call('migrate:refresh', [
 ```
 
 <a name="queueing-artisan-commands"></a>
-#### Artisan 명령어를 큐잉 처리하기
+#### 아티즌 명령어 큐 처리
 
-`Artisan` 파사드의 `queue` 메서드를 이용하면 Artisan 명령어를 큐에 넣어 비동기로 실행(백그라운드에서 처리)할 수도 있습니다. 사용 전 반드시 큐 설정을 마치고 워커를 실행 중이어야 합니다.
+`Artisan` 파사드의 `queue` 메서드를 이용하면, 아티즌 명령어를 큐로 넣어 비동기적으로 [큐 워커](/docs/{{version}}/queues)들이 처리할 수 있게 만들 수도 있습니다. 이 기능을 사용하기 전에 큐 설정을 마치고, 큐 리스너도 실행 중이어야 합니다.
 
 ```php
 use Illuminate\Support\Facades\Artisan;
@@ -831,7 +831,7 @@ Route::post('/user/{user}/mail', function (string $user) {
 });
 ```
 
-`onConnection`과 `onQueue` 메서드를 이용하면 명령어를 실행시킬 큐 커넥션이나 큐 채널까지 지정할 수 있습니다.
+또한 `onConnection`, `onQueue` 메서드로 명령어를 전송할 연결(connection)이나 큐(queue)를 지정할 수 있습니다.
 
 ```php
 Artisan::queue('mail:send', [
@@ -840,9 +840,9 @@ Artisan::queue('mail:send', [
 ```
 
 <a name="calling-commands-from-other-commands"></a>
-### 다른 명령어에서 명령어 호출하기
+### 다른 명령어에서 명령어 호출
 
-한 명령어 내에서 다른 Artisan 명령어를 호출하고 싶을 때는 `call` 메서드를 사용할 수 있습니다. 이 메서드는 명령어 이름과 인수/옵션 배열을 인자로 받습니다.
+기존 아티즌 명령어(클래스) 내부에서, 다른 명령어를 호출하고 싶다면 `call` 메서드를 사용할 수 있습니다. 이 메서드는 명령어 이름과 매개변수 배열을 받습니다.
 
 ```php
 /**
@@ -858,7 +858,7 @@ public function handle(): void
 }
 ```
 
-만약 호출한 명령어의 출력을 모두 숨기고 싶다면 `callSilently` 메서드를 사용하면 됩니다. 시그니처는 `call`과 동일합니다.
+다른 콘솔 명령어를 호출하되, 모든 출력 결과를 숨기려면 `callSilently` 메서드를 사용할 수 있습니다. 사용법은 `call` 메서드와 동일합니다.
 
 ```php
 $this->callSilently('mail:send', [
@@ -867,9 +867,9 @@ $this->callSilently('mail:send', [
 ```
 
 <a name="signal-handling"></a>
-## Signal 처리
+## 시그널 핸들링
 
-운영 체제에서는 실행 중인 프로세스에 시그널을 보낼 수 있습니다. 예를 들어 `SIGTERM`은 프로그램 종료 요청 신호입니다. Artisan 콘솔 명령어에서 이런 시그널을 감지하고, 신호가 발생했을 때 특정 코드를 실행하고 싶다면 `trap` 메서드를 사용할 수 있습니다.
+운영체제는 실행 중인 프로세스에 계속해서 시그널(신호)를 보낼 수 있습니다. 예를 들어, `SIGTERM` 시그널은 운영체제가 프로그램에 "종료 요청"을 보내는 데 사용됩니다. 아티즌 콘솔 명령어에서 이런 시그널을 감지하고 발생 시 코드를 실행하고 싶다면, `trap` 메서드를 사용할 수 있습니다.
 
 ```php
 /**
@@ -885,7 +885,7 @@ public function handle(): void
 }
 ```
 
-한 번에 여러 시그널을 감지하고 싶으면 `trap` 메서드에 시그널 배열을 넘기면 됩니다.
+여러 개의 시그널을 동시에 감지하고 싶으면, `trap` 메서드에 배열로 전달하면 됩니다.
 
 ```php
 $this->trap([SIGTERM, SIGQUIT], function (int $signal) {
@@ -896,18 +896,17 @@ $this->trap([SIGTERM, SIGQUIT], function (int $signal) {
 ```
 
 <a name="stub-customization"></a>
-## 스타브(Stub) 커스터마이징
+## 스텁 커스터마이즈
 
-Artisan 콘솔의 `make` 명령어는 컨트롤러, 잡, 마이그레이션, 테스트 등 다양한 클래스를 생성할 때 사용됩니다. 이 클래스들은 "스타브(stub)" 파일을 기반으로 자동 생성됩니다. Artisan이 생성하는 파일을 조금 다르게 만들어야 할 때는 `stub:publish` 명령어로 필요한 스타브 파일을 애플리케이션에 배포해 원하는 대로 수정할 수 있습니다.
+아티즌 콘솔의 `make` 계열 명령어는 컨트롤러, 잡, 마이그레이션, 테스트 등 다양한 클래스를 생성합니다. 이때 사용하는 "스텁(stub)" 파일은 입력값에 따라 내용이 채워진 상태로 파일을 생성합니다. 필요한 경우, Artisan이 생성하는 파일의 내용을 직접 수정하고 싶을 수 있습니다. 이럴 땐 `stub:publish` 명령어로 애플리케이션에 자주 쓰이는 스텁 파일을 내보낸 후 수정하여 사용할 수 있습니다.
 
 ```shell
 php artisan stub:publish
 ```
 
-배포된 스타브 파일들은 애플리케이션 루트의 `stubs` 디렉토리 안에 위치합니다. 이 파일들을 수정하면 이후 Artisan의 `make` 명령어를 통해 클래스를 생성할 때 변경 사항이 그대로 반영됩니다.
+배포된 스텁 파일은 애플리케이션 루트 디렉터리의 `stubs` 폴더에 저장됩니다. 해당 스텁 파일을 수정하면, Artisan의 `make` 계열 명령어를 실행할 때마다 반영됩니다.
 
 <a name="events"></a>
-## 이벤트(Events)
+## 이벤트
 
-Artisan으로 명령어를 실행할 때는 세 가지 이벤트가 발생합니다: `Illuminate\Console\Events\ArtisanStarting`, `Illuminate\Console\Events\CommandStarting`, `Illuminate\Console\Events\CommandFinished`.  
-ArtisanStarting 이벤트는 Artisan이 실행을 시작할 때 바로 발생하고, CommandStarting 이벤트는 개별 명령어를 실행하기 직전에 발생합니다. 마지막으로 CommandFinished 이벤트는 명령어 실행이 종료되면 발생합니다.
+아티즌은 명령어가 실행될 때 세 가지 이벤트를 발생시킵니다: `Illuminate\Console\Events\ArtisanStarting`, `Illuminate\Console\Events\CommandStarting`, `Illuminate\Console\Events\CommandFinished`. 가장 먼저, 아티즌이 실행되면 `ArtisanStarting` 이벤트가 발생합니다. 다음으로, 개별 명령어 실행 직전에 `CommandStarting` 이벤트가 발생하고, 명령어가 모두 실행을 마치면 `CommandFinished` 이벤트가 발생합니다.
