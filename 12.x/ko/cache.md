@@ -84,9 +84,9 @@ Memcached 드라이버를 사용하려면 [Memcached PECL 패키지](https://pec
 <a name="redis"></a>
 #### Redis
 
-라라벨에서 Redis 캐시를 사용하려면 PECL을 통해 PhpRedis PHP 확장 프로그램을 설치하거나, Composer를 통해 `predis/predis` 패키지(~2.0)를 설치해야 합니다. [Laravel Sail](/docs/{{version}}/sail)에는 이미 이 확장 프로그램이 포함되어 있습니다. 또한, [Laravel Cloud](https://cloud.laravel.com)나 [Laravel Forge](https://forge.laravel.com) 같은 공식 배포 플랫폼에는 기본적으로 PhpRedis 확장 프로그램이 설치되어 있습니다.
+라라벨에서 Redis 캐시를 사용하려면 PECL을 통해 PhpRedis PHP 확장 프로그램을 설치하거나, Composer를 통해 `predis/predis` 패키지(~2.0)를 설치해야 합니다. [Laravel Sail](/docs/12.x/sail)에는 이미 이 확장 프로그램이 포함되어 있습니다. 또한, [Laravel Cloud](https://cloud.laravel.com)나 [Laravel Forge](https://forge.laravel.com) 같은 공식 배포 플랫폼에는 기본적으로 PhpRedis 확장 프로그램이 설치되어 있습니다.
 
-Redis 설정에 관한 더 많은 정보는 [라라벨 Redis 문서](/docs/{{version}}/redis#configuration)를 참고해 주세요.
+Redis 설정에 관한 더 많은 정보는 [라라벨 Redis 문서](/docs/12.x/redis#configuration)를 참고해 주세요.
 
 <a name="dynamodb"></a>
 #### DynamoDB
@@ -239,7 +239,7 @@ $value = Cache::rememberForever('users', function () {
 
 `flexible` 메서드는 캐시 값을 “신선(fresh)”하게 간주할 기간과, “오래된(stale)” 데이터 기간을 배열로 지정합니다. 배열의 첫 번째 값은 신선 함의 기간(초), 두 번째 값은 오래된 데이터를 제공해도 되는 기간(초)입니다.
 
-신선한 기간 내에 요청이 오면, 캐시를 바로 반환하고 재계산하지 않습니다. 오래된 데이터 기간에는 사용자가 오래된 값을 받고, 응답 후 [지연 함수](/docs/{{version}}/helpers#deferred-functions)를 등록해 백그라운드에서 캐시를 갱신합니다. 두 번째 값까지 지난 후에는, 캐시가 만료된 것으로 간주되어 새 값을 즉시 재계산합니다(따라서 이때 사용자 응답이 느려질 수 있습니다).
+신선한 기간 내에 요청이 오면, 캐시를 바로 반환하고 재계산하지 않습니다. 오래된 데이터 기간에는 사용자가 오래된 값을 받고, 응답 후 [지연 함수](/docs/12.x/helpers#deferred-functions)를 등록해 백그라운드에서 캐시를 갱신합니다. 두 번째 값까지 지난 후에는, 캐시가 만료된 것으로 간주되어 새 값을 즉시 재계산합니다(따라서 이때 사용자 응답이 느려질 수 있습니다).
 
 ```php
 $value = Cache::flexible('users', [5, 10], function () {
@@ -396,7 +396,7 @@ cache()->remember('users', $seconds, function () {
 ```
 
 > [!NOTE]
-> 전역 `cache` 함수를 테스트할 때는, [파사드 테스트](/docs/{{version}}/mocking#mocking-facades)와 마찬가지로 `Cache::shouldReceive` 메서드를 사용할 수 있습니다.
+> 전역 `cache` 함수를 테스트할 때는, [파사드 테스트](/docs/12.x/mocking#mocking-facades)와 마찬가지로 `Cache::shouldReceive` 메서드를 사용할 수 있습니다.
 
 <a name="atomic-locks"></a>
 ## 원자적 락(Atomic Locks)
@@ -490,7 +490,7 @@ Cache::lock('processing')->forceRelease();
 <a name="writing-the-driver"></a>
 ### 드라이버 작성
 
-사용자 정의 캐시 드라이버를 만들려면, `Illuminate\Contracts\Cache\Store` [계약(Contract)](/docs/{{version}}/contracts)를 구현해야 합니다. 예를 들어 MongoDB 기반 캐시 저장소는 다음과 같이 만들 수 있습니다.
+사용자 정의 캐시 드라이버를 만들려면, `Illuminate\Contracts\Cache\Store` [계약(Contract)](/docs/12.x/contracts)를 구현해야 합니다. 예를 들어 MongoDB 기반 캐시 저장소는 다음과 같이 만들 수 있습니다.
 
 ```php
 <?php
@@ -564,14 +564,14 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-`extend` 메서드의 첫 번째 인자는 드라이버 이름인데, 이는 `config/cache.php` 파일의 `driver` 옵션과 대응합니다. 두 번째 인자는 `Illuminate\Cache\Repository` 인스턴스를 반환하는 클로저이며, 클로저에는 [서비스 컨테이너](/docs/{{version}}/container) 인스턴스인 `$app`이 전달됩니다.
+`extend` 메서드의 첫 번째 인자는 드라이버 이름인데, 이는 `config/cache.php` 파일의 `driver` 옵션과 대응합니다. 두 번째 인자는 `Illuminate\Cache\Repository` 인스턴스를 반환하는 클로저이며, 클로저에는 [서비스 컨테이너](/docs/12.x/container) 인스턴스인 `$app`이 전달됩니다.
 
 등록이 끝나면, 애플리케이션의 `CACHE_STORE` 환경 변수 또는 `config/cache.php` 파일의 `default` 옵션에 확장한 저장소 이름을 지정해주면 됩니다.
 
 <a name="events"></a>
 ## 이벤트
 
-캐시 작업이 발생할 때마다 특정 코드를 실행하고 싶으면, 캐시에서 발생하는 다양한 [이벤트](/docs/{{version}}/events)를 리스닝할 수 있습니다.
+캐시 작업이 발생할 때마다 특정 코드를 실행하고 싶으면, 캐시에서 발생하는 다양한 [이벤트](/docs/12.x/events)를 리스닝할 수 있습니다.
 
 <div class="overflow-auto">
 

@@ -63,7 +63,7 @@
 <a name="defining-relationships"></a>
 ## 관계 정의하기
 
-Eloquent의 관계는 Eloquent 모델 클래스 안에서 메서드로 정의합니다. 관계는 동시에 강력한 [쿼리 빌더](/docs/{{version}}/queries)의 역할도 하며, 메서드로 정의할 경우 강력한 메서드 체이닝과 쿼리 기능을 활용할 수 있습니다. 예를 들어, 다음과 같이 `posts` 관계에 추가 쿼리 제한을 체이닝할 수 있습니다.
+Eloquent의 관계는 Eloquent 모델 클래스 안에서 메서드로 정의합니다. 관계는 동시에 강력한 [쿼리 빌더](/docs/12.x/queries)의 역할도 하며, 메서드로 정의할 경우 강력한 메서드 체이닝과 쿼리 기능을 활용할 수 있습니다. 예를 들어, 다음과 같이 `posts` 관계에 추가 쿼리 제한을 체이닝할 수 있습니다.
 
 ```php
 $user->posts()->where('active', 1)->get();
@@ -192,7 +192,7 @@ class Post extends Model
 
 Eloquent는 자동으로 `Comment` 모델의 올바른 외래 키 컬럼명을 추론합니다. 기본 규칙으로 Eloquent는 부모 모델 이름을 스네이크 케이스(snake_case)로 변환하고 여기에 `_id`를 붙입니다. 이 예시에서는 `Comment` 모델이 `post_id` 외래 키 컬럼을 가지고 있다고 가정합니다.
 
-관계 메서드를 정의하고 나면, `comments` 프로퍼티를 통해 관련된 [컬렉션](/docs/{{version}}/eloquent-collections)을 조회할 수 있습니다. Eloquent의 "동적 관계 프로퍼티" 덕분에, 관계 메서드를 마치 모델의 프로퍼티처럼 사용할 수 있습니다.
+관계 메서드를 정의하고 나면, `comments` 프로퍼티를 통해 관련된 [컬렉션](/docs/12.x/eloquent-collections)을 조회할 수 있습니다. Eloquent의 "동적 관계 프로퍼티" 덕분에, 관계 메서드를 마치 모델의 프로퍼티처럼 사용할 수 있습니다.
 
 ```php
 use App\Models\Post;
@@ -388,7 +388,7 @@ $posts = Post::where('user_id', $user->id)->get();
 $posts = Post::whereBelongsTo($user)->get();
 ```
 
-`whereBelongsTo` 메서드에는 [컬렉션](/docs/{{version}}/eloquent-collections) 인스턴스를 전달할 수 있습니다. 이 경우 컬렉션 안에 포함된 모든 부모 모델 중 하나에 속하는 모델을 자동으로 조회해줍니다.
+`whereBelongsTo` 메서드에는 [컬렉션](/docs/12.x/eloquent-collections) 인스턴스를 전달할 수 있습니다. 이 경우 컬렉션 안에 포함된 모든 부모 모델 중 하나에 속하는 모델을 자동으로 조회해줍니다.
 
 ```php
 $users = User::where('vip', true)->get();
@@ -1489,7 +1489,7 @@ $class = Relation::getMorphedModel($alias);
 
 `resolveRelationUsing` 메서드를 활용하면 런타임에 Eloquent 모델 간의 관계를 정의할 수 있습니다. 일반적인 애플리케이션 개발에서는 잘 사용하지 않지만, 라라벨 패키지를 개발할 때는 가끔 유용하게 활용할 수 있습니다.
 
-`resolveRelationUsing` 메서드는 첫 번째 인자로 원하는 관계명을 전달하며, 두 번째 인자로는 모델 인스턴스를 받아서 적절한 Eloquent 관계 정의를 반환하는 클로저를 넘깁니다. 일반적으로 이런 동적 관계 정의는 [서비스 프로바이더](/docs/{{version}}/providers)의 boot 메서드 내에서 설정해야 합니다.
+`resolveRelationUsing` 메서드는 첫 번째 인자로 원하는 관계명을 전달하며, 두 번째 인자로는 모델 인스턴스를 받아서 적절한 Eloquent 관계 정의를 반환하는 클로저를 넘깁니다. 일반적으로 이런 동적 관계 정의는 [서비스 프로바이더](/docs/12.x/providers)의 boot 메서드 내에서 설정해야 합니다.
 
 ```php
 use App\Models\Order;
@@ -1506,7 +1506,7 @@ Order::resolveRelationUsing('customer', function (Order $orderModel) {
 <a name="querying-relations"></a>
 ## 관계 쿼리(Querying Relations)
 
-모든 Eloquent 관계는 메서드로 정의되어 있으므로, 이 메서드를 호출하면 실제로 관계 모델을 로드하지 않고 관계 인스턴스를 바로 얻을 수 있습니다. 또한, 모든 종류의 Eloquent 관계는 [쿼리 빌더](/docs/{{version}}/queries) 역할도 하므로, 실제 SQL 쿼리를 실행하기 전에 관계 쿼리에 추가 제약 조건을 체이닝할 수 있습니다.
+모든 Eloquent 관계는 메서드로 정의되어 있으므로, 이 메서드를 호출하면 실제로 관계 모델을 로드하지 않고 관계 인스턴스를 바로 얻을 수 있습니다. 또한, 모든 종류의 Eloquent 관계는 [쿼리 빌더](/docs/12.x/queries) 역할도 하므로, 실제 SQL 쿼리를 실행하기 전에 관계 쿼리에 추가 제약 조건을 체이닝할 수 있습니다.
 
 예를 들어, 블로그 애플리케이션에서 `User` 모델이 여러 `Post` 모델을 가지고 있다고 가정해봅시다.
 
@@ -1540,7 +1540,7 @@ $user = User::find(1);
 $user->posts()->where('active', 1)->get();
 ```
 
-모든 라라벨 [쿼리 빌더](/docs/{{version}}/queries) 메서드를 관계에 적용할 수 있으니, 쿼리 빌더 문서도 꼭 참고하세요.
+모든 라라벨 [쿼리 빌더](/docs/12.x/queries) 메서드를 관계에 적용할 수 있으니, 쿼리 빌더 문서도 꼭 참고하세요.
 
 <a name="chaining-orwhere-clauses-after-relationships"></a>
 #### 관계에서 `orWhere` 체이닝 주의
@@ -1562,7 +1562,7 @@ from posts
 where user_id = ? and active = 1 or votes >= 100
 ```
 
-대부분의 경우에는 [논리적 그룹화](/docs/{{version}}/queries#logical-grouping)를 활용하여 조건들을 괄호로 묶어야 합니다.
+대부분의 경우에는 [논리적 그룹화](/docs/12.x/queries#logical-grouping)를 활용하여 조건들을 괄호로 묶어야 합니다.
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -1654,7 +1654,7 @@ $posts = Post::whereHas('comments', function (Builder $query) {
 $users = User::whereAttachedTo($role)->get();
 ```
 
-`whereAttachedTo` 메서드에는 [컬렉션](/docs/{{version}}/eloquent-collections) 인스턴스를 넘길 수도 있습니다. 이때는 컬렉션 내의 어느 모델에 연결돼 있어도 모두 찾아줍니다.
+`whereAttachedTo` 메서드에는 [컬렉션](/docs/12.x/eloquent-collections) 인스턴스를 넘길 수도 있습니다. 이때는 컬렉션 내의 어느 모델에 연결돼 있어도 모두 찾아줍니다.
 
 ```php
 $tags = Tag::whereLike('name', '%laravel%')->get();
@@ -2139,7 +2139,7 @@ $users = User::with(['posts' => function (Builder $query) {
 }])->get();
 ```
 
-위 예시에서는, 게시글(Posts) 중에서 제목에 `code`가 들어간 게시글만 eager load 하게 됩니다. 또한 [쿼리 빌더](/docs/{{version}}/queries)의 다른 메서드도 호출할 수 있어 eager loading 쿼리를 다양하게 커스터마이즈할 수 있습니다.
+위 예시에서는, 게시글(Posts) 중에서 제목에 `code`가 들어간 게시글만 eager load 하게 됩니다. 또한 [쿼리 빌더](/docs/12.x/queries)의 다른 메서드도 호출할 수 있어 eager loading 쿼리를 다양하게 커스터마이즈할 수 있습니다.
 
 ```php
 $users = User::with(['posts' => function (Builder $query) {
@@ -2430,10 +2430,10 @@ $user->posts()->createManyQuietly([
 ]);
 ```
 
-또한, `findOrNew`, `firstOrNew`, `firstOrCreate`, `updateOrCreate` 등 다양한 메서드로 [리레이션을 통해 모델을 생성하거나 갱신](/docs/{{version}}/eloquent#upserts)할 수 있습니다.
+또한, `findOrNew`, `firstOrNew`, `firstOrCreate`, `updateOrCreate` 등 다양한 메서드로 [리레이션을 통해 모델을 생성하거나 갱신](/docs/12.x/eloquent#upserts)할 수 있습니다.
 
 > [!NOTE]
-> `create` 메서드를 사용하기 전에 [대량 할당(mass assignment)](/docs/{{version}}/eloquent#mass-assignment) 관련 문서를 꼭 숙지하시기 바랍니다.
+> `create` 메서드를 사용하기 전에 [대량 할당(mass assignment)](/docs/12.x/eloquent#mass-assignment) 관련 문서를 꼭 숙지하시기 바랍니다.
 
 <a name="updating-belongs-to-relationships"></a>
 ### Belongs To(소속) 리레이션

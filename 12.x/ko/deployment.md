@@ -192,7 +192,7 @@ php artisan view:cache
 )
 ```
 
-이 라우트로 HTTP 요청이 오면, 라라벨은 `Illuminate\Foundation\Events\DiagnosingHealth` 이벤트도 발생시킵니다. 이를 통해, 추가적으로 필요한 헬스 체크 로직을 구현할 수 있습니다. 예를 들어, [리스너](/docs/{{version}}/events) 안에서 데이터베이스나 캐시 상태를 점검할 수 있습니다. 만약 애플리케이션에 문제가 감지되면, 리스너 내에서 예외를 발생시키기만 하면 됩니다.
+이 라우트로 HTTP 요청이 오면, 라라벨은 `Illuminate\Foundation\Events\DiagnosingHealth` 이벤트도 발생시킵니다. 이를 통해, 추가적으로 필요한 헬스 체크 로직을 구현할 수 있습니다. 예를 들어, [리스너](/docs/12.x/events) 안에서 데이터베이스나 캐시 상태를 점검할 수 있습니다. 만약 애플리케이션에 문제가 감지되면, 리스너 내에서 예외를 발생시키기만 하면 됩니다.
 
 <a name="deploying-with-cloud-or-forge"></a>
 ## Laravel Cloud 나 Forge로 배포하기

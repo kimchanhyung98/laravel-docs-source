@@ -18,7 +18,7 @@
 <a name="introduction"></a>
 ## 소개
 
-다른 프레임워크에서 페이지네이션을 구현하는 일은 매우 번거로울 수 있습니다. 라라벨의 페이지네이션 방식이 여러분에게 신선한 경험이 되길 바랍니다. 라라벨의 페이지네이터는 [쿼리 빌더](/docs/{{version}}/queries)와 [Eloquent ORM](/docs/{{version}}/eloquent)에 통합되어 있으며, 별도의 설정 없이도 데이터베이스 레코드의 편리하고 간단한 페이지네이션 기능을 제공합니다.
+다른 프레임워크에서 페이지네이션을 구현하는 일은 매우 번거로울 수 있습니다. 라라벨의 페이지네이션 방식이 여러분에게 신선한 경험이 되길 바랍니다. 라라벨의 페이지네이터는 [쿼리 빌더](/docs/12.x/queries)와 [Eloquent ORM](/docs/12.x/eloquent)에 통합되어 있으며, 별도의 설정 없이도 데이터베이스 레코드의 편리하고 간단한 페이지네이션 기능을 제공합니다.
 
 기본적으로 페이지네이터가 생성하는 HTML은 [Tailwind CSS 프레임워크](https://tailwindcss.com/)와 호환됩니다. 하지만, Bootstrap 기반 페이지네이션도 지원됩니다.
 
@@ -39,7 +39,7 @@
 <a name="paginating-query-builder-results"></a>
 ### 쿼리 빌더 결과 페이지네이션
 
-아이템을 페이지네이트하는 방법에는 여러 가지가 있습니다. 가장 간단한 방법은 [쿼리 빌더](/docs/{{version}}/queries)나 [Eloquent 쿼리](/docs/{{version}}/eloquent)에서 `paginate` 메서드를 사용하는 것입니다. `paginate` 메서드는 사용자가 보고 있는 현재 페이지에 따라 쿼리의 "limit"과 "offset"을 자동으로 설정합니다. 기본적으로, 현재 페이지는 HTTP 요청의 `page` 쿼리 문자열 인수의 값으로 감지되며, 라라벨이 이 값을 자동으로 읽어 들이고, 페이지네이터가 생성하는 링크에도 자동으로 추가됩니다.
+아이템을 페이지네이트하는 방법에는 여러 가지가 있습니다. 가장 간단한 방법은 [쿼리 빌더](/docs/12.x/queries)나 [Eloquent 쿼리](/docs/12.x/eloquent)에서 `paginate` 메서드를 사용하는 것입니다. `paginate` 메서드는 사용자가 보고 있는 현재 페이지에 따라 쿼리의 "limit"과 "offset"을 자동으로 설정합니다. 기본적으로, 현재 페이지는 HTTP 요청의 `page` 쿼리 문자열 인수의 값으로 감지되며, 라라벨이 이 값을 자동으로 읽어 들이고, 페이지네이터가 생성하는 링크에도 자동으로 추가됩니다.
 
 아래 예시에서는 `paginate` 메서드에 "한 페이지당 보여줄 아이템의 개수"만 인수로 전달합니다. 이번에는 한 페이지에 `15`개의 아이템을 출력하도록 지정해 보겠습니다:
 
@@ -79,7 +79,7 @@ $users = DB::table('users')->simplePaginate(15);
 <a name="paginating-eloquent-results"></a>
 ### Eloquent 결과 페이지네이션
 
-[Eloquent](/docs/{{version}}/eloquent) 쿼리도 페이지네이터를 활용할 수 있습니다. 다음 예시에서는 `App\Models\User` 모델의 레코드를 페이지네이션하며, 한 페이지에 15개의 레코드를 보여주도록 설정합니다. 쿼리 빌더 결과를 페이지네이션하는 방식과 거의 동일한 문법으로 사용할 수 있습니다:
+[Eloquent](/docs/12.x/eloquent) 쿼리도 페이지네이터를 활용할 수 있습니다. 다음 예시에서는 `App\Models\User` 모델의 레코드를 페이지네이션하며, 한 페이지에 15개의 레코드를 보여주도록 설정합니다. 쿼리 빌더 결과를 페이지네이션하는 방식과 거의 동일한 문법으로 사용할 수 있습니다:
 
 ```php
 use App\Models\User;
@@ -231,7 +231,7 @@ $users = User::paginate(15)->fragment('users');
 
 `paginate` 메서드를 호출하면 `Illuminate\Pagination\LengthAwarePaginator` 인스턴스를, `simplePaginate` 메서드를 사용할 경우에는 `Illuminate\Pagination\Paginator` 인스턴스를 받게 됩니다. 마지막으로, `cursorPaginate` 메서드를 호출하면 `Illuminate\Pagination\CursorPaginator` 인스턴스를 얻게 됩니다.
 
-이 객체들은 결과 집합에 대한 여러 메서드를 제공합니다. 또한, 페이지네이터 인스턴스는 반복자(iterator)이기 때문에 배열처럼 반복문으로 순회할 수 있습니다. 따라서 결과를 가져온 뒤, [Blade](/docs/{{version}}/blade)를 사용하여 결과와 페이지 링크를 쉽게 출력할 수 있습니다:
+이 객체들은 결과 집합에 대한 여러 메서드를 제공합니다. 또한, 페이지네이터 인스턴스는 반복자(iterator)이기 때문에 배열처럼 반복문으로 순회할 수 있습니다. 따라서 결과를 가져온 뒤, [Blade](/docs/12.x/blade)를 사용하여 결과와 페이지 링크를 쉽게 출력할 수 있습니다:
 
 ```blade
 <div class="container">

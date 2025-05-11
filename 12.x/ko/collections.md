@@ -38,7 +38,7 @@ $collection = collect([1, 2, 3]);
 또한 [make](#method-make) 또는 [fromJson](#method-fromjson) 메서드를 이용해 컬렉션을 생성할 수도 있습니다.
 
 > [!NOTE]
-> [Eloquent](/docs/{{version}}/eloquent) 쿼리의 반환 결과는 항상 `Collection` 인스턴스로 제공됩니다.
+> [Eloquent](/docs/12.x/eloquent) 쿼리의 반환 결과는 항상 `Collection` 인스턴스로 제공됩니다.
 
 <a name="extending-collections"></a>
 ### 컬렉션 확장
@@ -62,7 +62,7 @@ $upper = $collection->toUpper();
 // ['FIRST', 'SECOND']
 ```
 
-일반적으로 컬렉션 매크로는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 선언하는 것이 좋습니다.
+일반적으로 컬렉션 매크로는 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 선언하는 것이 좋습니다.
 
 <a name="macro-arguments"></a>
 #### 매크로 인수
@@ -252,7 +252,7 @@ $translated = $collection->toLocale('es');
 
 
 <a name="method-after"></a>
-#### `after()` {.collection-method .first-collection-method}
+#### `after()` .collection-method .first-collection-method
 
 `after` 메서드는 지정한 값 바로 다음에 위치한 요소를 반환합니다. 만약 지정한 값이 없거나 컬렉션의 마지막 요소라면 `null`을 반환합니다.
 
@@ -364,7 +364,7 @@ $chunks->all();
 // [[1, 2, 3, 4], [5, 6, 7]]
 ```
 
-이 메서드는 [뷰](/docs/{{version}}/views)에서 [Bootstrap](https://getbootstrap.com/docs/5.3/layout/grid/)과 같은 그리드 시스템을 사용할 때 특히 유용합니다. 예를 들어, 여러 [Eloquent](/docs/{{version}}/eloquent) 모델을 그리드 형태로 출력하려는 상황을 생각해 보세요.
+이 메서드는 [뷰](/docs/12.x/views)에서 [Bootstrap](https://getbootstrap.com/docs/5.3/layout/grid/)과 같은 그리드 시스템을 사용할 때 특히 유용합니다. 예를 들어, 여러 [Eloquent](/docs/12.x/eloquent) 모델을 그리드 형태로 출력하려는 상황을 생각해 보세요.
 
 ```blade
 @foreach ($products->chunk(3) as $chunk)
@@ -577,7 +577,7 @@ collect(['1', '2'])->containsOneItem();
 이 메서드는 [contains](#method-contains) 메서드와 같은 시그니처를 가지지만, 모든 값을 "엄격한(strict)" 비교로 판단합니다.
 
 > [!NOTE]
-> 이 메서드는 [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-contains)에서 동작 방식이 다르게 동작합니다.
+> 이 메서드는 [Eloquent 컬렉션](/docs/12.x/eloquent-collections#method-contains)에서 동작 방식이 다르게 동작합니다.
 
 <a name="method-count"></a>
 #### `count()` {.collection-method}
@@ -700,7 +700,7 @@ $diff->all();
 ```
 
 > [!NOTE]
-> 이 메서드는 [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-diff)에서 동작 방식이 다르게 동작합니다.
+> 이 메서드는 [Eloquent 컬렉션](/docs/12.x/eloquent-collections#method-diff)에서 동작 방식이 다르게 동작합니다.
 
 <a name="method-diffassoc"></a>
 #### `diffAssoc()` {.collection-method}
@@ -997,7 +997,7 @@ $filtered->all();
 `except`와 반대되는 동작을 하려면 [only](#method-only) 메서드를 참고하세요.
 
 > [!NOTE]
-> 이 메서드는 [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-except)에서 동작 방식이 다르게 동작합니다.
+> 이 메서드는 [Eloquent 컬렉션](/docs/12.x/eloquent-collections#method-except)에서 동작 방식이 다르게 동작합니다.
 
 <a name="method-filter"></a>
 #### `filter()` {.collection-method}
@@ -1459,7 +1459,7 @@ $intersect->all();
 ```
 
 > [!NOTE]
-> [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-intersect)에서는 이 메서드의 동작이 일부 달라집니다.
+> [Eloquent 컬렉션](/docs/12.x/eloquent-collections#method-intersect)에서는 이 메서드의 동작이 일부 달라집니다.
 
 <a name="method-intersectusing"></a>
 #### `intersectUsing()` {.collection-method}
@@ -2031,7 +2031,7 @@ $filtered->all();
 `only`의 반대 동작을 위해서는 [except](#method-except) 메서드를 참고하세요.
 
 > [!NOTE]
-> [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-only)에서 사용할 때는 이 메서드의 동작 방식이 달라질 수 있습니다.
+> [Eloquent 컬렉션](/docs/12.x/eloquent-collections#method-only)에서 사용할 때는 이 메서드의 동작 방식이 달라질 수 있습니다.
 
 <a name="method-pad"></a>
 #### `pad()` {.collection-method}
@@ -2078,7 +2078,7 @@ $equalOrAboveThree->all();
 ```
 
 > [!NOTE]
-> [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-partition)에서 사용할 때는 이 메서드의 동작이 다를 수 있습니다.
+> [Eloquent 컬렉션](/docs/12.x/eloquent-collections#method-partition)에서 사용할 때는 이 메서드의 동작이 다를 수 있습니다.
 
 <a name="method-percentage"></a>
 #### `percentage()` {.collection-method}
@@ -3267,7 +3267,7 @@ $collection->all();
 <a name="method-toarray"></a>
 #### `toArray()` {.collection-method}
 
-`toArray` 메서드는 컬렉션을 일반 PHP `array`로 변환합니다. 만약 컬렉션의 값이 [Eloquent](/docs/{{version}}/eloquent) 모델이라면, 모델도 배열로 변환됩니다.
+`toArray` 메서드는 컬렉션을 일반 PHP `array`로 변환합니다. 만약 컬렉션의 값이 [Eloquent](/docs/12.x/eloquent) 모델이라면, 모델도 배열로 변환됩니다.
 
 ```php
 $collection = collect(['name' => 'Desk', 'price' => 200]);
@@ -3429,7 +3429,7 @@ $unique->values()->all();
 `unique` 메서드는 항목 값을 비교할 때 "느슨한(loose) 비교"를 사용합니다. 즉, 값이 동일한 문자열과 숫자는 같은 값으로 간주합니다. 보다 엄격한 비교를 하고 싶다면 [uniqueStrict](#method-uniquestrict) 메서드를 사용하세요.
 
 > [!NOTE]
-> 이 메서드는 [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-unique)에서 동작 방식이 달라집니다.
+> 이 메서드는 [Eloquent 컬렉션](/docs/12.x/eloquent-collections#method-unique)에서 동작 방식이 달라집니다.
 
 <a name="method-uniquestrict"></a>
 #### `uniqueStrict()` {.collection-method}
@@ -4204,7 +4204,7 @@ $lazyCollection->each(function (int $number) {
 // 59
 ```
 
-이 메서드의 사용 예시로, 데이터베이스에서 커서를 이용해 송장(invoice)을 전송하는 애플리케이션을 생각해볼 수 있습니다. 매 15분마다 실행되는 [예약 작업](/docs/{{version}}/scheduling)을 정의해서, 최대 14분 동안만 송장 처리를 진행하도록 할 수 있습니다.
+이 메서드의 사용 예시로, 데이터베이스에서 커서를 이용해 송장(invoice)을 전송하는 애플리케이션을 생각해볼 수 있습니다. 매 15분마다 실행되는 [예약 작업](/docs/12.x/scheduling)을 정의해서, 최대 14분 동안만 송장 처리를 진행하도록 할 수 있습니다.
 
 ```php
 use App\Models\Invoice;

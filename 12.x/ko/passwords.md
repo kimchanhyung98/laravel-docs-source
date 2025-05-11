@@ -16,7 +16,7 @@
 대부분의 웹 애플리케이션에서는 사용자가 비밀번호를 잊어버렸을 때 이를 재설정할 수 있는 방법을 제공합니다. 라라벨에서는 애플리케이션마다 반복적으로 이 기능을 직접 구현하지 않아도 되도록, 비밀번호 재설정 링크를 전송하고 안전하게 비밀번호를 재설정할 수 있는 편리한 서비스를 제공합니다.
 
 > [!NOTE]
-> 빠르게 시작하고 싶으신가요? 새로운 라라벨 애플리케이션에서 [애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)를 설치해 보십시오. 라라벨의 스타터 키트는 비밀번호 재설정 기능을 포함한 전체 인증 시스템을 자동으로 구성해 줍니다.
+> 빠르게 시작하고 싶으신가요? 새로운 라라벨 애플리케이션에서 [애플리케이션 스타터 키트](/docs/12.x/starter-kits)를 설치해 보십시오. 라라벨의 스타터 키트는 비밀번호 재설정 기능을 포함한 전체 인증 시스템을 자동으로 구성해 줍니다.
 
 <a name="model-preparation"></a>
 ### 모델 준비
@@ -37,7 +37,7 @@
 
 일반적으로는 Nginx나 Apache와 같은 웹 서버에서 특정 호스트명과 일치하는 요청만 애플리케이션으로 전달하도록 설정하는 것이 바람직합니다. 하지만 웹 서버를 직접 커스터마이징할 수 없는 상황이라면, 라라벨의 `bootstrap/app.php` 파일에서 `trustHosts` 미들웨어 메서드를 사용해 특정 호스트만 허용하도록 설정할 수 있습니다. 특히 비밀번호 재설정 기능을 제공하는 경우 이 설정은 더욱 중요합니다.
 
-이 미들웨어 메서드에 대해 더 자세히 알고 싶으시면 [TrustHosts 미들웨어 문서](/docs/{{version}}/requests#configuring-trusted-hosts)를 참고하시기 바랍니다.
+이 미들웨어 메서드에 대해 더 자세히 알고 싶으시면 [TrustHosts 미들웨어 문서](/docs/12.x/requests#configuring-trusted-hosts)를 참고하시기 바랍니다.
 
 <a name="routing"></a>
 ## 라우팅
@@ -82,17 +82,17 @@ Route::post('/forgot-password', function (Request $request) {
 })->middleware('guest')->name('password.email');
 ```
 
-다음 단계로 넘어가기 전에, 위의 라우트가 하는 일을 좀 더 자세히 살펴보겠습니다. 우선, 요청 객체에서 받은 `email` 속성에 대해 유효성 검증을 실시합니다. 그리고 나서 라라벨에서 제공하는 "패스워드 브로커"(`Password` 파사드 사용)를 이용해 해당 사용자에게 비밀번호 재설정 링크를 보냅니다. 패스워드 브로커는 주어진 필드(여기서는 이메일 주소)로 사용자를 찾아 라라벨 내장 [알림 시스템](/docs/{{version}}/notifications)을 통해 비밀번호 재설정 링크를 보내줍니다.
+다음 단계로 넘어가기 전에, 위의 라우트가 하는 일을 좀 더 자세히 살펴보겠습니다. 우선, 요청 객체에서 받은 `email` 속성에 대해 유효성 검증을 실시합니다. 그리고 나서 라라벨에서 제공하는 "패스워드 브로커"(`Password` 파사드 사용)를 이용해 해당 사용자에게 비밀번호 재설정 링크를 보냅니다. 패스워드 브로커는 주어진 필드(여기서는 이메일 주소)로 사용자를 찾아 라라벨 내장 [알림 시스템](/docs/12.x/notifications)을 통해 비밀번호 재설정 링크를 보내줍니다.
 
-`sendResetLink` 메서드는 "상태" 슬러그를 반환합니다. 이 상태값은 라라벨의 [로컬라이제이션](/docs/{{version}}/localization) 헬퍼를 사용하여, 사용자의 요청 처리 결과에 대해 친숙한 메시지로 번역할 수 있습니다. 비밀번호 재설정 상태에 대한 번역 값은 애플리케이션의 `lang/{lang}/passwords.php` 파일에서 관리됩니다. 가능한 상태 슬러그별로 각각에 대한 항목이 이 파일에 정의되어 있습니다.
+`sendResetLink` 메서드는 "상태" 슬러그를 반환합니다. 이 상태값은 라라벨의 [로컬라이제이션](/docs/12.x/localization) 헬퍼를 사용하여, 사용자의 요청 처리 결과에 대해 친숙한 메시지로 번역할 수 있습니다. 비밀번호 재설정 상태에 대한 번역 값은 애플리케이션의 `lang/{lang}/passwords.php` 파일에서 관리됩니다. 가능한 상태 슬러그별로 각각에 대한 항목이 이 파일에 정의되어 있습니다.
 
 > [!NOTE]
 > 기본적으로, 라라벨의 애플리케이션 스캐폴딩에는 `lang` 디렉터리가 포함되어 있지 않습니다. 라라벨의 언어 파일을 커스터마이징하고 싶다면, `lang:publish` Artisan 명령어로 파일을 게시할 수 있습니다.
 
-아마 궁금하실 수 있습니다. `Password` 파사드의 `sendResetLink` 메서드를 호출할 때 라라벨이 어떻게 내 애플리케이션 데이터베이스에서 사용자 레코드를 찾아오는 걸까요? 라라벨의 패스워드 브로커는 인증 시스템의 "user providers"를 이용해 데이터베이스 레코드를 조회합니다. 패스워드 브로커에서 사용하는 user provider는 `config/auth.php` 설정 파일의 `passwords` 설정 배열에서 지정됩니다. 커스텀 user provider 작성 방법이 궁금하다면 [인증 문서](/docs/{{version}}/authentication#adding-custom-user-providers)를 참고하십시오.
+아마 궁금하실 수 있습니다. `Password` 파사드의 `sendResetLink` 메서드를 호출할 때 라라벨이 어떻게 내 애플리케이션 데이터베이스에서 사용자 레코드를 찾아오는 걸까요? 라라벨의 패스워드 브로커는 인증 시스템의 "user providers"를 이용해 데이터베이스 레코드를 조회합니다. 패스워드 브로커에서 사용하는 user provider는 `config/auth.php` 설정 파일의 `passwords` 설정 배열에서 지정됩니다. 커스텀 user provider 작성 방법이 궁금하다면 [인증 문서](/docs/12.x/authentication#adding-custom-user-providers)를 참고하십시오.
 
 > [!NOTE]
-> 패스워드 재설정을 직접 구현하는 경우, 뷰와 라우트의 내용을 모두 직접 정의해야 합니다. 인증과 인증 검증에 필요한 모든 로직이 자동 구성된 스캐폴딩을 원하신다면 [라라벨 애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)를 참고하지기 바랍니다.
+> 패스워드 재설정을 직접 구현하는 경우, 뷰와 라우트의 내용을 모두 직접 정의해야 합니다. 인증과 인증 검증에 필요한 모든 로직이 자동 구성된 스캐폴딩을 원하신다면 [라라벨 애플리케이션 스타터 키트](/docs/12.x/starter-kits)를 참고하지기 바랍니다.
 
 <a name="resetting-the-password"></a>
 ### 비밀번호 재설정
@@ -153,9 +153,9 @@ Route::post('/reset-password', function (Request $request) {
 
 패스워드 브로커에 제공된 토큰, 이메일, 비밀번호가 유효하다면, `reset` 메서드에 전달한 클로저가 실행됩니다. 이 클로저는 사용자 인스턴스와 폼에 입력된 평문 비밀번호를 인자로 받아서, 데이터베이스의 실제 사용자 비밀번호를 업데이트합니다.
 
-`reset` 메서드는 "상태" 슬러그를 반환합니다. 이 슬러그는 라라벨의 [로컬라이제이션](/docs/{{version}}/localization) 헬퍼를 사용해, 사용자의 요청 처리 결과를 친숙한 메시지로 번역해서 표시할 수 있습니다. 상태값에 대한 번역 항목은 애플리케이션의 `lang/{lang}/passwords.php` 파일에 정의되어 있습니다. 만약 애플리케이션에 `lang` 디렉터리가 없다면, `lang:publish` Artisan 명령어로 생성할 수 있습니다.
+`reset` 메서드는 "상태" 슬러그를 반환합니다. 이 슬러그는 라라벨의 [로컬라이제이션](/docs/12.x/localization) 헬퍼를 사용해, 사용자의 요청 처리 결과를 친숙한 메시지로 번역해서 표시할 수 있습니다. 상태값에 대한 번역 항목은 애플리케이션의 `lang/{lang}/passwords.php` 파일에 정의되어 있습니다. 만약 애플리케이션에 `lang` 디렉터리가 없다면, `lang:publish` Artisan 명령어로 생성할 수 있습니다.
 
-또한, `Password` 파사드의 `reset` 메서드를 호출할 때 라라벨이 데이터베이스에서 사용자 레코드를 어떻게 찾아오는지 궁금할 수 있습니다. 라라벨의 패스워드 브로커는 인증 시스템의 "user provider"를 활용해 사용자 정보를 조회하며, 이 provider는 `config/auth.php` 파일의 `passwords` 설정 배열에서 지정됩니다. 커스텀 user provider 작성에 대해 더 알고 싶으시다면 [인증 문서](/docs/{{version}}/authentication#adding-custom-user-providers)를 참고하십시오.
+또한, `Password` 파사드의 `reset` 메서드를 호출할 때 라라벨이 데이터베이스에서 사용자 레코드를 어떻게 찾아오는지 궁금할 수 있습니다. 라라벨의 패스워드 브로커는 인증 시스템의 "user provider"를 활용해 사용자 정보를 조회하며, 이 provider는 `config/auth.php` 파일의 `passwords` 설정 배열에서 지정됩니다. 커스텀 user provider 작성에 대해 더 알고 싶으시다면 [인증 문서](/docs/12.x/authentication#adding-custom-user-providers)를 참고하십시오.
 
 <a name="deleting-expired-tokens"></a>
 ## 만료된 토큰 삭제
@@ -166,7 +166,7 @@ Route::post('/reset-password', function (Request $request) {
 php artisan auth:clear-resets
 ```
 
-이 작업을 자동화하고 싶다면, 애플리케이션의 [스케줄러](/docs/{{version}}/scheduling)를 이용해 아래와 같이 명령어를 등록할 수 있습니다.
+이 작업을 자동화하고 싶다면, 애플리케이션의 [스케줄러](/docs/12.x/scheduling)를 이용해 아래와 같이 명령어를 등록할 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\Schedule;
@@ -200,7 +200,7 @@ public function boot(): void
 <a name="reset-email-customization"></a>
 #### 비밀번호 재설정 이메일 커스터마이즈
 
-비밀번호 재설정 링크를 사용자에게 전달하는 데 사용하는 알림 클래스를 손쉽게 변경할 수 있습니다. 이를 위해 `App\Models\User` 모델에서 `sendPasswordResetNotification` 메서드를 오버라이드하면 됩니다. 이 메서드 안에서 [알림 클래스](/docs/{{version}}/notifications)를 활용해 원하는 방식으로 알림을 보낼 수 있습니다. 비밀번호 재설정 `$token`은 이 메서드의 첫 번째 인자로 전달됩니다. 이 `$token`을 사용해서 원하는 방식으로 재설정 URL을 만들고, 사용자가 받을 알림을 전송할 수 있습니다.
+비밀번호 재설정 링크를 사용자에게 전달하는 데 사용하는 알림 클래스를 손쉽게 변경할 수 있습니다. 이를 위해 `App\Models\User` 모델에서 `sendPasswordResetNotification` 메서드를 오버라이드하면 됩니다. 이 메서드 안에서 [알림 클래스](/docs/12.x/notifications)를 활용해 원하는 방식으로 알림을 보낼 수 있습니다. 비밀번호 재설정 `$token`은 이 메서드의 첫 번째 인자로 전달됩니다. 이 `$token`을 사용해서 원하는 방식으로 재설정 URL을 만들고, 사용자가 받을 알림을 전송할 수 있습니다.
 
 ```php
 use App\Notifications\ResetPasswordNotification;

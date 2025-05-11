@@ -34,7 +34,7 @@
 <a name="package-discovery"></a>
 ## 패키지 자동 발견
 
-라라벨 애플리케이션의 `bootstrap/providers.php` 파일에는 라라벨이 로드해야 할 서비스 프로바이더 목록이 포함되어 있습니다. 하지만 사용자가 직접 이 파일에 여러분의 서비스 프로바이더를 추가해야 하는 번거로움을 줄이기 위해, 패키지의 `composer.json` 파일 `extra` 섹션에 프로바이더를 정의하면 라라벨이 자동으로 해당 프로바이더를 로드합니다. 또한 서비스 프로바이더뿐 아니라, 등록하고 싶은 [파사드](/docs/{{version}}/facades)도 함께 지정할 수 있습니다.
+라라벨 애플리케이션의 `bootstrap/providers.php` 파일에는 라라벨이 로드해야 할 서비스 프로바이더 목록이 포함되어 있습니다. 하지만 사용자가 직접 이 파일에 여러분의 서비스 프로바이더를 추가해야 하는 번거로움을 줄이기 위해, 패키지의 `composer.json` 파일 `extra` 섹션에 프로바이더를 정의하면 라라벨이 자동으로 해당 프로바이더를 로드합니다. 또한 서비스 프로바이더뿐 아니라, 등록하고 싶은 [파사드](/docs/12.x/facades)도 함께 지정할 수 있습니다.
 
 ```json
 "extra": {
@@ -81,9 +81,9 @@
 <a name="service-providers"></a>
 ## 서비스 프로바이더
 
-[서비스 프로바이더](/docs/{{version}}/providers)는 여러분의 패키지와 라라벨 사이의 연결점입니다. 서비스 프로바이더는 라라벨의 [서비스 컨테이너](/docs/{{version}}/container)에 다양한 항목을 바인딩하거나, 뷰, 구성, 언어 파일 등 패키지 리소스가 어디에 위치하는지 라라벨에 알려주는 역할을 합니다.
+[서비스 프로바이더](/docs/12.x/providers)는 여러분의 패키지와 라라벨 사이의 연결점입니다. 서비스 프로바이더는 라라벨의 [서비스 컨테이너](/docs/12.x/container)에 다양한 항목을 바인딩하거나, 뷰, 구성, 언어 파일 등 패키지 리소스가 어디에 위치하는지 라라벨에 알려주는 역할을 합니다.
 
-서비스 프로바이더는 `Illuminate\Support\ServiceProvider` 클래스를 상속하며, `register`와 `boot` 메서드를 구현합니다. 기본 `ServiceProvider` 클래스는 `illuminate/support` Composer 패키지에 포함되어 있으니, 여러분의 패키지에도 이를 의존성에 추가해야 합니다. 서비스 프로바이더의 구조와 역할에 대해 더 자세히 알고 싶다면, [별도의 문서](/docs/{{version}}/providers)를 참고하십시오.
+서비스 프로바이더는 `Illuminate\Support\ServiceProvider` 클래스를 상속하며, `register`와 `boot` 메서드를 구현합니다. 기본 `ServiceProvider` 클래스는 `illuminate/support` Composer 패키지에 포함되어 있으니, 여러분의 패키지에도 이를 의존성에 추가해야 합니다. 서비스 프로바이더의 구조와 역할에 대해 더 자세히 알고 싶다면, [별도의 문서](/docs/12.x/providers)를 참고하십시오.
 
 <a name="resources"></a>
 ## 리소스
@@ -154,7 +154,7 @@ public function boot(): void
 <a name="migrations"></a>
 ### 마이그레이션
 
-패키지에 [데이터베이스 마이그레이션](/docs/{{version}}/migrations)가 포함되어 있다면, `publishesMigrations` 메서드를 통해 해당 디렉터리나 파일이 마이그레이션임을 라라벨에 알릴 수 있습니다. 마이그레이션을 퍼블리시할 때, 파일명에 포함된 타임스탬프는 현재 날짜와 시간으로 자동으로 갱신됩니다.
+패키지에 [데이터베이스 마이그레이션](/docs/12.x/migrations)가 포함되어 있다면, `publishesMigrations` 메서드를 통해 해당 디렉터리나 파일이 마이그레이션임을 라라벨에 알릴 수 있습니다. 마이그레이션을 퍼블리시할 때, 파일명에 포함된 타임스탬프는 현재 날짜와 시간으로 자동으로 갱신됩니다.
 
 ```php
 /**
@@ -171,7 +171,7 @@ public function boot(): void
 <a name="language-files"></a>
 ### 언어 파일
 
-패키지에 [언어 파일](/docs/{{version}}/localization)이 포함되어 있다면, `loadTranslationsFrom` 메서드를 활용해 라라벨이 해당 파일들을 올바르게 불러올 수 있도록 해야 합니다. 예를 들어, 패키지 이름이 `courier`라면 서비스 프로바이더의 `boot` 메서드에 다음처럼 추가합니다.
+패키지에 [언어 파일](/docs/12.x/localization)이 포함되어 있다면, `loadTranslationsFrom` 메서드를 활용해 라라벨이 해당 파일들을 올바르게 불러올 수 있도록 해야 합니다. 예를 들어, 패키지 이름이 `courier`라면 서비스 프로바이더의 `boot` 메서드에 다음처럼 추가합니다.
 
 ```php
 /**
@@ -225,7 +225,7 @@ public function boot(): void
 <a name="views"></a>
 ### 뷰
 
-패키지의 [뷰](/docs/{{version}}/views)를 라라벨에 등록하려면, 라라벨에 뷰 파일의 위치를 알려줘야 합니다. 이를 위해 서비스 프로바이더의 `loadViewsFrom` 메서드를 사용합니다. 이 메서드는 첫 번째 인수로 뷰 템플릿 경로, 두 번째 인수로 패키지의 이름을 받습니다. 예를 들어, 패키지 이름이 `courier`라면, 서비스 프로바이더의 `boot` 메서드에 다음과 같이 추가합니다.
+패키지의 [뷰](/docs/12.x/views)를 라라벨에 등록하려면, 라라벨에 뷰 파일의 위치를 알려줘야 합니다. 이를 위해 서비스 프로바이더의 `loadViewsFrom` 메서드를 사용합니다. 이 메서드는 첫 번째 인수로 뷰 템플릿 경로, 두 번째 인수로 패키지의 이름을 받습니다. 예를 들어, 패키지 이름이 `courier`라면, 서비스 프로바이더의 `boot` 메서드에 다음과 같이 추가합니다.
 
 ```php
 /**
@@ -350,7 +350,7 @@ public function boot(): void
 <a name="commands"></a>
 ## 명령어
 
-패키지의 아티즌(Artisan) 명령어를 라라벨에 등록하려면, `commands` 메서드를 사용합니다. 이 메서드는 명령어 클래스 이름으로 이루어진 배열을 받습니다. 명령어가 등록되면, [Artisan CLI](/docs/{{version}}/artisan)를 통해 실행할 수 있습니다.
+패키지의 아티즌(Artisan) 명령어를 라라벨에 등록하려면, `commands` 메서드를 사용합니다. 이 메서드는 명령어 클래스 이름으로 이루어진 배열을 받습니다. 명령어가 등록되면, [Artisan CLI](/docs/12.x/artisan)를 통해 실행할 수 있습니다.
 
 ```php
 use Courier\Console\Commands\InstallCommand;
@@ -373,7 +373,7 @@ public function boot(): void
 <a name="optimize-commands"></a>
 ### 최적화 명령어
 
-라라벨의 [optimize 명령어](/docs/{{version}}/deployment#optimization)는 애플리케이션의 구성, 이벤트, 라우트, 뷰 파일을 캐시합니다. `optimizes` 메서드를 사용하면, 여러분의 패키지에서 `optimize` 또는 `optimize:clear` 명령어가 실행될 때 같이 호출할 아티즌 명령어를 지정할 수 있습니다.
+라라벨의 [optimize 명령어](/docs/12.x/deployment#optimization)는 애플리케이션의 구성, 이벤트, 라우트, 뷰 파일을 캐시합니다. `optimizes` 메서드를 사용하면, 여러분의 패키지에서 `optimize` 또는 `optimize:clear` 명령어가 실행될 때 같이 호출할 아티즌 명령어를 지정할 수 있습니다.
 
 ```php
 /**

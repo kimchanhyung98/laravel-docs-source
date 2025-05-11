@@ -195,7 +195,7 @@ Route::get('/orders', function () {
 
 편의상, 만약 인증된 요청이 자체 SPA UI에서 발생했고, Sanctum의 내장 [SPA 인증](#spa-authentication)을 사용한다면, `tokenCan` 메서드는 언제나 `true`를 반환합니다.
 
-하지만 이것이 곧 사용자가 모든 동작을 할 수 있어야 한다는 뜻은 아닙니다. 일반적으로, 애플리케이션의 [인가 정책(authorization policy)](/docs/{{version}}/authorization#creating-policies)에서 토큰이 필요한 권한을 가졌는지, 그리고 현재 사용자 인스턴스가 실제로 해당 행위를 할 자격이 있는지를 함께 검사해야 합니다.
+하지만 이것이 곧 사용자가 모든 동작을 할 수 있어야 한다는 뜻은 아닙니다. 일반적으로, 애플리케이션의 [인가 정책(authorization policy)](/docs/12.x/authorization#creating-policies)에서 토큰이 필요한 권한을 가졌는지, 그리고 현재 사용자 인스턴스가 실제로 해당 행위를 할 자격이 있는지를 함께 검사해야 합니다.
 
 예를 들어, 서버를 관리하는 애플리케이션이라고 할 때, 아래와 같이 토큰이 서버 업데이트 기능을 가지는지, 해당 서버가 사용자 소유인지 모두 검사할 수 있습니다.
 
@@ -341,14 +341,14 @@ axios.get('/sanctum/csrf-cookie').then(response => {
 <a name="logging-in"></a>
 #### 로그인
 
-CSRF 보호가 초기화되면, 이제 라라벨 애플리케이션의 `/login` 라우트로 `POST` 요청을 보낼 수 있습니다. 이 `/login` 라우트는 [직접 구현](/docs/{{version}}/authentication#authenticating-users)하거나, [Laravel Fortify](/docs/{{version}}/fortify)와 같은 헤드리스 인증 패키지를 사용할 수도 있습니다.
+CSRF 보호가 초기화되면, 이제 라라벨 애플리케이션의 `/login` 라우트로 `POST` 요청을 보낼 수 있습니다. 이 `/login` 라우트는 [직접 구현](/docs/12.x/authentication#authenticating-users)하거나, [Laravel Fortify](/docs/12.x/fortify)와 같은 헤드리스 인증 패키지를 사용할 수도 있습니다.
 
 로그인에 성공하면 세션 쿠키가 브라우저에 발급되고, 이후의 모든 요청에서는 세션 쿠키로 자동 인증이 됩니다. 또한, 앞서 `/sanctum/csrf-cookie` 경로로 이미 요청을 보냈으므로, 이후 모든 요청에는 CSRF 보호가 자동으로 적용됩니다(단, JavaScript HTTP 클라이언트에서 `XSRF-TOKEN` 쿠키값을 `X-XSRF-TOKEN` 헤더로 전송해야 함).
 
 사용자의 세션이 비활성 상태로 만료될 경우, 다음 요청부터는 401 또는 419 HTTP 오류가 발생할 수 있습니다. 이 때는 사용자를 SPA의 로그인 페이지로 리디렉션하면 됩니다.
 
 > [!WARNING]
-> `/login` 엔드포인트는 직접 구현해도 되지만, 반드시 라라벨의 표준 [세션 기반 인증 서비스](/docs/{{version}}/authentication#authenticating-users)를 사용해 인증을 처리해야 합니다. 대부분의 경우, `web` 인증 가드를 사용하면 충분합니다.
+> `/login` 엔드포인트는 직접 구현해도 되지만, 반드시 라라벨의 표준 [세션 기반 인증 서비스](/docs/12.x/authentication#authenticating-users)를 사용해 인증을 처리해야 합니다. 대부분의 경우, `web` 인증 가드를 사용하면 충분합니다.
 
 <a name="protecting-spa-routes"></a>
 ### SPA 라우트 보호하기
@@ -366,7 +366,7 @@ Route::get('/user', function (Request $request) {
 <a name="authorizing-private-broadcast-channels"></a>
 ### 프라이빗 브로드캐스트 채널 인가
 
-SPA에서 [프라이빗/프레즌스 브로드캐스트 채널](/docs/{{version}}/broadcasting#authorizing-channels)에 인증이 필요하다면, 애플리케이션의 `bootstrap/app.php` 파일에서 `withRouting` 메서드의 `channels` 항목을 제거하세요. 그리고 다음과 같이 `withBroadcasting` 메서드를 대신 사용하여, 브로드캐스팅 라우트에 올바른 미들웨어를 지정해야 합니다.
+SPA에서 [프라이빗/프레즌스 브로드캐스트 채널](/docs/12.x/broadcasting#authorizing-channels)에 인증이 필요하다면, 애플리케이션의 `bootstrap/app.php` 파일에서 `withRouting` 메서드의 `channels` 항목을 제거하세요. 그리고 다음과 같이 `withBroadcasting` 메서드를 대신 사용하여, 브로드캐스팅 라우트에 올바른 미들웨어를 지정해야 합니다.
 
 ```php
 return Application::configure(basePath: dirname(__DIR__))
@@ -380,7 +380,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
 ```
 
-그리고 Pusher의 인증 요청이 정상동작하도록, [Laravel Echo](/docs/{{version}}/broadcasting#client-side-installation) 초기화 시 별도의 커스텀 Pusher `authorizer`를 제공해야 합니다. 이렇게 하면 [cross-domain 요청을 제대로 구성한 axios 인스턴스](#cors-and-cookies)로 Pusher 인증을 처리할 수 있습니다.
+그리고 Pusher의 인증 요청이 정상동작하도록, [Laravel Echo](/docs/12.x/broadcasting#client-side-installation) 초기화 시 별도의 커스텀 Pusher `authorizer`를 제공해야 합니다. 이렇게 하면 [cross-domain 요청을 제대로 구성한 axios 인스턴스](#cors-and-cookies)로 Pusher 인증을 처리할 수 있습니다.
 
 ```js
 window.Echo = new Echo({

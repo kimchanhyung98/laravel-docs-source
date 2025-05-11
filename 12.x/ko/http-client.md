@@ -822,7 +822,7 @@ $recorded = Http::recorded(function (Request $request, Response $response) {
 
 라라벨은 HTTP 요청을 보내는 과정에서 세 가지 이벤트를 발생시킵니다. 요청 전에는 `RequestSending` 이벤트가, 응답을 받은 후에는 `ResponseReceived` 이벤트가, 응답을 받지 못할 경우에는 `ConnectionFailed` 이벤트가 발생합니다.
 
-`RequestSending`과 `ConnectionFailed` 이벤트에는 해당 요청을 검사할 수 있는 공개 `$request` 속성이 있습니다. 마찬가지로, `ResponseReceived` 이벤트에는 `$request`와 `$response` 속성이 있어 각각 요청, 응답 정보를 확인할 수 있습니다. 이들 이벤트에 대해 [이벤트 리스너](/docs/{{version}}/events)를 생성하거나 등록할 수 있습니다.
+`RequestSending`과 `ConnectionFailed` 이벤트에는 해당 요청을 검사할 수 있는 공개 `$request` 속성이 있습니다. 마찬가지로, `ResponseReceived` 이벤트에는 `$request`와 `$response` 속성이 있어 각각 요청, 응답 정보를 확인할 수 있습니다. 이들 이벤트에 대해 [이벤트 리스너](/docs/12.x/events)를 생성하거나 등록할 수 있습니다.
 
 ```php
 use Illuminate\Http\Client\Events\RequestSending;

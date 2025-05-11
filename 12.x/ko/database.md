@@ -15,7 +15,7 @@
 <a name="introduction"></a>
 ## 소개
 
-대부분의 최신 웹 애플리케이션은 데이터베이스와 상호작용합니다. 라라벨은 다양한 데이터베이스를 지원하며, 원시 SQL, [유연한 쿼리 빌더](/docs/{{version}}/queries), [Eloquent ORM](/docs/{{version}}/eloquent)를 통해 데이터베이스와 매우 쉽게 연동할 수 있습니다. 현재 라라벨은 다음 5가지 데이터베이스를 공식적으로 지원합니다.
+대부분의 최신 웹 애플리케이션은 데이터베이스와 상호작용합니다. 라라벨은 다양한 데이터베이스를 지원하며, 원시 SQL, [유연한 쿼리 빌더](/docs/12.x/queries), [Eloquent ORM](/docs/12.x/eloquent)를 통해 데이터베이스와 매우 쉽게 연동할 수 있습니다. 현재 라라벨은 다음 5가지 데이터베이스를 공식적으로 지원합니다.
 
 <div class="content-list" markdown="1">
 
@@ -34,7 +34,7 @@
 
 라라벨의 데이터베이스 서비스 설정 파일은 애플리케이션의 `config/database.php` 내에 있습니다. 이 파일에서 모든 데이터베이스 연결을 정의할 수 있으며, 기본적으로 사용할 연결도 지정할 수 있습니다. 이 파일 내 대부분의 설정 값은 애플리케이션의 환경 변수 값을 기반으로 합니다. 라라벨에서 지원하는 여러 데이터베이스 시스템에 대한 예시도 이 설정 파일에 포함되어 있습니다.
 
-기본적으로, 라라벨의 샘플 [환경 설정](/docs/{{version}}/configuration#environment-configuration)은 [Laravel Sail](/docs/{{version}}/sail)과 바로 사용할 수 있도록 구성되어 있습니다. Sail은 로컬 환경에서 라라벨 애플리케이션 개발을 위한 Docker 구성입니다. 하지만 로컬 데이터베이스에 맞게 설정을 자유롭게 수정할 수 있습니다.
+기본적으로, 라라벨의 샘플 [환경 설정](/docs/12.x/configuration#environment-configuration)은 [Laravel Sail](/docs/12.x/sail)과 바로 사용할 수 있도록 구성되어 있습니다. Sail은 로컬 환경에서 라라벨 애플리케이션 개발을 위한 Docker 구성입니다. 하지만 로컬 데이터베이스에 맞게 설정을 자유롭게 수정할 수 있습니다.
 
 <a name="sqlite-configuration"></a>
 #### SQLite 구성
@@ -53,7 +53,7 @@ DB_FOREIGN_KEYS=false
 ```
 
 > [!NOTE]
-> [라라벨 인스톨러](/docs/{{version}}/installation#creating-a-laravel-project)를 사용해 라라벨 애플리케이션 생성 시 데이터베이스로 SQLite를 선택하면, 라라벨이 자동으로 `database/database.sqlite` 파일을 만들어주고, 기본 [데이터베이스 마이그레이션](/docs/{{version}}/migrations)도 실행합니다.
+> [라라벨 인스톨러](/docs/12.x/installation#creating-a-laravel-project)를 사용해 라라벨 애플리케이션 생성 시 데이터베이스로 SQLite를 선택하면, 라라벨이 자동으로 `database/database.sqlite` 파일을 만들어주고, 기본 [데이터베이스 마이그레이션](/docs/12.x/migrations)도 실행합니다.
 
 <a name="mssql-configuration"></a>
 #### Microsoft SQL Server 구성
@@ -291,7 +291,7 @@ $pdo = DB::connection()->getPdo();
 <a name="listening-for-query-events"></a>
 ### 쿼리 이벤트 리스닝
 
-애플리케이션에서 실행되는 모든 SQL 쿼리에 대해 클로저(함수)를 실행하고 싶다면, `DB` 파사드의 `listen` 메서드를 이용할 수 있습니다. 이 메서드는 로그 기록이나 디버깅에 유용합니다. 쿼리 리스너는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 등록하면 됩니다.
+애플리케이션에서 실행되는 모든 SQL 쿼리에 대해 클로저(함수)를 실행하고 싶다면, `DB` 파사드의 `listen` 메서드를 이용할 수 있습니다. 이 메서드는 로그 기록이나 디버깅에 유용합니다. 쿼리 리스너는 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 등록하면 됩니다.
 
 ```php
 <?php
@@ -330,7 +330,7 @@ class AppServiceProvider extends ServiceProvider
 <a name="monitoring-cumulative-query-time"></a>
 ### 누적 쿼리 시간 모니터링
 
-모던 웹 애플리케이션에서 성능 병목의 대표적인 원인 중 하나는 데이터베이스 쿼리에 소요되는 시간입니다. 라라벨은 단일 요청 중 데이터베이스 쿼리에 너무 많은 시간이 소모될 경우, 지정한 클로저(콜백 함수)를 호출할 수 있습니다. 사용 방법은 `whenQueryingForLongerThan` 메서드에 임계값(밀리초 단위)과 콜백을 넘기면 됩니다. 이 메서드는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 호출할 수 있습니다.
+모던 웹 애플리케이션에서 성능 병목의 대표적인 원인 중 하나는 데이터베이스 쿼리에 소요되는 시간입니다. 라라벨은 단일 요청 중 데이터베이스 쿼리에 너무 많은 시간이 소모될 경우, 지정한 클로저(콜백 함수)를 호출할 수 있습니다. 사용 방법은 `whenQueryingForLongerThan` 메서드에 임계값(밀리초 단위)과 콜백을 넘기면 됩니다. 이 메서드는 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 호출할 수 있습니다.
 
 ```php
 <?php
@@ -418,7 +418,7 @@ DB::commit();
 ```
 
 > [!NOTE]
-> `DB` 파사드의 트랜잭션 제어 메서드는 [쿼리 빌더](/docs/{{version}}/queries), [Eloquent ORM](/docs/{{version}}/eloquent) 양쪽 모두에 적용됩니다.
+> `DB` 파사드의 트랜잭션 제어 메서드는 [쿼리 빌더](/docs/12.x/queries), [Eloquent ORM](/docs/12.x/eloquent) 양쪽 모두에 적용됩니다.
 
 <a name="connecting-to-the-database-cli"></a>
 ## 데이터베이스 CLI에 연결하기
@@ -488,7 +488,7 @@ php artisan db:table users
 
 `db:monitor` Artisan 명령어를 사용하면, 데이터베이스에서 열린 연결이 특정 개수 이상이 될 경우 `Illuminate\Database\Events\DatabaseBusy` 이벤트를 디스패치하도록 할 수 있습니다.
 
-먼저, `db:monitor` 명령어를 [매분 실행](/docs/{{version}}/scheduling)되도록 예약하세요. 명령어는 모니터링할 데이터베이스 연결 이름과 이벤트 발생 임계값(열린 연결 수)을 인수로 받을 수 있습니다.
+먼저, `db:monitor` 명령어를 [매분 실행](/docs/12.x/scheduling)되도록 예약하세요. 명령어는 모니터링할 데이터베이스 연결 이름과 이벤트 발생 임계값(열린 연결 수)을 인수로 받을 수 있습니다.
 
 ```shell
 php artisan db:monitor --databases=mysql,pgsql --max=100

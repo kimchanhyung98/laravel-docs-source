@@ -25,7 +25,7 @@
 <a name="creating-an-application"></a>
 ## 스타터 키트로 애플리케이션 생성하기
 
-라라벨의 스타터 키트를 이용해 새 애플리케이션을 만들려면 먼저 [PHP와 라라벨 CLI 도구를 설치](/docs/{{version}}/installation#installing-php)해야 합니다. 이미 PHP와 Composer가 설치되어 있다면, Composer를 통해 라라벨 설치 도구(Installer) CLI를 아래와 같이 설치할 수 있습니다.
+라라벨의 스타터 키트를 이용해 새 애플리케이션을 만들려면 먼저 [PHP와 라라벨 CLI 도구를 설치](/docs/12.x/installation#installing-php)해야 합니다. 이미 PHP와 Composer가 설치되어 있다면, Composer를 통해 라라벨 설치 도구(Installer) CLI를 아래와 같이 설치할 수 있습니다.
 
 ```shell
 composer global require laravel/installer

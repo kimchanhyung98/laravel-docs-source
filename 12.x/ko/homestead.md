@@ -615,7 +615,7 @@ backup: true
 <a name="configuring-cron-schedules"></a>
 ### Cron 스케줄 설정
 
-라라벨은 [cron 작업 스케줄](/docs/{{version}}/scheduling)을 편리하게 지원합니다. 1분마다 `schedule:run` 아티즌 명령어만 실행하면 됩니다. 이 명령어가 `routes/console.php`에 정의된 작업 목록을 확인하여 해당 작업들을 실행합니다.
+라라벨은 [cron 작업 스케줄](/docs/12.x/scheduling)을 편리하게 지원합니다. 1분마다 `schedule:run` 아티즌 명령어만 실행하면 됩니다. 이 명령어가 `routes/console.php`에 정의된 작업 목록을 확인하여 해당 작업들을 실행합니다.
 
 특정 Homestead 사이트에 대해 `schedule:run` 명령을 자동으로 실행하려면, 사이트 정의에서 `schedule` 옵션을 `true`로 설정하세요.
 
@@ -680,7 +680,7 @@ buckets:
 <a name="laravel-dusk"></a>
 ### Laravel Dusk
 
-Homestead 내에서 [Laravel Dusk](/docs/{{version}}/dusk) 테스트를 실행하려면, Homestead 설정에서 [webdriver 기능](#installing-optional-features)을 활성화해야 합니다.
+Homestead 내에서 [Laravel Dusk](/docs/12.x/dusk) 테스트를 실행하려면, Homestead 설정에서 [webdriver 기능](#installing-optional-features)을 활성화해야 합니다.
 
 ```yaml
 features:

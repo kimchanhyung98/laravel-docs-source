@@ -61,7 +61,7 @@ class EnsureTokenIsValid
 미들웨어는 애플리케이션에 도달하기 전에 HTTP 요청이 반드시 통과해야 하는 일련의 "레이어(계층)"로 상상하는 것이 좋습니다. 각 레이어는 요청을 검사하고 요청을 완전히 거부할 수도 있습니다.
 
 > [!NOTE]
-> 모든 미들웨어는 [서비스 컨테이너](/docs/{{version}}/container)를 통해 resolve되므로, 미들웨어의 생성자에서 필요한 모든 의존성을 타입힌트로 선언할 수 있습니다.
+> 모든 미들웨어는 [서비스 컨테이너](/docs/12.x/container)를 통해 resolve되므로, 미들웨어의 생성자에서 필요한 모든 의존성을 타입힌트로 선언할 수 있습니다.
 
 <a name="middleware-and-responses"></a>
 #### 미들웨어와 응답
@@ -486,7 +486,7 @@ class TerminatingMiddleware
 
 `terminate` 메서드는 요청과 응답을 모두 인수로 받아야 합니다. terminate 가능한 미들웨어를 만들었다면, 이를 애플리케이션의 전역 혹은 개별 라우트 미들웨어에 추가하면 됩니다.
 
-라라벨이 미들웨어의 `terminate` 메서드를 호출할 때는 [서비스 컨테이너](/docs/{{version}}/container)를 이용해 새로운 미들웨어 인스턴스를 resolve합니다. 만약 `handle`과 `terminate`가 동일한 미들웨어 인스턴스에서 호출되길 원한다면, 컨테이너의 `singleton` 메서드를 사용해 미들웨어를 등록해야 합니다. 일반적으로 이는 `AppServiceProvider`의 `register` 메서드에서 처리합니다.
+라라벨이 미들웨어의 `terminate` 메서드를 호출할 때는 [서비스 컨테이너](/docs/12.x/container)를 이용해 새로운 미들웨어 인스턴스를 resolve합니다. 만약 `handle`과 `terminate`가 동일한 미들웨어 인스턴스에서 호출되길 원한다면, 컨테이너의 `singleton` 메서드를 사용해 미들웨어를 등록해야 합니다. 일반적으로 이는 `AppServiceProvider`의 `register` 메서드에서 처리합니다.
 
 ```php
 use App\Http\Middleware\TerminatingMiddleware;

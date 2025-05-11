@@ -8,7 +8,7 @@
 <a name="introduction"></a>
 ## 소개
 
-라라벨은 HTTP 테스트를 간단하게 만들어줄 뿐만 아니라, 애플리케이션의 [커스텀 콘솔 명령어](/docs/{{version}}/artisan)를 테스트할 수 있는 간단한 API도 제공합니다.
+라라벨은 HTTP 테스트를 간단하게 만들어줄 뿐만 아니라, 애플리케이션의 [커스텀 콘솔 명령어](/docs/12.x/artisan)를 테스트할 수 있는 간단한 API도 제공합니다.
 
 <a name="success-failure-expectations"></a>
 ## 성공 / 실패 기대값
@@ -92,7 +92,7 @@ public function test_console_command(): void
 }
 ```
 
-[Laravel Prompts](/docs/{{version}}/prompts)가 제공하는 `search` 또는 `multisearch` 함수를 사용할 때는, `expectsSearch` assert를 이용해 사용자의 입력, 검색 결과, 선택한 값을 모킹할 수 있습니다.
+[Laravel Prompts](/docs/12.x/prompts)가 제공하는 `search` 또는 `multisearch` 함수를 사용할 때는, `expectsSearch` assert를 이용해 사용자의 입력, 검색 결과, 선택한 값을 모킹할 수 있습니다.
 
 ```php tab=Pest
 test('console command', function () {

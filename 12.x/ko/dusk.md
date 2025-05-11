@@ -76,7 +76,7 @@ php artisan dusk:install
 다음으로, 애플리케이션의 `.env` 파일에 `APP_URL` 환경 변수를 설정해야 합니다. 이 값은 실제 브라우저에서 애플리케이션에 접속할 때 사용하는 URL과 동일해야 합니다.
 
 > [!NOTE]
-> [Laravel Sail](/docs/{{version}}/sail)로 로컬 개발 환경을 관리하고 있다면, [Dusk 테스트 설정 및 실행](/docs/{{version}}/sail#laravel-dusk)에 관한 Sail 문서도 함께 참고하시기 바랍니다.
+> [Laravel Sail](/docs/12.x/sail)로 로컬 개발 환경을 관리하고 있다면, [Dusk 테스트 설정 및 실행](/docs/12.x/sail#laravel-dusk)에 관한 Sail 문서도 함께 참고하시기 바랍니다.
 
 <a name="managing-chromedriver-installations"></a>
 ### ChromeDriver 설치 관리
@@ -300,7 +300,7 @@ php artisan dusk --group=foo
 ```
 
 > [!NOTE]
-> [Laravel Sail](/docs/{{version}}/sail)로 로컬 개발 환경을 관리 중이라면, [Dusk 테스트 설정 및 실행](/docs/{{version}}/sail#laravel-dusk)에 관한 Sail 문서를 꼭 참고하세요.
+> [Laravel Sail](/docs/12.x/sail)로 로컬 개발 환경을 관리 중이라면, [Dusk 테스트 설정 및 실행](/docs/12.x/sail#laravel-dusk)에 관한 Sail 문서를 꼭 참고하세요.
 
 <a name="manually-starting-chromedriver"></a>
 #### ChromeDriver 수동 시작
@@ -441,7 +441,7 @@ $this->browse(function (Browser $first, Browser $second) {
 $browser->visit('/login');
 ```
 
-[named route](/docs/{{version}}/routing#named-routes)로 이동하려면 `visitRoute` 메서드를 사용할 수 있습니다:
+[named route](/docs/12.x/routing#named-routes)로 이동하려면 `visitRoute` 메서드를 사용할 수 있습니다:
 
 ```php
 $browser->visitRoute($routeName, $parameters);
@@ -497,7 +497,7 @@ $browser->move($x = 100, $y = 100);
 <a name="browser-macros"></a>
 ### 브라우저 매크로 사용
 
-여러 테스트에서 공통적으로 사용할 수 있는 사용자 정의 브라우저 메서드를 만들고 싶다면, `Browser` 클래스의 `macro` 메서드를 사용할 수 있습니다. 보통 이 메서드는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드 내에서 등록합니다:
+여러 테스트에서 공통적으로 사용할 수 있는 사용자 정의 브라우저 메서드를 만들고 싶다면, `Browser` 클래스의 `macro` 메서드를 사용할 수 있습니다. 보통 이 메서드는 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드 내에서 등록합니다:
 
 ```php
 <?php
@@ -889,7 +889,7 @@ $browser->withKeyboard(function (Keyboard $keyboard) {
 <a name="keyboard-macros"></a>
 #### 키보드 매크로
 
-테스트 전체에서 손쉽게 재사용할 수 있는 사용자 정의 키보드 동작이 필요하다면, `Keyboard` 클래스의 `macro` 메서드를 사용해 매크로를 등록할 수 있습니다. 일반적으로 이 메서드는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 호출합니다.
+테스트 전체에서 손쉽게 재사용할 수 있는 사용자 정의 키보드 동작이 필요하다면, `Keyboard` 클래스의 `macro` 메서드를 사용해 매크로를 등록할 수 있습니다. 일반적으로 이 메서드는 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 호출합니다.
 
 ```php
 <?php
@@ -1256,7 +1256,7 @@ $browser->waitForLocation('/secret');
 $browser->waitForLocation('https://example.com/path');
 ```
 
-[named route](/docs/{{version}}/routing#named-routes)의 위치가 나타날 때까지 대기할 수도 있습니다.
+[named route](/docs/12.x/routing#named-routes)의 위치가 나타날 때까지 대기할 수도 있습니다.
 
 ```php
 $browser->waitForRoute($routeName, $parameters);
@@ -1583,7 +1583,7 @@ $browser->assertPathIsNot('/home');
 <a name="assert-route-is"></a>
 #### assertRouteIs
 
-현재 URL이 지정한 [네임드 라우트](/docs/{{version}}/routing#named-routes)와 일치하는지 검증합니다.
+현재 URL이 지정한 [네임드 라우트](/docs/12.x/routing#named-routes)와 일치하는지 검증합니다.
 
 ```php
 $browser->assertRouteIs($name, $parameters);

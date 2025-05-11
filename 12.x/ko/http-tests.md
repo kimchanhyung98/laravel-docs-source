@@ -214,7 +214,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-라라벨의 세션은 일반적으로 현재 인증된 사용자의 상태 유지를 위해 사용됩니다. 그래서 `actingAs` 헬퍼 메서드를 이용하면 특정 사용자를 현재 사용자로 간단히 인증할 수 있습니다. 예를 들어, [모델 팩토리](/docs/{{version}}/eloquent-factories)를 이용해 사용자를 생성 후 인증할 수 있습니다.
+라라벨의 세션은 일반적으로 현재 인증된 사용자의 상태 유지를 위해 사용됩니다. 그래서 `actingAs` 헬퍼 메서드를 이용하면 특정 사용자를 현재 사용자로 간단히 인증할 수 있습니다. 예를 들어, [모델 팩토리](/docs/12.x/eloquent-factories)를 이용해 사용자를 생성 후 인증할 수 있습니다.
 
 ```php tab=Pest
 <?php
@@ -905,7 +905,7 @@ $contents = (string) $this->view('welcome');
 <a name="sharing-errors"></a>
 #### 에러(Error) 공유하기
 
-일부 뷰에서는 라라벨이 전역으로 제공하는 [에러 백(error bag)](/docs/{{version}}/validation#quick-displaying-the-validation-errors)과 함께 동작해야 할 때가 있습니다. 이러한 에러 메시지로 에러 백을 채우려면, `withViewErrors` 메서드를 사용할 수 있습니다.
+일부 뷰에서는 라라벨이 전역으로 제공하는 [에러 백(error bag)](/docs/12.x/validation#quick-displaying-the-validation-errors)과 함께 동작해야 할 때가 있습니다. 이러한 에러 메시지로 에러 백을 채우려면, `withViewErrors` 메서드를 사용할 수 있습니다.
 
 ```php
 $view = $this->withViewErrors([
@@ -918,7 +918,7 @@ $view->assertSee('Please provide a valid name.');
 <a name="rendering-blade-and-components"></a>
 ### Blade와 컴포넌트 렌더링
 
-필요하다면, `blade` 메서드를 사용해 [Blade](/docs/{{version}}/blade) 원본 문자열을 직접 평가하고 렌더링할 수 있습니다. `view` 메서드와 마찬가지로, `blade` 메서드 역시 `Illuminate\Testing\TestView` 인스턴스를 반환합니다.
+필요하다면, `blade` 메서드를 사용해 [Blade](/docs/12.x/blade) 원본 문자열을 직접 평가하고 렌더링할 수 있습니다. `view` 메서드와 마찬가지로, `blade` 메서드 역시 `Illuminate\Testing\TestView` 인스턴스를 반환합니다.
 
 ```php
 $view = $this->blade(
@@ -929,7 +929,7 @@ $view = $this->blade(
 $view->assertSee('Taylor');
 ```
 
-[Blade 컴포넌트](/docs/{{version}}/blade#components)를 평가하고 렌더링하려면, `component` 메서드를 사용할 수 있습니다. 이 메서드는 `Illuminate\Testing\TestComponent` 인스턴스를 반환합니다.
+[Blade 컴포넌트](/docs/12.x/blade#components)를 평가하고 렌더링하려면, `component` 메서드를 사용할 수 있습니다. 이 메서드는 `Illuminate\Testing\TestComponent` 인스턴스를 반환합니다.
 
 ```php
 $view = $this->component(Profile::class, ['name' => 'Taylor']);
@@ -1556,7 +1556,7 @@ $response->assertRedirectContains($string);
 <a name="assert-redirect-to-route"></a>
 #### assertRedirectToRoute
 
-응답이 지정한 [이름이 지정된 라우트](/docs/{{version}}/routing#named-routes)로 리다이렉트인지 확인합니다.
+응답이 지정한 [이름이 지정된 라우트](/docs/12.x/routing#named-routes)로 리다이렉트인지 확인합니다.
 
 ```php
 $response->assertRedirectToRoute($name, $parameters = []);
@@ -1565,7 +1565,7 @@ $response->assertRedirectToRoute($name, $parameters = []);
 <a name="assert-redirect-to-signed-route"></a>
 #### assertRedirectToSignedRoute
 
-응답이 지정한 [서명된 라우트](/docs/{{version}}/urls#signed-urls)로 리다이렉트인지 확인합니다.
+응답이 지정한 [서명된 라우트](/docs/12.x/urls#signed-urls)로 리다이렉트인지 확인합니다.
 
 ```php
 $response->assertRedirectToSignedRoute($name = null, $parameters = []);
@@ -1654,7 +1654,7 @@ $response->assertSessionHas($key, function (User $value) {
 <a name="assert-session-has-input"></a>
 #### assertSessionHasInput
 
-세션의 [flashed input 배열](/docs/{{version}}/responses#redirecting-with-flashed-session-data)에 지정한 값이 포함되어 있는지 확인합니다.
+세션의 [flashed input 배열](/docs/12.x/responses#redirecting-with-flashed-session-data)에 지정한 값이 포함되어 있는지 확인합니다.
 
 ```php
 $response->assertSessionHasInput($key, $value = null);
@@ -1719,7 +1719,7 @@ $response->assertSessionHasErrors([
 <a name="assert-session-has-errors-in"></a>
 #### assertSessionHasErrorsIn
 
-특정 [에러 백(error bag)](/docs/{{version}}/validation#named-error-bags) 내에서 지정한 `$keys`에 대한 에러가 존재하는지 확인합니다. `$keys`가 연관 배열일 경우, 각 필드(키)에 대해 해당 에러 백 안에 특정 에러 메시지(값)가 존재하는지도 검증합니다.
+특정 [에러 백(error bag)](/docs/12.x/validation#named-error-bags) 내에서 지정한 `$keys`에 대한 에러가 존재하는지 확인합니다. `$keys`가 연관 배열일 경우, 각 필드(키)에 대해 해당 에러 백 안에 특정 에러 메시지(값)가 존재하는지도 검증합니다.
 
 ```php
 $response->assertSessionHasErrorsIn($errorBag, $keys = [], $format = null);

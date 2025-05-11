@@ -26,7 +26,7 @@
     - [User Provider 계약](#the-user-provider-contract)
     - [Authenticatable 계약](#the-authenticatable-contract)
 - [자동 비밀번호 재해시](#automatic-password-rehashing)
-- [소셜 인증](/docs/{{version}}/socialite)
+- [소셜 인증](/docs/12.x/socialite)
 - [이벤트](#events)
 
 <a name="introduction"></a>
@@ -36,24 +36,24 @@
 
 라라벨 인증의 핵심은 "가드(guards)"와 "프로바이더(providers)"로 구성되어 있습니다. 가드는 각 요청마다 사용자를 어떻게 인증할지 정의합니다. 예를 들어, 라라벨에는 세션 저장소와 쿠키를 활용하는 `session` 가드가 기본적으로 포함되어 있습니다.
 
-프로바이더는 사용자를 영구 저장소(데이터베이스 등)에서 어떻게 불러올지 결정합니다. 라라벨은 [Eloquent](/docs/{{version}}/eloquent) 및 데이터베이스 쿼리 빌더를 활용한 사용자 조회를 기본 지원합니다. 필요하다면 여러분의 애플리케이션에서 추가 프로바이더 역시 정의할 수 있습니다.
+프로바이더는 사용자를 영구 저장소(데이터베이스 등)에서 어떻게 불러올지 결정합니다. 라라벨은 [Eloquent](/docs/12.x/eloquent) 및 데이터베이스 쿼리 빌더를 활용한 사용자 조회를 기본 지원합니다. 필요하다면 여러분의 애플리케이션에서 추가 프로바이더 역시 정의할 수 있습니다.
 
 애플리케이션의 인증 설정 파일은 `config/auth.php`에 위치합니다. 이 파일에는 라라벨 인증 서비스의 동작을 세부적으로 조정할 수 있는 옵션들이 잘 설명되어 있습니다.
 
 > [!NOTE]
-> 가드와 프로바이더는 "역할(roles)"이나 "권한(permissions)"과는 다릅니다. 권한을 통한 사용자 동작 인가(authorization) 기능이 궁금하다면, [인가(authorization)](/docs/{{version}}/authorization) 문서를 참고하세요.
+> 가드와 프로바이더는 "역할(roles)"이나 "권한(permissions)"과는 다릅니다. 권한을 통한 사용자 동작 인가(authorization) 기능이 궁금하다면, [인가(authorization)](/docs/12.x/authorization) 문서를 참고하세요.
 
 <a name="starter-kits"></a>
 ### 스타터 키트
 
-빠르게 시작하고 싶으신가요? 새로 설치한 라라벨 애플리케이션에 [라라벨 애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)를 설치하세요. 데이터베이스 마이그레이션을 끝낸 후, 브라우저에서 `/register` 등 해당 애플리케이션에 할당된 URL로 접속하면 됩니다. 스타터 키트는 인증 시스템 전체의 기본 구조를 손쉽게 만들어 줍니다.
+빠르게 시작하고 싶으신가요? 새로 설치한 라라벨 애플리케이션에 [라라벨 애플리케이션 스타터 키트](/docs/12.x/starter-kits)를 설치하세요. 데이터베이스 마이그레이션을 끝낸 후, 브라우저에서 `/register` 등 해당 애플리케이션에 할당된 URL로 접속하면 됩니다. 스타터 키트는 인증 시스템 전체의 기본 구조를 손쉽게 만들어 줍니다.
 
-**최종 애플리케이션에서는 굳이 스타터 키트를 사용하지 않더라도, [스타터 키트](/docs/{{version}}/starter-kits)를 설치해 실제 예제를 보며 라라벨 인증 기능 전체를 직접 구현하는 방법을 배울 수 있습니다.** 스타터 키트에는 인증 컨트롤러, 라우트, 뷰가 모두 미리 구현되어 있으니, 이러한 파일의 코드를 살펴보며 라라벨의 인증 기능이 어떻게 동작하는지 학습할 수 있습니다.
+**최종 애플리케이션에서는 굳이 스타터 키트를 사용하지 않더라도, [스타터 키트](/docs/12.x/starter-kits)를 설치해 실제 예제를 보며 라라벨 인증 기능 전체를 직접 구현하는 방법을 배울 수 있습니다.** 스타터 키트에는 인증 컨트롤러, 라우트, 뷰가 모두 미리 구현되어 있으니, 이러한 파일의 코드를 살펴보며 라라벨의 인증 기능이 어떻게 동작하는지 학습할 수 있습니다.
 
 <a name="introduction-database-considerations"></a>
 ### 데이터베이스 관련 사항
 
-기본적으로 라라벨은 `app/Models` 디렉터리에 `App\Models\User` [Eloquent 모델](/docs/{{version}}/eloquent)을 포함하고 있습니다. 이 모델은 기본 Eloquent 인증 드라이버와 함께 사용할 수 있습니다.
+기본적으로 라라벨은 `app/Models` 디렉터리에 `App\Models\User` [Eloquent 모델](/docs/12.x/eloquent)을 포함하고 있습니다. 이 모델은 기본 Eloquent 인증 드라이버와 함께 사용할 수 있습니다.
 
 만약 애플리케이션에서 Eloquent를 사용하지 않는다 해도, 라라벨 쿼리 빌더를 사용하는 `database` 인증 프로바이더를 활용할 수 있습니다. MongoDB를 사용하는 경우, MongoDB 공식 [라라벨 사용자 인증 문서](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/user-authentication/)를 참고하세요.
 
@@ -66,7 +66,7 @@
 
 라라벨은 인증과 관련된 다양한 패키지를 제공합니다. 본격적으로 학습을 시작하기 전에, 라라벨의 인증 에코시스템 전체를 간단히 살펴보고 각 패키지가 어떤 용도에 적합한지 소개하겠습니다.
 
-먼저, 인증이 어떻게 동작하는지 생각해봅시다. 웹 브라우저를 이용할 때, 사용자는 로그인 폼에 사용자명과 비밀번호를 입력합니다. 이 정보가 정확하다면, 애플리케이션은 해당 사용자 정보를 [세션](/docs/{{version}}/session)에 저장합니다. 브라우저에는 세션 ID가 담긴 쿠키가 발급되어, 이후 요청에서는 세션 ID로 적절한 사용자를 연결할 수 있습니다. 이렇게 세션 쿠키가 전달되면, 애플리케이션은 해당 세션 ID로 세션 데이터를 조회하고 인증 정보를 확인해, 사용자를 "인증됨" 상태로 간주합니다.
+먼저, 인증이 어떻게 동작하는지 생각해봅시다. 웹 브라우저를 이용할 때, 사용자는 로그인 폼에 사용자명과 비밀번호를 입력합니다. 이 정보가 정확하다면, 애플리케이션은 해당 사용자 정보를 [세션](/docs/12.x/session)에 저장합니다. 브라우저에는 세션 ID가 담긴 쿠키가 발급되어, 이후 요청에서는 세션 ID로 적절한 사용자를 연결할 수 있습니다. 이렇게 세션 쿠키가 전달되면, 애플리케이션은 해당 세션 ID로 세션 데이터를 조회하고 인증 정보를 확인해, 사용자를 "인증됨" 상태로 간주합니다.
 
 반면, 외부 서비스가 API에 접근하려는 경우에는 웹 브라우저가 없기 때문에 인증에 쿠키를 잘 사용하지 않습니다. 대신 원격 서비스는 매 요청마다 API 토큰을 함께 보내고, 애플리케이션은 유효한 토큰 목록과 요청에 포함된 토큰을 비교해 해당 토큰에 연결된 사용자로 "인증" 처리를 하게 됩니다.
 
@@ -77,12 +77,12 @@
 
 **애플리케이션 스타터 키트**
 
-이 문서에서 소개하는 것처럼 개발자가 인증 서비스를 직접 활용해 자체 인증 계층을 만들 수도 있지만, 좀 더 빠르게 시작하고 싶다면 [무료 스타터 키트](/docs/{{version}}/starter-kits)를 활용해 견고하고 현대적인 인증 구조 전체를 쉽게 구축할 수 있습니다.
+이 문서에서 소개하는 것처럼 개발자가 인증 서비스를 직접 활용해 자체 인증 계층을 만들 수도 있지만, 좀 더 빠르게 시작하고 싶다면 [무료 스타터 키트](/docs/12.x/starter-kits)를 활용해 견고하고 현대적인 인증 구조 전체를 쉽게 구축할 수 있습니다.
 
 <a name="laravels-api-authentication-services"></a>
 #### 라라벨의 API 인증 서비스
 
-라라벨은 API 토큰 관리와 토큰을 통한 인증을 도와주는 두 가지 선택적 패키지, [Passport](/docs/{{version}}/passport)와 [Sanctum](/docs/{{version}}/sanctum)을 제공합니다. 이 두 라이브러리와 라라벨 내장 쿠키 기반 인증 라이브러리는 서로 배타적이지 않으며, 주로 API 토큰 인증에 집중하는 한편 내장 인증 서비스는 브라우저 쿠키 기반 인증에 집중합니다. 많은 애플리케이션은 라라벨 내장 인증 서비스와 API 인증 패키지 하나를 함께 사용하는 경우가 많습니다.
+라라벨은 API 토큰 관리와 토큰을 통한 인증을 도와주는 두 가지 선택적 패키지, [Passport](/docs/12.x/passport)와 [Sanctum](/docs/12.x/sanctum)을 제공합니다. 이 두 라이브러리와 라라벨 내장 쿠키 기반 인증 라이브러리는 서로 배타적이지 않으며, 주로 API 토큰 인증에 집중하는 한편 내장 인증 서비스는 브라우저 쿠키 기반 인증에 집중합니다. 많은 애플리케이션은 라라벨 내장 인증 서비스와 API 인증 패키지 하나를 함께 사용하는 경우가 많습니다.
 
 **Passport**
 
@@ -90,33 +90,33 @@ Passport는 OAuth2 인증 제공자로, 다양한 OAuth2 "grant type"을 지원�
 
 **Sanctum**
 
-OAuth2의 복잡성과 관련된 개발자 혼란을 해소하기 위해, 라라벨 팀은 웹 브라우저의 1인칭 요청과 API 토큰 인증 모두를 다룰 수 있는 보다 간결하고 직관적인 인증 패키지 개발을 목표로 했고, 그 결과물이 바로 [Laravel Sanctum](/docs/{{version}}/sanctum)입니다. Sanctum은 별도의 백엔드와 분리된 SPA, 혹은 모바일 클라이언트를 함께 제공하거나, API와 웹 UI를 모두 제공해야 하는 애플리케이션에 권장되는 하이브리드 인증 패키지입니다.
+OAuth2의 복잡성과 관련된 개발자 혼란을 해소하기 위해, 라라벨 팀은 웹 브라우저의 1인칭 요청과 API 토큰 인증 모두를 다룰 수 있는 보다 간결하고 직관적인 인증 패키지 개발을 목표로 했고, 그 결과물이 바로 [Laravel Sanctum](/docs/12.x/sanctum)입니다. Sanctum은 별도의 백엔드와 분리된 SPA, 혹은 모바일 클라이언트를 함께 제공하거나, API와 웹 UI를 모두 제공해야 하는 애플리케이션에 권장되는 하이브리드 인증 패키지입니다.
 
-Laravel Sanctum은 웹/ API 인증을 모두 아우르는 기능을 제공하는데, 이는 Sanctum이 요청을 받을 때 먼저 세션 쿠키가 있는지 확인하여 라라벨 내장 인증 기능(앞서 설명한 서비스들)을 활용한다는 점에서 가능합니다. 세션 쿠키 기반 인증이 아닐 경우, 요청에 API 토큰이 있는지 확인해 해당 토큰으로 인증 처리를 수행합니다. 더 자세한 작동 방식은 Sanctum의 ["작동 원리"](/docs/{{version}}/sanctum#how-it-works) 문서를 참고하세요.
+Laravel Sanctum은 웹/ API 인증을 모두 아우르는 기능을 제공하는데, 이는 Sanctum이 요청을 받을 때 먼저 세션 쿠키가 있는지 확인하여 라라벨 내장 인증 기능(앞서 설명한 서비스들)을 활용한다는 점에서 가능합니다. 세션 쿠키 기반 인증이 아닐 경우, 요청에 API 토큰이 있는지 확인해 해당 토큰으로 인증 처리를 수행합니다. 더 자세한 작동 방식은 Sanctum의 ["작동 원리"](/docs/12.x/sanctum#how-it-works) 문서를 참고하세요.
 
 <a name="summary-choosing-your-stack"></a>
 #### 요약 및 인증 스택 선택
 
 정리하면, 애플리케이션이 브라우저를 통해 접근되고, 단일 라라벨 애플리케이션(모놀리식 구조)이라면, 라라벨의 내장 인증 서비스를 활용하면 됩니다.
 
-다음으로, 서드 파티가 API를 통해 접근할 수 있도록 만들고자 한다면, API 토큰 인증 기능 제공을 위해 [Passport](/docs/{{version}}/passport) 또는 [Sanctum](/docs/{{version}}/sanctum) 중 택일하면 됩니다. 일반적으로는 더 간단하고 완성도 높은 인증 경험을 제공하는 Sanctum이 권장되며, "스코프(scopes)"와 "abilities" 등도 지원합니다.
+다음으로, 서드 파티가 API를 통해 접근할 수 있도록 만들고자 한다면, API 토큰 인증 기능 제공을 위해 [Passport](/docs/12.x/passport) 또는 [Sanctum](/docs/12.x/sanctum) 중 택일하면 됩니다. 일반적으로는 더 간단하고 완성도 높은 인증 경험을 제공하는 Sanctum이 권장되며, "스코프(scopes)"와 "abilities" 등도 지원합니다.
 
-만약 라라벨 백엔드 기반의 SPA를 만든다면, [Laravel Sanctum](/docs/{{version}}/sanctum) 사용을 권장합니다. 이 경우 [사용자 인증 라우트를 직접 구현](#authenticating-users)하거나, [Laravel Fortify](/docs/{{version}}/fortify)를 헤드리스 인증 백엔드 서비스(회원가입, 비밀번호 재설정, 이메일 인증 등 기능 제공)로 이용하면 좋습니다.
+만약 라라벨 백엔드 기반의 SPA를 만든다면, [Laravel Sanctum](/docs/12.x/sanctum) 사용을 권장합니다. 이 경우 [사용자 인증 라우트를 직접 구현](#authenticating-users)하거나, [Laravel Fortify](/docs/12.x/fortify)를 헤드리스 인증 백엔드 서비스(회원가입, 비밀번호 재설정, 이메일 인증 등 기능 제공)로 이용하면 좋습니다.
 
 OAuth2의 모든 기능이 필수적으로 필요한 앱이라면 Passport를 선택할 수 있습니다.
 
-무엇보다 빠른 시작을 원한다면, [애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)를 활용해 라라벨 내장 인증 스택 기반의 새 프로젝트를 빠르게 구축할 수 있습니다.
+무엇보다 빠른 시작을 원한다면, [애플리케이션 스타터 키트](/docs/12.x/starter-kits)를 활용해 라라벨 내장 인증 스택 기반의 새 프로젝트를 빠르게 구축할 수 있습니다.
 
 <a name="authentication-quickstart"></a>
 ## 인증 빠르게 시작하기
 
 > [!WARNING]
-> 이 문서의 지금 파트에서는 [라라벨 애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)를 통한 사용자 인증 방법을 설명합니다. 스타터 키트에는 UI 구조가 포함되어 있어 빠르게 시작할 수 있습니다. 라라벨의 인증 시스템을 직접 연동하고 싶다면, [사용자 수동 인증하기](#authenticating-users) 문서를 참고하세요.
+> 이 문서의 지금 파트에서는 [라라벨 애플리케이션 스타터 키트](/docs/12.x/starter-kits)를 통한 사용자 인증 방법을 설명합니다. 스타터 키트에는 UI 구조가 포함되어 있어 빠르게 시작할 수 있습니다. 라라벨의 인증 시스템을 직접 연동하고 싶다면, [사용자 수동 인증하기](#authenticating-users) 문서를 참고하세요.
 
 <a name="install-a-starter-kit"></a>
 ### 스타터 키트 설치하기
 
-먼저, [라라벨 애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)를 설치하세요. 스타터 키트는 신선한(새로 설치한) 라라벨 애플리케이션에 인증을 손쉽게 적용할 수 있는 아름답게 디자인된 시작점을 제공합니다.
+먼저, [라라벨 애플리케이션 스타터 키트](/docs/12.x/starter-kits)를 설치하세요. 스타터 키트는 신선한(새로 설치한) 라라벨 애플리케이션에 인증을 손쉽게 적용할 수 있는 아름답게 디자인된 시작점을 제공합니다.
 
 <a name="retrieving-the-authenticated-user"></a>
 ### 인증된 사용자 가져오기
@@ -173,12 +173,12 @@ if (Auth::check()) {
 ```
 
 > [!NOTE]
-> `check` 메서드로 사용자 인증 여부를 직접 확인할 수도 있지만, 실제로는 미들웨어를 활용해 특정 라우트/컨트롤러 접근 전 미리 인증 여부를 확인하는 경우가 많습니다. 이와 관련해서는 [라우트 보호하기](/docs/{{version}}/authentication#protecting-routes) 문서를 참고하세요.
+> `check` 메서드로 사용자 인증 여부를 직접 확인할 수도 있지만, 실제로는 미들웨어를 활용해 특정 라우트/컨트롤러 접근 전 미리 인증 여부를 확인하는 경우가 많습니다. 이와 관련해서는 [라우트 보호하기](/docs/12.x/authentication#protecting-routes) 문서를 참고하세요.
 
 <a name="protecting-routes"></a>
 ### 라우트 보호하기
 
-[라우트 미들웨어](/docs/{{version}}/middleware)를 활용하면, 인증된 사용자만 특정 라우트에 접근하도록 제한할 수 있습니다. 라라벨에는 인증 전용 `auth` 미들웨어가 내장되어 있으며, 이는 `Illuminate\Auth\Middleware\Authenticate` 클래스의 [미들웨어 별칭](/docs/{{version}}/middleware#middleware-aliases)입니다. 이 미들웨어는 라라벨에서 이미 별칭이 등록되어 있으므로, 라우트에 단순히 붙이기만 하면 됩니다:
+[라우트 미들웨어](/docs/12.x/middleware)를 활용하면, 인증된 사용자만 특정 라우트에 접근하도록 제한할 수 있습니다. 라라벨에는 인증 전용 `auth` 미들웨어가 내장되어 있으며, 이는 `Illuminate\Auth\Middleware\Authenticate` 클래스의 [미들웨어 별칭](/docs/12.x/middleware#middleware-aliases)입니다. 이 미들웨어는 라라벨에서 이미 별칭이 등록되어 있으므로, 라우트에 단순히 붙이기만 하면 됩니다:
 
 ```php
 Route::get('/flights', function () {
@@ -189,7 +189,7 @@ Route::get('/flights', function () {
 <a name="redirecting-unauthenticated-users"></a>
 #### 인증되지 않은 사용자 리다이렉트
 
-`auth` 미들웨어가 인증되지 않은 사용자를 감지하면, 자동으로 그 사용자를 `login` [네임드 라우트](/docs/{{version}}/routing#named-routes)로 리다이렉트합니다. 이 동작은 애플리케이션의 `bootstrap/app.php` 파일에서 `redirectGuestsTo` 메서드를 활용해 변경할 수 있습니다:
+`auth` 미들웨어가 인증되지 않은 사용자를 감지하면, 자동으로 그 사용자를 `login` [네임드 라우트](/docs/12.x/routing#named-routes)로 리다이렉트합니다. 이 동작은 애플리케이션의 `bootstrap/app.php` 파일에서 `redirectGuestsTo` 메서드를 활용해 변경할 수 있습니다:
 
 ```php
 use Illuminate\Http\Request;
@@ -232,17 +232,17 @@ Route::get('/flights', function () {
 <a name="login-throttling"></a>
 ### 로그인 시도 제한
 
-[애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)를 사용하는 경우, 로그인 시도에 대해 자동으로 속도 제한(레이트 리미트)이 적용됩니다. 기본적으로 사용자가 여러 번 연속 잘못된 정보를 입력하면, 1분간 로그인 시도가 차단됩니다. 이 제한은 사용자명/이메일과 IP 주소별로 각각 적용됩니다.
+[애플리케이션 스타터 키트](/docs/12.x/starter-kits)를 사용하는 경우, 로그인 시도에 대해 자동으로 속도 제한(레이트 리미트)이 적용됩니다. 기본적으로 사용자가 여러 번 연속 잘못된 정보를 입력하면, 1분간 로그인 시도가 차단됩니다. 이 제한은 사용자명/이메일과 IP 주소별로 각각 적용됩니다.
 
 > [!NOTE]
-> 애플리케이션의 다른 라우트에 대해서도 레이트 리미트를 적용하고 싶다면, [레이트 리미트 문서](/docs/{{version}}/routing#rate-limiting)를 참고하세요.
+> 애플리케이션의 다른 라우트에 대해서도 레이트 리미트를 적용하고 싶다면, [레이트 리미트 문서](/docs/12.x/routing#rate-limiting)를 참고하세요.
 
 <a name="authenticating-users"></a>
 ## 사용자 수동 인증하기
 
-라라벨의 [애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)에 포함된 인증 스캐폴딩을 반드시 사용할 필요는 없습니다. 이 스캐폴딩 없이 직접 인증 기능을 구현하려면, 라라벨의 인증 클래스를 직접 활용해야 합니다. 걱정하지 마세요, 절차는 간단합니다!
+라라벨의 [애플리케이션 스타터 키트](/docs/12.x/starter-kits)에 포함된 인증 스캐폴딩을 반드시 사용할 필요는 없습니다. 이 스캐폴딩 없이 직접 인증 기능을 구현하려면, 라라벨의 인증 클래스를 직접 활용해야 합니다. 걱정하지 마세요, 절차는 간단합니다!
 
-여기서는 인증 서비스를 `Auth` [파사드](/docs/{{version}}/facades)를 통해 사용하므로, 클래스 상단에서 `Auth` 파사드를 꼭 임포트해야 합니다. 일단, `attempt` 메서드를 살펴봅시다. `attempt` 메서드는 일반적으로 애플리케이션의 "로그인" 폼에서 인증 요청을 처리할 때 사용합니다. 인증에 성공하면, [세션](/docs/{{version}}/session) [고정 공격(session fixation)](https://en.wikipedia.org/wiki/Session_fixation)을 막기 위해 사용자의 세션을 반드시 재생성해주세요:
+여기서는 인증 서비스를 `Auth` [파사드](/docs/12.x/facades)를 통해 사용하므로, 클래스 상단에서 `Auth` 파사드를 꼭 임포트해야 합니다. 일단, `attempt` 메서드를 살펴봅시다. `attempt` 메서드는 일반적으로 애플리케이션의 "로그인" 폼에서 인증 요청을 처리할 때 사용합니다. 인증에 성공하면, [세션](/docs/12.x/session) [고정 공격(session fixation)](https://en.wikipedia.org/wiki/Session_fixation)을 막기 위해 사용자의 세션을 반드시 재생성해주세요:
 
 ```php
 <?php
@@ -371,7 +371,7 @@ if (Auth::viaRemember()) {
 <a name="authenticate-a-user-instance"></a>
 #### User 인스턴스를 직접 인증하기
 
-이미 존재하는 사용자 인스턴스를 현재 인증된 사용자로 설정하려면, `Auth` 파사드의 `login` 메서드에 해당 인스턴스를 넘기면 됩니다. 전달하는 인스턴스는 반드시 `Illuminate\Contracts\Auth\Authenticatable` [계약](/docs/{{version}}/contracts)을 구현하고 있어야 하며, 라라벨의 기본 `App\Models\User` 모델은 이미 이를 구현합니다. 이 방식은 일반적으로 회원가입 직후 등, 유효한 사용자 인스턴스가 이미 있는 경우에 유용합니다:
+이미 존재하는 사용자 인스턴스를 현재 인증된 사용자로 설정하려면, `Auth` 파사드의 `login` 메서드에 해당 인스턴스를 넘기면 됩니다. 전달하는 인스턴스는 반드시 `Illuminate\Contracts\Auth\Authenticatable` [계약](/docs/12.x/contracts)을 구현하고 있어야 하며, 라라벨의 기본 `App\Models\User` 모델은 이미 이를 구현합니다. 이 방식은 일반적으로 회원가입 직후 등, 유효한 사용자 인스턴스가 이미 있는 경우에 유용합니다:
 
 ```php
 use Illuminate\Support\Facades\Auth;
@@ -420,7 +420,7 @@ if (Auth::once($credentials)) {
 <a name="http-basic-authentication"></a>
 ## HTTP 기본 인증
 
-[HTTP 기본 인증](https://en.wikipedia.org/wiki/Basic_access_authentication)은 별도의 "로그인" 페이지를 만들지 않고도 신속하게 사용자를 인증하는 방법입니다. 먼저, 해당 라우트에 `auth.basic` [미들웨어](/docs/{{version}}/middleware)를 추가하세요. `auth.basic` 미들웨어는 라라벨 프레임워크에 기본 포함이므로, 정의할 필요 없이 바로 사용할 수 있습니다:
+[HTTP 기본 인증](https://en.wikipedia.org/wiki/Basic_access_authentication)은 별도의 "로그인" 페이지를 만들지 않고도 신속하게 사용자를 인증하는 방법입니다. 먼저, 해당 라우트에 `auth.basic` [미들웨어](/docs/12.x/middleware)를 추가하세요. `auth.basic` 미들웨어는 라라벨 프레임워크에 기본 포함이므로, 정의할 필요 없이 바로 사용할 수 있습니다:
 
 ```php
 Route::get('/profile', function () {
@@ -443,7 +443,7 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 <a name="stateless-http-basic-authentication"></a>
 ### 상태 없는 HTTP 기본 인증
 
-세션에 사용자 식별 쿠키를 남기지 않고 HTTP 기본 인증을 사용할 수도 있습니다. 이 방법은 API 요청에 대해 HTTP 인증을 쓰고자 할 때 유용합니다. 이를 위해, [사용자 지정 미들웨어](/docs/{{version}}/middleware)를 정의해 `onceBasic` 메서드를 호출하면 됩니다. `onceBasic` 메서드가 응답을 반환하지 않는 경우에만 요청 처리를 진행하도록 합니다:
+세션에 사용자 식별 쿠키를 남기지 않고 HTTP 기본 인증을 사용할 수도 있습니다. 이 방법은 API 요청에 대해 HTTP 인증을 쓰고자 할 때 유용합니다. 이를 위해, [사용자 지정 미들웨어](/docs/12.x/middleware)를 정의해 `onceBasic` 메서드를 호출하면 됩니다. `onceBasic` 메서드가 응답을 반환하지 않는 경우에만 요청 처리를 진행하도록 합니다:
 
 ```php
 <?php
@@ -483,7 +483,7 @@ Route::get('/api/user', function () {
 
 사용자를 수동으로 로그아웃시키려면, `Auth` 파사드의 `logout` 메서드를 사용하세요. 이 메서드는 사용자의 세션에서 인증 정보를 제거해, 이후 요청에서는 인증 상태가 유지되지 않게 만듭니다.
 
-추가로, 로그아웃 시 세션을 무효화하고 [CSRF 토큰](/docs/{{version}}/csrf)도 재생성할 것을 권장합니다. 사용자를 로그아웃 처리한 다음, 보통은 홈페이지 등으로 리다이렉트시킵니다:
+추가로, 로그아웃 시 세션을 무효화하고 [CSRF 토큰](/docs/12.x/csrf)도 재생성할 것을 권장합니다. 사용자를 로그아웃 처리한 다음, 보통은 홈페이지 등으로 리다이렉트시킵니다:
 
 ```php
 use Illuminate\Http\Request;
@@ -510,7 +510,7 @@ public function logout(Request $request): RedirectResponse
 
 라라벨은 한 사용자가 여러 기기(브라우저 등)에서 로그인하고 있을 때, 현재 기기를 제외한 다른 기기들의 세션만 선택적으로 무효화(로그아웃)하는 기능을 제공합니다. 이 기능은 사용자가 비밀번호를 변경하거나 수정할 때, 현재 사용 중인 기기는 유지하면서 다른 기기의 세션을 만료시키고 싶을 때 주로 사용됩니다.
 
-이 기능을 사용하기 전, `Illuminate\Session\Middleware\AuthenticateSession` 미들웨어가 해당 라우트에 추가되어 있는지 확인하세요. 보통은 라우트 그룹 단위로 이 미들웨어를 걸어두면 대부분의 라우트에 적용할 수 있습니다. 기본적으로 `auth.session` [미들웨어 별칭](/docs/{{version}}/middleware#middleware-aliases)으로 라우트에 추가할 수 있습니다:
+이 기능을 사용하기 전, `Illuminate\Session\Middleware\AuthenticateSession` 미들웨어가 해당 라우트에 추가되어 있는지 확인하세요. 보통은 라우트 그룹 단위로 이 미들웨어를 걸어두면 대부분의 라우트에 적용할 수 있습니다. 기본적으로 `auth.session` [미들웨어 별칭](/docs/12.x/middleware#middleware-aliases)으로 라우트에 추가할 수 있습니다:
 
 ```php
 Route::middleware(['auth', 'auth.session'])->group(function () {
@@ -536,7 +536,7 @@ Auth::logoutOtherDevices($currentPassword);
 애플리케이션 개발 과정에서 중요한 작업을 수행하거나 민감한 영역으로 이동하기 전에, 사용자가 비밀번호를 한 번 더 확인하도록 해야 하는 경우가 있습니다. 라라벨은 이를 쉽게 구현할 수 있도록 내장 미들웨어를 제공합니다. 이 기능의 구현에는, 비밀번호 확인 화면을 보여주는 라우트와, 비밀번호를 검증하고 사용자를 의도한 위치로 보내는 라우트, 총 두 개를 정의해야 합니다.
 
 > [!NOTE]
-> 아래에서 소개하는 방법은 라라벨의 비밀번호 확인 기능 자체를 직접 통합하는 방법입니다. 보다 빠르게 시작하고 싶다면, [라라벨 애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)에 이미 해당 기능이 포함되어 있습니다.
+> 아래에서 소개하는 방법은 라라벨의 비밀번호 확인 기능 자체를 직접 통합하는 방법입니다. 보다 빠르게 시작하고 싶다면, [라라벨 애플리케이션 스타터 키트](/docs/12.x/starter-kits)에 이미 해당 기능이 포함되어 있습니다.
 
 <a name="password-confirmation-configuration"></a>
 ### 설정
@@ -587,7 +587,7 @@ Route::post('/confirm-password', function (Request $request) {
 <a name="password-confirmation-protecting-routes"></a>
 ### 라우트 보호하기
 
-비밀번호 재확인이 필요한 액션을 수행하는 라우트에는 반드시 `password.confirm` 미들웨어를 붙여주세요. 이 미들웨어는 라라벨 기본 설치에 포함되어 있으며, 사용자가 비밀번호를 확인하자마자 원래 가려던 위치로 리다이렉트할 수 있도록 해당 정보를 세션에 자동 저장합니다. 이후, 미들웨어가 사용자를 `password.confirm` [네임드 라우트](/docs/{{version}}/routing#named-routes)로 리다이렉트합니다:
+비밀번호 재확인이 필요한 액션을 수행하는 라우트에는 반드시 `password.confirm` 미들웨어를 붙여주세요. 이 미들웨어는 라라벨 기본 설치에 포함되어 있으며, 사용자가 비밀번호를 확인하자마자 원래 가려던 위치로 리다이렉트할 수 있도록 해당 정보를 세션에 자동 저장합니다. 이후, 미들웨어가 사용자를 `password.confirm` [네임드 라우트](/docs/12.x/routing#named-routes)로 리다이렉트합니다:
 
 ```php
 Route::get('/settings', function () {
@@ -602,7 +602,7 @@ Route::post('/settings', function () {
 <a name="adding-custom-guards"></a>
 ## 사용자 정의 가드 추가
 
-`Auth` 파사드의 `extend` 메서드를 이용하면 나만의 인증 가드를 직접 정의할 수 있습니다. 이 코드는 보통 [서비스 프로바이더](/docs/{{version}}/providers) 내에서 작성합니다. 라라벨에는 이미 `AppServiceProvider`가 있으니, 여기에 코드를 추가하면 됩니다:
+`Auth` 파사드의 `extend` 메서드를 이용하면 나만의 인증 가드를 직접 정의할 수 있습니다. 이 코드는 보통 [서비스 프로바이더](/docs/12.x/providers) 내에서 작성합니다. 라라벨에는 이미 `AppServiceProvider`가 있으니, 여기에 코드를 추가하면 됩니다:
 
 ```php
 <?php
@@ -822,7 +822,7 @@ php artisan config:publish hashing
 <a name="events"></a>
 ## 이벤트
 
-라라벨은 인증 과정에서 다양한 [이벤트](/docs/{{version}}/events)를 디스패치합니다. 아래 이벤트 각각에 대해 [리스너를 정의](/docs/{{version}}/events)해 사용할 수 있습니다:
+라라벨은 인증 과정에서 다양한 [이벤트](/docs/12.x/events)를 디스패치합니다. 아래 이벤트 각각에 대해 [리스너를 정의](/docs/12.x/events)해 사용할 수 있습니다:
 
 <div class="overflow-auto">
 

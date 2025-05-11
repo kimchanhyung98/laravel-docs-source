@@ -29,12 +29,12 @@
 
 마이그레이션은 데이터베이스의 버전 관리와 비슷합니다. 이를 통해 팀원들이 애플리케이션의 데이터베이스 스키마 정의를 작성하고 공유할 수 있습니다. 만약 소스 컨트롤에서 작업을 가져온 후에, 다른 개발자에게 수동으로 새로운 컬럼을 데이터베이스에 추가하라고 알려야 했던 경험이 있다면, 바로 그 문제를 데이터베이스 마이그레이션이 해결해 줍니다.
 
-라라벨의 `Schema` [파사드](/docs/{{version}}/facades)는 라라벨이 지원하는 모든 데이터베이스 시스템에서 테이블을 생성하고 수정할 수 있도록 데이터베이스에 종속되지 않는(agnostic) 기능을 제공합니다. 일반적으로, 마이그레이션에서는 이 파사드를 사용하여 데이터베이스 테이블과 컬럼을 생성하거나 변경합니다.
+라라벨의 `Schema` [파사드](/docs/12.x/facades)는 라라벨이 지원하는 모든 데이터베이스 시스템에서 테이블을 생성하고 수정할 수 있도록 데이터베이스에 종속되지 않는(agnostic) 기능을 제공합니다. 일반적으로, 마이그레이션에서는 이 파사드를 사용하여 데이터베이스 테이블과 컬럼을 생성하거나 변경합니다.
 
 <a name="generating-migrations"></a>
 ## 마이그레이션 생성
 
-`make:migration` [Artisan 명령어](/docs/{{version}}/artisan)를 사용하여 데이터베이스 마이그레이션을 생성할 수 있습니다. 새로 생성된 마이그레이션은 `database/migrations` 디렉터리에 위치하게 됩니다. 각 마이그레이션 파일 이름에는 실행 순서를 결정할 수 있도록 타임스탬프가 포함됩니다.
+`make:migration` [Artisan 명령어](/docs/12.x/artisan)를 사용하여 데이터베이스 마이그레이션을 생성할 수 있습니다. 새로 생성된 마이그레이션은 `database/migrations` 디렉터리에 위치하게 됩니다. 각 마이그레이션 파일 이름에는 실행 순서를 결정할 수 있도록 타임스탬프가 포함됩니다.
 
 ```shell
 php artisan make:migration create_flights_table
@@ -45,7 +45,7 @@ php artisan make:migration create_flights_table
 생성된 마이그레이션의 저장 경로를 직접 지정하고 싶다면, `make:migration` 명령어 실행 시 `--path` 옵션을 사용할 수 있습니다. 이 옵션에 지정하는 경로는 애플리케이션의 기본 경로를 기준으로 상대 경로여야 합니다.
 
 > [!NOTE]
-> 마이그레이션 스텁은 [스텁 공개](/docs/{{version}}/artisan#stub-customization) 기능을 사용하여 커스터마이즈할 수 있습니다.
+> 마이그레이션 스텁은 [스텁 공개](/docs/12.x/artisan#stub-customization) 기능을 사용하여 커스터마이즈할 수 있습니다.
 
 <a name="squashing-migrations"></a>
 ### 마이그레이션 합치기
@@ -257,7 +257,7 @@ php artisan migrate:fresh
 php artisan migrate:fresh --seed
 ```
 
-기본적으로, `migrate:fresh` 명령어는 기본 데이터베이스 연결의 테이블만 삭제합니다. 다른 연결의 데이터베이스에 적용하려면 `--database` 옵션으로 연결명을 지정하세요. 이 연결명은 애플리케이션의 `database` [설정 파일](/docs/{{version}}/configuration)에 정의되어 있어야 합니다.
+기본적으로, `migrate:fresh` 명령어는 기본 데이터베이스 연결의 테이블만 삭제합니다. 다른 연결의 데이터베이스에 적용하려면 `--database` 옵션으로 연결명을 지정하세요. 이 연결명은 애플리케이션의 `database` [설정 파일](/docs/12.x/configuration)에 정의되어 있어야 합니다.
 
 ```shell
 php artisan migrate:fresh --database=admin
@@ -857,7 +857,7 @@ $table->mediumText('data')->charset('binary'); // MEDIUMBLOB
 
 `morphs` 메서드는 `{column}_id` 타입의 컬럼과 `{column}_type` `VARCHAR` 타입의 컬럼을 한 번에 추가해 주는 편의 메서드입니다. `{column}_id` 컬럼은 모델 키 타입에 따라 `UNSIGNED BIGINT`, `CHAR(36)`, 또는 `CHAR(26)`이 지정됩니다.
 
-이 메서드는 다형성 [Eloquent 관계](/docs/{{version}}/eloquent-relationships)에서 필요한 컬럼을 만들 때 사용합니다. 예를 들어, 아래와 같이 작성하면 `taggable_id`와 `taggable_type` 컬럼이 생성됩니다.
+이 메서드는 다형성 [Eloquent 관계](/docs/12.x/eloquent-relationships)에서 필요한 컬럼을 만들 때 사용합니다. 예를 들어, 아래와 같이 작성하면 `taggable_id`와 `taggable_type` 컬럼이 생성됩니다.
 
 ```php
 $table->morphs('taggable');
@@ -893,7 +893,7 @@ $table->nullableUuidMorphs('taggable');
 <a name="column-method-rememberToken"></a>
 #### `rememberToken()` {.collection-method}
 
-`rememberToken` 메서드는 현재 "remember me" [인증 토큰](/docs/{{version}}/authentication#remembering-users)를 저장하기 위한, nullable한 `VARCHAR(100)` 타입 컬럼을 생성합니다.
+`rememberToken` 메서드는 현재 "remember me" [인증 토큰](/docs/12.x/authentication#remembering-users)를 저장하기 위한, nullable한 `VARCHAR(100)` 타입 컬럼을 생성합니다.
 
 ```php
 $table->rememberToken();
@@ -1105,7 +1105,7 @@ $table->unsignedTinyInteger('votes');
 
 `ulidMorphs` 메서드는 `{column}_id`에 `CHAR(26)` 타입, `{column}_type`에 `VARCHAR` 타입의 컬럼을 추가해 주는 편의 메서드입니다.
 
-이 메서드는 ULID 식별자를 사용하는 다형성 [Eloquent 관계](/docs/{{version}}/eloquent-relationships)에서 필요한 컬럼을 정의할 때 사용합니다. 아래의 예시에서는 `taggable_id`와 `taggable_type` 컬럼이 생성됩니다.
+이 메서드는 ULID 식별자를 사용하는 다형성 [Eloquent 관계](/docs/12.x/eloquent-relationships)에서 필요한 컬럼을 정의할 때 사용합니다. 아래의 예시에서는 `taggable_id`와 `taggable_type` 컬럼이 생성됩니다.
 
 ```php
 $table->ulidMorphs('taggable');
@@ -1116,7 +1116,7 @@ $table->ulidMorphs('taggable');
 
 `uuidMorphs` 메서드는 `{column}_id`에 `CHAR(36)` 타입, `{column}_type`에 `VARCHAR` 타입의 컬럼을 추가해 주는 편의 메서드입니다.
 
-이 메서드는 UUID 식별자를 사용하는 다형성 [Eloquent 관계](/docs/{{version}}/eloquent-relationships)에서 필요한 컬럼을 정의할 때 사용합니다. 아래의 예시에서는 `taggable_id`와 `taggable_type` 컬럼이 생성됩니다.
+이 메서드는 UUID 식별자를 사용하는 다형성 [Eloquent 관계](/docs/12.x/eloquent-relationships)에서 필요한 컬럼을 정의할 때 사용합니다. 아래의 예시에서는 `taggable_id`와 `taggable_type` 컬럼이 생성됩니다.
 
 ```php
 $table->uuidMorphs('taggable');
@@ -1508,12 +1508,12 @@ Schema::withoutForeignKeyConstraints(function () {
 ```
 
 > [!WARNING]
-> SQLite에서는 기본적으로 외래키 제약조건이 비활성화되어 있습니다. SQLite를 사용한다면, 마이그레이션에서 외래키를 적용하기 전에 반드시 [데이터베이스 설정에서 외래키 지원을 활성화](/docs/{{version}}/database#configuration)해야 합니다.
+> SQLite에서는 기본적으로 외래키 제약조건이 비활성화되어 있습니다. SQLite를 사용한다면, 마이그레이션에서 외래키를 적용하기 전에 반드시 [데이터베이스 설정에서 외래키 지원을 활성화](/docs/12.x/database#configuration)해야 합니다.
 
 <a name="events"></a>
 ## 이벤트(Events)
 
-편의를 위해, 각 마이그레이션 작업은 [이벤트](/docs/{{version}}/events)를 디스패치합니다. 아래의 각 이벤트들은 기본 클래스인 `Illuminate\Database\Events\MigrationEvent`를 상속합니다.
+편의를 위해, 각 마이그레이션 작업은 [이벤트](/docs/12.x/events)를 디스패치합니다. 아래의 각 이벤트들은 기본 클래스인 `Illuminate\Database\Events\MigrationEvent`를 상속합니다.
 
 <div class="overflow-auto">
 

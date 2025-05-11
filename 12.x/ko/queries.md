@@ -89,7 +89,7 @@ foreach ($users as $user) {
 ```
 
 > [!NOTE]
-> 라라벨의 컬렉션은 데이터를 매핑하거나 집계할 수 있는 매우 강력한 다양한 메서드를 제공합니다. 라라벨 컬렉션에 대한 자세한 내용은 [컬렉션 문서](/docs/{{version}}/collections)를 참고하세요.
+> 라라벨의 컬렉션은 데이터를 매핑하거나 집계할 수 있는 매우 강력한 다양한 메서드를 제공합니다. 라라벨 컬렉션에 대한 자세한 내용은 [컬렉션 문서](/docs/12.x/collections)를 참고하세요.
 
 <a name="retrieving-a-single-row-column-from-a-table"></a>
 #### 테이블에서 단일 행/컬럼 조회하기
@@ -204,7 +204,7 @@ DB::table('users')->where(function ($query) {
 <a name="streaming-results-lazily"></a>
 ### 결과를 지연 스트리밍으로 처리
 
-`lazy` 메서드는 [chunk 메서드](#chunking-results)와 유사하게 쿼리를 청크 단위로 실행합니다. 다만, 각 청크를 콜백에 넘기는 대신, `lazy()` 메서드는 [LazyCollection](/docs/{{version}}/collections#lazy-collections)을 반환하므로 하나의 스트림처럼 결과를 다룰 수 있습니다.
+`lazy` 메서드는 [chunk 메서드](#chunking-results)와 유사하게 쿼리를 청크 단위로 실행합니다. 다만, 각 청크를 콜백에 넘기는 대신, `lazy()` 메서드는 [LazyCollection](/docs/12.x/collections#lazy-collections)을 반환하므로 하나의 스트림처럼 결과를 다룰 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -1089,7 +1089,7 @@ $incomes = Income::where('amount', '<', function (Builder $query) {
 > [!WARNING]
 > 전체 텍스트(Full text) where 절은 현재 MariaDB, MySQL, PostgreSQL에서만 지원됩니다.
 
-`whereFullText` 및 `orWhereFullText` 메서드는 [전체 텍스트 인덱스](/docs/{{version}}/migrations#available-index-types)가 지정된 컬럼에 대해 전체 텍스트 "where" 절을 쿼리에 추가할 때 사용할 수 있습니다. 이 메서드는 라라벨이 내부적으로 데이터베이스에 맞는 SQL 형태로 변환해줍니다. 예를 들어, MariaDB나 MySQL 환경에서는 `MATCH AGAINST` 절이 생성됩니다.
+`whereFullText` 및 `orWhereFullText` 메서드는 [전체 텍스트 인덱스](/docs/12.x/migrations#available-index-types)가 지정된 컬럼에 대해 전체 텍스트 "where" 절을 쿼리에 추가할 때 사용할 수 있습니다. 이 메서드는 라라벨이 내부적으로 데이터베이스에 맞는 SQL 형태로 변환해줍니다. 예를 들어, MariaDB나 MySQL 환경에서는 `MATCH AGAINST` 절이 생성됩니다.
 
 ```php
 $users = DB::table('users')
@@ -1443,7 +1443,7 @@ DB::table('users')
     ->get();
 ```
 
-꼭 필수는 아니지만, 비관적 잠금 사용 시에는 해당 쿼리를 [트랜잭션](/docs/{{version}}/database#database-transactions) 내에서 감싸는 것이 권장됩니다. 이렇게 하면 쿼리가 끝날 때까지 데이터가 안전하게 보호되며, 에러가 발생하면 트랜잭션이 자동으로 롤백되고 잠금도 해제됩니다.
+꼭 필수는 아니지만, 비관적 잠금 사용 시에는 해당 쿼리를 [트랜잭션](/docs/12.x/database#database-transactions) 내에서 감싸는 것이 권장됩니다. 이렇게 하면 쿼리가 끝날 때까지 데이터가 안전하게 보호되며, 에러가 발생하면 트랜잭션이 자동으로 롤백되고 잠금도 해제됩니다.
 
 ```php
 DB::transaction(function () {
@@ -1562,7 +1562,7 @@ DB::table('flights')
 
 `tap` 메서드는 항상 쿼리 빌더 인스턴스를 반환합니다. 쿼리를 실행하여 다른 값을 반환하는 객체로 추출하고 싶다면, 대신 `pipe` 메서드를 사용할 수 있습니다.
 
-다음은 애플리케이션 내에서 공통으로 사용되는 [페이지네이션](/docs/{{version}}/pagination) 로직을 담고 있는 쿼리 객체 예시입니다. 이 객체는 `DestinationFilter`처럼 쿼리 조건을 추가하지 않고, 쿼리를 실행하여 페이지네이터 인스턴스를 반환합니다.
+다음은 애플리케이션 내에서 공통으로 사용되는 [페이지네이션](/docs/12.x/pagination) 로직을 담고 있는 쿼리 객체 예시입니다. 이 객체는 `DestinationFilter`처럼 쿼리 조건을 추가하지 않고, 쿼리를 실행하여 페이지네이터 인스턴스를 반환합니다.
 
 ```php
 <?php

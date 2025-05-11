@@ -841,7 +841,7 @@ class ExampleTest extends TestCase
 }
 ```
 
-기본적으로 `fake` 메서드는 임시 디렉터리 내의 모든 파일을 삭제합니다. 이 파일들을 유지하고 싶다면 `persistentFake` 메서드를 사용할 수도 있습니다. 파일 업로드 테스트에 대한 자세한 내용은 [HTTP 테스트 문서의 파일 업로드 관련 정보](/docs/{{version}}/http-tests#testing-file-uploads)를 참고하십시오.
+기본적으로 `fake` 메서드는 임시 디렉터리 내의 모든 파일을 삭제합니다. 이 파일들을 유지하고 싶다면 `persistentFake` 메서드를 사용할 수도 있습니다. 파일 업로드 테스트에 대한 자세한 내용은 [HTTP 테스트 문서의 파일 업로드 관련 정보](/docs/12.x/http-tests#testing-file-uploads)를 참고하십시오.
 
 > [!WARNING]
 > `image` 메서드 사용을 위해서는 [GD 확장 모듈](https://www.php.net/manual/en/book.image.php)이 필요합니다.
@@ -857,7 +857,7 @@ class ExampleTest extends TestCase
 composer require spatie/flysystem-dropbox
 ```
 
-그 다음, [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 드라이버를 등록해줍니다. 이를 위해 `Storage` 파사드의 `extend` 메서드를 사용합니다.
+그 다음, [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 드라이버를 등록해줍니다. 이를 위해 `Storage` 파사드의 `extend` 메서드를 사용합니다.
 
 ```php
 <?php

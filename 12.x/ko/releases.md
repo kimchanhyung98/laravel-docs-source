@@ -19,7 +19,7 @@
 <a name="support-policy"></a>
 ## 지원 정책
 
-모든 라라벨 버전은 18개월간 버그 수정(Bug Fixes)을, 2년간 보안 수정(Security Fixes)을 제공합니다. Lumen을 포함한 추가 라이브러리들은 최신 주요 버전만이 버그 수정을 받습니다. 또한, 라라벨이 지원하는 데이터베이스 버전도 [공식 문서](/docs/{{version}}/database#introduction)에서 꼭 확인해 주세요.
+모든 라라벨 버전은 18개월간 버그 수정(Bug Fixes)을, 2년간 보안 수정(Security Fixes)을 제공합니다. Lumen을 포함한 추가 라이브러리들은 최신 주요 버전만이 버그 수정을 받습니다. 또한, 라라벨이 지원하는 데이터베이스 버전도 [공식 문서](/docs/12.x/database#introduction)에서 꼭 확인해 주세요.
 
 <div class="overflow-auto">
 
@@ -62,10 +62,10 @@
 <a name="new-application-starter-kits"></a>
 ### 새로운 애플리케이션 스타터 키트
 
-라라벨 12에서는 React, Vue, Livewire를 위한 [새로운 스타터 키트](/docs/{{version}}/starter-kits)가 도입되었습니다. React와 Vue 스타터 키트는 Inertia 2, TypeScript, [shadcn/ui](https://ui.shadcn.com), Tailwind를 활용하며, Livewire 스타터 키트는 Tailwind 기반의 [Flux UI](https://fluxui.dev) 컴포넌트 라이브러리와 Laravel Volt를 사용합니다.
+라라벨 12에서는 React, Vue, Livewire를 위한 [새로운 스타터 키트](/docs/12.x/starter-kits)가 도입되었습니다. React와 Vue 스타터 키트는 Inertia 2, TypeScript, [shadcn/ui](https://ui.shadcn.com), Tailwind를 활용하며, Livewire 스타터 키트는 Tailwind 기반의 [Flux UI](https://fluxui.dev) 컴포넌트 라이브러리와 Laravel Volt를 사용합니다.
 
 React, Vue, Livewire 스타터 키트 모두 라라벨 내장 인증 시스템을 이용해 로그인, 회원가입, 비밀번호 재설정, 이메일 인증 등 다양한 인증 관련 기능을 제공합니다. 여기에 [WorkOS AuthKit 기반](https://authkit.com) 스타터 키트 버전도 각각 제공되어, 소셜 로그인, 패스키, SSO 인증까지 지원합니다. WorkOS는 월간 100만 명 활동 사용자까지 무료로 인증 기능을 제공합니다.
 
 이러한 새로운 스타터 키트가 출시됨에 따라, 기존의 Laravel Breeze 및 Laravel Jetstream은 더 이상 추가 업데이트를 받지 않습니다.
 
-신규 스타터 키트의 사용법은 [스타터 키트 공식 문서](/docs/{{version}}/starter-kits)를 참고해 시작해 보세요.
+신규 스타터 키트의 사용법은 [스타터 키트 공식 문서](/docs/12.x/starter-kits)를 참고해 시작해 보세요.

@@ -40,12 +40,12 @@ Route::get('/', function () {
 ```
 
 > [!NOTE]
-> 라라벨의 [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections)도 라우트나 컨트롤러에서 바로 반환할 수 있다는 사실을 알고 계셨나요? 자동으로 JSON으로 변환되어 반환됩니다. 한번 시도해 보세요!
+> 라라벨의 [Eloquent 컬렉션](/docs/12.x/eloquent-collections)도 라우트나 컨트롤러에서 바로 반환할 수 있다는 사실을 알고 계셨나요? 자동으로 JSON으로 변환되어 반환됩니다. 한번 시도해 보세요!
 
 <a name="response-objects"></a>
 #### 응답 객체
 
-일반적으로 라우트 액션에서는 문자열이나 배열만 반환하지 않고, `Illuminate\Http\Response` 인스턴스나 [뷰](/docs/{{version}}/views)를 반환하는 경우가 많습니다.
+일반적으로 라우트 액션에서는 문자열이나 배열만 반환하지 않고, `Illuminate\Http\Response` 인스턴스나 [뷰](/docs/12.x/views)를 반환하는 경우가 많습니다.
 
 `Response` 인스턴스를 반환하면, 응답의 HTTP 상태 코드 및 헤더를 자유롭게 제어할 수 있습니다. `Response` 인스턴스는 `Symfony\Component\HttpFoundation\Response` 클래스를 상속하며, HTTP 응답을 조립할 수 있는 다양한 메서드를 제공합니다.
 
@@ -59,7 +59,7 @@ Route::get('/home', function () {
 <a name="eloquent-models-and-collections"></a>
 #### Eloquent 모델 및 컬렉션
 
-[Eloquent ORM](/docs/{{version}}/eloquent)의 모델이나 컬렉션을 라우트 및 컨트롤러에서 직접 반환할 수도 있습니다. 이렇게 반환하면, 라라벨이 해당 모델이나 컬렉션을 JSON 응답으로 자동 변환해줍니다. 이때 모델의 [숨김 속성](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)도 자동으로 처리됩니다.
+[Eloquent ORM](/docs/12.x/eloquent)의 모델이나 컬렉션을 라우트 및 컨트롤러에서 직접 반환할 수도 있습니다. 이렇게 반환하면, 라라벨이 해당 모델이나 컬렉션을 JSON 응답으로 자동 변환해줍니다. 이때 모델의 [숨김 속성](/docs/12.x/eloquent-serialization#hiding-attributes-from-json)도 자동으로 처리됩니다.
 
 ```php
 use App\Models\User;
@@ -186,7 +186,7 @@ Route::get('/dashboard', function () {
 });
 ```
 
-때로는 사용자를 이전 위치로 되돌려 보내고 싶을 때가 있습니다. (예: 제출된 폼이 올바르지 않은 경우 등) 이럴 때는 전역 `back` 헬퍼 함수를 사용할 수 있습니다. 이 기능은 [세션](/docs/{{version}}/session)을 이용하므로, `back` 함수를 호출하는 라우트는 반드시 `web` 미들웨어 그룹을 사용해야 합니다.
+때로는 사용자를 이전 위치로 되돌려 보내고 싶을 때가 있습니다. (예: 제출된 폼이 올바르지 않은 경우 등) 이럴 때는 전역 `back` 헬퍼 함수를 사용할 수 있습니다. 이 기능은 [세션](/docs/12.x/session)을 이용하므로, `back` 함수를 호출하는 라우트는 반드시 `web` 미들웨어 그룹을 사용해야 합니다.
 
 ```php
 Route::post('/user/profile', function () {
@@ -239,7 +239,7 @@ public function getRouteKey(): mixed
 <a name="redirecting-controller-actions"></a>
 ### 컨트롤러 액션으로 리디렉션
 
-[컨트롤러 액션](/docs/{{version}}/controllers)으로 리디렉션도 가능합니다. 이때는 컨트롤러 클래스명과 액션명을 `action` 메서드에 전달하면 됩니다.
+[컨트롤러 액션](/docs/12.x/controllers)으로 리디렉션도 가능합니다. 이때는 컨트롤러 클래스명과 액션명을 `action` 메서드에 전달하면 됩니다.
 
 ```php
 use App\Http\Controllers\UserController;
@@ -267,7 +267,7 @@ return redirect()->away('https://www.google.com');
 <a name="redirecting-with-flashed-session-data"></a>
 ### 세션 플래시 데이터와 함께 리디렉션
 
-새 URL로 리디렉션하면서 [데이터를 세션에 플래시](/docs/{{version}}/session#flash-data)하는 경우가 많습니다. 예를 들어, 어떤 작업에 성공한 뒤 성공 메시지를 세션에 플래시합니다. 라라벨에서는 한 번에 `RedirectResponse` 생성과 데이터 플래시를 연속된 메서드 체인으로 편리하게 처리할 수 있습니다.
+새 URL로 리디렉션하면서 [데이터를 세션에 플래시](/docs/12.x/session#flash-data)하는 경우가 많습니다. 예를 들어, 어떤 작업에 성공한 뒤 성공 메시지를 세션에 플래시합니다. 라라벨에서는 한 번에 `RedirectResponse` 생성과 데이터 플래시를 연속된 메서드 체인으로 편리하게 처리할 수 있습니다.
 
 ```php
 Route::post('/user/profile', function () {
@@ -277,7 +277,7 @@ Route::post('/user/profile', function () {
 });
 ```
 
-리디렉션 후, [세션](/docs/{{version}}/session)에 저장되어 있는 플래시 메시지는 [Blade 문법](/docs/{{version}}/blade)을 사용해 쉽게 표시할 수 있습니다.
+리디렉션 후, [세션](/docs/12.x/session)에 저장되어 있는 플래시 메시지는 [Blade 문법](/docs/12.x/blade)을 사용해 쉽게 표시할 수 있습니다.
 
 ```blade
 @if (session('status'))
@@ -290,7 +290,7 @@ Route::post('/user/profile', function () {
 <a name="redirecting-with-input"></a>
 #### 입력값과 함께 리디렉션
 
-`RedirectResponse`의 `withInput` 메서드를 사용하면, 현재 요청의 입력 데이터를 세션에 플래시한 뒤 새로운 위치로 리디렉션할 수 있습니다. 주로 유효성 검사 오류가 있을 때 사용됩니다. 이렇게 세션에 플래시된 입력값은 다음 요청에서 [쉽게 꺼내어](/docs/{{version}}/requests#retrieving-old-input) 폼을 다시 채울 때 사용할 수 있습니다.
+`RedirectResponse`의 `withInput` 메서드를 사용하면, 현재 요청의 입력 데이터를 세션에 플래시한 뒤 새로운 위치로 리디렉션할 수 있습니다. 주로 유효성 검사 오류가 있을 때 사용됩니다. 이렇게 세션에 플래시된 입력값은 다음 요청에서 [쉽게 꺼내어](/docs/12.x/requests#retrieving-old-input) 폼을 다시 채울 때 사용할 수 있습니다.
 
 ```php
 return back()->withInput();
@@ -299,12 +299,12 @@ return back()->withInput();
 <a name="other-response-types"></a>
 ## 기타 응답 타입
 
-`response` 헬퍼는 다양한 종류의 응답 인스턴스를 생성하는 데 사용할 수 있습니다. `response` 헬퍼를 인수 없이 호출하면, `Illuminate\Contracts\Routing\ResponseFactory` [컨트랙트](/docs/{{version}}/contracts)의 구현체가 반환됩니다. 이 컨트랙트에는 여러 가지 유용한 응답 생성 메서드가 포함되어 있습니다.
+`response` 헬퍼는 다양한 종류의 응답 인스턴스를 생성하는 데 사용할 수 있습니다. `response` 헬퍼를 인수 없이 호출하면, `Illuminate\Contracts\Routing\ResponseFactory` [컨트랙트](/docs/12.x/contracts)의 구현체가 반환됩니다. 이 컨트랙트에는 여러 가지 유용한 응답 생성 메서드가 포함되어 있습니다.
 
 <a name="view-responses"></a>
 ### 뷰 응답
 
-응답의 상태 코드와 헤더도 직접 지정하면서 [뷰](/docs/{{version}}/views)를 응답 내용으로 반환해야 한다면, `view` 메서드를 이용하세요.
+응답의 상태 코드와 헤더도 직접 지정하면서 [뷰](/docs/12.x/views)를 응답 내용으로 반환해야 한다면, `view` 메서드를 이용하세요.
 
 ```php
 return response()
@@ -550,7 +550,7 @@ return response()->streamDownload(function () {
 <a name="response-macros"></a>
 ## 응답 매크로
 
-여러 라우트나 컨트롤러에서 반복적으로 사용할 사용자 지정 응답을 만들고 싶다면, `Response` 파사드의 `macro` 메서드를 사용할 수 있습니다. 일반적으로 이 메서드는 애플리케이션의 [서비스 프로바이더](/docs/{{version}}/providers), 예를 들어 `App\Providers\AppServiceProvider`의 `boot` 메서드에서 호출하는 것이 좋습니다.
+여러 라우트나 컨트롤러에서 반복적으로 사용할 사용자 지정 응답을 만들고 싶다면, `Response` 파사드의 `macro` 메서드를 사용할 수 있습니다. 일반적으로 이 메서드는 애플리케이션의 [서비스 프로바이더](/docs/12.x/providers), 예를 들어 `App\Providers\AppServiceProvider`의 `boot` 메서드에서 호출하는 것이 좋습니다.
 
 ```php
 <?php

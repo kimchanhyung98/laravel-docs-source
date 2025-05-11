@@ -324,7 +324,7 @@ while ($process->running()) {
 
 라라벨에서는 여러 비동기 프로세스를 풀(pool)로 구성하여 동시에 손쉽게 실행하고 관리할 수 있습니다. 먼저 `pool` 메서드를 호출하면, 이 메서드는 `Illuminate\Process\Pool` 인스턴스를 클로저로 전달해줍니다.
 
-이 클로저 내부에서 풀에 포함될 프로세스를 정의할 수 있습니다. 풀을 `start` 메서드로 시작하면, `running` 메서드로 현재 실행 중인 프로세스의 [컬렉션](/docs/{{version}}/collections)을 조회할 수 있습니다:
+이 클로저 내부에서 풀에 포함될 프로세스를 정의할 수 있습니다. 풀을 `start` 메서드로 시작하면, `running` 메서드로 현재 실행 중인 프로세스의 [컬렉션](/docs/12.x/collections)을 조회할 수 있습니다:
 
 ```php
 use Illuminate\Process\Pool;

@@ -168,7 +168,7 @@ $instance = Feature::instance(NewApi::class);
 ```
 
 > [!NOTE]
-> 기능 클래스는 [컨테이너](/docs/{{version}}/container)를 통해 해석되므로, 필요에 따라 생성자에 의존성을 주입할 수 있습니다.
+> 기능 클래스는 [컨테이너](/docs/12.x/container)를 통해 해석되므로, 필요에 따라 생성자에 의존성을 주입할 수 있습니다.
 
 #### 저장되는 기능 이름 커스터마이징
 
@@ -411,7 +411,7 @@ Blade에서 기능 플래그를 쉽게 확인할 수 있도록, Pennant에서는
 <a name="middleware"></a>
 ### 미들웨어
 
-Pennant에는 [미들웨어](/docs/{{version}}/middleware)도 내장되어 있습니다.  
+Pennant에는 [미들웨어](/docs/12.x/middleware)도 내장되어 있습니다.  
 이 미들웨어로, 특정 라우트 실행 전 현재 인증된 사용자가 특정 기능에 접근할 권한이 있는지 검사할 수 있습니다.  
 해당 미들웨어를 라우트에 지정하고, 해당 라우트에 접근하기 위해 필요한 기능을 나열할 수 있습니다.  
 지정한 기능 중 비활성 기능이 있다면, 라우트에서는 `400 Bad Request` HTTP 응답을 반환합니다.  
@@ -701,7 +701,7 @@ class User extends Model implements FeatureScopeable
 <a name="serializing-scope"></a>
 ### 범위 직렬화하기(Serializing Scope)
 
-기본적으로 Pennant는 Eloquent 모델과 연관된 기능을 저장할 때 완전한 클래스 이름(fully qualified class name)을 사용합니다. 이미 [Eloquent morph map](/docs/{{version}}/eloquent-relationships#custom-polymorphic-types)을 사용 중이라면, Pennant도 morph map을 활용하여 저장된 기능이 애플리케이션 내부 구조에 종속되지 않도록 구성할 수 있습니다.
+기본적으로 Pennant는 Eloquent 모델과 연관된 기능을 저장할 때 완전한 클래스 이름(fully qualified class name)을 사용합니다. 이미 [Eloquent morph map](/docs/12.x/eloquent-relationships#custom-polymorphic-types)을 사용 중이라면, Pennant도 morph map을 활용하여 저장된 기능이 애플리케이션 내부 구조에 종속되지 않도록 구성할 수 있습니다.
 
 이렇게 하려면, 서비스 프로바이더에서 morph map을 정의한 뒤 `Feature` 파사드의 `useMorphMap` 메서드를 호출하면 됩니다.
 
@@ -1041,7 +1041,7 @@ public function test_it_can_control_feature_values()
 }
 ```
 
-기능 반환 값이 `Lottery` 인스턴스인 경우, 사용할 수 있는 다양한 [테스트 헬퍼](/docs/{{version}}/helpers#testing-lotteries)도 준비되어 있습니다.
+기능 반환 값이 `Lottery` 인스턴스인 경우, 사용할 수 있는 다양한 [테스트 헬퍼](/docs/12.x/helpers#testing-lotteries)도 준비되어 있습니다.
 
 <a name="store-configuration"></a>
 #### 저장소 설정(Store Configuration)
@@ -1095,7 +1095,7 @@ class RedisFeatureDriver implements Driver
 <a name="registering-the-driver"></a>
 #### 드라이버 등록하기(Registering the Driver)
 
-드라이버 구현을 마쳤다면, Pennant에 등록할 준비가 된 것입니다. 추가 드라이버를 Pennant에 등록하려면 `Feature` 파사드의 `extend` 메서드를 사용하면 됩니다. `extend`는 보통 애플리케이션의 [서비스 프로바이더](/docs/{{version}}/providers) `boot` 메서드 내에서 호출합니다.
+드라이버 구현을 마쳤다면, Pennant에 등록할 준비가 된 것입니다. 추가 드라이버를 Pennant에 등록하려면 `Feature` 파사드의 `extend` 메서드를 사용하면 됩니다. `extend`는 보통 애플리케이션의 [서비스 프로바이더](/docs/12.x/providers) `boot` 메서드 내에서 호출합니다.
 
 ```php
 <?php

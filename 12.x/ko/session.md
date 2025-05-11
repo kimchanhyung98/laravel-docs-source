@@ -40,7 +40,7 @@ HTTP 기반 애플리케이션은 상태를 유지하지 않으므로, 세션은
 </div>
 
 > [!NOTE]
-> `array` 드라이버는 주로 [테스트](/docs/{{version}}/testing) 시에 사용되며, 세션에 저장된 데이터가 영구적으로 보존되지 않습니다.
+> `array` 드라이버는 주로 [테스트](/docs/12.x/testing) 시에 사용되며, 세션에 저장된 데이터가 영구적으로 보존되지 않습니다.
 
 <a name="driver-prerequisites"></a>
 ### 드라이버 사전 준비사항
@@ -48,7 +48,7 @@ HTTP 기반 애플리케이션은 상태를 유지하지 않으므로, 세션은
 <a name="database"></a>
 #### 데이터베이스
 
-`database` 세션 드라이버를 사용할 경우, 세션 데이터를 담을 데이터베이스 테이블이 필요합니다. 보통 이 테이블은 라라벨의 기본 제공 migration 파일인 `0001_01_01_000000_create_users_table.php` [데이터베이스 마이그레이션](/docs/{{version}}/migrations)에 포함되어 있습니다. 만약 `sessions` 테이블이 없다면, 아래와 같이 `make:session-table` Artisan 명령어로 migration 파일을 생성할 수 있습니다.
+`database` 세션 드라이버를 사용할 경우, 세션 데이터를 담을 데이터베이스 테이블이 필요합니다. 보통 이 테이블은 라라벨의 기본 제공 migration 파일인 `0001_01_01_000000_create_users_table.php` [데이터베이스 마이그레이션](/docs/12.x/migrations)에 포함되어 있습니다. 만약 `sessions` 테이블이 없다면, 아래와 같이 `make:session-table` Artisan 명령어로 migration 파일을 생성할 수 있습니다.
 
 ```shell
 php artisan make:session-table
@@ -59,7 +59,7 @@ php artisan migrate
 <a name="redis"></a>
 #### Redis
 
-라라벨에서 Redis 세션을 사용하려면, PECL을 통해 PhpRedis PHP 확장(extension)을 설치하거나, Composer로 `predis/predis` 패키지(~1.0)를 설치해야 합니다. Redis 설정에 대한 추가 정보는 라라벨 [Redis 문서](/docs/{{version}}/redis#configuration)를 참고하세요.
+라라벨에서 Redis 세션을 사용하려면, PECL을 통해 PhpRedis PHP 확장(extension)을 설치하거나, Composer로 `predis/predis` 패키지(~1.0)를 설치해야 합니다. Redis 설정에 대한 추가 정보는 라라벨 [Redis 문서](/docs/12.x/redis#configuration)를 참고하세요.
 
 > [!NOTE]
 > 세션 저장에 사용할 Redis 커넥션은 `SESSION_CONNECTION` 환경 변수 또는 `session.php` 설정 파일의 `connection` 옵션을 사용해 지정할 수 있습니다.
@@ -70,7 +70,7 @@ php artisan migrate
 <a name="retrieving-data"></a>
 ### 데이터 조회
 
-라라벨에서 세션 데이터에 접근하는 방법은 크게 두 가지가 있습니다. 하나는 전역 `session` 헬퍼를 사용하는 방법이고, 또 하나는 `Request` 인스턴스를 이용하는 방법입니다. 먼저, 라우트 클로저나 컨트롤러 메서드에서 type-hint를 통해 DI되는 `Request` 인스턴스에서 세션에 접근하는 방법을 살펴보겠습니다. 참고로 컨트롤러 메서드의 의존성은 라라벨 [서비스 컨테이너](/docs/{{version}}/container)를 통해 자동으로 주입됩니다.
+라라벨에서 세션 데이터에 접근하는 방법은 크게 두 가지가 있습니다. 하나는 전역 `session` 헬퍼를 사용하는 방법이고, 또 하나는 `Request` 인스턴스를 이용하는 방법입니다. 먼저, 라우트 클로저나 컨트롤러 메서드에서 type-hint를 통해 DI되는 `Request` 인스턴스에서 세션에 접근하는 방법을 살펴보겠습니다. 참고로 컨트롤러 메서드의 의존성은 라라벨 [서비스 컨테이너](/docs/12.x/container)를 통해 자동으로 주입됩니다.
 
 ```php
 <?php
@@ -127,7 +127,7 @@ Route::get('/home', function () {
 ```
 
 > [!NOTE]
-> HTTP 요청 인스턴스를 통해 세션을 사용하는 것과 전역 `session` 헬퍼를 사용하는 것에는 실질적인 차이가 거의 없습니다. 두 방식 모두 모든 테스트에서 제공되는 `assertSessionHas` 메서드를 사용해 [테스트 가능](/docs/{{version}}/testing)합니다.
+> HTTP 요청 인스턴스를 통해 세션을 사용하는 것과 전역 `session` 헬퍼를 사용하는 것에는 실질적인 차이가 거의 없습니다. 두 방식 모두 모든 테스트에서 제공되는 `assertSessionHas` 메서드를 사용해 [테스트 가능](/docs/12.x/testing)합니다.
 
 <a name="retrieving-all-session-data"></a>
 #### 세션의 모든 데이터 조회
@@ -265,7 +265,7 @@ $request->session()->flush();
 
 세션 ID를 재생성하는 것은 악의적인 사용자가 애플리케이션에서 [세션 고정(session fixation)](https://owasp.org/www-community/attacks/Session_fixation) 공격을 악용하지 못하도록 하기 위해 자주 사용됩니다.
 
-라라벨의 [애플리케이션 스타터 키트](/docs/{{version}}/starter-kits)나 [Laravel Fortify](/docs/{{version}}/fortify)를 사용하는 경우, 인증 시점에 자동으로 세션 ID가 재생성됩니다. 만약 직접 세션 ID를 재생성해야 할 경우, `regenerate` 메서드를 사용할 수 있습니다.
+라라벨의 [애플리케이션 스타터 키트](/docs/12.x/starter-kits)나 [Laravel Fortify](/docs/12.x/fortify)를 사용하는 경우, 인증 시점에 자동으로 세션 ID가 재생성됩니다. 만약 직접 세션 ID를 재생성해야 할 경우, `regenerate` 메서드를 사용할 수 있습니다.
 
 ```php
 $request->session()->regenerate();
@@ -281,7 +281,7 @@ $request->session()->invalidate();
 ## 세션 차단
 
 > [!WARNING]
-> 세션 차단 기능을 사용하려면, [원자적 락(atomic locks)](/docs/{{version}}/cache#atomic-locks)를 지원하는 캐시 드라이버를 사용해야 합니다. 현재 지원되는 드라이버로는 `memcached`, `dynamodb`, `redis`, `mongodb`(공식 `mongodb/laravel-mongodb` 패키지에서 제공), `database`, `file`, `array` 드라이버 등이 있습니다. 또한 `cookie` 세션 드라이버는 사용할 수 없습니다.
+> 세션 차단 기능을 사용하려면, [원자적 락(atomic locks)](/docs/12.x/cache#atomic-locks)를 지원하는 캐시 드라이버를 사용해야 합니다. 현재 지원되는 드라이버로는 `memcached`, `dynamodb`, `redis`, `mongodb`(공식 `mongodb/laravel-mongodb` 패키지에서 제공), `database`, `file`, `array` 드라이버 등이 있습니다. 또한 `cookie` 세션 드라이버는 사용할 수 없습니다.
 
 기본적으로, 라라벨은 동일한 세션을 사용하는 여러 요청이 동시에(concurrently) 실행될 수 있습니다. 예를 들어 JavaScript HTTP 라이브러리로 두 개의 요청을 동시에 보낼 경우, 이 두 요청이 동시에 실행됩니다. 대부분의 애플리케이션에서는 문제가 없지만, 서로 다른 엔드포인트에 동시에 요청을 보내 양쪽 모두 세션 데이터를 기록하는 드문 경우에는 세션 데이터 손실이 발생할 수 있습니다.
 
@@ -351,7 +351,7 @@ class MongoSessionHandler implements \SessionHandlerInterface
 <a name="registering-the-driver"></a>
 ### 드라이버 등록
 
-드라이버가 준비되면, 이제 라라벨에 등록해야 합니다. 세션 백엔드에 추가적인 드라이버를 등록하려면, `Session` [파사드](/docs/{{version}}/facades)가 제공하는 `extend` 메서드를 사용하면 됩니다. `extend`는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드 안에서 호출하는 것이 좋습니다. 기존의 `App\Providers\AppServiceProvider`를 사용해도 되고, 별도의 프로바이더를 만들어도 됩니다.
+드라이버가 준비되면, 이제 라라벨에 등록해야 합니다. 세션 백엔드에 추가적인 드라이버를 등록하려면, `Session` [파사드](/docs/12.x/facades)가 제공하는 `extend` 메서드를 사용하면 됩니다. `extend`는 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드 안에서 호출하는 것이 좋습니다. 기존의 `App\Providers\AppServiceProvider`를 사용해도 되고, 별도의 프로바이더를 만들어도 됩니다.
 
 ```php
 <?php

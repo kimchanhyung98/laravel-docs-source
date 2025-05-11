@@ -395,7 +395,7 @@ Route::get('/subscription-checkout', function (Request $request) {
 <a name="quickstart-building-a-subscribed-middleware"></a>
 #### 구독 여부 확인 미들웨어 만들기
 
-실제 환경에서는, [미들웨어](/docs/{{version}}/middleware)를 만들어서 요청이 구독한 사용자에게서 온 것인지 판단할 수 있습니다. 이 미들웨어를 특정 라우트에 적용하면, 구독하지 않은 사용자가 해당 경로에 접근하는 것을 쉽고 안전하게 막을 수 있습니다:
+실제 환경에서는, [미들웨어](/docs/12.x/middleware)를 만들어서 요청이 구독한 사용자에게서 온 것인지 판단할 수 있습니다. 이 미들웨어를 특정 라우트에 적용하면, 구독하지 않은 사용자가 해당 경로에 접근하는 것을 쉽고 안전하게 막을 수 있습니다:
 
 ```php
 <?php
@@ -1065,7 +1065,7 @@ if ($user->subscribed('default')) {
 }
 ```
 
-`subscribed` 메서드는 [라우트 미들웨어](/docs/{{version}}/middleware)로도 활용 가능하여, 사용자의 구독 상태에 따라 라우트나 컨트롤러 접근 권한을 제어할 수 있습니다.
+`subscribed` 메서드는 [라우트 미들웨어](/docs/12.x/middleware)로도 활용 가능하여, 사용자의 구독 상태에 따라 라우트나 컨트롤러 접근 권한을 제어할 수 있습니다.
 
 ```php
 <?php
@@ -1815,7 +1815,7 @@ $user = User::create([
 ```
 
 > [!WARNING]
-> 빌링 가능한 모델 클래스 정의에 [date cast](/docs/{{version}}/eloquent-mutators#date-casting)를 추가하여, `trial_ends_at` 속성이 날짜형으로 다뤄지도록 처리해야 합니다.
+> 빌링 가능한 모델 클래스 정의에 [date cast](/docs/12.x/eloquent-mutators#date-casting)를 추가하여, `trial_ends_at` 속성이 날짜형으로 다뤄지도록 처리해야 합니다.
 
 Cashier에서는 이런 형태의 체험을 "일반(Generic) 체험"이라고 합니다. 이는 아직 구독에 연결되지 않은 체험 기간을 의미합니다. 모델 인스턴스의 `onTrial` 메서드는 현재 날짜가 `trial_ends_at`보다 이전이면 `true`를 반환합니다.
 
@@ -1921,7 +1921,7 @@ php artisan cashier:webhook --disabled
 <a name="webhooks-csrf-protection"></a>
 #### Webhook과 CSRF 보호
 
-Stripe Webhook 요청이 라라벨의 [CSRF 보호](/docs/{{version}}/csrf)를 우회할 수 있도록, Stripe Webhook 경로에 대해서는 CSRF 토큰 검증을 하지 않도록 설정해야 합니다. 이를 위해 애플리케이션의 `bootstrap/app.php` 파일에서 `stripe/*`를 CSRF 보호 예외로 추가해 주어야 합니다.
+Stripe Webhook 요청이 라라벨의 [CSRF 보호](/docs/12.x/csrf)를 우회할 수 있도록, Stripe Webhook 경로에 대해서는 CSRF 토큰 검증을 하지 않도록 설정해야 합니다. 이를 위해 애플리케이션의 `bootstrap/app.php` 파일에서 `stripe/*`를 CSRF 보호 예외로 추가해 주어야 합니다.
 
 ```php
 ->withMiddleware(function (Middleware $middleware) {
@@ -1939,7 +1939,7 @@ Cashier는 결제 실패로 인한 구독 해지와 같은 기본 Stripe Webhook
 - `Laravel\Cashier\Events\WebhookReceived`
 - `Laravel\Cashier\Events\WebhookHandled`
 
-두 이벤트 모두 Stripe Webhook의 전체 페이로드를 포함하고 있습니다. 예를 들어, `invoice.payment_succeeded` Webhook을 처리하려면 아래와 같이 [리스너](/docs/{{version}}/events#defining-listeners) 를 등록하여 사용할 수 있습니다.
+두 이벤트 모두 Stripe Webhook의 전체 페이로드를 포함하고 있습니다. 예를 들어, `invoice.payment_succeeded` Webhook을 처리하려면 아래와 같이 [리스너](/docs/12.x/events#defining-listeners) 를 등록하여 사용할 수 있습니다.
 
 ```php
 <?php

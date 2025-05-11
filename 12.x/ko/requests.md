@@ -32,7 +32,7 @@
 <a name="accessing-the-request"></a>
 ### 요청 객체 접근하기
 
-현재 HTTP 요청 인스턴스를 의존성 주입 방식으로 얻으려면, 라우트 클로저나 컨트롤러 메서드의 인자로 `Illuminate\Http\Request` 클래스를 타입힌트하면 됩니다. 요청 객체는 라라벨 [서비스 컨테이너](/docs/{{version}}/container)가 자동으로 주입해줍니다.
+현재 HTTP 요청 인스턴스를 의존성 주입 방식으로 얻으려면, 라우트 클로저나 컨트롤러 메서드의 인자로 `Illuminate\Http\Request` 클래스를 타입힌트하면 됩니다. 요청 객체는 라라벨 [서비스 컨테이너](/docs/12.x/container)가 자동으로 주입해줍니다.
 
 ```php
 <?php
@@ -128,7 +128,7 @@ if ($request->is('admin/*')) {
 }
 ```
 
-`routeIs` 메서드를 사용하면, 들어온 요청이 [이름 있는 라우트](/docs/{{version}}/routing#named-routes)와 매칭되는지 확인할 수 있습니다.
+`routeIs` 메서드를 사용하면, 들어온 요청이 [이름 있는 라우트](/docs/12.x/routing#named-routes)와 매칭되는지 확인할 수 있습니다.
 
 ```php
 if ($request->routeIs('admin.*')) {
@@ -294,7 +294,7 @@ Route::get('/', function (ServerRequestInterface $request) {
 $input = $request->all();
 ```
 
-`collect` 메서드를 사용하면, 모든 요청 입력값을 [컬렉션](/docs/{{version}}/collections)으로 가져올 수도 있습니다.
+`collect` 메서드를 사용하면, 모든 요청 입력값을 [컬렉션](/docs/12.x/collections)으로 가져올 수도 있습니다.
 
 ```php
 $input = $request->collect();
@@ -370,7 +370,7 @@ $name = $request->input('user.name');
 <a name="retrieving-stringable-input-values"></a>
 #### Stringable(문자열 객체) 입력값 가져오기
 
-입력값을 원시 `string` 데이터가 아니라 [Illuminate\Support\Stringable](/docs/{{version}}/strings) 인스턴스로 받고 싶다면, `string` 메서드를 사용할 수 있습니다.
+입력값을 원시 `string` 데이터가 아니라 [Illuminate\Support\Stringable](/docs/12.x/strings) 인스턴스로 받고 싶다면, `string` 메서드를 사용할 수 있습니다.
 
 ```php
 $name = $request->string('name')->trim();
@@ -586,12 +586,12 @@ $request->mergeIfMissing(['votes' => 0]);
 <a name="old-input"></a>
 ### 이전 입력값(Old Input)
 
-라라벨에서는 한 번의 요청에서 입력값을 플래시(flashing)하여 다음 요청 시에도 입력값을 유지할 수 있습니다. 주로 폼 유효성 검증에서 오류가 발생했을 때 사용자 입력을 폼에 그대로 보여주고 싶을 때 사용됩니다. 다만, 라라벨의 [유효성 검증](/docs/{{version}}/validation) 기능을 활용한다면 수동으로 입력값 플래싱을 직접 처리할 필요가 없는 경우가 많습니다(내장된 기능이 자동으로 처리함).
+라라벨에서는 한 번의 요청에서 입력값을 플래시(flashing)하여 다음 요청 시에도 입력값을 유지할 수 있습니다. 주로 폼 유효성 검증에서 오류가 발생했을 때 사용자 입력을 폼에 그대로 보여주고 싶을 때 사용됩니다. 다만, 라라벨의 [유효성 검증](/docs/12.x/validation) 기능을 활용한다면 수동으로 입력값 플래싱을 직접 처리할 필요가 없는 경우가 많습니다(내장된 기능이 자동으로 처리함).
 
 <a name="flashing-input-to-the-session"></a>
 #### 입력값을 세션에 플래시하기
 
-`Illuminate\Http\Request`의 `flash` 메서드는 현재 입력값을 [세션](/docs/{{version}}/session)에 저장하여, 유저의 다음 요청에서도 입력값에 접근할 수 있게 합니다.
+`Illuminate\Http\Request`의 `flash` 메서드는 현재 입력값을 [세션](/docs/12.x/session)에 저장하여, 유저의 다음 요청에서도 입력값에 접근할 수 있게 합니다.
 
 ```php
 $request->flash();
@@ -623,7 +623,7 @@ return redirect('/form')->withInput(
 <a name="retrieving-old-input"></a>
 #### 이전 입력값 가져오기
 
-이전 요청에서 플래시된 입력값을 가져오려면, `Illuminate\Http\Request` 인스턴스의 `old` 메서드를 사용하세요. `old` 메서드는 [세션](/docs/{{version}}/session)에서 이전 입력값을 찾아 반환합니다.
+이전 요청에서 플래시된 입력값을 가져오려면, `Illuminate\Http\Request` 인스턴스의 `old` 메서드를 사용하세요. `old` 메서드는 [세션](/docs/12.x/session)에서 이전 입력값을 찾아 반환합니다.
 
 ```php
 $username = $request->old('username');
@@ -734,7 +734,7 @@ $extension = $request->photo->extension();
 <a name="storing-uploaded-files"></a>
 ### 업로드된 파일 저장하기
 
-업로드된 파일을 저장할 때는, 설정한 [파일 시스템](/docs/{{version}}/filesystem) 중 하나를 보통 사용합니다. `UploadedFile` 클래스의 `store` 메서드는 지정한 디스크로 파일을 이동시킬 수 있습니다. 디스크는 로컬이거나, Amazon S3와 같은 클라우드 스토리지일 수도 있습니다.
+업로드된 파일을 저장할 때는, 설정한 [파일 시스템](/docs/12.x/filesystem) 중 하나를 보통 사용합니다. `UploadedFile` 클래스의 `store` 메서드는 지정한 디스크로 파일을 이동시킬 수 있습니다. 디스크는 로컬이거나, Amazon S3와 같은 클라우드 스토리지일 수도 있습니다.
 
 `store` 메서드는 파일을 저장할 경로(디렉터리 경로)를 첫 번째 인자로 받습니다. 별도의 파일명을 지정하지 않으면 자동으로 고유한 파일명이 생성되어 저장됩니다.
 
@@ -755,7 +755,7 @@ $path = $request->photo->storeAs('images', 'filename.jpg', 's3');
 ```
 
 > [!NOTE]
-> 파일 저장에 대한 더 자세한 내용은 [파일 시스템 문서](/docs/{{version}}/filesystem)를 참고하세요.
+> 파일 저장에 대한 더 자세한 내용은 [파일 시스템 문서](/docs/12.x/filesystem)를 참고하세요.
 
 <a name="configuring-trusted-proxies"></a>
 ## 신뢰할 수 있는 프록시 설정

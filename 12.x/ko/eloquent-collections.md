@@ -7,7 +7,7 @@
 <a name="introduction"></a>
 ## 소개
 
-한 번에 둘 이상의 모델을 반환하는 모든 엘로퀀트(Eloquent) 메서드는 `Illuminate\Database\Eloquent\Collection` 클래스의 인스턴스를 반환합니다. 여기에는 `get` 메서드로 조회하거나, 관계(relationship)를 통해 접근한 결과 등이 포함됩니다. 엘로퀀트 컬렉션 객체는 라라벨의 [기본 컬렉션](/docs/{{version}}/collections)을 확장하기 때문에, 기본 컬렉션 클래스가 제공하는 여러 가지 편리한 메서드들을 그대로 사용할 수 있습니다. 유용한 메서드들에 대해 알아보려면 라라벨 컬렉션 문서도 꼭 참고해 주세요!
+한 번에 둘 이상의 모델을 반환하는 모든 엘로퀀트(Eloquent) 메서드는 `Illuminate\Database\Eloquent\Collection` 클래스의 인스턴스를 반환합니다. 여기에는 `get` 메서드로 조회하거나, 관계(relationship)를 통해 접근한 결과 등이 포함됩니다. 엘로퀀트 컬렉션 객체는 라라벨의 [기본 컬렉션](/docs/12.x/collections)을 확장하기 때문에, 기본 컬렉션 클래스가 제공하는 여러 가지 편리한 메서드들을 그대로 사용할 수 있습니다. 유용한 메서드들에 대해 알아보려면 라라벨 컬렉션 문서도 꼭 참고해 주세요!
 
 컬렉션은 반복자(iterator)로 동작하므로, 마치 PHP 배열처럼 반복문으로 순회할 수 있습니다:
 
@@ -34,12 +34,12 @@ $names = User::all()->reject(function (User $user) {
 <a name="eloquent-collection-conversion"></a>
 #### 엘로퀀트 컬렉션 변환
 
-대부분의 엘로퀀트 컬렉션 메서드는 새로운 엘로퀀트 컬렉션 인스턴스를 반환합니다. 하지만 `collapse`, `flatten`, `flip`, `keys`, `pluck`, `zip` 메서드는 [기본 컬렉션](/docs/{{version}}/collections) 인스턴스를 반환합니다. 마찬가지로, `map` 연산 결과가 엘로퀀트 모델을 전혀 포함하지 않는 컬렉션일 경우 기본 컬렉션 인스턴스로 변환됩니다.
+대부분의 엘로퀀트 컬렉션 메서드는 새로운 엘로퀀트 컬렉션 인스턴스를 반환합니다. 하지만 `collapse`, `flatten`, `flip`, `keys`, `pluck`, `zip` 메서드는 [기본 컬렉션](/docs/12.x/collections) 인스턴스를 반환합니다. 마찬가지로, `map` 연산 결과가 엘로퀀트 모델을 전혀 포함하지 않는 컬렉션일 경우 기본 컬렉션 인스턴스로 변환됩니다.
 
 <a name="available-methods"></a>
 ## 사용 가능한 메서드
 
-모든 엘로퀀트 컬렉션은 [라라벨 기본 컬렉션](/docs/{{version}}/collections#available-methods) 객체를 확장하므로, 기본 컬렉션 클래스가 제공하는 강력한 메서드들을 모두 그대로 사용할 수 있습니다.
+모든 엘로퀀트 컬렉션은 [라라벨 기본 컬렉션](/docs/12.x/collections#available-methods) 객체를 확장하므로, 기본 컬렉션 클래스가 제공하는 강력한 메서드들을 모두 그대로 사용할 수 있습니다.
 
 추가로, `Illuminate\Database\Eloquent\Collection` 클래스는 모델 컬렉션을 더욱 쉽게 관리할 수 있도록 여러 메서드를 제공합니다. 대부분의 메서드는 `Illuminate\Database\Eloquent\Collection` 인스턴스를 반환하지만, `modelKeys`와 같은 일부 메서드는 `Illuminate\Support\Collection` 인스턴스를 반환합니다.
 
@@ -72,7 +72,7 @@ $names = User::all()->reject(function (User $user) {
 <a name="method-append"></a>
 #### `append($attributes)` {.collection-method .first-collection-method}
 
-`append` 메서드는 컬렉션의 모든 모델에 대해 [속성(attribute)를 추가](/docs/{{version}}/eloquent-serialization#appending-values-to-json)할 수 있도록 해줍니다. 이 메서드는 속성의 배열이나 단일 속성을 인수로 받을 수 있습니다:
+`append` 메서드는 컬렉션의 모든 모델에 대해 [속성(attribute)를 추가](/docs/12.x/eloquent-serialization#appending-values-to-json)할 수 있도록 해줍니다. 이 메서드는 속성의 배열이나 단일 속성을 인수로 받을 수 있습니다:
 
 ```php
 $users->append('team');
@@ -195,7 +195,7 @@ $users->modelKeys();
 <a name="method-makeVisible"></a>
 #### `makeVisible($attributes)` {.collection-method}
 
-`makeVisible` 메서드는 컬렉션의 각 모델에서 보통 "숨겨진(hidden)" 상태인 [속성들을 표시](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)하도록 만듭니다:
+`makeVisible` 메서드는 컬렉션의 각 모델에서 보통 "숨겨진(hidden)" 상태인 [속성들을 표시](/docs/12.x/eloquent-serialization#hiding-attributes-from-json)하도록 만듭니다:
 
 ```php
 $users = $users->makeVisible(['address', 'phone_number']);
@@ -204,7 +204,7 @@ $users = $users->makeVisible(['address', 'phone_number']);
 <a name="method-makeHidden"></a>
 #### `makeHidden($attributes)` {.collection-method}
 
-`makeHidden` 메서드는 컬렉션의 각 모델에서 보통 "표시되는(visible)" [속성들을 숨기도록](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json) 변경합니다:
+`makeHidden` 메서드는 컬렉션의 각 모델에서 보통 "표시되는(visible)" [속성들을 숨기도록](/docs/12.x/eloquent-serialization#hiding-attributes-from-json) 변경합니다:
 
 ```php
 $users = $users->makeHidden(['address', 'phone_number']);
@@ -235,7 +235,7 @@ dump($partition[1]::class); // Illuminate\Database\Eloquent\Collection
 <a name="method-setVisible"></a>
 #### `setVisible($attributes)` {.collection-method}
 
-`setVisible` 메서드는 컬렉션에 있는 각 모델의 표시 속성을 [일시적으로 덮어씁니다](/docs/{{version}}/eloquent-serialization#temporarily-modifying-attribute-visibility):
+`setVisible` 메서드는 컬렉션에 있는 각 모델의 표시 속성을 [일시적으로 덮어씁니다](/docs/12.x/eloquent-serialization#temporarily-modifying-attribute-visibility):
 
 ```php
 $users = $users->setVisible(['id', 'name']);
@@ -244,7 +244,7 @@ $users = $users->setVisible(['id', 'name']);
 <a name="method-setHidden"></a>
 #### `setHidden($attributes)` {.collection-method}
 
-`setHidden` 메서드는 컬렉션에 있는 각 모델의 숨김 속성을 [일시적으로 덮어씁니다](/docs/{{version}}/eloquent-serialization#temporarily-modifying-attribute-visibility):
+`setHidden` 메서드는 컬렉션에 있는 각 모델의 숨김 속성을 [일시적으로 덮어씁니다](/docs/12.x/eloquent-serialization#temporarily-modifying-attribute-visibility):
 
 ```php
 $users = $users->setHidden(['email', 'password', 'remember_token']);

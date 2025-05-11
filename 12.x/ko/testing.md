@@ -22,7 +22,7 @@
 <a name="environment"></a>
 ## 환경
 
-테스트를 실행하면, 라라벨은 `phpunit.xml` 파일에 정의된 환경 변수 덕분에 [애플리케이션 환경 설정](/docs/{{version}}/configuration#environment-configuration)을 자동으로 `testing`으로 지정합니다. 또한 세션과 캐시 역시 `array` 드라이버로 자동 설정되기 때문에, 테스트 중에는 세션이나 캐시 데이터가 영구적으로 저장되지 않습니다.
+테스트를 실행하면, 라라벨은 `phpunit.xml` 파일에 정의된 환경 변수 덕분에 [애플리케이션 환경 설정](/docs/12.x/configuration#environment-configuration)을 자동으로 `testing`으로 지정합니다. 또한 세션과 캐시 역시 `array` 드라이버로 자동 설정되기 때문에, 테스트 중에는 세션이나 캐시 데이터가 영구적으로 저장되지 않습니다.
 
 필요하다면 테스트 환경에 맞는 다른 환경 설정 값을 마음대로 추가할 수 있습니다. `testing` 환경 변수들은 애플리케이션의 `phpunit.xml` 파일에서 설정할 수 있지만, 테스트를 실행하기 전에 반드시 `config:clear` 아티즌 명령어로 설정 캐시를 비워야 합니다!
 
@@ -47,7 +47,7 @@ php artisan make:test UserTest --unit
 ```
 
 > [!NOTE]
-> 테스트 스텁은 [스텁 퍼블리싱](/docs/{{version}}/artisan#stub-customization)를 통해 사용자 정의가 가능합니다.
+> 테스트 스텁은 [스텁 퍼블리싱](/docs/12.x/artisan#stub-customization)를 통해 사용자 정의가 가능합니다.
 
 테스트가 생성되면, Pest 또는 PHPUnit을 사용하여 일반적으로 테스트 케이스를 작성할 수 있습니다. 테스트를 실행할 때는 터미널에서 `vendor/bin/pest`, `vendor/bin/phpunit`, 또는 `php artisan test` 명령어를 입력하면 됩니다.
 

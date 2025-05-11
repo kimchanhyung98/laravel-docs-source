@@ -107,7 +107,7 @@ public function boot(): void
 ```
 
 > [!WARNING]
-> 복수형 변환의 언어를 변경하는 경우, Eloquent 모델의 [테이블명](/docs/{{version}}/eloquent#table-names)을 명시적으로 정의해야 합니다.
+> 복수형 변환의 언어를 변경하는 경우, Eloquent 모델의 [테이블명](/docs/12.x/eloquent#table-names)을 명시적으로 정의해야 합니다.
 
 <a name="defining-translation-strings"></a>
 ## 번역 문자열 정의하기
@@ -176,7 +176,7 @@ echo __('I love programming.');
 
 이 경우 역시, 지정한 번역 문자열이 존재하지 않으면 입력된 문자열 자체를 반환합니다.
 
-[Blade 템플릿 엔진](/docs/{{version}}/blade)을 사용할 때에는 `{{ }}` 블레이드 이코 문법을 사용하여 번역 문자열을 출력할 수 있습니다.
+[Blade 템플릿 엔진](/docs/12.x/blade)을 사용할 때에는 `{{ }}` 블레이드 이코 문법을 사용하여 번역 문자열을 출력할 수 있습니다.
 
 ```blade
 {{ __('messages.welcome') }}

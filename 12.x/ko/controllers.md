@@ -107,12 +107,12 @@ php artisan make:controller ProvisionServer --invokable
 ```
 
 > [!NOTE]
-> 컨트롤러 스텁은 [스텁 퍼블리싱](/docs/{{version}}/artisan#stub-customization)을 통해 커스터마이즈할 수 있습니다.
+> 컨트롤러 스텁은 [스텁 퍼블리싱](/docs/12.x/artisan#stub-customization)을 통해 커스터마이즈할 수 있습니다.
 
 <a name="controller-middleware"></a>
 ## 컨트롤러 미들웨어
 
-[미들웨어](/docs/{{version}}/middleware)는 라우트 파일에서 컨트롤러 라우트에 할당할 수 있습니다:
+[미들웨어](/docs/12.x/middleware)는 라우트 파일에서 컨트롤러 라우트에 할당할 수 있습니다:
 
 ```php
 Route::get('/profile', [UserController::class, 'show'])->middleware('auth');
@@ -234,7 +234,7 @@ Route::resource('photos', PhotoController::class)
 <a name="soft-deleted-models"></a>
 #### 소프트 삭제된 모델
 
-기본적으로 암묵적 모델 바인딩은 [소프트 삭제](/docs/{{version}}/eloquent#soft-deleting)된 모델을 조회하지 않으며, 대신 404 HTTP 응답을 반환합니다. 하지만 리소스 라우트 정의 시 `withTrashed` 메서드를 호출하여 소프트 삭제된 모델도 포함하도록 지정할 수 있습니다:
+기본적으로 암묵적 모델 바인딩은 [소프트 삭제](/docs/12.x/eloquent#soft-deleting)된 모델을 조회하지 않으며, 대신 404 HTTP 응답을 반환합니다. 하지만 리소스 라우트 정의 시 `withTrashed` 메서드를 호출하여 소프트 삭제된 모델도 포함하도록 지정할 수 있습니다:
 
 ```php
 use App\Http\Controllers\PhotoController;
@@ -251,7 +251,7 @@ Route::resource('photos', PhotoController::class)->withTrashed(['show']);
 <a name="specifying-the-resource-model"></a>
 #### 리소스 모델 지정하기
 
-[라우트 모델 바인딩](/docs/{{version}}/routing#route-model-binding)을 사용하고, 리소스 컨트롤러 메서드에서 모델 인스턴스를 타입힌트 하려면, 컨트롤러 생성 시 `--model` 옵션을 사용할 수 있습니다:
+[라우트 모델 바인딩](/docs/12.x/routing#route-model-binding)을 사용하고, 리소스 컨트롤러 메서드에서 모델 인스턴스를 타입힌트 하려면, 컨트롤러 생성 시 `--model` 옵션을 사용할 수 있습니다:
 
 ```shell
 php artisan make:controller PhotoController --model=Photo --resource
@@ -260,7 +260,7 @@ php artisan make:controller PhotoController --model=Photo --resource
 <a name="generating-form-requests"></a>
 #### 폼 리퀘스트 생성하기
 
-리소스 컨트롤러를 생성할 때 `--requests` 옵션을 추가하면, 컨트롤러의 store, update 메서드용 [폼 리퀘스트 클래스](/docs/{{version}}/validation#form-request-validation)를 함께 생성할 수 있습니다:
+리소스 컨트롤러를 생성할 때 `--requests` 옵션을 추가하면, 컨트롤러의 store, update 메서드용 [폼 리퀘스트 클래스](/docs/12.x/validation#form-request-validation)를 함께 생성할 수 있습니다:
 
 ```shell
 php artisan make:controller PhotoController --model=Photo --resource --requests
@@ -332,7 +332,7 @@ Route::resource('photos.comments', PhotoCommentController::class);
 <a name="scoping-nested-resources"></a>
 #### 중첩 리소스 스코프 적용
 
-라라벨의 [암묵적 모델 바인딩](/docs/{{version}}/routing#implicit-model-binding-scoping) 기능을 활용하면, 자식 모델이 반드시 부모 모델에 속하는지 자동으로 확인(스코프)할 수 있습니다. 중첩 리소스 정의 시 `scoped` 메서드를 사용하면 자동 스코핑 및 자식 리소스를 어떤 필드로 조회할지 지정할 수 있습니다. 자세한 방법은 [리소스 라우트 스코프 지정하기](#restful-scoping-resource-routes) 문서를 참고하세요.
+라라벨의 [암묵적 모델 바인딩](/docs/12.x/routing#implicit-model-binding-scoping) 기능을 활용하면, 자식 모델이 반드시 부모 모델에 속하는지 자동으로 확인(스코프)할 수 있습니다. 중첩 리소스 정의 시 `scoped` 메서드를 사용하면 자동 스코핑 및 자식 리소스를 어떤 필드로 조회할지 지정할 수 있습니다. 자세한 방법은 [리소스 라우트 스코프 지정하기](#restful-scoping-resource-routes) 문서를 참고하세요.
 
 <a name="shallow-nesting"></a>
 #### 얕은 중첩(Shallow Nesting)
@@ -396,7 +396,7 @@ Route::resource('users', AdminUserController::class)->parameters([
 <a name="restful-scoping-resource-routes"></a>
 ### 리소스 라우트 스코프 지정하기
 
-라라벨의 [스코프 암묵적 모델 바인딩](/docs/{{version}}/routing#implicit-model-binding-scoping) 기능을 통해, 자식 모델이 반드시 부모 모델에 속하도록 자동으로 스코프할 수 있습니다. 중첩 리소스 정의 시 `scoped` 메서드를 사용하면 자동 스코핑과 자식 리소스를 어느 필드로 조회할지 지정할 수 있습니다:
+라라벨의 [스코프 암묵적 모델 바인딩](/docs/12.x/routing#implicit-model-binding-scoping) 기능을 통해, 자식 모델이 반드시 부모 모델에 속하도록 자동으로 스코프할 수 있습니다. 중첩 리소스 정의 시 `scoped` 메서드를 사용하면 자동 스코핑과 자식 리소스를 어느 필드로 조회할지 지정할 수 있습니다:
 
 ```php
 use App\Http\Controllers\PhotoCommentController;
@@ -432,7 +432,7 @@ public function boot(): void
 }
 ```
 
-라라벨의 복수형 변환기는 [여러 언어를 지원하며 원하는 언어로 설정](https://laravel.com/docs/{{version}}/localization#pluralization-language)할 수 있습니다. 동사와 복수화 언어를 커스터마이즈한 후, 예를 들어 `Route::resource('publicacion', PublicacionController::class)`로 등록하면 아래와 같은 URI가 만들어집니다:
+라라벨의 복수형 변환기는 [여러 언어를 지원하며 원하는 언어로 설정](https://laravel.com/docs/12.x/localization#pluralization-language)할 수 있습니다. 동사와 복수화 언어를 커스터마이즈한 후, 예를 들어 `Route::resource('publicacion', PublicacionController::class)`로 등록하면 아래와 같은 URI가 만들어집니다:
 
 ```text
 /publicacion/crear
@@ -548,7 +548,7 @@ Route::apiSingleton('photos.thumbnail', ProfileController::class)->creatable();
 <a name="constructor-injection"></a>
 #### 생성자 주입(Constructor Injection)
 
-라라벨의 [서비스 컨테이너](/docs/{{version}}/container)는 모든 컨트롤러의 인스턴스를 생성할 때 사용됩니다. 즉, 컨트롤러에서 필요로 하는 어떤 의존성도 생성자에서 타입힌트로 선언할 수 있으며, 선언된 의존성들은 자동으로 해결되어 컨트롤러 인스턴스에 주입됩니다:
+라라벨의 [서비스 컨테이너](/docs/12.x/container)는 모든 컨트롤러의 인스턴스를 생성할 때 사용됩니다. 즉, 컨트롤러에서 필요로 하는 어떤 의존성도 생성자에서 타입힌트로 선언할 수 있으며, 선언된 의존성들은 자동으로 해결되어 컨트롤러 인스턴스에 주입됩니다:
 
 ```php
 <?php

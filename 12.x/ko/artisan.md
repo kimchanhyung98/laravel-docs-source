@@ -42,7 +42,7 @@ php artisan help migrate
 <a name="laravel-sail"></a>
 #### Laravel Sail
 
-로컬 개발 환경으로 [Laravel Sail](/docs/{{version}}/sail)을 사용하는 경우, 아티즌 명령어를 실행할 때는 반드시 `sail` 커맨드를 통해 실행해야 합니다. Sail을 사용하면, 애플리케이션의 Docker 컨테이너 안에서 아티즌 명령어가 실행됩니다.
+로컬 개발 환경으로 [Laravel Sail](/docs/12.x/sail)을 사용하는 경우, 아티즌 명령어를 실행할 때는 반드시 `sail` 커맨드를 통해 실행해야 합니다. Sail을 사용하면, 애플리케이션의 Docker 컨테이너 안에서 아티즌 명령어가 실행됩니다.
 
 ```shell
 ./vendor/bin/sail artisan list
@@ -124,7 +124,7 @@ php artisan make:command SendEmails
 
 명령어를 생성한 후에는, 클래스의 `signature`와 `description` 속성에 적절한 값을 지정해야 합니다. 이 속성들은 `list` 화면에 명령어를 표시할 때 사용됩니다. 또한 `signature` 속성을 통해 [명령어의 입력값 정의](#defining-input-expectations)도 할 수 있습니다. 명령어가 실행되면 `handle` 메서드가 호출되며, 실제 명령어 로직을 이 메서드에 작성하면 됩니다.
 
-예제 명령어를 살펴보겠습니다. 여기서는 필요한 의존성을 명령어의 `handle` 메서드로 요청할 수 있다는 것에 주목하세요. 라라벨의 [서비스 컨테이너](/docs/{{version}}/container)는 이 메서드의 시그니처에 타입힌트된 모든 의존성을 자동으로 주입해줍니다.
+예제 명령어를 살펴보겠습니다. 여기서는 필요한 의존성을 명령어의 `handle` 메서드로 요청할 수 있다는 것에 주목하세요. 라라벨의 [서비스 컨테이너](/docs/12.x/container)는 이 메서드의 시그니처에 타입힌트된 모든 의존성을 자동으로 주입해줍니다.
 
 ```php
 <?php
@@ -199,7 +199,7 @@ Artisan::command('mail:send {user}', function (string $user) {
 <a name="type-hinting-dependencies"></a>
 #### 의존성 타입힌트
 
-명령어의 인수와 옵션 외에도, 클로저에서 추가적인 의존성을 타입힌트하여 [서비스 컨테이너](/docs/{{version}}/container)에서 주입받을 수 있습니다.
+명령어의 인수와 옵션 외에도, 클로저에서 추가적인 의존성을 타입힌트하여 [서비스 컨테이너](/docs/12.x/container)에서 주입받을 수 있습니다.
 
 ```php
 use App\Models\User;
@@ -500,7 +500,7 @@ return [
 ```
 
 > [!NOTE]
-> 보다 다양한 프롬프트 기능 및 사용법은 [Laravel Prompts](/docs/{{version}}/prompts) 문서를 참고하세요.
+> 보다 다양한 프롬프트 기능 및 사용법은 [Laravel Prompts](/docs/12.x/prompts) 문서를 참고하세요.
 
 [옵션](#options)과 같이 선택지를 입력받는 프롬프트가 필요하다면, `handle` 메서드 안에서 직접 프롬프트를 사용할 수도 있습니다. 하지만 사용자에게 누락된 인수를 자동 프롬프트한 이후에만 옵션 프롬프트를 추가로 띄우고 싶을 때는, `afterPromptingForMissingArguments` 메서드를 구현하면 됩니다.
 
@@ -561,7 +561,7 @@ $options = $this->options();
 ### 입력값 프롬프트
 
 > [!NOTE]
-> [Laravel Prompts](/docs/{{version}}/prompts)는 명령줄 애플리케이션에 아름답고 사용자 친화적인 폼을 추가할 수 있도록 해주는 PHP 패키지입니다. 플레이스홀더, 유효성 검사 등 브라우저 유사 기능도 제공합니다.
+> [Laravel Prompts](/docs/12.x/prompts)는 명령줄 애플리케이션에 아름답고 사용자 친화적인 폼을 추가할 수 있도록 해주는 PHP 패키지입니다. 플레이스홀더, 유효성 검사 등 브라우저 유사 기능도 제공합니다.
 
 출력만 할 수 있는 것이 아니라, 명령어 실행 중에 사용자에게 직접 입력값을 요청할 수도 있습니다. `ask` 메서드를 사용하면 지정한 질문을 사용자에게 보여주고, 사용자가 입력한 값을 반환합니다.
 
@@ -763,7 +763,7 @@ use App\Domain\Orders\Commands\SendEmails;
 ])
 ```
 
-아티즌(Artisan)이 시작될 때, 애플리케이션의 모든 명령어는 [서비스 컨테이너](/docs/{{version}}/container)에서 해결되고 아티즌에 등록됩니다.
+아티즌(Artisan)이 시작될 때, 애플리케이션의 모든 명령어는 [서비스 컨테이너](/docs/12.x/container)에서 해결되고 아티즌에 등록됩니다.
 
 <a name="programmatically-executing-commands"></a>
 ## 프로그램적으로 명령어 실행
@@ -817,7 +817,7 @@ $exitCode = Artisan::call('migrate:refresh', [
 <a name="queueing-artisan-commands"></a>
 #### 아티즌 명령어 큐 처리
 
-`Artisan` 파사드의 `queue` 메서드를 이용하면, 아티즌 명령어를 큐로 넣어 비동기적으로 [큐 워커](/docs/{{version}}/queues)들이 처리할 수 있게 만들 수도 있습니다. 이 기능을 사용하기 전에 큐 설정을 마치고, 큐 리스너도 실행 중이어야 합니다.
+`Artisan` 파사드의 `queue` 메서드를 이용하면, 아티즌 명령어를 큐로 넣어 비동기적으로 [큐 워커](/docs/12.x/queues)들이 처리할 수 있게 만들 수도 있습니다. 이 기능을 사용하기 전에 큐 설정을 마치고, 큐 리스너도 실행 중이어야 합니다.
 
 ```php
 use Illuminate\Support\Facades\Artisan;

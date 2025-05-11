@@ -45,18 +45,18 @@
 라라벨은 Eloquent라는 ORM(Object-Relational Mapper)을 기본적으로 제공합니다. 이를 통해 데이터베이스 작업이 한결 즐겁고 쉬워집니다. Eloquent를 사용할 때는 각 데이터베이스 테이블별로 "모델(Model)" 클래스를 만들어 해당 테이블과 상호작용합니다. 모델을 사용하면 데이터 조회뿐만 아니라, 삽입, 갱신, 삭제 등 다양한 작업도 손쉽게 처리할 수 있습니다.
 
 > [!NOTE]
-> 시작하기 전에, 반드시 애플리케이션의 `config/database.php` 설정 파일에서 데이터베이스 커넥션을 구성했는지 확인하십시오. 데이터베이스 구성에 대한 더 자세한 내용은 [데이터베이스 구성 문서](/docs/{{version}}/database#configuration)를 참고하세요.
+> 시작하기 전에, 반드시 애플리케이션의 `config/database.php` 설정 파일에서 데이터베이스 커넥션을 구성했는지 확인하십시오. 데이터베이스 구성에 대한 더 자세한 내용은 [데이터베이스 구성 문서](/docs/12.x/database#configuration)를 참고하세요.
 
 <a name="generating-model-classes"></a>
 ## 모델 클래스 생성
 
-먼저 Eloquent 모델을 생성해봅시다. 모델 클래스는 보통 `app\Models` 디렉터리에 위치하며, `Illuminate\Database\Eloquent\Model` 클래스를 확장(extend)합니다. 새로운 모델은 `make:model` [Artisan 명령어](/docs/{{version}}/artisan)를 사용하여 생성할 수 있습니다.
+먼저 Eloquent 모델을 생성해봅시다. 모델 클래스는 보통 `app\Models` 디렉터리에 위치하며, `Illuminate\Database\Eloquent\Model` 클래스를 확장(extend)합니다. 새로운 모델은 `make:model` [Artisan 명령어](/docs/12.x/artisan)를 사용하여 생성할 수 있습니다.
 
 ```shell
 php artisan make:model Flight
 ```
 
-모델을 생성할 때 [데이터베이스 마이그레이션](/docs/{{version}}/migrations)도 함께 만들고 싶다면, `--migration` 또는 `-m` 옵션을 사용하면 됩니다.
+모델을 생성할 때 [데이터베이스 마이그레이션](/docs/12.x/migrations)도 함께 만들고 싶다면, `--migration` 또는 `-m` 옵션을 사용하면 됩니다.
 
 ```shell
 php artisan make:model Flight --migration
@@ -213,7 +213,7 @@ Eloquent는 각 모델에 식별 가능한 "ID"(primary key)가 반드시 하나
 
 Eloquent 모델의 기본 키로 자동 증가하는 정수형 대신 UUID를 사용할 수도 있습니다. UUID는 36자의 영숫자(알파벳+숫자)로 이루어진, 전역적으로 고유한 식별자입니다.
 
-모델의 기본 키를 자동 증가 정수형 대신 UUID로 사용하려면, 모델에 `Illuminate\Database\Eloquent\Concerns\HasUuids` 트레이트를 사용합니다. 물론, 모델의 [UUID 기반 기본 키 컬럼](/docs/{{version}}/migrations#column-method-uuid)도 미리 준비되어 있어야 합니다.
+모델의 기본 키를 자동 증가 정수형 대신 UUID로 사용하려면, 모델에 `Illuminate\Database\Eloquent\Concerns\HasUuids` 트레이트를 사용합니다. 물론, 모델의 [UUID 기반 기본 키 컬럼](/docs/12.x/migrations#column-method-uuid)도 미리 준비되어 있어야 합니다.
 
 ```php
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -231,7 +231,7 @@ $article = Article::create(['title' => 'Traveling to Europe']);
 $article->id; // "8f8e8478-9035-4d23-b9a7-62f4d2612ce5"
 ```
 
-기본적으로 `HasUuids` 트레이트는 ["정렬 가능한" UUID](/docs/{{version}}/strings#method-str-ordered-uuid)를 생성합니다. 이런 UUID는 정렬이 가능하므로 인덱스 기반의 데이터베이스 저장 시 더 효율적입니다.
+기본적으로 `HasUuids` 트레이트는 ["정렬 가능한" UUID](/docs/12.x/strings#method-str-ordered-uuid)를 생성합니다. 이런 UUID는 정렬이 가능하므로 인덱스 기반의 데이터베이스 저장 시 더 효율적입니다.
 
 특정 모델에서 UUID 생성 방식을 직접 제어하고 싶다면 `newUniqueId` 메서드를 정의하면 되고, 어떤 컬럼에 UUID를 할당할지 지정하려면 `uniqueIds` 메서드를 모델에 정의할 수 있습니다.
 
@@ -257,7 +257,7 @@ public function uniqueIds(): array
 }
 ```
 
-UUID 대신 "ULID"를 사용할 수도 있습니다. ULID는 UUID와 비슷하지만, 길이가 26자이며 역시 정렬이 가능하여 인덱싱에 효율적입니다. ULID를 사용하려면 `Illuminate\Database\Eloquent\Concerns\HasUlids` 트레이트를 모델에 적용하고, 컬럼도 [ULID 기반 컬럼](/docs/{{version}}/migrations#column-method-ulid)으로 준비해야 합니다.
+UUID 대신 "ULID"를 사용할 수도 있습니다. ULID는 UUID와 비슷하지만, 길이가 26자이며 역시 정렬이 가능하여 인덱싱에 효율적입니다. ULID를 사용하려면 `Illuminate\Database\Eloquent\Concerns\HasUlids` 트레이트를 모델에 적용하고, 컬럼도 [ULID 기반 컬럼](/docs/12.x/migrations#column-method-ulid)으로 준비해야 합니다.
 
 ```php
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -413,7 +413,7 @@ Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 <a name="retrieving-models"></a>
 ## 모델 조회
 
-모델과 [연관된 데이터베이스 테이블](/docs/{{version}}/migrations#generating-migrations)을 생성했다면 이제 데이터 조회를 시작할 수 있습니다. 각 Eloquent 모델은 강력한 [쿼리 빌더](/docs/{{version}}/queries) 역할도 하므로, 관련된 테이블에 대해 매우 유연하고 간편하게 쿼리할 수 있습니다. 가장 기본적인 `all` 메서드를 사용하면 해당 모델이 연결된 테이블의 모든 레코드를 한 번에 가져올 수 있습니다.
+모델과 [연관된 데이터베이스 테이블](/docs/12.x/migrations#generating-migrations)을 생성했다면 이제 데이터 조회를 시작할 수 있습니다. 각 Eloquent 모델은 강력한 [쿼리 빌더](/docs/12.x/queries) 역할도 하므로, 관련된 테이블에 대해 매우 유연하고 간편하게 쿼리할 수 있습니다. 가장 기본적인 `all` 메서드를 사용하면 해당 모델이 연결된 테이블의 모든 레코드를 한 번에 가져올 수 있습니다.
 
 ```php
 use App\Models\Flight;
@@ -426,7 +426,7 @@ foreach (Flight::all() as $flight) {
 <a name="building-queries"></a>
 #### 쿼리 작성하기
 
-Eloquent의 `all` 메서드는 테이블 내 모든 결과를 반환합니다. 하지만 Eloquent 모델은 [쿼리 빌더](/docs/{{version}}/queries)이기도 하기 때문에, 쿼리에 다양한 조건을 추가하고, 마지막에 `get` 메서드를 호출해 원하는 결과만 조회할 수도 있습니다.
+Eloquent의 `all` 메서드는 테이블 내 모든 결과를 반환합니다. 하지만 Eloquent 모델은 [쿼리 빌더](/docs/12.x/queries)이기도 하기 때문에, 쿼리에 다양한 조건을 추가하고, 마지막에 `get` 메서드를 호출해 원하는 결과만 조회할 수도 있습니다.
 
 ```php
 $flights = Flight::where('active', 1)
@@ -436,7 +436,7 @@ $flights = Flight::where('active', 1)
 ```
 
 > [!NOTE]
-> Eloquent 모델은 쿼리 빌더이므로, 라라벨의 [쿼리 빌더](/docs/{{version}}/queries)가 제공하는 모든 메서드를 자유롭게 사용할 수 있습니다. Eloquent를 사용할 때도 쿼리 빌더의 다양한 기능을 참고하세요.
+> Eloquent 모델은 쿼리 빌더이므로, 라라벨의 [쿼리 빌더](/docs/12.x/queries)가 제공하는 모든 메서드를 자유롭게 사용할 수 있습니다. Eloquent를 사용할 때도 쿼리 빌더의 다양한 기능을 참고하세요.
 
 <a name="refreshing-models"></a>
 #### 모델 새로고침(Refresh)
@@ -466,7 +466,7 @@ $flight->number; // "FR 900"
 
 지금까지 살펴본 `all`이나 `get`과 같은 Eloquent 메서드는 여러 레코드를 조회합니다. 하지만 이 메서드들은 단순한 PHP 배열이 아니라 `Illuminate\Database\Eloquent\Collection` 인스턴스를 반환합니다.
 
-Eloquent의 `Collection` 클래스는 라라벨의 기본 `Illuminate\Support\Collection` 클래스를 확장하며, 데이터 컬렉션을 다룰 때 유용한 [다양한 메서드](/docs/{{version}}/collections#available-methods)를 제공합니다. 예를 들어, `reject` 메서드를 사용하면 클로저 조건에 따라 컬렉션의 일부 모델을 걸러낼 수 있습니다.
+Eloquent의 `Collection` 클래스는 라라벨의 기본 `Illuminate\Support\Collection` 클래스를 확장하며, 데이터 컬렉션을 다룰 때 유용한 [다양한 메서드](/docs/12.x/collections#available-methods)를 제공합니다. 예를 들어, `reject` 메서드를 사용하면 클로저 조건에 따라 컬렉션의 일부 모델을 걸러낼 수 있습니다.
 
 ```php
 $flights = Flight::where('destination', 'Paris')->get();
@@ -476,7 +476,7 @@ $flights = $flights->reject(function (Flight $flight) {
 });
 ```
 
-여기에 더해 Eloquent 전용 [추가 컬렉션 메서드](/docs/{{version}}/eloquent-collections#available-methods)도 일부 제공됩니다.  
+여기에 더해 Eloquent 전용 [추가 컬렉션 메서드](/docs/12.x/eloquent-collections#available-methods)도 일부 제공됩니다.  
 그리고 라라벨의 모든 컬렉션은 PHP의 반복(iterable) 인터페이스를 구현하므로 배열처럼 쉽게 반복문을 돌릴 수 있습니다.
 
 ```php
@@ -514,7 +514,7 @@ Flight::where('departed', true)
     }, column: 'id');
 ```
 
-그리고 `chunkById`와 `lazyById`는 쿼리 내에 자체적인 "where" 조건을 추가하므로, 여러 조건을 직접 추가할 때는 보통 클로저로 [논리적으로 그룹핑](/docs/{{version}}/queries#logical-grouping)해서 작성하는 것이 좋습니다.
+그리고 `chunkById`와 `lazyById`는 쿼리 내에 자체적인 "where" 조건을 추가하므로, 여러 조건을 직접 추가할 때는 보통 클로저로 [논리적으로 그룹핑](/docs/12.x/queries#logical-grouping)해서 작성하는 것이 좋습니다.
 
 ```php
 Flight::where(function ($query) {
@@ -530,7 +530,7 @@ Flight::where(function ($query) {
 <a name="chunking-using-lazy-collections"></a>
 ### Lazy 컬렉션을 활용한 청크 처리
 
-`lazy` 메서드는 [chunk 메서드와](#chunking-results) 비슷하게 백엔드에서는 쿼리를 청크 단위로 실행합니다. 하지만 각 청크를 바로 콜백으로 넘기는 대신, 하나로 펼쳐진(Flattened) [LazyCollection](/docs/{{version}}/collections#lazy-collections) 객체로 반환하여, 전체 결과를 하나의 스트림으로 자유롭게 다룰 수 있습니다.
+`lazy` 메서드는 [chunk 메서드와](#chunking-results) 비슷하게 백엔드에서는 쿼리를 청크 단위로 실행합니다. 하지만 각 청크를 바로 콜백으로 넘기는 대신, 하나로 펼쳐진(Flattened) [LazyCollection](/docs/12.x/collections#lazy-collections) 객체로 반환하여, 전체 결과를 하나의 스트림으로 자유롭게 다룰 수 있습니다.
 
 ```php
 use App\Models\Flight;
@@ -570,7 +570,7 @@ foreach (Flight::where('destination', 'Zurich')->cursor() as $flight) {
 }
 ```
 
-`cursor`는 `Illuminate\Support\LazyCollection` 인스턴스를 반환합니다. [Lazy 컬렉션](/docs/{{version}}/collections#lazy-collections)을 활용하면, 평소 라라벨 컬렉션에서 쓸 수 있는 다양한 메서드를 각 모델이 하나씩 스트림으로 메모리에 로드되면서도 사용 가능합니다.
+`cursor`는 `Illuminate\Support\LazyCollection` 인스턴스를 반환합니다. [Lazy 컬렉션](/docs/12.x/collections#lazy-collections)을 활용하면, 평소 라라벨 컬렉션에서 쓸 수 있는 다양한 메서드를 각 모델이 하나씩 스트림으로 메모리에 로드되면서도 사용 가능합니다.
 
 ```php
 use App\Models\User;
@@ -709,7 +709,7 @@ $flight = Flight::firstOrNew(
 <a name="retrieving-aggregates"></a>
 ### 집계값 조회
 
-Eloquent 모델을 사용할 때도 Laravel [쿼리 빌더](/docs/{{version}}/queries)에서 제공하는 `count`, `sum`, `max` 등 [집계 메서드](/docs/{{version}}/queries#aggregates)를 활용할 수 있습니다. 예상할 수 있듯이, 이 메서드들은 Eloquent 모델 인스턴스가 아닌 스칼라 값을 반환합니다.
+Eloquent 모델을 사용할 때도 Laravel [쿼리 빌더](/docs/12.x/queries)에서 제공하는 `count`, `sum`, `max` 등 [집계 메서드](/docs/12.x/queries#aggregates)를 활용할 수 있습니다. 예상할 수 있듯이, 이 메서드들은 Eloquent 모델 인스턴스가 아닌 스칼라 값을 반환합니다.
 
 ```php
 $count = Flight::where('active', 1)->count();
@@ -1031,7 +1031,7 @@ $flight->delete();
 <a name="deleting-an-existing-model-by-its-primary-key"></a>
 #### 기본 키로 기존 모델 삭제
 
-위 예제처럼 먼저 모델을 조회한 뒤 `delete`를 호출할 수도 있고, 모델의 기본 키를 알고 있다면 조회하지 않고 바로 `destroy` 메서드로 삭제할 수 있습니다. `destroy`는 단일 기본 키뿐 아니라, 여러 개의 기본 키, 기본 키 배열, 또는 [컬렉션](/docs/{{version}}/collections)을 인자로 받을 수 있습니다.
+위 예제처럼 먼저 모델을 조회한 뒤 `delete`를 호출할 수도 있고, 모델의 기본 키를 알고 있다면 조회하지 않고 바로 `destroy` 메서드로 삭제할 수 있습니다. `destroy`는 단일 기본 키뿐 아니라, 여러 개의 기본 키, 기본 키 배열, 또는 [컬렉션](/docs/12.x/collections)을 인자로 받을 수 있습니다.
 
 ```php
 Flight::destroy(1);
@@ -1092,7 +1092,7 @@ class Flight extends Model
 > [!NOTE]
 > `SoftDeletes` 트레잇은 `deleted_at` 속성을 자동으로 `DateTime`/`Carbon` 인스턴스로 변환(cast)해줍니다.
 
-또한, 테이블에 `deleted_at` 컬럼을 추가해야 합니다. 라라벨 [스키마 빌더](/docs/{{version}}/migrations)에는 이 컬럼을 쉽게 추가할 수 있는 헬퍼 메서드가 있습니다.
+또한, 테이블에 `deleted_at` 컬럼을 추가해야 합니다. 라라벨 [스키마 빌더](/docs/12.x/migrations)에는 이 컬럼을 쉽게 추가할 수 있는 헬퍼 메서드가 있습니다.
 
 ```php
 use Illuminate\Database\Schema\Blueprint;
@@ -1134,7 +1134,7 @@ Flight::withTrashed()
     ->restore();
 ```
 
-[관계](/docs/{{version}}/eloquent-relationships) 쿼리에서도 `restore` 메서드를 사용할 수 있습니다.
+[관계](/docs/12.x/eloquent-relationships) 쿼리에서도 `restore` 메서드를 사용할 수 있습니다.
 
 ```php
 $flight->history()->restore();
@@ -1172,7 +1172,7 @@ $flights = Flight::withTrashed()
     ->get();
 ```
 
-`withTrashed` 메서드는 [관계](/docs/{{version}}/eloquent-relationships) 쿼리를 생성할 때도 사용할 수 있습니다.
+`withTrashed` 메서드는 [관계](/docs/12.x/eloquent-relationships) 쿼리를 생성할 때도 사용할 수 있습니다.
 
 ```php
 $flight->history()->withTrashed()->get();
@@ -1526,7 +1526,7 @@ use App\Models\User;
 $users = User::popular()->active()->orderBy('created_at')->get();
 ```
 
-여러 Eloquent 스코프를 `or` 쿼리 연산자로 결합하려면, [논리적 그룹화](/docs/{{version}}/queries#logical-grouping)를 위해 클로저를 사용해야 할 수 있습니다.
+여러 Eloquent 스코프를 `or` 쿼리 연산자로 결합하려면, [논리적 그룹화](/docs/12.x/queries#logical-grouping)를 위해 클로저를 사용해야 할 수 있습니다.
 
 ```php
 $users = User::popular()->orWhere(function (Builder $query) {
@@ -1633,7 +1633,7 @@ if ($post->isNot($anotherPost)) {
 }
 ```
 
-`is`와 `isNot` 메서드는 `belongsTo`, `hasOne`, `morphTo`, `morphOne`과 같은 [관계](/docs/{{version}}/eloquent-relationships)를 사용할 때도 이용할 수 있습니다. 이 메서드는 쿼리 없이도 관련 모델과 비교하고 싶을 때 특히 유용합니다.
+`is`와 `isNot` 메서드는 `belongsTo`, `hasOne`, `morphTo`, `morphOne`과 같은 [관계](/docs/12.x/eloquent-relationships)를 사용할 때도 이용할 수 있습니다. 이 메서드는 쿼리 없이도 관련 모델과 비교하고 싶을 때 특히 유용합니다.
 
 ```php
 if ($post->author()->is($user)) {
@@ -1645,7 +1645,7 @@ if ($post->author()->is($user)) {
 ## 이벤트(Events)
 
 > [!NOTE]
-> Eloquent 이벤트를 클라이언트 애플리케이션으로 직접 브로드캐스트하고 싶으신가요? 라라벨의 [모델 이벤트 브로드캐스팅](/docs/{{version}}/broadcasting#model-broadcasting) 문서를 참고해 보세요.
+> Eloquent 이벤트를 클라이언트 애플리케이션으로 직접 브로드캐스트하고 싶으신가요? 라라벨의 [모델 이벤트 브로드캐스팅](/docs/12.x/broadcasting#model-broadcasting) 문서를 참고해 보세요.
 
 Eloquent 모델은 여러 이벤트를 발생시켜, 모델 생명주기에서 아래와 같은 시점에 직접 작업을 연결할 수 있습니다. `retrieved`, `creating`, `created`, `updating`, `updated`, `saving`, `saved`, `deleting`, `deleted`, `trashed`, `forceDeleting`, `forceDeleted`, `restoring`, `restored`, `replicating`.
 
@@ -1683,7 +1683,7 @@ class User extends Authenticatable
 }
 ```
 
-Eloquent 이벤트를 정의하고 매핑했다면, [이벤트 리스너](/docs/{{version}}/events#defining-listeners)를 이용해 해당 이벤트를 처리할 수 있습니다.
+Eloquent 이벤트를 정의하고 매핑했다면, [이벤트 리스너](/docs/12.x/events#defining-listeners)를 이용해 해당 이벤트를 처리할 수 있습니다.
 
 > [!WARNING]
 > Eloquent의 대량 수정(mass update)이나 삭제(mass delete) 쿼리를 실행할 때는, 영향을 받는 모델에 대해 `saved`, `updated`, `deleting`, `deleted` 등의 모델 이벤트가 발생하지 않습니다. 이는 이러한 작업이 실제로 모델을 조회하지 않고 바로 처리되기 때문입니다.
@@ -1714,7 +1714,7 @@ class User extends Model
 }
 ```
 
-필요하다면, [큐어블(Queueable) 익명 이벤트 리스너](/docs/{{version}}/events#queuable-anonymous-event-listeners)를 활용할 수도 있습니다. 이 방법을 사용하면, 모델 이벤트 리스너를 애플리케이션의 [큐](/docs/{{version}}/queues)로 백그라운드에서 실행하도록 지정할 수 있습니다.
+필요하다면, [큐어블(Queueable) 익명 이벤트 리스너](/docs/12.x/events#queuable-anonymous-event-listeners)를 활용할 수도 있습니다. 이 방법을 사용하면, 모델 이벤트 리스너를 애플리케이션의 [큐](/docs/12.x/queues)로 백그라운드에서 실행하도록 지정할 수 있습니다.
 
 ```php
 use function Illuminate\Events\queueable;

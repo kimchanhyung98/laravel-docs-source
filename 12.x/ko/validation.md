@@ -185,7 +185,7 @@ $request->validate([
 <a name="quick-displaying-the-validation-errors"></a>
 ### 유효성 검증 에러 표시하기
 
-만약 들어오는 요청 필드가 지정한 유효성 검증 규칙을 통과하지 못하면 어떻게 될까요? 앞서 언급했듯이, 라라벨은 자동으로 사용자를 이전 위치로 리디렉션합니다. 또한 모든 유효성 검증 에러와 [요청 입력값](/docs/{{version}}/requests#retrieving-old-input)이 자동으로 [세션에 flash됩니다](/docs/{{version}}/session#flash-data).
+만약 들어오는 요청 필드가 지정한 유효성 검증 규칙을 통과하지 못하면 어떻게 될까요? 앞서 언급했듯이, 라라벨은 자동으로 사용자를 이전 위치로 리디렉션합니다. 또한 모든 유효성 검증 에러와 [요청 입력값](/docs/12.x/requests#retrieving-old-input)이 자동으로 [세션에 flash됩니다](/docs/12.x/session#flash-data).
 
 `Illuminate\View\Middleware\ShareErrorsFromSession` 미들웨어는 모든 뷰에 `$errors` 변수를 공유합니다. 이 미들웨어는 `web` 미들웨어 그룹에 제공되며, 이로 인해 항상 뷰에서 `$errors` 변수를 사용할 수 있습니다. `$errors` 변수는 `Illuminate\Support\MessageBag` 인스턴스이며, 보다 자세한 사용법은 [별도의 문서](#working-with-error-messages)에서 확인할 수 있습니다.
 
@@ -216,7 +216,7 @@ $request->validate([
 
 `lang/en/validation.php` 파일에는 각 유효성 검증 규칙에 대한 번역 항목이 존재하며, 애플리케이션의 요구에 따라 이 메시지들을 자유롭게 변경하거나 수정할 수 있습니다.
 
-또한, 이 파일을 다른 언어의 디렉터리에 복사해서 메시지를 해당 언어로 번역할 수도 있습니다. 라라벨 지역화(Localization)에 대해 더 알아보려면 [지역화 문서](/docs/{{version}}/localization)를 참고하세요.
+또한, 이 파일을 다른 언어의 디렉터리에 복사해서 메시지를 해당 언어로 번역할 수도 있습니다. 라라벨 지역화(Localization)에 대해 더 알아보려면 [지역화 문서](/docs/12.x/localization)를 참고하세요.
 
 > [!WARNING]
 > 기본적으로 라라벨 애플리케이션 스캐폴딩에는 `lang` 디렉터리가 포함되어 있지 않습니다. 라라벨의 언어 파일을 커스터마이즈하고 싶다면 `lang:publish` Artisan 명령어로 파일을 퍼블리시하세요.
@@ -229,7 +229,7 @@ $request->validate([
 <a name="the-at-error-directive"></a>
 #### `@error` 디렉티브
 
-특정 속성(attribute)에 대한 유효성 검증 에러 메시지가 존재하는지 빠르게 확인하려면, [Blade](/docs/{{version}}/blade)의 `@error` 디렉티브를 사용할 수 있습니다. `@error` 디렉티브 내부에서는 `$message` 변수를 출력해 에러 메시지를 표시하면 됩니다.
+특정 속성(attribute)에 대한 유효성 검증 에러 메시지가 존재하는지 빠르게 확인하려면, [Blade](/docs/12.x/blade)의 `@error` 디렉티브를 사용할 수 있습니다. `@error` 디렉티브 내부에서는 `$message` 변수를 출력해 에러 메시지를 표시하면 됩니다.
 
 ```blade
 <!-- /resources/views/post/create.blade.php -->
@@ -257,15 +257,15 @@ $request->validate([
 <a name="repopulating-forms"></a>
 ### 폼 값 다시 채우기(Repopulating Forms)
 
-라라벨에서는 유효성 검증 에러로 인한 리디렉션 발생 시, 프레임워크가 자동으로 [요청의 모든 입력값을 세션에 flash 처리](/docs/{{version}}/session#flash-data)합니다. 이를 통해 다음 요청 시에도 입력값을 쉽게 다시 폼에 출력할 수 있습니다.
+라라벨에서는 유효성 검증 에러로 인한 리디렉션 발생 시, 프레임워크가 자동으로 [요청의 모든 입력값을 세션에 flash 처리](/docs/12.x/session#flash-data)합니다. 이를 통해 다음 요청 시에도 입력값을 쉽게 다시 폼에 출력할 수 있습니다.
 
-이전 요청에서 flash된 입력값을 가져오려면, `Illuminate\Http\Request` 인스턴스의 `old` 메서드를 호출하면 됩니다. 이 메서드는 [세션](/docs/{{version}}/session)에 저장된 이전 입력값을 반환합니다.
+이전 요청에서 flash된 입력값을 가져오려면, `Illuminate\Http\Request` 인스턴스의 `old` 메서드를 호출하면 됩니다. 이 메서드는 [세션](/docs/12.x/session)에 저장된 이전 입력값을 반환합니다.
 
 ```php
 $title = $request->old('title');
 ```
 
-라라벨은 전역적으로 사용할 수 있는 `old` 헬퍼 함수도 제공합니다. [Blade 템플릿](/docs/{{version}}/blade)에서 이전 입력값을 출력할 때는 이 헬퍼를 활용하는 것이 더욱 편리합니다. 해당 필드에 이전 입력값이 없다면, `null`이 반환됩니다.
+라라벨은 전역적으로 사용할 수 있는 `old` 헬퍼 함수도 제공합니다. [Blade 템플릿](/docs/12.x/blade)에서 이전 입력값을 출력할 때는 이 헬퍼를 활용하는 것이 더욱 편리합니다. 해당 필드에 이전 입력값이 없다면, `null`이 반환됩니다.
 
 ```blade
 <input type="text" name="title" value="{{ old('title') }}">
@@ -346,7 +346,7 @@ public function rules(): array
 ```
 
 > [!NOTE]
-> `rules` 메서드의 시그니처에서 필요한 의존성을 타입힌트로 지정할 수 있습니다. 이들은 라라벨 [서비스 컨테이너](/docs/{{version}}/container)를 통해 자동으로 resolve됩니다.
+> `rules` 메서드의 시그니처에서 필요한 의존성을 타입힌트로 지정할 수 있습니다. 이들은 라라벨 [서비스 컨테이너](/docs/12.x/container)를 통해 자동으로 resolve됩니다.
 
 그렇다면 실제로 검증 규칙이 평가는 언제 이루어질까요? 컨트롤러 메서드의 인자에서 해당 요청을 타입힌트로 지정하는 것만으로 충분합니다. 들어오는 폼 요청은 컨트롤러 메서드 호출 전에 자동으로 검증되므로, 컨트롤러에 별도의 검증 코드를 추가하지 않아도 됩니다.
 
@@ -374,7 +374,7 @@ public function store(StorePostRequest $request): RedirectResponse
 유효성 검증에 실패하면 다시 이전 위치로 리디렉션 응답이 생성되며, 에러 메시지도 세션에 flash되어 뷰에서 바로 사용할 수 있습니다. 만약 요청이 XHR 방식이었다면, 422 상태 코드와 함께 [JSON 포맷의 검증 에러](#validation-error-response-format)가 포함된 HTTP 응답이 반환됩니다.
 
 > [!NOTE]
-> Inertia 기반 라라벨 프론트엔드에 실시간 폼 요청 검증 기능이 필요하다면 [Laravel Precognition](/docs/{{version}}/precognition)을 참고하세요.
+> Inertia 기반 라라벨 프론트엔드에 실시간 폼 요청 검증 기능이 필요하다면 [Laravel Precognition](/docs/12.x/precognition)을 참고하세요.
 
 <a name="performing-additional-validation-on-form-requests"></a>
 #### 추가 유효성 검증 수행하기
@@ -468,7 +468,7 @@ protected $redirectRoute = 'dashboard';
 <a name="authorizing-form-requests"></a>
 ### 폼 요청 권한 부여
 
-폼 요청 클래스에는 `authorize` 메서드가 존재합니다. 이 메서드 내부에서 현재 인증된 사용자가 실제로 특정 리소스를 수정할 권한이 있는지 판단할 수 있습니다. 예를 들어, 사용자가 자신이 소유한 블로그 댓글만 수정할 수 있도록 제한하고 싶을 때 사용할 수 있습니다. 이 메서드에서 보통 [인가 게이트(gate) 및 정책(policy)](/docs/{{version}}/authorization)과 상호작용하게 됩니다.
+폼 요청 클래스에는 `authorize` 메서드가 존재합니다. 이 메서드 내부에서 현재 인증된 사용자가 실제로 특정 리소스를 수정할 권한이 있는지 판단할 수 있습니다. 예를 들어, 사용자가 자신이 소유한 블로그 댓글만 수정할 수 있도록 제한하고 싶을 때 사용할 수 있습니다. 이 메서드에서 보통 [인가 게이트(gate) 및 정책(policy)](/docs/12.x/authorization)과 상호작용하게 됩니다.
 
 ```php
 use App\Models\Comment;
@@ -490,7 +490,7 @@ public function authorize(): bool
 Route::post('/comment/{comment}');
 ```
 
-[라우트 모델 바인딩](/docs/{{version}}/routing#route-model-binding)을 활용하고 있다면, resolve된 모델 객체에 바로 접근하여 코드를 더욱 간결하게 만들 수도 있습니다.
+[라우트 모델 바인딩](/docs/12.x/routing#route-model-binding)을 활용하고 있다면, resolve된 모델 객체에 바로 접근하여 코드를 더욱 간결하게 만들 수도 있습니다.
 
 ```php
 return $this->user()->can('update', $this->comment);
@@ -511,7 +511,7 @@ public function authorize(): bool
 ```
 
 > [!NOTE]
-> `authorize` 메서드의 시그니처에서 필요한 의존성을 타입힌트로 지정할 수 있습니다. 이들은 라라벨 [서비스 컨테이너](/docs/{{version}}/container)를 통해 자동으로 resolve됩니다.
+> `authorize` 메서드의 시그니처에서 필요한 의존성을 타입힌트로 지정할 수 있습니다. 이들은 라라벨 [서비스 컨테이너](/docs/12.x/container)를 통해 자동으로 resolve됩니다.
 
 <a name="customizing-the-error-messages"></a>
 ### 에러 메시지 커스터마이징
@@ -587,7 +587,7 @@ protected function passedValidation(): void
 
 ## Validator 인스턴스 수동 생성하기
 
-`validate` 메서드를 사용하지 않고 요청 데이터를 검증하려는 경우, `Validator` [파사드](/docs/{{version}}/facades)를 사용하여 직접 validator 인스턴스를 생성할 수 있습니다. 파사드의 `make` 메서드는 새로운 validator 인스턴스를 만들어 줍니다.
+`validate` 메서드를 사용하지 않고 요청 데이터를 검증하려는 경우, `Validator` [파사드](/docs/12.x/facades)를 사용하여 직접 validator 인스턴스를 생성할 수 있습니다. 파사드의 `make` 메서드는 새로운 validator 인스턴스를 만들어 줍니다.
 
 ```php
 <?php
@@ -803,7 +803,7 @@ $email = $validated['email'];
 $validated = $request->safe()->merge(['name' => 'Taylor Otwell']);
 ```
 
-검증된 데이터 전체를 [컬렉션](/docs/{{version}}/collections) 인스턴스로 받고 싶다면, `collect` 메서드를 호출하면 됩니다.
+검증된 데이터 전체를 [컬렉션](/docs/12.x/collections) 인스턴스로 받고 싶다면, `collect` 메서드를 호출하면 됩니다.
 
 ```php
 $collection = $request->safe()->collect();
@@ -873,7 +873,7 @@ if ($errors->has('email')) {
 
 `lang/en/validation.php` 파일에서는 각 검증 규칙에 대한 번역 항목을 확인할 수 있으며, 애플리케이션의 요구에 따라 자유롭게 수정하거나 변경할 수 있습니다.
 
-또한, 이 파일을 다른 언어 디렉터리로 복사해서 애플리케이션의 언어에 맞춰 메시지를 번역할 수도 있습니다. 라라벨의 다국어(localization) 기능에 대한 자세한 내용은 [다국어 문서](/docs/{{version}}/localization)를 참고하세요.
+또한, 이 파일을 다른 언어 디렉터리로 복사해서 애플리케이션의 언어에 맞춰 메시지를 번역할 수도 있습니다. 라라벨의 다국어(localization) 기능에 대한 자세한 내용은 [다국어 문서](/docs/12.x/localization)를 참고하세요.
 
 > [!WARNING]
 > 기본적으로, 라라벨 애플리케이션 스캐폴딩에는 `lang` 디렉토리가 포함되어 있지 않습니다. 라라벨의 언어 파일을 커스터마이즈하려면 `lang:publish` Artisan 명령어를 통해 언어 파일을 퍼블리시해야 합니다.
@@ -1351,7 +1351,7 @@ use Illuminate\Validation\Rule;
 <a name="rule-current-password"></a>
 #### current_password
 
-유효성 검증 대상 필드는 인증된 사용자의 비밀번호와 일치해야 합니다. 규칙의 첫 번째 파라미터로 [인증 가드](/docs/{{version}}/authentication)를 지정할 수 있습니다.
+유효성 검증 대상 필드는 인증된 사용자의 비밀번호와 일치해야 합니다. 규칙의 첫 번째 파라미터로 [인증 가드](/docs/12.x/authentication)를 지정할 수 있습니다.
 
 ```php
 'password' => 'current_password:api'
@@ -2745,7 +2745,7 @@ $request->validate([
 
 #### 유효성 메시지 다국어 처리
 
-`$fail` 클로저에 직접 오류 메시지를 작성하는 대신, [번역 문자열 키](/docs/{{version}}/localization)를 넘겨 라라벨이 에러 메시지를 번역하게 할 수도 있습니다.
+`$fail` 클로저에 직접 오류 메시지를 작성하는 대신, [번역 문자열 키](/docs/12.x/localization)를 넘겨 라라벨이 에러 메시지를 번역하게 할 수도 있습니다.
 
 ```php
 if (strtoupper($value) !== $value) {

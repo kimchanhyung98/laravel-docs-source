@@ -65,7 +65,7 @@
 큐와 관련된 라라벨의 설정값들은 애플리케이션의 `config/queue.php` 설정 파일에 저장되어 있습니다. 이 파일에서는 데이터베이스, [Amazon SQS](https://aws.amazon.com/sqs/), [Redis](https://redis.io), [Beanstalkd](https://beanstalkd.github.io/) 등 프레임워크에 포함된 다양한 큐 드라이버에 대한 커넥션 설정을 찾을 수 있습니다. 또한, 바로 실행되는 동기식 드라이버(로컬 개발 시 주로 사용)도 포함되어 있습니다. 큐 작업을 단순히 폐기하는 `null` 드라이버도 제공합니다.
 
 > [!NOTE]
-> 라라벨은 이제 Redis 기반 큐의 관리와 모니터링을 위한 아름다운 대시보드이자 설정 시스템인 Horizon을 제공합니다. 자세한 내용은 [Horizon 공식 문서](/docs/{{version}}/horizon)를 참고하세요.
+> 라라벨은 이제 Redis 기반 큐의 관리와 모니터링을 위한 아름다운 대시보드이자 설정 시스템인 Horizon을 제공합니다. 자세한 내용은 [Horizon 공식 문서](/docs/12.x/horizon)를 참고하세요.
 
 <a name="connections-vs-queues"></a>
 ### 커넥션과 큐의 차이
@@ -96,7 +96,7 @@ php artisan queue:work --queue=high,default
 <a name="database"></a>
 #### 데이터베이스
 
-`database` 큐 드라이버를 사용하려면, 작업을 저장할 테이블이 필요합니다. 이 테이블은 일반적으로 라라벨이 기본 제공하는 `0001_01_01_000002_create_jobs_table.php` [데이터베이스 마이그레이션](/docs/{{version}}/migrations)에 포함되어 있습니다. 만약 애플리케이션에 해당 마이그레이션이 없다면, `make:queue-table` 아티즌 명령어로 생성할 수 있습니다:
+`database` 큐 드라이버를 사용하려면, 작업을 저장할 테이블이 필요합니다. 이 테이블은 일반적으로 라라벨이 기본 제공하는 `0001_01_01_000002_create_jobs_table.php` [데이터베이스 마이그레이션](/docs/12.x/migrations)에 포함되어 있습니다. 만약 애플리케이션에 해당 마이그레이션이 없다면, `make:queue-table` 아티즌 명령어로 생성할 수 있습니다:
 
 ```shell
 php artisan make:queue-table
@@ -176,7 +176,7 @@ php artisan make:job ProcessPodcast
 생성된 클래스는 `Illuminate\Contracts\Queue\ShouldQueue` 인터페이스를 구현하게 되며, 라라벨에게 이 작업이 큐에 올라가 비동기로 실행되어야 함을 알립니다.
 
 > [!NOTE]
-> 작업의 기본 스텁(stub: 생성될 때 사용되는 기본 틀)은 [스텁 공개 기능](/docs/{{version}}/artisan#stub-customization)을 이용해 커스터마이즈할 수 있습니다.
+> 작업의 기본 스텁(stub: 생성될 때 사용되는 기본 틀)은 [스텁 공개 기능](/docs/12.x/artisan#stub-customization)을 이용해 커스터마이즈할 수 있습니다.
 
 <a name="class-structure"></a>
 ### 클래스 구조
@@ -214,16 +214,16 @@ class ProcessPodcast implements ShouldQueue
 }
 ```
 
-이 예제에서는 [Eloquent 모델](/docs/{{version}}/eloquent)을 작업 클래스의 생성자에 직접 전달할 수 있음을 볼 수 있습니다. 이는 작업 클래스가 `Queueable` 트레이트를 사용하고 있기 때문이며, 이로 인해 Eloquent 모델과 로딩된 관계까지도 큐 작업으로 직렬화(serialize) 및 역직렬화(unserialize)됩니다.
+이 예제에서는 [Eloquent 모델](/docs/12.x/eloquent)을 작업 클래스의 생성자에 직접 전달할 수 있음을 볼 수 있습니다. 이는 작업 클래스가 `Queueable` 트레이트를 사용하고 있기 때문이며, 이로 인해 Eloquent 모델과 로딩된 관계까지도 큐 작업으로 직렬화(serialize) 및 역직렬화(unserialize)됩니다.
 
 만약 큐 작업의 생성자에 Eloquent 모델이 전달된 경우, 큐에 직렬화될 때는 모델 식별자만 저장됩니다. 큐 작업 실제 실행 시, 큐 시스템이 모델과 모델의 관계 데이터를 데이터베이스에서 다시 조회해 사용합니다. 이 방식은 큐에 전송되는 작업 데이터(payload) 크기를 현저히 줄일 수 있습니다.
 
 <a name="handle-method-dependency-injection"></a>
 #### `handle` 메서드 의존성 주입
 
-`handle` 메서드는 큐에서 작업이 처리될 때 호출됩니다. 이때 handle 메서드에서 타입 힌트로 의존성을 선언할 수 있습니다. 라라벨의 [서비스 컨테이너](/docs/{{version}}/container)가 이 의존성 주입을 자동으로 처리해줍니다.
+`handle` 메서드는 큐에서 작업이 처리될 때 호출됩니다. 이때 handle 메서드에서 타입 힌트로 의존성을 선언할 수 있습니다. 라라벨의 [서비스 컨테이너](/docs/12.x/container)가 이 의존성 주입을 자동으로 처리해줍니다.
 
-서비스 컨테이너의 의존성 주입 방식을 완전히 제어하고 싶을 때는 컨테이너의 `bindMethod` 메서드를 사용할 수 있습니다. 이 메서드는 작업과 컨테이너를 받는 콜백을 전달받아, 그 안에서 원하는 방식대로 handle 메서드 호출이 가능합니다. 보통 이것은 `App\Providers\AppServiceProvider` [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드 등에서 호출합니다:
+서비스 컨테이너의 의존성 주입 방식을 완전히 제어하고 싶을 때는 컨테이너의 `bindMethod` 메서드를 사용할 수 있습니다. 이 메서드는 작업과 컨테이너를 받는 콜백을 전달받아, 그 안에서 원하는 방식대로 handle 메서드 호출이 가능합니다. 보통 이것은 `App\Providers\AppServiceProvider` [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드 등에서 호출합니다:
 
 ```php
 use App\Jobs\ProcessPodcast;
@@ -276,7 +276,7 @@ public function __construct(
 ### 고유 작업(Unique Jobs)
 
 > [!WARNING]
-> 고유 작업은 [락(locks)](/docs/{{version}}/cache#atomic-locks)을 지원하는 캐시 드라이버가 필요합니다. 현재 `memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 캐시 드라이버가 원자적 락(atomic lock)을 지원합니다. 참고로, 고유 작업 제약은 작업 배치(batch) 내의 작업에는 적용되지 않습니다.
+> 고유 작업은 [락(locks)](/docs/12.x/cache#atomic-locks)을 지원하는 캐시 드라이버가 필요합니다. 현재 `memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 캐시 드라이버가 원자적 락(atomic lock)을 지원합니다. 참고로, 고유 작업 제약은 작업 배치(batch) 내의 작업에는 적용되지 않습니다.
 
 특정 작업이 한 번에 하나만 큐에 올라가 있기를 바라는 경우도 있습니다. 이럴 때는 작업 클래스에 `ShouldBeUnique` 인터페이스를 구현하면 됩니다. 별도의 추가 메서드 구현은 필요하지 않습니다:
 
@@ -355,7 +355,7 @@ class UpdateSearchIndex implements ShouldQueue, ShouldBeUniqueUntilProcessing
 <a name="unique-job-locks"></a>
 #### 고유 작업 락(Unique Job Locks)
 
-내부적으로 `ShouldBeUnique` 작업이 디스패치될 때, 라라벨은 `uniqueId` 키로 [락(locks)](/docs/{{version}}/cache#atomic-locks)를 획득하려 시도합니다. 락 획득에 실패하면 해당 작업은 큐에 올라가지 않습니다. 락은 작업 처리 완료 또는 모든 재시도 실패 시 해제됩니다. 기본적으로 라라벨은 기본 캐시 드라이버를 이용해 이 락을 관리합니다. 하지만 락 획득에 사용할 캐시 드라이버를 변경하고 싶을 때는, 반환값으로 원하는 캐시 드라이버를 지정하는 `uniqueVia` 메서드를 정의하면 됩니다:
+내부적으로 `ShouldBeUnique` 작업이 디스패치될 때, 라라벨은 `uniqueId` 키로 [락(locks)](/docs/12.x/cache#atomic-locks)를 획득하려 시도합니다. 락 획득에 실패하면 해당 작업은 큐에 올라가지 않습니다. 락은 작업 처리 완료 또는 모든 재시도 실패 시 해제됩니다. 기본적으로 라라벨은 기본 캐시 드라이버를 이용해 이 락을 관리합니다. 하지만 락 획득에 사용할 캐시 드라이버를 변경하고 싶을 때는, 반환값으로 원하는 캐시 드라이버를 지정하는 `uniqueVia` 메서드를 정의하면 됩니다:
 
 ```php
 use Illuminate\Contracts\Cache\Repository;
@@ -376,12 +376,12 @@ class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
 ```
 
 > [!NOTE]
-> 작업의 동시 실행 제약이 필요하다면, [WithoutOverlapping](/docs/{{version}}/queues#preventing-job-overlaps) 작업 미들웨어를 사용하는 것이 더 적합합니다.
+> 작업의 동시 실행 제약이 필요하다면, [WithoutOverlapping](/docs/12.x/queues#preventing-job-overlaps) 작업 미들웨어를 사용하는 것이 더 적합합니다.
 
 <a name="encrypted-jobs"></a>
 ### 암호화된 작업
 
-라라벨은 [암호화](/docs/{{version}}/encryption)를 통해 작업 데이터의 기밀성과 무결성을 보장할 수 있도록 지원합니다. 시작하려면 작업 클래스에 `ShouldBeEncrypted` 인터페이스를 추가하면 됩니다. 이 인터페이스가 추가된 클래스는, 라라벨이 자동으로 작업 데이터를 큐에 올리기 전에 암호화합니다:
+라라벨은 [암호화](/docs/12.x/encryption)를 통해 작업 데이터의 기밀성과 무결성을 보장할 수 있도록 지원합니다. 시작하려면 작업 클래스에 `ShouldBeEncrypted` 인터페이스를 추가하면 됩니다. 이 인터페이스가 추가된 클래스는, 라라벨이 자동으로 작업 데이터를 큐에 올리기 전에 암호화합니다:
 
 ```php
 <?php
@@ -456,7 +456,7 @@ class RateLimited
 }
 ```
 
-보시는 것처럼, [라우트 미들웨어](/docs/{{version}}/middleware)처럼 작업 미들웨어도 처리 중인 작업 객체와, 작업 처리를 계속 진행할 콜백을 인자로 받습니다.
+보시는 것처럼, [라우트 미들웨어](/docs/12.x/middleware)처럼 작업 미들웨어도 처리 중인 작업 객체와, 작업 처리를 계속 진행할 콜백을 인자로 받습니다.
 
 작업 미들웨어를 만든 뒤에는, 작업 클래스의 `middleware` 메서드에서 반환값 배열에 추가하면 해당 작업에서 쓸 수 있습니다. 이 메서드는 `make:job` 아티즌 명령어로 생성된 작업에는 기본적으로 존재하지 않으니, 직접 추가해야 합니다:
 
@@ -480,7 +480,7 @@ public function middleware(): array
 <a name="rate-limiting"></a>
 ### 속도 제한(Rate Limiting)
 
-직접 미들웨어로 속도 제한을 구현하는 대신, 라라벨이 기본 제공하는 속도 제한 미들웨어를 활용할 수도 있습니다. [라우트 속도 제한자](/docs/{{version}}/routing#defining-rate-limiters)처럼, 작업 속도 제한자도 `RateLimiter` 파사드의 `for` 메서드를 이용해 정의할 수 있습니다.
+직접 미들웨어로 속도 제한을 구현하는 대신, 라라벨이 기본 제공하는 속도 제한 미들웨어를 활용할 수도 있습니다. [라우트 속도 제한자](/docs/12.x/routing#defining-rate-limiters)처럼, 작업 속도 제한자도 `RateLimiter` 파사드의 `for` 메서드를 이용해 정의할 수 있습니다.
 
 예를 들어, 일반 사용자는 한 시간에 한 번만 데이터 백업을 허용하고, 프리미엄 고객에게는 제한을 두지 않으려는 경우 아래와 같이 구현할 수 있습니다. 이 코드는 보통 `AppServiceProvider`의 `boot` 메서드에서 작성합니다:
 
@@ -620,7 +620,7 @@ public function middleware(): array
 ```
 
 > [!WARNING]
-> `WithoutOverlapping` 미들웨어는 [락(locks)](/docs/{{version}}/cache#atomic-locks)를 지원하는 캐시 드라이버가 필요합니다. 현재 `memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 드라이버가 원자적 락을 지원합니다.
+> `WithoutOverlapping` 미들웨어는 [락(locks)](/docs/12.x/cache#atomic-locks)를 지원하는 캐시 드라이버가 필요합니다. 현재 `memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 드라이버가 원자적 락을 지원합니다.
 
 <a name="sharing-lock-keys"></a>
 
@@ -1256,7 +1256,7 @@ public function retryUntil(): DateTime
 ```
 
 > [!NOTE]
-> [큐잉된 이벤트 리스너](/docs/{{version}}/events#queued-event-listeners)에도 `tries` 속성이나 `retryUntil` 메서드를 정의할 수 있습니다.
+> [큐잉된 이벤트 리스너](/docs/12.x/events#queued-event-listeners)에도 `tries` 속성이나 `retryUntil` 메서드를 정의할 수 있습니다.
 
 <a name="max-exceptions"></a>
 #### 최대 예외 횟수
@@ -1722,7 +1722,7 @@ php artisan queue:retry-batch 32dbc76c-4f82-4749-b610-a639fe0099b5
 <a name="pruning-batches"></a>
 ### 배치 데이터 정리(Pruning)
 
-정리 작업을 하지 않으면 `job_batches` 테이블에 배치 이력이 매우 빠르게 누적될 수 있습니다. 이를 방지하려면, `queue:prune-batches` Artisan 명령어를 [스케줄러](/docs/{{version}}/scheduling)에 등록하여 매일 자동 실행되도록 하세요.
+정리 작업을 하지 않으면 `job_batches` 테이블에 배치 이력이 매우 빠르게 누적될 수 있습니다. 이를 방지하려면, `queue:prune-batches` Artisan 명령어를 [스케줄러](/docs/12.x/scheduling)에 등록하여 매일 자동 실행되도록 하세요.
 
 ```php
 use Illuminate\Support\Facades\Schedule;
@@ -1940,7 +1940,7 @@ php artisan queue:work --sleep=3
 <a name="maintenance-mode-queues"></a>
 #### 유지보수 모드와 큐
 
-애플리케이션이 [유지보수 모드](/docs/{{version}}/configuration#maintenance-mode)일 때는 큐 작업이 처리되지 않습니다. 유지보수 모드 해제 후에는 평소처럼 큐 작업이 처리됩니다.
+애플리케이션이 [유지보수 모드](/docs/12.x/configuration#maintenance-mode)일 때는 큐 작업이 처리되지 않습니다. 유지보수 모드 해제 후에는 평소처럼 큐 작업이 처리됩니다.
 
 유지보수 모드일 때도 강제로 큐 워커가 작업을 처리하게 하려면, `--force` 옵션을 사용할 수 있습니다:
 
@@ -1980,7 +1980,7 @@ php artisan queue:restart
 이 명령어는 모든 큐 워커에게 현재 작업을 마치면 정상적으로 종료하라는 신호를 보냅니다. 기존 작업이 손실되는 일은 없습니다. `queue:restart` 명령어 실행 시 큐 워커가 종료되므로, [Supervisor](#supervisor-configuration)와 같은 프로세스 관리자를 통해 워커가 자동으로 재시작되게 해야 합니다.
 
 > [!NOTE]
-> 큐는 [캐시](/docs/{{version}}/cache)에 재시작 신호를 저장하므로, 이 기능을 사용하기 전에 애플리케이션에 적절한 캐시 드라이버가 설정되었는지 확인하세요.
+> 큐는 [캐시](/docs/12.x/cache)에 재시작 신호를 저장하므로, 이 기능을 사용하기 전에 애플리케이션에 적절한 캐시 드라이버가 설정되었는지 확인하세요.
 
 <a name="job-expirations-and-timeouts"></a>
 ### 작업 만료 및 타임아웃
@@ -2069,7 +2069,7 @@ Supervisor에 대한 자세한 설명은 [Supervisor 공식 문서](http://super
 <a name="dealing-with-failed-jobs"></a>
 ## 실패한 작업(잡) 처리
 
-큐에 등록한 작업이 실패하는 경우도 있을 수 있습니다. 걱정하지 마세요! 라라벨은 [작업 재시도 최대 횟수 지정](#max-job-attempts-and-timeout) 및 관리 방법을 제공합니다. 비동기 작업이 지정한 시도 횟수를 초과하면, 해당 작업은 `failed_jobs` 데이터베이스 테이블에 저장됩니다. [동기식으로 디스패치된 작업](/docs/{{version}}/queues#synchronous-dispatching)이 실패할 경우에는 이 테이블에 저장되지 않고, 예외가 즉시 애플리케이션에서 처리됩니다.
+큐에 등록한 작업이 실패하는 경우도 있을 수 있습니다. 걱정하지 마세요! 라라벨은 [작업 재시도 최대 횟수 지정](#max-job-attempts-and-timeout) 및 관리 방법을 제공합니다. 비동기 작업이 지정한 시도 횟수를 초과하면, 해당 작업은 `failed_jobs` 데이터베이스 테이블에 저장됩니다. [동기식으로 디스패치된 작업](/docs/12.x/queues#synchronous-dispatching)이 실패할 경우에는 이 테이블에 저장되지 않고, 예외가 즉시 애플리케이션에서 처리됩니다.
 
 신규 라라벨 애플리케이션에는 `failed_jobs` 테이블 생성을 위한 마이그레이션이 이미 포함되어 있습니다. 만약 없다면 `make:queue-failed-table` 명령어로 마이그레이션을 생성할 수 있습니다:
 
@@ -2216,7 +2216,7 @@ php artisan queue:forget 91401d2c-0784-4f43-824c-34f94a33c24d
 ```
 
 > [!NOTE]
-> [Horizon](/docs/{{version}}/horizon)를 사용하는 경우, 실패한 작업을 삭제할 때는 `queue:forget` 대신 `horizon:forget` 명령어를 사용해야 합니다.
+> [Horizon](/docs/12.x/horizon)를 사용하는 경우, 실패한 작업을 삭제할 때는 `queue:forget` 대신 `horizon:forget` 명령어를 사용해야 합니다.
 
 `failed_jobs` 테이블의 모든 실패한 작업을 삭제하려면 `queue:flush` 명령어를 사용하세요:
 
@@ -2332,7 +2332,7 @@ class AppServiceProvider extends ServiceProvider
 ## 큐에서 작업 삭제하기
 
 > [!NOTE]
-> [Horizon](/docs/{{version}}/horizon)을 사용할 경우, `queue:clear` 명령어 대신 `horizon:clear` 명령어를 사용하여 큐에서 작업을 삭제해야 합니다.
+> [Horizon](/docs/12.x/horizon)을 사용할 경우, `queue:clear` 명령어 대신 `horizon:clear` 명령어를 사용하여 큐에서 작업을 삭제해야 합니다.
 
 기본 연결의 기본 큐에서 모든 작업을 삭제하려면, `queue:clear` 아티즌 명령어를 사용할 수 있습니다.
 
@@ -2354,7 +2354,7 @@ php artisan queue:clear redis --queue=emails
 
 큐에 갑자기 많은 작업이 몰리면 큐가 과부하에 걸릴 수 있으며, 이로 인해 작업 처리 대기 시간이 길어질 수 있습니다. 필요하다면 라라벨이 큐의 작업 수가 특정 임계값을 초과했을 때 알림을 보낼 수 있습니다.
 
-시작하려면, `queue:monitor` 명령어를 [1분마다 실행되도록 예약](/docs/{{version}}/scheduling)해야 합니다. 이 명령어는 모니터링하려는 큐 이름들과, 원하는 작업 개수 임계값을 인자로 받습니다.
+시작하려면, `queue:monitor` 명령어를 [1분마다 실행되도록 예약](/docs/12.x/scheduling)해야 합니다. 이 명령어는 모니터링하려는 큐 이름들과, 원하는 작업 개수 임계값을 인자로 받습니다.
 
 ```shell
 php artisan queue:monitor redis:default,redis:deployments --max=100
@@ -2515,7 +2515,7 @@ Queue::fake()->except([
 <a name="testing-job-chains"></a>
 ### 작업 체인 테스트하기
 
-작업 체인을 테스트할 때는 `Bus` 파사드의 fake 기능을 사용해야 합니다. `Bus` 파사드의 `assertChained` 메서드를 사용해서 [작업 체인](/docs/{{version}}/queues#job-chaining)이 정상적으로 디스패치 되었는지 검증할 수 있습니다. 첫 번째 인자로는 체인의 작업을 배열 형태로 넘깁니다.
+작업 체인을 테스트할 때는 `Bus` 파사드의 fake 기능을 사용해야 합니다. `Bus` 파사드의 `assertChained` 메서드를 사용해서 [작업 체인](/docs/12.x/queues#job-chaining)이 정상적으로 디스패치 되었는지 검증할 수 있습니다. 첫 번째 인자로는 체인의 작업을 배열 형태로 넘깁니다.
 
 ```php
 use App\Jobs\RecordShipment;
@@ -2596,7 +2596,7 @@ Bus::assertChained([
 <a name="testing-job-batches"></a>
 ### 작업 배치 테스트
 
-[작업 배치](/docs/{{version}}/queues#job-batching)가 제대로 디스패치 되었는지 검증하려면, `Bus` 파사드의 `assertBatched` 메서드를 사용할 수 있습니다. 이 메서드에 넘기는 클로저는 `Illuminate\Bus\PendingBatch` 인스턴스를 전달받게 되며, 이 인스턴스를 통해 배치 내의 작업들을 검사할 수 있습니다.
+[작업 배치](/docs/12.x/queues#job-batching)가 제대로 디스패치 되었는지 검증하려면, `Bus` 파사드의 `assertBatched` 메서드를 사용할 수 있습니다. 이 메서드에 넘기는 클로저는 `Illuminate\Bus\PendingBatch` 인스턴스를 전달받게 되며, 이 인스턴스를 통해 배치 내의 작업들을 검사할 수 있습니다.
 
 ```php
 use Illuminate\Bus\PendingBatch;
@@ -2664,7 +2664,7 @@ $job->assertNotFailed();
 <a name="job-events"></a>
 ## 작업 이벤트 (Job Events)
 
-`Queue` [파사드](/docs/{{version}}/facades)의 `before` 및 `after` 메서드를 사용하면, 큐에 등록된 작업이 처리되기 전, 그리고 후에 실행할 콜백을 지정할 수 있습니다. 이 콜백을 활용해 추가 로그를 남기거나 대시보드용 통계를 남기는 등 다양한 처리를 할 수 있습니다. 일반적으로 이 메서드들은 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 호출합니다. 예를 들어, 라라벨의 기본 `AppServiceProvider`에서 다음과 같이 사용할 수 있습니다.
+`Queue` [파사드](/docs/12.x/facades)의 `before` 및 `after` 메서드를 사용하면, 큐에 등록된 작업이 처리되기 전, 그리고 후에 실행할 콜백을 지정할 수 있습니다. 이 콜백을 활용해 추가 로그를 남기거나 대시보드용 통계를 남기는 등 다양한 처리를 할 수 있습니다. 일반적으로 이 메서드들은 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 호출합니다. 예를 들어, 라라벨의 기본 `AppServiceProvider`에서 다음과 같이 사용할 수 있습니다.
 
 ```php
 <?php
@@ -2706,7 +2706,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-`Queue` [파사드](/docs/{{version}}/facades)의 `looping` 메서드를 사용하면, 워커가 큐에서 새 작업을 가져오기 전에 실행할 콜백을 지정할 수 있습니다. 예를 들어, 실패한 이전 작업으로 인해 열려 있을 수 있는 트랜잭션을 롤백하는 클로저를 등록할 때 유용하게 사용할 수 있습니다.
+`Queue` [파사드](/docs/12.x/facades)의 `looping` 메서드를 사용하면, 워커가 큐에서 새 작업을 가져오기 전에 실행할 콜백을 지정할 수 있습니다. 예를 들어, 실패한 이전 작업으로 인해 열려 있을 수 있는 트랜잭션을 롤백하는 클로저를 등록할 때 유용하게 사용할 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\DB;

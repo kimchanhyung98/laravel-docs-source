@@ -20,7 +20,7 @@
 <a name="introduction"></a>
 ## 소개
 
-접근자, 변경자, 그리고 속성 캐스팅은 Eloquent 모델 인스턴스에서 속성을 조회하거나 설정할 때 속성 값을 변환할 수 있도록 도와주는 기능입니다. 예를 들어, [Laravel의 암호화기](/docs/{{version}}/encryption)를 사용해 값을 데이터베이스에 저장할 때 암호화하고, Eloquent 모델에서 해당 속성을 읽을 때 자동으로 복호화할 수도 있습니다. 또는 데이터베이스에 저장된 JSON 문자열을 Eloquent 모델을 통해 접근할 때 배열로 자동 변환할 수도 있습니다.
+접근자, 변경자, 그리고 속성 캐스팅은 Eloquent 모델 인스턴스에서 속성을 조회하거나 설정할 때 속성 값을 변환할 수 있도록 도와주는 기능입니다. 예를 들어, [Laravel의 암호화기](/docs/12.x/encryption)를 사용해 값을 데이터베이스에 저장할 때 암호화하고, Eloquent 모델에서 해당 속성을 읽을 때 자동으로 복호화할 수도 있습니다. 또는 데이터베이스에 저장된 JSON 문자열을 Eloquent 모델을 통해 접근할 때 배열로 자동 변환할 수도 있습니다.
 
 <a name="accessors-and-mutators"></a>
 ## 접근자(Accessor)와 변경자(Mutator)
@@ -67,7 +67,7 @@ $firstName = $user->first_name;
 ```
 
 > [!NOTE]
-> 이런 방식으로 계산된(custom) 값들을 모델의 배열/JSON 표현에 포함하려면, [별도로 속성을 추가(APPEND)해야 합니다](/docs/{{version}}/eloquent-serialization#appending-values-to-json).
+> 이런 방식으로 계산된(custom) 값들을 모델의 배열/JSON 표현에 포함하려면, [별도로 속성을 추가(APPEND)해야 합니다](/docs/12.x/eloquent-serialization#appending-values-to-json).
 
 <a name="building-value-objects-from-multiple-attributes"></a>
 #### 여러 속성으로 값 객체(Value Object) 만들기
@@ -286,7 +286,7 @@ $user->mergeCasts([
 <a name="stringable-casting"></a>
 #### Stringable 캐스팅
 
-`Illuminate\Database\Eloquent\Casts\AsStringable` 캐스트 클래스를 사용해 모델 속성을 [유연한 Illuminate\Support\Stringable 객체](/docs/{{version}}/strings#fluent-strings-method-list)로 캐스팅할 수 있습니다:
+`Illuminate\Database\Eloquent\Casts\AsStringable` 캐스트 클래스를 사용해 모델 속성을 [유연한 Illuminate\Support\Stringable 객체](/docs/12.x/strings#fluent-strings-method-list)로 캐스팅할 수 있습니다:
 
 ```php
 <?php
@@ -356,7 +356,7 @@ $user->options = $options;
 $user->save();
 ```
 
-JSON 속성의 단일 필드만 간단한 문법으로 업데이트하려면, [속성을 대량 할당 가능(mass assignable) 하게 지정한 뒤](/docs/{{version}}/eloquent#mass-assignment-json-columns) `update` 메서드를 사용할 때 `->` 연산자를 사용할 수 있습니다:
+JSON 속성의 단일 필드만 간단한 문법으로 업데이트하려면, [속성을 대량 할당 가능(mass assignable) 하게 지정한 뒤](/docs/12.x/eloquent#mass-assignment-json-columns) `update` 메서드를 사용할 때 `->` 연산자를 사용할 수 있습니다:
 
 ```php
 $user = User::find(1);
@@ -412,7 +412,7 @@ protected function casts(): array
 }
 ```
 
-마찬가지로, Laravel은 JSON 속성을 Laravel [컬렉션](/docs/{{version}}/collections) 인스턴스로 변환하는 `AsCollection` 캐스트도 제공합니다:
+마찬가지로, Laravel은 JSON 속성을 Laravel [컬렉션](/docs/12.x/collections) 인스턴스로 변환하는 `AsCollection` 캐스트도 제공합니다:
 
 ```php
 use Illuminate\Database\Eloquent\Casts\AsCollection;
@@ -449,7 +449,7 @@ protected function casts(): array
 }
 ```
 
-`of` 메서드를 사용해 컬렉션의 각 아이템을 특정 클래스로 매핑하려면, 컬렉션의 [mapInto 메서드](/docs/{{version}}/collections#method-mapinto)를 활용할 수 있습니다:
+`of` 메서드를 사용해 컬렉션의 각 아이템을 특정 클래스로 매핑하려면, 컬렉션의 [mapInto 메서드](/docs/12.x/collections#method-mapinto)를 활용할 수 있습니다:
 
 ```php
 use App\ValueObjects\Option;
@@ -525,7 +525,7 @@ class Option implements Arrayable, JsonSerializable
 
 기본적으로 Eloquent는 `created_at`과 `updated_at` 컬럼을 [Carbon](https://github.com/briannesbitt/Carbon) 객체로 캐스팅하며, Carbon은 PHP의 `DateTime` 클래스를 확장해 여러 유용한 메서드를 제공합니다. 추가로 날짜 속성을 더 캐스팅하고 싶다면, 모델의 `casts` 메서드에 추가로 날짜 캐스트를 정의하면 됩니다. 일반적으로 날짜는 `datetime`이나 `immutable_datetime` 타입으로 캐스팅하는 것이 좋습니다.
 
-`date` 또는 `datetime` 캐스트를 정의할 때, 원하는 날짜 형식을 지정할 수도 있습니다. 이 형식은 [모델이 배열이나 JSON으로 직렬화](/docs/{{version}}/eloquent-serialization)될 때 사용됩니다:
+`date` 또는 `datetime` 캐스트를 정의할 때, 원하는 날짜 형식을 지정할 수도 있습니다. 이 형식은 [모델이 배열이나 JSON으로 직렬화](/docs/12.x/eloquent-serialization)될 때 사용됩니다:
 
 ```php
 /**
@@ -630,7 +630,7 @@ protected function casts(): array
 <a name="encrypted-casting"></a>
 ### 암호화 캐스팅
 
-`encrypted` 캐스트는 모델의 속성 값을 라라벨의 [암호화](/docs/{{version}}/encryption) 기능을 사용하여 암호화합니다. 또한, `encrypted:array`, `encrypted:collection`, `encrypted:object`, `AsEncryptedArrayObject`, `AsEncryptedCollection` 캐스트 역시 기존 비암호화 버전과 거의 동일하게 동작합니다. 단, 데이터를 저장할 때 값이 암호화된다는 점만 다릅니다.
+`encrypted` 캐스트는 모델의 속성 값을 라라벨의 [암호화](/docs/12.x/encryption) 기능을 사용하여 암호화합니다. 또한, `encrypted:array`, `encrypted:collection`, `encrypted:object`, `AsEncryptedArrayObject`, `AsEncryptedCollection` 캐스트 역시 기존 비암호화 버전과 거의 동일하게 동작합니다. 단, 데이터를 저장할 때 값이 암호화된다는 점만 다릅니다.
 
 암호화된 텍스트의 최종 길이는 예측하기 어렵고 일반 텍스트보다 더 길어지므로, 관련된 데이터베이스 컬럼의 타입을 반드시 `TEXT` 이상으로 지정해야 합니다. 그리고 값이 데이터베이스 내에서 암호화되어 저장되기 때문에, 암호화된 속성 값 기준으로는 쿼리나 검색을 할 수 없습니다.
 

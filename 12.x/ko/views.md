@@ -17,7 +17,7 @@
 
 라우트나 컨트롤러에서 전체 HTML 문서 문자열을 직접 반환하는 것은 현실적으로 비효율적입니다. 이런 문제를 해결하기 위해 뷰(View)는 모든 HTML을 별도의 파일로 분리해서 관리할 수 있는 편리한 방법을 제공합니다.
 
-뷰는 컨트롤러/애플리케이션의 로직과 화면 출력(표현) 로직을 분리하는 역할을 하며, `resources/views` 디렉토리에 저장됩니다. 라라벨을 사용할 때, 뷰 템플릿은 보통 [Blade 템플릿 언어](/docs/{{version}}/blade)를 이용해 작성합니다. 간단한 뷰 예시는 다음과 같습니다.
+뷰는 컨트롤러/애플리케이션의 로직과 화면 출력(표현) 로직을 분리하는 역할을 하며, `resources/views` 디렉토리에 저장됩니다. 라라벨을 사용할 때, 뷰 템플릿은 보통 [Blade 템플릿 언어](/docs/12.x/blade)를 이용해 작성합니다. 간단한 뷰 예시는 다음과 같습니다.
 
 ```blade
 <!-- View stored in resources/views/greeting.blade.php -->
@@ -38,14 +38,14 @@ Route::get('/', function () {
 ```
 
 > [!NOTE]
-> Blade 템플릿 작성에 대해 더 자세히 알고 싶으신가요? [Blade 공식 문서](/docs/{{version}}/blade)를 참고해 시작해보시기 바랍니다.
+> Blade 템플릿 작성에 대해 더 자세히 알고 싶으신가요? [Blade 공식 문서](/docs/12.x/blade)를 참고해 시작해보시기 바랍니다.
 
 <a name="writing-views-in-react-or-vue"></a>
 ### React / Vue로 뷰 작성하기
 
 PHP의 Blade 대신 React 또는 Vue를 이용해 프론트엔드 템플릿을 작성하는 개발자들도 많아졌습니다. 라라벨에서는 [Inertia](https://inertiajs.com/)라는 라이브러리를 통해 SPA를 새로 구축할 때 복잡한 작업 없이 React/Vue 프론트엔드와 라라벨 백엔드를 손쉽게 연동할 수 있습니다.
 
-[React 및 Vue 스타터 키트](/docs/{{version}}/starter-kits)는 Inertia를 활용하는 차세대 라라벨 애플리케이션을 손쉽게 시작할 수 있도록 도와줍니다.
+[React 및 Vue 스타터 키트](/docs/12.x/starter-kits)는 Inertia를 활용하는 차세대 라라벨 애플리케이션을 손쉽게 시작할 수 있도록 도와줍니다.
 
 <a name="creating-and-rendering-views"></a>
 ## 뷰 생성 및 렌더링
@@ -56,7 +56,7 @@ PHP의 Blade 대신 React 또는 Vue를 이용해 프론트엔드 템플릿을 �
 php artisan make:view greeting
 ```
 
-`.blade.php` 확장자는 해당 파일이 [Blade 템플릿](/docs/{{version}}/blade)임을 라라벨에 알려줍니다. Blade 템플릿은 HTML 뿐만 아니라 값을 출력하거나 if문 작성, 데이터 반복 등 다양한 Blade 지시문도 함께 사용할 수 있습니다.
+`.blade.php` 확장자는 해당 파일이 [Blade 템플릿](/docs/12.x/blade)임을 라라벨에 알려줍니다. Blade 템플릿은 HTML 뿐만 아니라 값을 출력하거나 if문 작성, 데이터 반복 등 다양한 Blade 지시문도 함께 사용할 수 있습니다.
 
 뷰를 만들었다면, 애플리케이션의 라우트 또는 컨트롤러에서 전역 `view` 헬퍼를 이용해 반환할 수 있습니다.
 
@@ -74,7 +74,7 @@ use Illuminate\Support\Facades\View;
 return View::make('greeting', ['name' => 'James']);
 ```
 
-위 예시에서 볼 수 있듯, `view` 헬퍼의 첫 번째 인자는 `resources/views` 디렉토리 내 뷰 파일 이름을 의미합니다. 두 번째 인자는 뷰에 전달할 데이터의 배열입니다. 이 예시는 `name` 변수를 전달했으며, 뷰에서 [Blade 문법](/docs/{{version}}/blade)으로 출력합니다.
+위 예시에서 볼 수 있듯, `view` 헬퍼의 첫 번째 인자는 `resources/views` 디렉토리 내 뷰 파일 이름을 의미합니다. 두 번째 인자는 뷰에 전달할 데이터의 배열입니다. 이 예시는 `name` 변수를 전달했으며, 뷰에서 [Blade 문법](/docs/12.x/blade)으로 출력합니다.
 
 <a name="nested-view-directories"></a>
 ### 중첩 뷰 디렉토리
@@ -168,7 +168,7 @@ class AppServiceProvider extends ServiceProvider
 
 뷰 컴포저(View Composer)는 뷰가 렌더링될 때마다 호출되는 콜백 함수 또는 클래스 메서드입니다. 특정 뷰가 렌더링될 때마다 항상 데이터를 전달해야 한다면, 뷰 컴포저를 사용해 관련 로직을 한 곳에 정리할 수 있습니다. 여러 라우트나 컨트롤러에서 동일한 뷰가 자주 사용되고, 공통으로 필요한 데이터가 있다면 뷰 컴포저가 특히 유용합니다.
 
-일반적으로 뷰 컴포저는 애플리케이션의 [서비스 프로바이더](/docs/{{version}}/providers)에서 등록합니다. 예시에서는 `App\Providers\AppServiceProvider`에 로직을 작성한다고 가정합니다.
+일반적으로 뷰 컴포저는 애플리케이션의 [서비스 프로바이더](/docs/12.x/providers)에서 등록합니다. 예시에서는 `App\Providers\AppServiceProvider`에 로직을 작성한다고 가정합니다.
 
 `View` 파사드의 `composer` 메서드를 이용해 뷰 컴포저를 등록할 수 있습니다. 라라벨에서는 컴포저용 기본 디렉토리를 제공하지 않으므로, `app/View/Composers` 디렉토리 등에 자유롭게 클래스를 생성해 관리할 수 있습니다.
 
@@ -241,7 +241,7 @@ class ProfileComposer
 }
 ```
 
-모든 뷰 컴포저 클래스는 [서비스 컨테이너](/docs/{{version}}/container)를 통해 의존성 주입이 가능하므로, 생성자에서 필요한 의존 객체를 타입힌트로 지정할 수 있습니다.
+모든 뷰 컴포저 클래스는 [서비스 컨테이너](/docs/12.x/container)를 통해 의존성 주입이 가능하므로, 생성자에서 필요한 의존 객체를 타입힌트로 지정할 수 있습니다.
 
 <a name="attaching-a-composer-to-multiple-views"></a>
 #### 여러 뷰에 한 번에 컴포저 연결하기

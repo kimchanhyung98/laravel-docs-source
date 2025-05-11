@@ -191,7 +191,7 @@ Log::emergency('The system is down!');
 <a name="writing-log-messages"></a>
 ## 로그 메시지 작성하기
 
-`Log` [파사드](/docs/{{version}}/facades)를 사용해 로그에 정보를 남길 수 있습니다. 앞서 언급했듯이, 라라벨 로거는 [RFC 5424 스펙](https://tools.ietf.org/html/rfc5424)에 정의된 8가지 레벨의 로깅 메서드를 제공합니다: **emergency**, **alert**, **critical**, **error**, **warning**, **notice**, **info**, **debug**
+`Log` [파사드](/docs/12.x/facades)를 사용해 로그에 정보를 남길 수 있습니다. 앞서 언급했듯이, 라라벨 로거는 [RFC 5424 스펙](https://tools.ietf.org/html/rfc5424)에 정의된 8가지 레벨의 로깅 메서드를 제공합니다: **emergency**, **alert**, **critical**, **error**, **warning**, **notice**, **info**, **debug**
 
 ```php
 use Illuminate\Support\Facades\Log;
@@ -315,7 +315,7 @@ class AssignRequestId
 ```
 
 > [!NOTE]
-> 큐 처리 중에 로그 컨텍스트를 공유해야 할 경우, [작업 미들웨어](/docs/{{version}}/queues#job-middleware)를 활용할 수 있습니다.
+> 큐 처리 중에 로그 컨텍스트를 공유해야 할 경우, [작업 미들웨어](/docs/12.x/queues#job-middleware)를 활용할 수 있습니다.
 
 <a name="writing-to-specific-channels"></a>
 ### 특정 채널에 기록하기
@@ -408,7 +408,7 @@ class CustomizeFormatter
 ```
 
 > [!NOTE]
-> 모든 "tap" 클래스는 [서비스 컨테이너](/docs/{{version}}/container)를 통해 생성되므로, 생성자에 필요한 의존성은 자동 주입됩니다.
+> 모든 "tap" 클래스는 [서비스 컨테이너](/docs/12.x/container)를 통해 생성되므로, 생성자에 필요한 의존성은 자동 주입됩니다.
 
 <a name="creating-monolog-handler-channels"></a>
 ### Monolog 핸들러 채널 생성

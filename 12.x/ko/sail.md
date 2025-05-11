@@ -257,14 +257,14 @@ Sail 설치 시 Valkey 서비스를 선택했다면, `docker-compose.yml` 파일
 <a name="meilisearch"></a>
 ### Meilisearch
 
-Sail 설치 시 [Meilisearch](https://www.meilisearch.com) 서비스를 선택했다면, `docker-compose.yml`에 이 강력한 검색 엔진 컨테이너 항목이 추가됩니다. [Laravel Scout](/docs/{{version}}/scout)와 통합되어 사용할 수 있습니다. 컨테이너를 시작한 후 애플리케이션에서 Meilisearch에 접속하려면 `MEILISEARCH_HOST` 환경 변수를 `http://meilisearch:7700`으로 지정하세요.
+Sail 설치 시 [Meilisearch](https://www.meilisearch.com) 서비스를 선택했다면, `docker-compose.yml`에 이 강력한 검색 엔진 컨테이너 항목이 추가됩니다. [Laravel Scout](/docs/12.x/scout)와 통합되어 사용할 수 있습니다. 컨테이너를 시작한 후 애플리케이션에서 Meilisearch에 접속하려면 `MEILISEARCH_HOST` 환경 변수를 `http://meilisearch:7700`으로 지정하세요.
 
 로컬 컴퓨터에서는 웹 브라우저에서 `http://localhost:7700`으로 Meilisearch의 관리 페이지에 접근할 수 있습니다.
 
 <a name="typesense"></a>
 ### Typesense
 
-Sail 설치 시 [Typesense](https://typesense.org) 서비스를 선택했다면, `docker-compose.yml`에 매우 빠르고 오픈소스인 검색 엔진 Typesense 항목이 추가됩니다. [Laravel Scout](/docs/{{version}}/scout#typesense)와도 연동됩니다. 컨테이너를 시작한 후 아래와 같이 환경 변수를 설정해서 애플리케이션과 연결할 수 있습니다.
+Sail 설치 시 [Typesense](https://typesense.org) 서비스를 선택했다면, `docker-compose.yml`에 매우 빠르고 오픈소스인 검색 엔진 Typesense 항목이 추가됩니다. [Laravel Scout](/docs/12.x/scout#typesense)와도 연동됩니다. 컨테이너를 시작한 후 아래와 같이 환경 변수를 설정해서 애플리케이션과 연결할 수 있습니다.
 
 ```ini
 TYPESENSE_HOST=typesense
@@ -306,7 +306,7 @@ MinIO 콘솔은 `http://localhost:8900`에서 사용할 수 있으며, 기본 �
 <a name="running-tests"></a>
 ## 테스트 실행
 
-라라벨은 강력한 테스트 기능을 기본 제공합니다. Sail의 `test` 명령을 사용해 [기능/유닛 테스트](/docs/{{version}}/testing)를 실행할 수 있습니다. Pest/PHPUnit에서 지원하는 CLI 옵션도 함께 전달할 수 있습니다.
+라라벨은 강력한 테스트 기능을 기본 제공합니다. Sail의 `test` 명령을 사용해 [기능/유닛 테스트](/docs/12.x/testing)를 실행할 수 있습니다. Pest/PHPUnit에서 지원하는 CLI 옵션도 함께 전달할 수 있습니다.
 
 ```shell
 sail test
@@ -329,7 +329,7 @@ sail artisan test
 <a name="laravel-dusk"></a>
 ### Laravel Dusk
 
-[Laravel Dusk](/docs/{{version}}/dusk)은 간편하게 브라우저 자동화 및 UI 테스트 환경을 제공합니다. Sail 덕분에 Selenium 등 별도 도구 설치 없이도 Dusk 테스트를 실행할 수 있습니다. 우선, `docker-compose.yml` 파일에서 Selenium 서비스를 주석 해제하세요.
+[Laravel Dusk](/docs/12.x/dusk)은 간편하게 브라우저 자동화 및 UI 테스트 환경을 제공합니다. Sail 덕분에 Selenium 등 별도 도구 설치 없이도 Dusk 테스트를 실행할 수 있습니다. 우선, `docker-compose.yml` 파일에서 Selenium 서비스를 주석 해제하세요.
 
 ```yaml
 selenium:

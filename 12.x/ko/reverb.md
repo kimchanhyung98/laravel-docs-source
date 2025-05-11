@@ -22,7 +22,7 @@
 <a name="introduction"></a>
 ## 소개
 
-[Laravel Reverb](https://github.com/laravel/reverb)는 초고속이면서 확장 가능한 실시간 WebSocket 통신을 라라벨 애플리케이션에 직접 제공하며, 라라벨이 기본으로 제공하는 [이벤트 브로드캐스팅 도구](/docs/{{version}}/broadcasting)와도 완벽하게 통합되어 작동합니다.
+[Laravel Reverb](https://github.com/laravel/reverb)는 초고속이면서 확장 가능한 실시간 WebSocket 통신을 라라벨 애플리케이션에 직접 제공하며, 라라벨이 기본으로 제공하는 [이벤트 브로드캐스팅 도구](/docs/12.x/broadcasting)와도 완벽하게 통합되어 작동합니다.
 
 <a name="installation"></a>
 ## 설치
@@ -89,7 +89,7 @@ REVERB_APP_SECRET=my-app-secret
 
 대부분의 경우, 보안 WebSocket 연결은 상위 웹 서버(Nginx 등)가 먼저 처리한 뒤, 해당 요청을 Reverb 서버로 프록시합니다.
 
-다만, 로컬 개발처럼 리버브 서버 자체에서 보안 연결을 직접 처리하고 싶을 때도 있습니다. [Laravel Herd](https://herd.laravel.com)의 사이트 보안 설정을 사용하거나, [Laravel Valet](/docs/{{version}}/valet)에서 [secure 명령어](/docs/{{version}}/valet#securing-sites)로 애플리케이션을 보호한 경우, 사이트를 위해 생성된 Herd/Valet 인증서를 리버브 보안 연결에도 이용할 수 있습니다. 이를 위해서는 `REVERB_HOST` 환경 변수를 사이트의 호스트명으로 지정하거나, 리버브 서버 시작 시 명시적으로 호스트네임 옵션을 전달하면 됩니다.
+다만, 로컬 개발처럼 리버브 서버 자체에서 보안 연결을 직접 처리하고 싶을 때도 있습니다. [Laravel Herd](https://herd.laravel.com)의 사이트 보안 설정을 사용하거나, [Laravel Valet](/docs/12.x/valet)에서 [secure 명령어](/docs/12.x/valet#securing-sites)로 애플리케이션을 보호한 경우, 사이트를 위해 생성된 Herd/Valet 인증서를 리버브 보안 연결에도 이용할 수 있습니다. 이를 위해서는 `REVERB_HOST` 환경 변수를 사이트의 호스트명으로 지정하거나, 리버브 서버 시작 시 명시적으로 호스트네임 옵션을 전달하면 됩니다.
 
 ```shell
 php artisan reverb:start --host="0.0.0.0" --port=8080 --hostname="laravel.test"
@@ -159,9 +159,9 @@ php artisan reverb:restart
 <a name="monitoring"></a>
 ## 모니터링
 
-리버브는 [Laravel Pulse](/docs/{{version}}/pulse)와의 통합 monitoring을 지원합니다. Reverb의 Pulse 통합을 활성화하면 서버에서 처리되는 연결과 메시지의 개수를 손쉽게 추적할 수 있습니다.
+리버브는 [Laravel Pulse](/docs/12.x/pulse)와의 통합 monitoring을 지원합니다. Reverb의 Pulse 통합을 활성화하면 서버에서 처리되는 연결과 메시지의 개수를 손쉽게 추적할 수 있습니다.
 
-통합을 활성화하려면 먼저 [Pulse를 설치](/docs/{{version}}/pulse#installation)했는지 확인하세요. 그런 다음, 애플리케이션의 `config/pulse.php` 설정 파일에 Reverb의 리코더를 등록합니다.
+통합을 활성화하려면 먼저 [Pulse를 설치](/docs/12.x/pulse#installation)했는지 확인하세요. 그런 다음, 애플리케이션의 `config/pulse.php` 설정 파일에 Reverb의 리코더를 등록합니다.
 
 ```php
 use Laravel\Reverb\Pulse\Recorders\ReverbConnections;
@@ -180,7 +180,7 @@ use Laravel\Reverb\Pulse\Recorders\ReverbMessages;
 ],
 ```
 
-다음으로, 각 리코더에 대한 Pulse 카드를 [Pulse 대시보드](/docs/{{version}}/pulse#dashboard-customization)에 추가합니다.
+다음으로, 각 리코더에 대한 Pulse 카드를 [Pulse 대시보드](/docs/12.x/pulse#dashboard-customization)에 추가합니다.
 
 ```blade
 <x-pulse>
@@ -313,7 +313,7 @@ minfds=10000
 REVERB_SCALING_ENABLED=true
 ```
 
-그리고, 모든 Reverb 서버가 통신할 수 있는, 별도의 중앙 Redis 서버가 필요합니다. Reverb는 [애플리케이션에 설정된 기본 Redis 연결](/docs/{{version}}/redis#configuration)을 사용해 모든 리버브 서버에 메시지를 발행합니다.
+그리고, 모든 Reverb 서버가 통신할 수 있는, 별도의 중앙 Redis 서버가 필요합니다. Reverb는 [애플리케이션에 설정된 기본 Redis 연결](/docs/12.x/redis#configuration)을 사용해 모든 리버브 서버에 메시지를 발행합니다.
 
 Reverb의 스케일링 옵션을 켜고 Redis 서버를 설정한 후에는, Redis 서버와 통신할 수 있는 여러 서버에서 각각 `reverb:start` 명령어를 실행하면 됩니다. 이렇게 실행한 Reverb 서버들은 로드 밸런서 뒤에 배치하여, 들어오는 요청이 여러 서버에 고르게 분배되도록 해야 합니다.
 

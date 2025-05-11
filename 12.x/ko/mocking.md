@@ -16,7 +16,7 @@
 <a name="mocking-objects"></a>
 ## 객체 목킹
 
-라라벨의 [서비스 컨테이너](/docs/{{version}}/container)를 통해 애플리케이션에 주입될 객체를 목킹해야 할 경우, 해당 객체의 목(mock) 인스턴스를 `인스턴스(instance)` 바인딩으로 컨테이너에 바인딩해주어야 합니다. 이렇게 하면 컨테이너는 객체를 직접 생성하는 대신, 여러분이 등록한 목 인스턴스를 사용하게 됩니다.
+라라벨의 [서비스 컨테이너](/docs/12.x/container)를 통해 애플리케이션에 주입될 객체를 목킹해야 할 경우, 해당 객체의 목(mock) 인스턴스를 `인스턴스(instance)` 바인딩으로 컨테이너에 바인딩해주어야 합니다. 이렇게 하면 컨테이너는 객체를 직접 생성하는 대신, 여러분이 등록한 목 인스턴스를 사용하게 됩니다.
 
 ```php tab=Pest
 use App\Service;
@@ -86,7 +86,7 @@ $spy->shouldHaveReceived('process');
 <a name="mocking-facades"></a>
 ## 파사드 목킹
 
-전통적인 정적(static) 메서드 호출과 다르게, [파사드](/docs/{{version}}/facades) (그리고 [실시간 파사드](/docs/{{version}}/facades#real-time-facades))는 목킹할 수 있습니다. 이는 일반적인 정적 메서드에 비해 매우 큰 장점이며, 의존성 주입 방식을 사용하는 것과 마찬가지로 테스트가 편리해집니다. 실무에서는 컨트롤러 코드에서 사용하는 라라벨 파사드의 호출을 자주 목킹해야 할 것입니다. 예를 들어 아래와 같은 컨트롤러 액션을 보겠습니다.
+전통적인 정적(static) 메서드 호출과 다르게, [파사드](/docs/12.x/facades) (그리고 [실시간 파사드](/docs/12.x/facades#real-time-facades))는 목킹할 수 있습니다. 이는 일반적인 정적 메서드에 비해 매우 큰 장점이며, 의존성 주입 방식을 사용하는 것과 마찬가지로 테스트가 편리해집니다. 실무에서는 컨트롤러 코드에서 사용하는 라라벨 파사드의 호출을 자주 목킹해야 할 것입니다. 예를 들어 아래와 같은 컨트롤러 액션을 보겠습니다.
 
 ```php
 <?php
@@ -111,7 +111,7 @@ class UserController extends Controller
 }
 ```
 
-이런 경우, `Cache` 파사드의 호출을 `expects` 메서드로 목킹할 수 있습니다. 이 메서드는 [Mockery](https://github.com/padraic/mockery) 목 객체를 반환합니다. 파사드는 라라벨의 [서비스 컨테이너](/docs/{{version}}/container)에서 실제로 resolve되고 관리되므로, 전통적인 정적 클래스에 비해 훨씬 더 테스트가 용이합니다. 아래는 `Cache` 파사드의 `get` 메서드를 목킹하는 예시입니다.
+이런 경우, `Cache` 파사드의 호출을 `expects` 메서드로 목킹할 수 있습니다. 이 메서드는 [Mockery](https://github.com/padraic/mockery) 목 객체를 반환합니다. 파사드는 라라벨의 [서비스 컨테이너](/docs/12.x/container)에서 실제로 resolve되고 관리되므로, 전통적인 정적 클래스에 비해 훨씬 더 테스트가 용이합니다. 아래는 `Cache` 파사드의 `get` 메서드를 목킹하는 예시입니다.
 
 ```php tab=Pest
 <?php
@@ -153,7 +153,7 @@ class UserControllerTest extends TestCase
 ```
 
 > [!WARNING]
-> `Request` 파사드는 목킹해서는 안 됩니다. 대신 테스트 시 [HTTP 테스트 메서드](/docs/{{version}}/http-tests)에서 원하는 입력값을 `get`, `post`와 같은 메서드로 직접 전달해야 합니다. 마찬가지로, `Config` 파사드를 목킹하는 대신 테스트 내에서 `Config::set` 메서드를 사용하세요.
+> `Request` 파사드는 목킹해서는 안 됩니다. 대신 테스트 시 [HTTP 테스트 메서드](/docs/12.x/http-tests)에서 원하는 입력값을 `get`, `post`와 같은 메서드로 직접 전달해야 합니다. 마찬가지로, `Config` 파사드를 목킹하는 대신 테스트 내에서 `Config::set` 메서드를 사용하세요.
 
 <a name="facade-spies"></a>
 ### 파사드 스파이

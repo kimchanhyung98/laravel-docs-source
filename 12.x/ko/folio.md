@@ -338,4 +338,4 @@ Folio::path(resource_path('views/pages'))->middleware([
 <a name="route-caching"></a>
 ## 라우트 캐싱
 
-Folio를 사용할 때는 [라라벨의 라우트 캐싱 기능](/docs/{{version}}/routing#route-caching)을 적극 활용하는 것이 좋습니다. Folio는 `route:cache` 아티즌 명령어가 실행될 때 Folio 페이지 정의와 라우트 이름 또한 올바르게 캐싱하여 최고의 성능을 보장합니다.
+Folio를 사용할 때는 [라라벨의 라우트 캐싱 기능](/docs/12.x/routing#route-caching)을 적극 활용하는 것이 좋습니다. Folio는 `route:cache` 아티즌 명령어가 실행될 때 Folio 페이지 정의와 라우트 이름 또한 올바르게 캐싱하여 최고의 성능을 보장합니다.

@@ -27,7 +27,7 @@
 <a name="introduction"></a>
 ## 소개
 
-라라벨은 내장된 [인증](/docs/{{version}}/authentication) 기능 외에도, 특정 리소스에 대해 사용자의 행위를 인가(authorization)할 수 있는 간단한 방법을 제공합니다. 예를 들어, 사용자가 인증은 되어 있더라도 애플리케이션에서 관리되는 특정 Eloquent 모델이나 데이터베이스 레코드를 수정하거나 삭제할 권한이 없을 수 있습니다. 라라벨의 인가 기능은 이런 종류의 권한 검사를 쉽게, 그리고 체계적으로 관리할 수 있도록 도와줍니다.
+라라벨은 내장된 [인증](/docs/12.x/authentication) 기능 외에도, 특정 리소스에 대해 사용자의 행위를 인가(authorization)할 수 있는 간단한 방법을 제공합니다. 예를 들어, 사용자가 인증은 되어 있더라도 애플리케이션에서 관리되는 특정 Eloquent 모델이나 데이터베이스 레코드를 수정하거나 삭제할 권한이 없을 수 있습니다. 라라벨의 인가 기능은 이런 종류의 권한 검사를 쉽게, 그리고 체계적으로 관리할 수 있도록 도와줍니다.
 
 라라벨에서는 행위를 인가하는 두 가지 주요 방법을 제공합니다: [게이트(Gate)](#gates)와 [정책(Policy)](#creating-policies)입니다. 게이트와 정책은 각각 라우트(Route)와 컨트롤러(Controller)와 비슷하게 생각하시면 됩니다. 게이트는 클로저(익명 함수) 기반의 간단한 인가 방식을 제공하고, 정책은 컨트롤러처럼 특정 모델이나 리소스와 관련된 인가 로직을 묶어서 관리합니다. 이 문서에서는 먼저 게이트를, 이후에 정책을 살펴보겠습니다.
 
@@ -378,7 +378,7 @@ class PostPolicy
 아티즌 콘솔에서 정책을 생성할 때 `--model` 옵션을 사용했다면, `viewAny`, `view`, `create`, `update`, `delete`, `restore`, `forceDelete` 등 주요 행위에 대한 메서드가 미리 포함됩니다.
 
 > [!NOTE]
-> 모든 정책 클래스는 라라벨 [서비스 컨테이너](/docs/{{version}}/container)에 의해 resolve(해결)되므로, 생성자에서 필요한 의존성을 타입힌트로 선언하면 자동으로 주입됩니다.
+> 모든 정책 클래스는 라라벨 [서비스 컨테이너](/docs/12.x/container)에 의해 resolve(해결)되므로, 생성자에서 필요한 의존성을 타입힌트로 선언하면 자동으로 주입됩니다.
 
 <a name="policy-responses"></a>
 ### 정책 응답
@@ -661,7 +661,7 @@ public function create(Request $request): RedirectResponse
 <a name="via-middleware"></a>
 ### 미들웨어를 통한 인가
 
-라라벨에는 들어오는 HTTP 요청이 라우트나 컨트롤러에 도달하기 전에 인가를 미리 체크해주는 미들웨어가 포함되어 있습니다. 기본적으로 `Illuminate\Auth\Middleware\Authorize`는 `can` [미들웨어 별칭](/docs/{{version}}/middleware#middleware-aliases)으로 등록되어 있어, 바로 사용할 수 있습니다. 사용 예시는 다음과 같습니다.
+라라벨에는 들어오는 HTTP 요청이 라우트나 컨트롤러에 도달하기 전에 인가를 미리 체크해주는 미들웨어가 포함되어 있습니다. 기본적으로 `Illuminate\Auth\Middleware\Authorize`는 `can` [미들웨어 별칭](/docs/12.x/middleware#middleware-aliases)으로 등록되어 있어, 바로 사용할 수 있습니다. 사용 예시는 다음과 같습니다.
 
 ```php
 use App\Models\Post;
@@ -671,7 +671,7 @@ Route::put('/post/{post}', function (Post $post) {
 })->middleware('can:update,post');
 ```
 
-여기서 `can` 미들웨어에는 두 개의 인수를 전달합니다. 첫 번째는 인가하려는 액션명이고, 두 번째는 정책에 전달할 라우트 파라미터입니다. [암시적 모델 바인딩](/docs/{{version}}/routing#implicit-binding)을 사용하고 있으므로, 정책 메서드에는 `App\Models\Post` 인스턴스가 전달됩니다. 만약 인가되지 않은 경우엔 미들웨어에서 403 응답이 반환됩니다.
+여기서 `can` 미들웨어에는 두 개의 인수를 전달합니다. 첫 번째는 인가하려는 액션명이고, 두 번째는 정책에 전달할 라우트 파라미터입니다. [암시적 모델 바인딩](/docs/12.x/routing#implicit-binding)을 사용하고 있으므로, 정책 메서드에는 `App\Models\Post` 인스턴스가 전달됩니다. 만약 인가되지 않은 경우엔 미들웨어에서 403 응답이 반환됩니다.
 
 더 간편하게, `can` 메서드로 라우트에 직접 미들웨어를 붙일 수도 있습니다.
 
@@ -799,7 +799,7 @@ public function update(Request $request, Post $post): RedirectResponse
 
 비록 인가 로직은 반드시 서버에서 처리되어야 하지만, 프론트엔드에서도 인가 정보를 받아 UI를 적절히 그릴 수 있다면 편리합니다. 라라벨은 Inertia 기반 프론트엔드로 인가 정보 노출을 위한 특정한 규칙을 강제하지는 않습니다.
 
-하지만, 라라벨의 Inertia 기반 [스타터 키트](/docs/{{version}}/starter-kits)를 사용한다면 `HandleInertiaRequests` 미들웨어가 이미 애플리케이션에 포함되어 있습니다. 해당 미들웨어의 `share` 메서드에서, 모든 Inertia 페이지에 공통으로 전달할 데이터를 반환할 수 있습니다. 이렇게 하면 사용자에 대한 인가 정보를 이곳에서 정의해 프론트엔드로 넘길 수 있습니다.
+하지만, 라라벨의 Inertia 기반 [스타터 키트](/docs/12.x/starter-kits)를 사용한다면 `HandleInertiaRequests` 미들웨어가 이미 애플리케이션에 포함되어 있습니다. 해당 미들웨어의 `share` 메서드에서, 모든 Inertia 페이지에 공통으로 전달할 데이터를 반환할 수 있습니다. 이렇게 하면 사용자에 대한 인가 정보를 이곳에서 정의해 프론트엔드로 넘길 수 있습니다.
 
 ```php
 <?php

@@ -107,7 +107,7 @@ php artisan event:list
 <a name="event-discovery-in-production"></a>
 #### 운영 환경에서의 이벤트 탐색
 
-애플리케이션의 성능을 높이려면, `optimize` 또는 `event:cache` Artisan 명령어를 이용해 모든 리스너의 매니페스트를 캐싱해야 합니다. 이 명령어는 일반적으로 [배포 프로세스](/docs/{{version}}/deployment#optimization)에서 실행하는 것이 좋습니다. 캐시된 매니페스트는 프레임워크가 이벤트 등록을 더 빠르게 처리하도록 돕습니다. 이벤트 캐시를 삭제하려면 `event:clear` 명령어를 사용하면 됩니다.
+애플리케이션의 성능을 높이려면, `optimize` 또는 `event:cache` Artisan 명령어를 이용해 모든 리스너의 매니페스트를 캐싱해야 합니다. 이 명령어는 일반적으로 [배포 프로세스](/docs/12.x/deployment#optimization)에서 실행하는 것이 좋습니다. 캐시된 매니페스트는 프레임워크가 이벤트 등록을 더 빠르게 처리하도록 돕습니다. 이벤트 캐시를 삭제하려면 `event:clear` 명령어를 사용하면 됩니다.
 
 <a name="manually-registering-events"></a>
 ### 이벤트 수동 등록하기
@@ -160,7 +160,7 @@ public function boot(): void
 <a name="queuable-anonymous-event-listeners"></a>
 #### 큐잉 가능한 익명 이벤트 리스너
 
-클로저 기반 이벤트 리스너를 등록할 때, `Illuminate\Events\queueable` 함수를 사용해 리스너를 [큐](/docs/{{version}}/queues)에서 실행하도록 지정할 수 있습니다.
+클로저 기반 이벤트 리스너를 등록할 때, `Illuminate\Events\queueable` 함수를 사용해 리스너를 [큐](/docs/12.x/queues)에서 실행하도록 지정할 수 있습니다.
 
 ```php
 use App\Events\PodcastProcessed;
@@ -215,7 +215,7 @@ Event::listen('event.*', function (string $eventName, array $data) {
 <a name="defining-events"></a>
 ## 이벤트 정의하기
 
-이벤트 클래스는 이벤트와 관련된 데이터를 담는 컨테이너 역할을 합니다. 예를 들어, `App\Events\OrderShipped` 이벤트가 [Eloquent ORM](/docs/{{version}}/eloquent) 오브젝트를 전달받는다고 가정해봅니다.
+이벤트 클래스는 이벤트와 관련된 데이터를 담는 컨테이너 역할을 합니다. 예를 들어, `App\Events\OrderShipped` 이벤트가 [Eloquent ORM](/docs/12.x/eloquent) 오브젝트를 전달받는다고 가정해봅니다.
 
 ```php
 <?php
@@ -272,7 +272,7 @@ class SendShipmentNotification
 ```
 
 > [!NOTE]
-> 이벤트 리스너의 생성자에서 추가적인 의존성을 타입힌트로 지정할 수도 있습니다. 모든 이벤트 리스너는 라라벨 [서비스 컨테이너](/docs/{{version}}/container)에서 해석되므로, 의존성 주입이 자동 지원됩니다.
+> 이벤트 리스너의 생성자에서 추가적인 의존성을 타입힌트로 지정할 수도 있습니다. 모든 이벤트 리스너는 라라벨 [서비스 컨테이너](/docs/12.x/container)에서 해석되므로, 의존성 주입이 자동 지원됩니다.
 
 <a name="stopping-the-propagation-of-an-event"></a>
 #### 이벤트 전파(Propagation) 중단하기
@@ -282,7 +282,7 @@ class SendShipmentNotification
 <a name="queued-event-listeners"></a>
 ## 큐잉된(Queued) 이벤트 리스너
 
-리스너가 이메일 발송이나 외부 HTTP 요청처럼 시간이 오래 걸리는 작업을 수행한다면, 큐잉하는 것이 유리합니다. 큐잉된 리스너를 사용하려면 [큐를 설정](/docs/{{version}}/queues)하고, 서버나 로컬 개발 환경에서 큐 워커를 구동해야 합니다.
+리스너가 이메일 발송이나 외부 HTTP 요청처럼 시간이 오래 걸리는 작업을 수행한다면, 큐잉하는 것이 유리합니다. 큐잉된 리스너를 사용하려면 [큐를 설정](/docs/12.x/queues)하고, 서버나 로컬 개발 환경에서 큐 워커를 구동해야 합니다.
 
 리스너가 큐에 맡겨지도록 하려면, 해당 리스너 클래스에 `ShouldQueue` 인터페이스를 추가하면 됩니다. `make:listener` Artisan 명령어로 생성한 리스너에는 이 인터페이스를 즉시 사용할 수 있도록 자동 임포트되어 있습니다.
 
@@ -300,7 +300,7 @@ class SendShipmentNotification implements ShouldQueue
 }
 ```
 
-이제 이 리스너가 처리하는 이벤트가 발생하면, 이벤트 디스패처가 자동으로 이 리스너를 라라벨의 [큐 시스템](/docs/{{version}}/queues)에 큐잉합니다. 큐에서 리스너가 정상적으로 실행되면, 해당 작업은 자동으로 삭제됩니다.
+이제 이 리스너가 처리하는 이벤트가 발생하면, 이벤트 디스패처가 자동으로 이 리스너를 라라벨의 [큐 시스템](/docs/12.x/queues)에 큐잉합니다. 큐에서 리스너가 정상적으로 실행되면, 해당 작업은 자동으로 삭제됩니다.
 
 <a name="customizing-the-queue-connection-queue-name"></a>
 #### 큐 연결, 큐 이름, 지연 시간(custom delay) 지정
@@ -453,7 +453,7 @@ class SendShipmentNotification implements ShouldQueueAfterCommit
 ```
 
 > [!NOTE]
-> 이와 관련된 자세한 안내는 [큐 작업과 데이터베이스 트랜잭션](/docs/{{version}}/queues#jobs-and-database-transactions) 문서를 참고하시기 바랍니다.
+> 이와 관련된 자세한 안내는 [큐 작업과 데이터베이스 트랜잭션](/docs/12.x/queues#jobs-and-database-transactions) 문서를 참고하시기 바랍니다.
 
 <a name="handling-failed-jobs"></a>
 ### 실패한 작업 처리하기

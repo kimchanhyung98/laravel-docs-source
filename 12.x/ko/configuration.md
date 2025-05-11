@@ -106,7 +106,7 @@ APP_NAME="My Application"
 <a name="determining-the-current-environment"></a>
 ### 현재 환경 판별하기
 
-현재 애플리케이션 환경은 `.env` 파일의 `APP_ENV` 변수로 결정됩니다. 이 값은 `App` [파사드](/docs/{{version}}/facades)의 `environment` 메서드를 통해 가져올 수 있습니다.
+현재 애플리케이션 환경은 `.env` 파일의 `APP_ENV` 변수로 결정됩니다. 이 값은 `App` [파사드](/docs/12.x/facades)의 `environment` 메서드를 통해 가져올 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\App;
@@ -150,7 +150,7 @@ php artisan env:encrypt --key=3UVsEgGVK36XN82KKeyLFMhvosbZN1aF
 ```
 
 > [!NOTE]
-> 입력하는 키의 길이는 사용 중인 암호화 알고리즘이 요구하는 길이와 일치해야 합니다. 기본적으로 라라벨은 `AES-256-CBC` 알고리즘을 사용하며, 32자의 키가 필요합니다. 필요하면 `--cipher` 옵션을 추가하여 라라벨 [암호화기](/docs/{{version}}/encryption)가 지원하는 임의의 암호 기법을 사용할 수 있습니다.
+> 입력하는 키의 길이는 사용 중인 암호화 알고리즘이 요구하는 길이와 일치해야 합니다. 기본적으로 라라벨은 `AES-256-CBC` 알고리즘을 사용하며, 32자의 키가 필요합니다. 필요하면 `--cipher` 옵션을 추가하여 라라벨 [암호화기](/docs/12.x/encryption)가 지원하는 임의의 암호 기법을 사용할 수 있습니다.
 
 애플리케이션에 `.env`와 `.env.staging` 처럼 여러 환경 파일이 있다면, `--env` 옵션으로 암호화 대상 환경 파일을 지정할 수 있습니다.
 
@@ -364,7 +364,7 @@ php artisan up
 <a name="maintenance-mode-queues"></a>
 #### 점검 모드와 큐 작업
 
-애플리케이션이 점검 모드에 진입해 있는 동안에는 [큐 작업](/docs/{{version}}/queues)이 처리되지 않습니다. 점검 모드가 해제되면 큐 작업이 정상적으로 재개됩니다.
+애플리케이션이 점검 모드에 진입해 있는 동안에는 [큐 작업](/docs/12.x/queues)이 처리되지 않습니다. 점검 모드가 해제되면 큐 작업이 정상적으로 재개됩니다.
 
 <a name="alternatives-to-maintenance-mode"></a>
 #### 점검 모드의 대안

@@ -58,7 +58,7 @@ php artisan octane:install
 <a name="frankenphp-via-laravel-sail"></a>
 #### Laravel Sail에서 FrankenPHP 사용
 
-[Laravel Sail](/docs/{{version}}/sail)을 이용해 개발하려면 다음 명령어로 Octane 및 FrankenPHP를 설치하세요.
+[Laravel Sail](/docs/12.x/sail)을 이용해 개발하려면 다음 명령어로 Octane 및 FrankenPHP를 설치하세요.
 
 ```shell
 ./vendor/bin/sail up
@@ -147,7 +147,7 @@ FrankenPHP와 Docker 연동에 관한 자세한 내용은 [공식 FrankenPHP 문
 <a name="roadrunner-via-laravel-sail"></a>
 #### Laravel Sail에서 RoadRunner 사용
 
-[Laravel Sail](/docs/{{version}}/sail)을 이용해 개발할 경우, 아래 명령어로 Octane과 RoadRunner를 설치하세요.
+[Laravel Sail](/docs/12.x/sail)을 이용해 개발할 경우, 아래 명령어로 Octane과 RoadRunner를 설치하세요.
 
 ```shell
 ./vendor/bin/sail up
@@ -207,7 +207,7 @@ Laravel Octane을 Open Swoole과 함께 사용할 때도 Swoole과 동일하게,
 > [!WARNING]
 > Sail을 이용해 Octane 애플리케이션을 실행하기 전에, Laravel Sail의 최신 버전 사용을 확인하고 애플리케이션 루트에서 `./vendor/bin/sail build --no-cache`를 실행해야 합니다.
 
-또는, [Laravel Sail](/docs/{{version}}/sail) 공식 Docker 기반 개발 환경을 이용해 Swoole 기반 Octane 애플리케이션을 개발할 수 있습니다. Laravel Sail에는 기본적으로 Swoole 확장이 포함되어 있습니다. 단, Sail에서 사용하는 `docker-compose.yml` 파일을 직접 수정해야 합니다.
+또는, [Laravel Sail](/docs/12.x/sail) 공식 Docker 기반 개발 환경을 이용해 Swoole 기반 Octane 애플리케이션을 개발할 수 있습니다. Laravel Sail에는 기본적으로 Swoole 확장이 포함되어 있습니다. 단, Sail에서 사용하는 `docker-compose.yml` 파일을 직접 수정해야 합니다.
 
 먼저, `docker-compose.yml` 파일의 `laravel.test` 서비스 정의에 `SUPERVISOR_PHP_COMMAND` 환경 변수를 추가합니다. 이 변수를 통해 Sail이 Octane을 이용해 애플리케이션을 실행하도록 지정합니다.
 

@@ -80,7 +80,7 @@ Route::get('/', function (Service $service) {
 
 위 예제에서 앱의 `/` 경로에 접근하면, `Service` 클래스가 자동으로 해석되어 해당 라우트 핸들러에 주입됩니다. 이 기능은 개발에 큰 변화를 가져다줍니다. 즉, 복잡한 설정 파일에 신경쓰지 않고도 의존성 주입의 장점을 마음껏 누릴 수 있으니, 개발이 매우 빠르고 유연해집니다.
 
-라라벨 애플리케이션을 개발할 때 여러분이 작성하는 대부분의 클래스(예: [컨트롤러](/docs/{{version}}/controllers), [이벤트 리스너](/docs/{{version}}/events), [미들웨어](/docs/{{version}}/middleware) 등)는 컨테이너를 통해 자동으로 의존성을 주입받습니다. 또한 [큐 작업](/docs/{{version}}/queues)의 `handle` 메서드에서도 의존성을 타입힌트로 지정해 주입받을 수 있습니다. 한 번 이 자동 의존성 주입의 편의성을 경험하면, 이제는 의존성 주입 없는 개발은 상상할 수 없을 정도입니다.
+라라벨 애플리케이션을 개발할 때 여러분이 작성하는 대부분의 클래스(예: [컨트롤러](/docs/12.x/controllers), [이벤트 리스너](/docs/12.x/events), [미들웨어](/docs/12.x/middleware) 등)는 컨테이너를 통해 자동으로 의존성을 주입받습니다. 또한 [큐 작업](/docs/12.x/queues)의 `handle` 메서드에서도 의존성을 타입힌트로 지정해 주입받을 수 있습니다. 한 번 이 자동 의존성 주입의 편의성을 경험하면, 이제는 의존성 주입 없는 개발은 상상할 수 없을 정도입니다.
 
 <a name="when-to-use-the-container"></a>
 ### 컨테이너를 언제 사용해야 할까?
@@ -95,12 +95,12 @@ Route::get('/', function (Request $request) {
 });
 ```
 
-실제로는 자동 의존성 주입과 [파사드](/docs/{{version}}/facades) 덕분에, 대부분의 라라벨 애플리케이션을 작성할 때 컨테이너 바인딩이나 해석을 직접 신경 쓰지 않아도 됩니다.  
+실제로는 자동 의존성 주입과 [파사드](/docs/12.x/facades) 덕분에, 대부분의 라라벨 애플리케이션을 작성할 때 컨테이너 바인딩이나 해석을 직접 신경 쓰지 않아도 됩니다.  
 **그렇다면 언제 직접 컨테이너와 상호작용해야 할까요?** 대표적인 두 가지 상황이 있습니다.
 
 첫째, 어떤 인터페이스를 구현한 클래스를 만들고, 해당 인터페이스를 라우트나 생성자에서 타입힌트로 지정하려는 경우입니다. 이때는 [컨테이너에 어떤 구현체를 사용할지 알려줘야 합니다](#binding-interfaces-to-implementations).
 
-둘째, 다른 개발자들과 공유할 예정인 [라라벨 패키지](/docs/{{version}}/packages)를 만들 때, 패키지의 서비스를 컨테이너에 바인딩해야 할 수 있습니다.
+둘째, 다른 개발자들과 공유할 예정인 [라라벨 패키지](/docs/12.x/packages)를 만들 때, 패키지의 서비스를 컨테이너에 바인딩해야 할 수 있습니다.
 
 <a name="binding"></a>
 ## 바인딩
@@ -111,7 +111,7 @@ Route::get('/', function (Request $request) {
 <a name="simple-bindings"></a>
 #### 간단한 바인딩
 
-대부분의 서비스 컨테이너 바인딩은 [서비스 프로바이더](/docs/{{version}}/providers)에서 등록합니다. 그래서 이 문서의 예시들도 주로 서비스 프로바이더에서 컨테이너를 사용하는 방법을 보여줍니다.
+대부분의 서비스 컨테이너 바인딩은 [서비스 프로바이더](/docs/12.x/providers)에서 등록합니다. 그래서 이 문서의 예시들도 주로 서비스 프로바이더에서 컨테이너를 사용하는 방법을 보여줍니다.
 
 서비스 프로바이더 내부에서는 항상 `$this->app` 프로퍼티를 통해 컨테이너에 접근할 수 있습니다. `bind` 메서드를 사용해서 바인딩을 등록할 수 있는데, 바인딩하려는 클래스 또는 인터페이스 이름과 해당 클래스를 생성해 반환하는 클로저를 전달합니다.
 
@@ -127,7 +127,7 @@ $this->app->bind(Transistor::class, function (Application $app) {
 
 위 예시에서처럼, 클로저의 인자로 컨테이너 자체가 주입되므로, 해당 객체의 하위 의존성도 컨테이너를 이용해 쉽게 해결할 수 있습니다.
 
-앞서 언급했듯이 일반적으로 서비스 프로바이더 내에서 컨테이너를 사용하는 경우가 많지만, 서비스 프로바이더 외부에서도 [파사드](/docs/{{version}}/facades)를 통해 컨테이너에 접근할 수 있습니다.
+앞서 언급했듯이 일반적으로 서비스 프로바이더 내에서 컨테이너를 사용하는 경우가 많지만, 서비스 프로바이더 외부에서도 [파사드](/docs/12.x/facades)를 통해 컨테이너에 접근할 수 있습니다.
 
 ```php
 use App\Services\Transistor;
@@ -184,7 +184,7 @@ $this->app->singletonIf(Transistor::class, function (Application $app) {
 <a name="binding-scoped"></a>
 #### 스코프드(Scoped) 싱글톤 바인딩
 
-`scoped` 메서드는, 라라벨의 특정 요청 또는 작업(job) 생명주기 내에서 한 번만 해결되는 객체를 바인딩합니다. 즉, 일반적인 싱글톤과 비슷하지만, `scoped`로 등록된 객체는 [Laravel Octane](/docs/{{version}}/octane) 워커가 새로운 요청을 처리하거나, 라라벨 [큐 워커](/docs/{{version}}/queues)가 새로운 작업을 맡을 때마다 인스턴스가 초기화(플러시)됩니다.
+`scoped` 메서드는, 라라벨의 특정 요청 또는 작업(job) 생명주기 내에서 한 번만 해결되는 객체를 바인딩합니다. 즉, 일반적인 싱글톤과 비슷하지만, `scoped`로 등록된 객체는 [Laravel Octane](/docs/12.x/octane) 워커가 새로운 요청을 처리하거나, 라라벨 [큐 워커](/docs/12.x/queues)가 새로운 작업을 맡을 때마다 인스턴스가 초기화(플러시)됩니다.
 
 ```php
 use App\Services\Transistor;
@@ -246,7 +246,7 @@ public function __construct(
 <a name="contextual-binding"></a>
 ### 컨텍스트 바인딩
 
-때때로 동일한 인터페이스를 사용하는 두 클래스가 있지만, 각 클래스마다 서로 다른 구현체를 주입하고 싶을 수 있습니다. 예를 들어, 두 컨트롤러가 각각 다른 `Illuminate\Contracts\Filesystem\Filesystem` [컨트랙트](/docs/{{version}}/contracts) 구현을 필요로 할 수 있습니다. 라라벨은 이러한 경우를 위한 간단하고 유연한 인터페이스를 제공합니다.
+때때로 동일한 인터페이스를 사용하는 두 클래스가 있지만, 각 클래스마다 서로 다른 구현체를 주입하고 싶을 수 있습니다. 예를 들어, 두 컨트롤러가 각각 다른 `Illuminate\Contracts\Filesystem\Filesystem` [컨트랙트](/docs/12.x/contracts) 구현을 필요로 할 수 있습니다. 라라벨은 이러한 경우를 위한 간단하고 유연한 인터페이스를 제공합니다.
 
 ```php
 use App\Http\Controllers\PhotoController;
@@ -273,7 +273,7 @@ $this->app->when([VideoController::class, UploadController::class])
 
 컨텍스트 바인딩은 주로 드라이버나 설정 값을 주입할 때 많이 사용되므로, 라라벨에서는 이러한 값들을 속성(attribute)을 활용해 더 쉽게 주입할 수 있도록 다양한 컨텍스트 바인딩 속성을 제공합니다.
 
-예를 들어, `Storage` 속성(attribute)을 사용하면, 특정 [스토리지 디스크](/docs/{{version}}/filesystem)를 쉽게 주입할 수 있습니다.
+예를 들어, `Storage` 속성(attribute)을 사용하면, 특정 [스토리지 디스크](/docs/12.x/filesystem)를 쉽게 주입할 수 있습니다.
 
 ```php
 <?php
@@ -546,7 +546,7 @@ if ($this->app->bound(Transistor::class)) {
 }
 ```
 
-서비스 프로바이더 외부 등 `$app` 변수에 접근할 수 없는 곳에서는 `App` [파사드](/docs/{{version}}/facades)나 `app` [헬퍼](/docs/{{version}}/helpers#method-app)를 사용해 인스턴스를 해석할 수 있습니다.
+서비스 프로바이더 외부 등 `$app` 변수에 접근할 수 없는 곳에서는 `App` [파사드](/docs/12.x/facades)나 `app` [헬퍼](/docs/12.x/helpers#method-app)를 사용해 인스턴스를 해석할 수 있습니다.
 
 ```php
 use App\Services\Transistor;
@@ -573,7 +573,7 @@ public function __construct(
 <a name="automatic-injection"></a>
 ### 자동 주입
 
-그 외에도, 일반적으로 많이 사용하는 방식은 컨테이너가 해석하는 클래스(예: [컨트롤러](/docs/{{version}}/controllers), [이벤트 리스너](/docs/{{version}}/events), [미들웨어](/docs/{{version}}/middleware) 등)의 생성자에서 의존성을 타입힌트로 명시하는 것입니다. [큐 작업](/docs/{{version}}/queues)의 `handle` 메서드에서도 동일하게 활용할 수 있습니다.  
+그 외에도, 일반적으로 많이 사용하는 방식은 컨테이너가 해석하는 클래스(예: [컨트롤러](/docs/12.x/controllers), [이벤트 리스너](/docs/12.x/events), [미들웨어](/docs/12.x/middleware) 등)의 생성자에서 의존성을 타입힌트로 명시하는 것입니다. [큐 작업](/docs/12.x/queues)의 `handle` 메서드에서도 동일하게 활용할 수 있습니다.  
 이 방법이 가장 실무에서 많이 쓰이며, 대부분의 객체를 이런 식으로 컨테이너에 의존해 작성하면 됩니다.
 
 예를 들어, 아래처럼 애플리케이션에서 정의한 서비스를 컨트롤러의 생성자에서 타입힌트로 명시하면, 서비스가 자동으로 해석되어 클래스에 주입됩니다.

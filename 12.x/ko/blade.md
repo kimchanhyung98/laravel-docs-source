@@ -51,7 +51,7 @@
 
 Blade는 라라벨에 기본 내장된 간단하면서도 강력한 템플릿 엔진입니다. 일부 PHP 템플릿 엔진과는 달리 Blade는 템플릿에서 순수 PHP 코드를 자유롭게 사용할 수 있습니다. 실제로, 모든 Blade 템플릿은 순수 PHP 코드로 컴파일되어 변경될 때까지 캐시되므로, 사실상 애플리케이션에 거의 오버헤드를 추가하지 않습니다. Blade 템플릿 파일은 `.blade.php` 확장자를 사용하며 보통 `resources/views` 디렉터리에 저장합니다.
 
-Blade 뷰는 전역 `view` 헬퍼를 이용하여 라우트나 컨트롤러에서 반환할 수 있습니다. 물론 [뷰](/docs/{{version}}/views) 문서에서 설명했듯이, `view` 헬퍼의 두 번째 인수를 통해 Blade 뷰로 데이터를 전달할 수도 있습니다.
+Blade 뷰는 전역 `view` 헬퍼를 이용하여 라우트나 컨트롤러에서 반환할 수 있습니다. 물론 [뷰](/docs/12.x/views) 문서에서 설명했듯이, `view` 헬퍼의 두 번째 인수를 통해 Blade 뷰로 데이터를 전달할 수도 있습니다.
 
 ```php
 Route::get('/', function () {
@@ -236,7 +236,7 @@ Hello, @{{ name }}.
 <a name="authentication-directives"></a>
 #### 인증 지시문
 
-`@auth`와 `@guest` 지시문을 사용하여 현재 사용자가 [인증](/docs/{{version}}/authentication) 상태인지, 게스트인지 쉽게 확인할 수 있습니다.
+`@auth`와 `@guest` 지시문을 사용하여 현재 사용자가 [인증](/docs/12.x/authentication) 상태인지, 게스트인지 쉽게 확인할 수 있습니다.
 
 ```blade
 @auth
@@ -311,7 +311,7 @@ Hello, @{{ name }}.
 <a name="session-directives"></a>
 #### 세션 지시문
 
-`@session` 지시문을 사용하면 [세션](/docs/{{version}}/session) 값이 존재하는지 확인할 수 있습니다. 세션 값이 있으면 `@session`과 `@endsession` 사이의 템플릿 내용이 평가됩니다. 이 블록 안에서는 `$value` 변수를 출력하여 세션 값을 표시할 수 있습니다.
+`@session` 지시문을 사용하면 [세션](/docs/12.x/session) 값이 존재하는지 확인할 수 있습니다. 세션 값이 있으면 `@session`과 `@endsession` 사이의 템플릿 내용이 평가됩니다. 이 블록 안에서는 `$value` 변수를 출력하여 세션 값을 표시할 수 있습니다.
 
 ```blade
 @session('status')
@@ -979,7 +979,7 @@ return function (array $data) {
 <a name="additional-dependencies"></a>
 #### 추가 의존성 주입
 
-컴포넌트에서 라라벨의 [서비스 컨테이너](/docs/{{version}}/container)로부터 의존성을 주입받고 싶을 때에는 생성자의 데이터 속성 앞에 의존성 목록을 선언하면 됩니다. 서비스 컨테이너에 의해 자동으로 주입됩니다.
+컴포넌트에서 라라벨의 [서비스 컨테이너](/docs/12.x/container)로부터 의존성을 주입받고 싶을 때에는 생성자의 데이터 속성 앞에 의존성 목록을 선언하면 됩니다. 서비스 컨테이너에 의해 자동으로 주입됩니다.
 
 ```php
 use App\Services\AlertCreator;
@@ -1539,7 +1539,7 @@ Blade는 컴포넌트 이름을 파스칼 케이스로 변환해서 해당하는
 
 앞서 언급한 것처럼, 익명 컴포넌트는 일반적으로 `resources/views/components` 디렉터리에 Blade 템플릿 파일을 배치해 정의합니다. 하지만 때로는 이 기본 위치 외에 다른 익명 컴포넌트 경로를 별도로 등록하고 싶을 수도 있습니다.
 
-`anonymousComponentPath` 메서드는 첫 번째 인자로 익명 컴포넌트가 위치한 "경로(path)"를, 두 번째 인자로(optional) 해당 경로에 적용할 네임스페이스를 받습니다. 이 메서드는 보통 애플리케이션의 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 호출하면 됩니다.
+`anonymousComponentPath` 메서드는 첫 번째 인자로 익명 컴포넌트가 위치한 "경로(path)"를, 두 번째 인자로(optional) 해당 경로에 적용할 네임스페이스를 받습니다. 이 메서드는 보통 애플리케이션의 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 호출하면 됩니다.
 
 ```php
 /**
@@ -1711,7 +1711,7 @@ Route::get('/tasks', function () {
 <a name="csrf-field"></a>
 ### CSRF 필드
 
-애플리케이션 내에서 HTML 폼을 정의할 때는, [CSRF 보호 미들웨어](/docs/{{version}}/csrf)가 요청을 검증할 수 있도록 반드시 hidden CSRF 토큰 필드를 포함해야 합니다. `@csrf` Blade 지시어를 사용하면 토큰 필드를 쉽게 생성할 수 있습니다.
+애플리케이션 내에서 HTML 폼을 정의할 때는, [CSRF 보호 미들웨어](/docs/12.x/csrf)가 요청을 검증할 수 있도록 반드시 hidden CSRF 토큰 필드를 포함해야 합니다. `@csrf` Blade 지시어를 사용하면 토큰 필드를 쉽게 생성할 수 있습니다.
 
 ```blade
 <form method="POST" action="/profile">
@@ -1737,7 +1737,7 @@ HTML 폼은 `PUT`, `PATCH`, `DELETE` 요청을 직접 전송할 수 없으므로
 <a name="validation-errors"></a>
 ### 유효성 검증 에러(Validation Errors)
 
-`@error` 지시어를 사용하면 [유효성 검증 에러 메시지](/docs/{{version}}/validation#quick-displaying-the-validation-errors)가 특정 속성(attribute)에 존재하는지 빠르게 확인할 수 있습니다. `@error` 블록 안에서는 `$message` 변수를 출력해 에러 메시지를 표시할 수 있습니다.
+`@error` 지시어를 사용하면 [유효성 검증 에러 메시지](/docs/12.x/validation#quick-displaying-the-validation-errors)가 특정 속성(attribute)에 존재하는지 빠르게 확인할 수 있습니다. `@error` 블록 안에서는 `$message` 변수를 출력해 에러 메시지를 표시할 수 있습니다.
 
 ```blade
 <!-- /resources/views/post/create.blade.php -->
@@ -1769,7 +1769,7 @@ HTML 폼은 `PUT`, `PATCH`, `DELETE` 요청을 직접 전송할 수 없으므로
 />
 ```
 
-[별도의 에러 백(error bag)이 있을 때](/docs/{{version}}/validation#named-error-bags), `@error` 지시어의 두 번째 인자로 백 이름을 넘겨 여러 개의 폼이 있는 페이지에서 특정 폼에 대한 에러 메시지를 가져올 수도 있습니다.
+[별도의 에러 백(error bag)이 있을 때](/docs/12.x/validation#named-error-bags), `@error` 지시어의 두 번째 인자로 백 이름을 넘겨 여러 개의 폼이 있는 페이지에서 특정 폼에 대한 에러 메시지를 가져올 수도 있습니다.
 
 ```blade
 <!-- /resources/views/auth.blade.php -->
@@ -1834,7 +1834,7 @@ Blade에서는 이름이 지정된 스택(stack)에 내용을 추가(`push`)하�
 <a name="service-injection"></a>
 ## 서비스 주입(Service Injection)
 
-`@inject` 디렉티브를 사용하면 Laravel [서비스 컨테이너](/docs/{{version}}/container)에서 서비스를 가져올 수 있습니다. `@inject`의 첫 번째 인자는 주입받을 변수의 이름이고, 두 번째 인자는 가져오고 싶은 서비스의 클래스 또는 인터페이스 이름입니다.
+`@inject` 디렉티브를 사용하면 Laravel [서비스 컨테이너](/docs/12.x/container)에서 서비스를 가져올 수 있습니다. `@inject`의 첫 번째 인자는 주입받을 변수의 이름이고, 두 번째 인자는 가져오고 싶은 서비스의 클래스 또는 인터페이스 이름입니다.
 
 ```blade
 @inject('metrics', 'App\Services\MetricsService')

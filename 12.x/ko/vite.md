@@ -57,7 +57,7 @@ Vite 스캐폴딩을 사용해 새 라라벨 애플리케이션을 시작했지�
 ## 설치 및 설정
 
 > [!NOTE]
-> 아래 문서는 Laravel Vite 플러그인을 수동으로 설치 및 설정하는 방법을 다룹니다. 하지만, 라라벨의 [스타터 키트](/docs/{{version}}/starter-kits)는 이미 모든 스캐폴딩을 포함하고 있으므로, 라라벨과 Vite를 가장 빠르게 시작하려면 스타터 키트 사용을 권장합니다.
+> 아래 문서는 Laravel Vite 플러그인을 수동으로 설치 및 설정하는 방법을 다룹니다. 하지만, 라라벨의 [스타터 키트](/docs/12.x/starter-kits)는 이미 모든 스캐폴딩을 포함하고 있으므로, 라라벨과 Vite를 가장 빠르게 시작하려면 스타터 키트 사용을 권장합니다.
 
 <a name="installing-node"></a>
 ### Node 설치
@@ -69,7 +69,7 @@ node -v
 npm -v
 ```
 
-Node와 NPM의 최신 버전은 [공식 Node 웹사이트](https://nodejs.org/en/download/)에서 제공하는 그래픽 설치 프로그램으로 간단히 설치할 수 있습니다. 또는 [Laravel Sail](https://laravel.com/docs/{{version}}/sail)을 사용하는 경우, Sail을 통해 Node와 NPM을 실행할 수도 있습니다.
+Node와 NPM의 최신 버전은 [공식 Node 웹사이트](https://nodejs.org/en/download/)에서 제공하는 그래픽 설치 프로그램으로 간단히 설치할 수 있습니다. 또는 [Laravel Sail](https://laravel.com/docs/12.x/sail)을 사용하는 경우, Sail을 통해 Node와 NPM을 실행할 수도 있습니다.
 
 ```shell
 ./vendor/bin/sail node -v
@@ -136,7 +136,7 @@ Laravel 플러그인은 여러 엔트리 포인트 지정, SSR용 엔트리 포�
 
 로컬 개발 웹 서버가 HTTPS로 애플리케이션을 제공하는 경우, Vite 개발 서버와 연결할 때 문제가 발생할 수 있습니다.
 
-[Laravel Herd](https://herd.laravel.com)를 사용해 사이트에 보안(secure) 처리를 했거나, [Laravel Valet](/docs/{{version}}/valet)에서 [secure 명령어](/docs/{{version}}/valet#securing-sites)를 실행했다면, Laravel Vite 플러그인은 자동으로 생성된 TLS 인증서를 감지해서 사용합니다.
+[Laravel Herd](https://herd.laravel.com)를 사용해 사이트에 보안(secure) 처리를 했거나, [Laravel Valet](/docs/12.x/valet)에서 [secure 명령어](/docs/12.x/valet#securing-sites)를 실행했다면, Laravel Vite 플러그인은 자동으로 생성된 TLS 인증서를 감지해서 사용합니다.
 
 만약 사이트 이름과 애플리케이션 디렉터리명이 일치하지 않는 호스트를 별도로 보안 처리했다면, `vite.config.js` 파일에서 직접 host를 아래와 같이 지정할 수 있습니다.
 
@@ -180,7 +180,7 @@ export default defineConfig({
 <a name="configuring-hmr-in-sail-on-wsl2"></a>
 #### WSL2 기반 Sail에서 개발 서버 실행하기
 
-Windows Subsystem for Linux 2(WSL2)에서 [Laravel Sail](/docs/{{version}}/sail)로 Vite 개발 서버를 실행할 때는, 개발 서버와 브라우저가 통신할 수 있도록 `vite.config.js` 파일에 다음 설정을 추가해야 합니다.
+Windows Subsystem for Linux 2(WSL2)에서 [Laravel Sail](/docs/12.x/sail)로 Vite 개발 서버를 실행할 때는, 개발 서버와 브라우저가 통신할 수 있도록 `vite.config.js` 파일에 다음 설정을 추가해야 합니다.
 
 ```js
 // ...
@@ -269,7 +269,7 @@ npm run dev
 npm run build
 ```
 
-[WSL2 기반 Sail](/docs/{{version}}/sail)에서 개발 서버를 실행하는 경우, [추가 설정](#configuring-hmr-in-sail-on-wsl2)이 필요할 수 있습니다.
+[WSL2 기반 Sail](/docs/12.x/sail)에서 개발 서버를 실행하는 경우, [추가 설정](#configuring-hmr-in-sail-on-wsl2)이 필요할 수 있습니다.
 
 <a name="working-with-scripts"></a>
 ## 자바스크립트 작업
@@ -341,7 +341,7 @@ export default defineConfig({
 ```
 
 > [!NOTE]
-> 라라벨의 [스타터 키트](/docs/{{version}}/starter-kits)에는 적절한 라라벨, Vue, Vite 설정이 이미 포함되어 있습니다. 스타터 키트를 사용하면 라라벨, Vue, Vite를 가장 빠르게 시작할 수 있습니다.
+> 라라벨의 [스타터 키트](/docs/12.x/starter-kits)에는 적절한 라라벨, Vue, Vite 설정이 이미 포함되어 있습니다. 스타터 키트를 사용하면 라라벨, Vue, Vite를 가장 빠르게 시작할 수 있습니다.
 
 <a name="react"></a>
 ### React
@@ -379,7 +379,7 @@ JSX가 포함된 파일은 확장자를 `.jsx` 또는 `.tsx`로 지정해야 하
 `@viteReactRefresh` 디렉티브는 반드시 `@vite` 디렉티브보다 먼저 호출되어야 합니다.
 
 > [!NOTE]
-> 라라벨의 [스타터 키트](/docs/{{version}}/starter-kits)에는 적절한 라라벨, React, Vite 설정이 이미 포함되어 있습니다. 스타터 키트를 사용하면 라라벨, React, Vite를 가장 빠르게 시작할 수 있습니다.
+> 라라벨의 [스타터 키트](/docs/12.x/starter-kits)에는 적절한 라라벨, React, Vite 설정이 이미 포함되어 있습니다. 스타터 키트를 사용하면 라라벨, React, Vite를 가장 빠르게 시작할 수 있습니다.
 
 <a name="inertia"></a>
 ### Inertia
@@ -404,7 +404,7 @@ createInertiaApp({
 Inertia와 함께 Vite의 코드 스플리팅 기능을 사용하는 경우, [에셋 프리페칭](#asset-prefetching) 설정을 권장합니다.
 
 > [!NOTE]
-> 라라벨의 [스타터 키트](/docs/{{version}}/starter-kits)에는 Inertia, Vite와 관련된 최적의 설정도 모두 포함되어 있습니다. 이 키트들을 사용하면 훨씬 빠르게 시작할 수 있습니다.
+> 라라벨의 [스타터 키트](/docs/12.x/starter-kits)에는 Inertia, Vite와 관련된 최적의 설정도 모두 포함되어 있습니다. 이 키트들을 사용하면 훨씬 빠르게 시작할 수 있습니다.
 
 <a name="url-processing"></a>
 ### URL 처리
@@ -440,7 +440,7 @@ resources/
 ## 스타일시트 작업
 
 > [!NOTE]
-> 라라벨의 [스타터 키트](/docs/{{version}}/starter-kits)에는 Tailwind와 Vite가 이미 최적 설정된 상태로 포함되어 있습니다. 스타터 키트 없이 Tailwind와 Laravel을 함께 쓰고 싶으면, [Tailwind의 라라벨 설치 가이드](https://tailwindcss.com/docs/guides/laravel)를 참고하세요.
+> 라라벨의 [스타터 키트](/docs/12.x/starter-kits)에는 Tailwind와 Vite가 이미 최적 설정된 상태로 포함되어 있습니다. 스타터 키트 없이 Tailwind와 Laravel을 함께 쓰고 싶으면, [Tailwind의 라라벨 설치 가이드](https://tailwindcss.com/docs/guides/laravel)를 참고하세요.
 
 새로운 모든 라라벨 애플리케이션에는 기본적으로 Tailwind와 적절히 설정된 `vite.config.js`가 포함되어 있습니다. 따라서 Vite 개발 서버를 즉시 실행하거나, 아래처럼 Composer로 `dev` 명령어를 실행하면 라라벨과 Vite 개발 서버가 함께 시작됩니다.
 
@@ -541,7 +541,7 @@ export default defineConfig({
 <a name="blade-aliases"></a>
 ### 별칭
 
-자바스크립트 프로젝트에서는 자주 참조하는 디렉터리로의 [별칭(Alias)를 만드는 것](#aliases)이 일반적입니다. Blade에서도 `Illuminate\Support\Facades\Vite` 클래스의 `macro` 메서드를 활용해 자체 별칭을 만들 수 있습니다. 일반적으로 "매크로"는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 정의합니다.
+자바스크립트 프로젝트에서는 자주 참조하는 디렉터리로의 [별칭(Alias)를 만드는 것](#aliases)이 일반적입니다. Blade에서도 `Illuminate\Support\Facades\Vite` 클래스의 `macro` 메서드를 활용해 자체 별칭을 만들 수 있습니다. 일반적으로 "매크로"는 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 정의합니다.
 
 ```php
 /**
@@ -565,7 +565,7 @@ public function boot(): void
 
 Vite의 코드 스플리팅(code splitting) 기능을 활용해 SPA를 구축하면, 각 페이지 이동 시마다 필요한 에셋이 개별적으로 불러와집니다. 이 동작은 사용자 인터페이스(UI) 렌더링 지연 문제로 이어질 수 있습니다. 만약 여러분이 사용하는 프론트엔드 프레임워크에서 이 현상이 문제가 된다면, 라라벨은 최초 페이지 로딩 시 애플리케이션의 JavaScript와 CSS 에셋을 미리 프리페치하도록 지원합니다.
 
-애플리케이션의 [서비스 프로바이더](/docs/{{version}}/providers) 내 `boot` 메서드에서 `Vite::prefetch` 메서드를 호출하면, 에셋을 선제적으로 프리페치할 수 있습니다.
+애플리케이션의 [서비스 프로바이더](/docs/12.x/providers) 내 `boot` 메서드에서 `Vite::prefetch` 메서드를 호출하면, 에셋을 선제적으로 프리페치할 수 있습니다.
 
 ```php
 <?php
@@ -753,7 +753,7 @@ php artisan inertia:start-ssr
 ```
 
 > [!NOTE]
-> 라라벨의 [스타터 키트](/docs/{{version}}/starter-kits)에는 이미 Laravel, Inertia SSR, Vite가 올바르게 구성되어 있습니다. 이 스타터 키트들은 Laravel, Inertia SSR, Vite를 가장 신속하게 시작할 수 있는 방법을 제공합니다.
+> 라라벨의 [스타터 키트](/docs/12.x/starter-kits)에는 이미 Laravel, Inertia SSR, Vite가 올바르게 구성되어 있습니다. 이 스타터 키트들은 Laravel, Inertia SSR, Vite를 가장 신속하게 시작할 수 있는 방법을 제공합니다.
 
 <a name="script-and-style-attributes"></a>
 ## Script 및 Style 태그 속성
@@ -761,7 +761,7 @@ php artisan inertia:start-ssr
 <a name="content-security-policy-csp-nonce"></a>
 ### Content Security Policy (CSP) Nonce
 
-[Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) 구현을 위해 script, style 태그에 [nonce 속성](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce)을 추가하려면, 커스텀 [미들웨어](/docs/{{version}}/middleware)에서 `useCspNonce` 메서드를 사용해 nonce를 생성하거나 지정하면 됩니다.
+[Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) 구현을 위해 script, style 태그에 [nonce 속성](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/nonce)을 추가하려면, 커스텀 [미들웨어](/docs/12.x/middleware)에서 `useCspNonce` 메서드를 사용해 nonce를 생성하거나 지정하면 됩니다.
 
 ```php
 <?php
@@ -793,7 +793,7 @@ class AddContentSecurityPolicyHeaders
 
 `useCspNonce` 메서드 실행 이후, 라라벨이 생성하는 모든 script 및 style 태그에 `nonce` 속성이 자동으로 부여됩니다.
 
-이 nonce가 다른 곳(예: [Ziggy의 `@route` 디렉티브](https://github.com/tighten/ziggy#using-routes-with-a-content-security-policy), 라라벨 [스타터 키트](/docs/{{version}}/starter-kits) 포함)에서 필요하다면, `cspNonce` 메서드를 통해 가져올 수 있습니다.
+이 nonce가 다른 곳(예: [Ziggy의 `@route` 디렉티브](https://github.com/tighten/ziggy#using-routes-with-a-content-security-policy), 라라벨 [스타터 키트](/docs/12.x/starter-kits) 포함)에서 필요하다면, `cspNonce` 메서드를 통해 가져올 수 있습니다.
 
 ```blade
 @routes(nonce: Vite::cspNonce())
@@ -848,7 +848,7 @@ Vite::useIntegrityKey(false);
 <a name="arbitrary-attributes"></a>
 ### 임의의 속성 추가
 
-script 및 style 태그에 추가적으로 속성을 부여해야 한다면, [data-turbo-track](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change) 속성 등 다양한 속성을 `useScriptTagAttributes`, `useStyleTagAttributes` 메서드로 지정할 수 있습니다. 일반적으로 이런 메서드는 [서비스 프로바이더](/docs/{{version}}/providers)에서 호출합니다.
+script 및 style 태그에 추가적으로 속성을 부여해야 한다면, [data-turbo-track](https://turbo.hotwired.dev/handbook/drive#reloading-when-assets-change) 속성 등 다양한 속성을 `useScriptTagAttributes`, `useStyleTagAttributes` 메서드로 지정할 수 있습니다. 일반적으로 이런 메서드는 [서비스 프로바이더](/docs/12.x/providers)에서 호출합니다.
 
 ```php
 use Illuminate\Support\Facades\Vite;

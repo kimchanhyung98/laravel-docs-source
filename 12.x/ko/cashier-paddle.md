@@ -368,7 +368,7 @@ Route::get('/subscribe', function (Request $request) {
 <a name="quickstart-building-a-subscribed-middleware"></a>
 #### 구독 사용자 미들웨어 만들기
 
-편의상, 들어오는 요청의 사용자가 구독 중인지 판단하는 [미들웨어](/docs/{{version}}/middleware)를 만들어 사용할 수도 있습니다. 이 미들웨어를 라우트에 할당하면, 구독하지 않은 사용자가 해당 라우트에 접근하지 못하도록 제어할 수 있습니다.
+편의상, 들어오는 요청의 사용자가 구독 중인지 판단하는 [미들웨어](/docs/12.x/middleware)를 만들어 사용할 수도 있습니다. 이 미들웨어를 라우트에 할당하면, 구독하지 않은 사용자가 해당 라우트에 접근하지 못하도록 제어할 수 있습니다.
 
 ```php
 <?php
@@ -461,7 +461,7 @@ Route::get('/buy', function (Request $request) {
 });
 ```
 
-Cashier는 `paddle-button` [Blade 컴포넌트](/docs/{{version}}/blade#components)를 내장하고 있습니다. 체크아웃 세션을 "prop"으로 전달한 후, 버튼을 클릭하면 Paddle의 체크아웃 위젯이 표시됩니다.
+Cashier는 `paddle-button` [Blade 컴포넌트](/docs/12.x/blade#components)를 내장하고 있습니다. 체크아웃 세션을 "prop"으로 전달한 후, 버튼을 클릭하면 Paddle의 체크아웃 위젯이 표시됩니다.
 
 ```html
 <x-paddle-button :checkout="$checkout" class="px-8 py-4">
@@ -795,7 +795,7 @@ if ($user->subscribed('default')) {
 }
 ```
 
-`subscribed` 메서드는 [라우트 미들웨어](/docs/{{version}}/middleware)로 사용하기에도 적합하여, 사용자의 구독 상태에 따라 라우트와 컨트롤러 접근을 제한할 수 있습니다.
+`subscribed` 메서드는 [라우트 미들웨어](/docs/12.x/middleware)로 사용하기에도 적합하여, 사용자의 구독 상태에 따라 라우트와 컨트롤러 접근을 제한할 수 있습니다.
 
 ```php
 <?php
@@ -1353,12 +1353,12 @@ Paddle은 다양한 이벤트를 웹훅을 통해 애플리케이션에 알릴 �
 - Subscription Canceled
 
 > [!WARNING]
-> 들어오는 요청이 Cashier의 [웹훅 서명 검증](/docs/{{version}}/cashier-paddle#verifying-webhook-signatures) 미들웨어로 보호되고 있는지 반드시 확인하세요.
+> 들어오는 요청이 Cashier의 [웹훅 서명 검증](/docs/12.x/cashier-paddle#verifying-webhook-signatures) 미들웨어로 보호되고 있는지 반드시 확인하세요.
 
 <a name="webhooks-csrf-protection"></a>
 #### 웹훅과 CSRF 보호
 
-Paddle 웹훅이 Laravel의 [CSRF 보호](/docs/{{version}}/csrf)를 우회할 수 있게 하려면, Paddle 웹훅 요청에 대해 Laravel이 CSRF 토큰 검증을 시도하지 않도록 설정해야 합니다. 이를 위해 애플리케이션의 `bootstrap/app.php` 파일에서 `paddle/*` 경로를 CSRF 보호 예외에 추가해야 합니다.
+Paddle 웹훅이 Laravel의 [CSRF 보호](/docs/12.x/csrf)를 우회할 수 있게 하려면, Paddle 웹훅 요청에 대해 Laravel이 CSRF 토큰 검증을 시도하지 않도록 설정해야 합니다. 이를 위해 애플리케이션의 `bootstrap/app.php` 파일에서 `paddle/*` 경로를 CSRF 보호 예외에 추가해야 합니다.
 
 ```php
 ->withMiddleware(function (Middleware $middleware) {
@@ -1371,7 +1371,7 @@ Paddle 웹훅이 Laravel의 [CSRF 보호](/docs/{{version}}/csrf)를 우회할 �
 <a name="webhooks-local-development"></a>
 #### 웹훅과 로컬 개발환경
 
-로컬 개발 환경에서 Paddle이 애플리케이션에 웹훅을 전송할 수 있게 하려면, [Ngrok](https://ngrok.com/)이나 [Expose](https://expose.dev/docs/introduction)와 같은 사이트 공유 서비스를 통해 애플리케이션을 외부에 노출해야 합니다. [Laravel Sail](/docs/{{version}}/sail)을 사용한다면 Sail의 [사이트 공유 명령어](/docs/{{version}}/sail#sharing-your-site)를 이용할 수도 있습니다.
+로컬 개발 환경에서 Paddle이 애플리케이션에 웹훅을 전송할 수 있게 하려면, [Ngrok](https://ngrok.com/)이나 [Expose](https://expose.dev/docs/introduction)와 같은 사이트 공유 서비스를 통해 애플리케이션을 외부에 노출해야 합니다. [Laravel Sail](/docs/12.x/sail)을 사용한다면 Sail의 [사이트 공유 명령어](/docs/12.x/sail#sharing-your-site)를 이용할 수도 있습니다.
 
 <a name="defining-webhook-event-handlers"></a>
 ### 웹훅 이벤트 핸들러 정의하기
@@ -1381,7 +1381,7 @@ Cashier는 구독 결제 실패에 따른 취소나 기타 주요 Paddle 웹훅 
 - `Laravel\Paddle\Events\WebhookReceived`
 - `Laravel\Paddle\Events\WebhookHandled`
 
-이벤트에는 Paddle 웹훅의 전체 payload가 포함되어 있습니다. 예를 들어, `transaction.billed` 웹훅을 처리하고 싶다면 [리스너](/docs/{{version}}/events#defining-listeners)를 등록하면 됩니다.
+이벤트에는 Paddle 웹훅의 전체 payload가 포함되어 있습니다. 예를 들어, `transaction.billed` 웹훅을 처리하고 싶다면 [리스너](/docs/12.x/events#defining-listeners)를 등록하면 됩니다.
 
 ```php
 <?php
@@ -1582,4 +1582,4 @@ Next payment: {{ $nextPayment->amount() }} due on {{ $nextPayment->date()->forma
 
 테스트를 진행할 때는 실제 결제 흐름을 수동으로 여러 번 점검하여 통합이 정상적으로 동작하는지 반드시 확인해야 합니다.
 
-CI 환경을 포함한 자동화 테스트에서는 [Laravel의 HTTP 클라이언트](/docs/{{version}}/http-client#testing)를 사용하여 Paddle과의 HTTP 통신을 가짜로 처리할 수 있습니다. 이 방식은 실제로 Paddle의 응답을 검증하지는 못하지만, Paddle API를 직접 호출하지 않고도 애플리케이션 테스트가 가능합니다.
+CI 환경을 포함한 자동화 테스트에서는 [Laravel의 HTTP 클라이언트](/docs/12.x/http-client#testing)를 사용하여 Paddle과의 HTTP 통신을 가짜로 처리할 수 있습니다. 이 방식은 실제로 Paddle의 응답을 검증하지는 못하지만, Paddle API를 직접 호출하지 않고도 애플리케이션 테스트가 가능합니다.

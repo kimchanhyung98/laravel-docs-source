@@ -79,7 +79,7 @@ Route::get('/auth/callback', function () {
 <a name="authentication-and-storage"></a>
 ### 인증 및 데이터 저장
 
-OAuth 공급자에서 사용자를 받아온 후, 해당 사용자가 애플리케이션의 데이터베이스에 이미 존재하는지 확인하고, 존재하면 [사용자를 인증](/docs/{{version}}/authentication#authenticate-a-user-instance)할 수 있습니다. 사용자가 존재하지 않는 경우, 일반적으로 데이터베이스에 새 사용자 레코드를 생성해줍니다.
+OAuth 공급자에서 사용자를 받아온 후, 해당 사용자가 애플리케이션의 데이터베이스에 이미 존재하는지 확인하고, 존재하면 [사용자를 인증](/docs/12.x/authentication#authenticate-a-user-instance)할 수 있습니다. 사용자가 존재하지 않는 경우, 일반적으로 데이터베이스에 새 사용자 레코드를 생성해줍니다.
 
 ```php
 use App\Models\User;
@@ -157,7 +157,7 @@ return Socialite::driver('slack')
 $user = Socialite::driver('slack')->asBotUser()->user();
 ```
 
-봇 토큰을 생성할 때도 `user` 메서드는 여전히 `Laravel\Socialite\Two\User` 인스턴스를 반환하지만, 이때는 오직 `token` 속성만 설정됩니다. 이 토큰은 [인증된 사용자의 Slack 워크스페이스로 알림을 전송](/docs/{{version}}/notifications#notifying-external-slack-workspaces)할 때 활용할 수 있습니다.
+봇 토큰을 생성할 때도 `user` 메서드는 여전히 `Laravel\Socialite\Two\User` 인스턴스를 반환하지만, 이때는 오직 `token` 속성만 설정됩니다. 이 토큰은 [인증된 사용자의 Slack 워크스페이스로 알림을 전송](/docs/12.x/notifications#notifying-external-slack-workspaces)할 때 활용할 수 있습니다.
 
 <a name="optional-parameters"></a>
 ### 옵션 파라미터

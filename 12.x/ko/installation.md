@@ -35,7 +35,7 @@ PHP 웹 프레임워크가 처음이든, 오랜 경험을 갖추었든, 라라�
 
 저희는 라라벨을 "점진적(progressive)" 프레임워크라고 부릅니다. 이는 라라벨이 여러분의 성장 단계에 맞춰 함께 발전한다는 의미입니다. 웹 개발을 처음 시작한다면, 라라벨의 방대한 문서, 가이드, 그리고 [동영상 튜토리얼](https://laracasts.com)이 처음부터 차근차근 안내해 드릴 것입니다.
 
-만약 시니어 개발자라면, 라라벨은 [의존성 주입](/docs/{{version}}/container), [단위 테스트](/docs/{{version}}/testing), [큐](/docs/{{version}}/queues), [실시간 이벤트](/docs/{{version}}/broadcasting) 등 전문가를 위한 강력한 도구를 제공합니다. 라라벨은 전문적인 웹 애플리케이션을 구축할 수 있도록 최적화되어 있으며, 엔터프라이즈 급의 대규모 트래픽도 문제 없이 감당할 수 있습니다.
+만약 시니어 개발자라면, 라라벨은 [의존성 주입](/docs/12.x/container), [단위 테스트](/docs/12.x/testing), [큐](/docs/12.x/queues), [실시간 이벤트](/docs/12.x/broadcasting) 등 전문가를 위한 강력한 도구를 제공합니다. 라라벨은 전문적인 웹 애플리케이션을 구축할 수 있도록 최적화되어 있으며, 엔터프라이즈 급의 대규모 트래픽도 문제 없이 감당할 수 있습니다.
 
 #### 확장 가능한(Scalable) 프레임워크
 
@@ -101,7 +101,7 @@ composer run dev
 개발 서버를 시작하면, 웹 브라우저에서 [http://localhost:8000](http://localhost:8000) 주소를 통해 애플리케이션에 접근할 수 있습니다. 이제 [라라벨 생태계로 더 나아갈 준비](#next-steps)가 된 것입니다. 물론, [데이터베이스 설정](#databases-and-migrations)을 먼저 진행해 볼 수도 있습니다.
 
 > [!NOTE]
-> 라라벨 애플리케이션 개발을 좀 더 빠르고 편하게 시작하고 싶다면, 라라벨에서 제공하는 [스타터 키트](/docs/{{version}}/starter-kits)를 활용해 보세요. 스타터 키트에는 백엔드 및 프런트엔드 인증에 필요한 기본 뼈대가 모두 포함되어 있습니다.
+> 라라벨 애플리케이션 개발을 좀 더 빠르고 편하게 시작하고 싶다면, 라라벨에서 제공하는 [스타터 키트](/docs/12.x/starter-kits)를 활용해 보세요. 스타터 키트에는 백엔드 및 프런트엔드 인증에 필요한 기본 뼈대가 모두 포함되어 있습니다.
 
 <a name="initial-configuration"></a>
 ## 초기 설정
@@ -118,7 +118,7 @@ composer run dev
 `.env` 파일은 각 개발자나 서버 환경마다 다르게 설정될 수 있으므로, 절대 소스 관리 시스템에 커밋해서는 안 됩니다. 만약 누군가 소스 저장소에 접근하게 될 경우, 중요한 자격 증명들이 유출될 위험이 있기 때문입니다.
 
 > [!NOTE]
-> `.env` 파일과 환경 기반 설정에 대한 보다 자세한 내용은 [설정 문서](/docs/{{version}}/configuration#environment-configuration)를 참고하세요.
+> `.env` 파일과 환경 기반 설정에 대한 보다 자세한 내용은 [설정 문서](/docs/12.x/configuration#environment-configuration)를 참고하세요.
 
 <a name="databases-and-migrations"></a>
 ### 데이터베이스와 마이그레이션
@@ -138,7 +138,7 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-SQLite 이외의 데이터베이스를 사용하는 경우에는, 직접 데이터베이스를 생성하고 애플리케이션의 [데이터베이스 마이그레이션](/docs/{{version}}/migrations)을 실행해야 합니다.
+SQLite 이외의 데이터베이스를 사용하는 경우에는, 직접 데이터베이스를 생성하고 애플리케이션의 [데이터베이스 마이그레이션](/docs/12.x/migrations)을 실행해야 합니다.
 
 ```shell
 php artisan migrate
@@ -218,12 +218,12 @@ Windows용 Herd에 대한 자세한 내용은 [Herd 공식 문서](https://herd.
 
 <div class="content-list" markdown="1">
 
-- [요청 라이프사이클](/docs/{{version}}/lifecycle)
-- [설정](/docs/{{version}}/configuration)
-- [디렉터리 구조](/docs/{{version}}/structure)
-- [프런트엔드](/docs/{{version}}/frontend)
-- [서비스 컨테이너](/docs/{{version}}/container)
-- [파사드(Facades)](/docs/{{version}}/facades)
+- [요청 라이프사이클](/docs/12.x/lifecycle)
+- [설정](/docs/12.x/configuration)
+- [디렉터리 구조](/docs/12.x/structure)
+- [프런트엔드](/docs/12.x/frontend)
+- [서비스 컨테이너](/docs/12.x/container)
+- [파사드(Facades)](/docs/12.x/facades)
 
 </div>
 
@@ -232,18 +232,18 @@ Windows용 Herd에 대한 자세한 내용은 [Herd 공식 문서](https://herd.
 <a name="laravel-the-fullstack-framework"></a>
 ### 풀스택 프레임워크로서의 라라벨
 
-라라벨은 풀스택 프레임워크로 사용할 수 있습니다. 여기서 "풀스택"이란 라라벨로 라우팅부터 프런트엔드 렌더링(예: [Blade 템플릿](/docs/{{version}}/blade)이나 [Inertia](https://inertiajs.com) 등 SPA 하이브리드 기술 포함)까지 모두 담당하는 것을 뜻합니다. 이것은 라라벨을 활용하는 가장 일반적이고, 저희가 생각하기에 가장 생산적인 방식입니다.
+라라벨은 풀스택 프레임워크로 사용할 수 있습니다. 여기서 "풀스택"이란 라라벨로 라우팅부터 프런트엔드 렌더링(예: [Blade 템플릿](/docs/12.x/blade)이나 [Inertia](https://inertiajs.com) 등 SPA 하이브리드 기술 포함)까지 모두 담당하는 것을 뜻합니다. 이것은 라라벨을 활용하는 가장 일반적이고, 저희가 생각하기에 가장 생산적인 방식입니다.
 
-이와 같이 라라벨을 활용할 계획이라면, [프런트엔드 개발](/docs/{{version}}/frontend), [라우팅](/docs/{{version}}/routing), [뷰](/docs/{{version}}/views), [Eloquent ORM](/docs/{{version}}/eloquent)에 대한 문서를 먼저 참고해 보세요. 또한 [Livewire](https://livewire.laravel.com), [Inertia](https://inertiajs.com)와 같은 커뮤니티 패키지에 관심을 가져볼 만합니다. 이들 패키지는 자바스크립트 단일 페이지 애플리케이션이 제공하는 다양한 UI 편의성을 누리면서도, 라라벨을 완전한 풀스택 프레임워크로 사용할 수 있는 길을 열어줍니다.
+이와 같이 라라벨을 활용할 계획이라면, [프런트엔드 개발](/docs/12.x/frontend), [라우팅](/docs/12.x/routing), [뷰](/docs/12.x/views), [Eloquent ORM](/docs/12.x/eloquent)에 대한 문서를 먼저 참고해 보세요. 또한 [Livewire](https://livewire.laravel.com), [Inertia](https://inertiajs.com)와 같은 커뮤니티 패키지에 관심을 가져볼 만합니다. 이들 패키지는 자바스크립트 단일 페이지 애플리케이션이 제공하는 다양한 UI 편의성을 누리면서도, 라라벨을 완전한 풀스택 프레임워크로 사용할 수 있는 길을 열어줍니다.
 
-풀스택 프레임워크 형태로 라라벨을 사용할 계획이라면, [Vite](/docs/{{version}}/vite)를 이용해 애플리케이션의 CSS 및 자바스크립트를 컴파일하는 방법도 꼭 익혀두시기 바랍니다.
+풀스택 프레임워크 형태로 라라벨을 사용할 계획이라면, [Vite](/docs/12.x/vite)를 이용해 애플리케이션의 CSS 및 자바스크립트를 컴파일하는 방법도 꼭 익혀두시기 바랍니다.
 
 > [!NOTE]
-> 애플리케이션 개발을 빠르게 시작하고 싶다면, [공식 스타터 키트](/docs/{{version}}/starter-kits)를 활용해 보세요.
+> 애플리케이션 개발을 빠르게 시작하고 싶다면, [공식 스타터 키트](/docs/12.x/starter-kits)를 활용해 보세요.
 
 <a name="laravel-the-api-backend"></a>
 ### API 백엔드로서의 라라벨
 
-라라벨은 자바스크립트 단일 페이지 애플리케이션이나 모바일 앱을 위한 API 백엔드로도 사용할 수 있습니다. 예를 들어, 여러분의 [Next.js](https://nextjs.org) 애플리케이션의 백엔드 API로 라라벨을 활용할 수 있습니다. 이 경우, 라라벨로 [인증](/docs/{{version}}/sanctum)과 데이터 저장/조회 기능을 제공하고, 동시에 큐, 이메일, 알림 등 강력한 서비스도 함께 사용할 수 있습니다.
+라라벨은 자바스크립트 단일 페이지 애플리케이션이나 모바일 앱을 위한 API 백엔드로도 사용할 수 있습니다. 예를 들어, 여러분의 [Next.js](https://nextjs.org) 애플리케이션의 백엔드 API로 라라벨을 활용할 수 있습니다. 이 경우, 라라벨로 [인증](/docs/12.x/sanctum)과 데이터 저장/조회 기능을 제공하고, 동시에 큐, 이메일, 알림 등 강력한 서비스도 함께 사용할 수 있습니다.
 
-이런 방식으로 라라벨을 활용하고 싶다면, [라우팅](/docs/{{version}}/routing), [Laravel Sanctum](/docs/{{version}}/sanctum), [Eloquent ORM](/docs/{{version}}/eloquent) 관련 문서를 읽어보시길 권장합니다.
+이런 방식으로 라라벨을 활용하고 싶다면, [라우팅](/docs/12.x/routing), [Laravel Sanctum](/docs/12.x/sanctum), [Eloquent ORM](/docs/12.x/eloquent) 관련 문서를 읽어보시길 권장합니다.

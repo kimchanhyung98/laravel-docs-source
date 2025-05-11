@@ -1201,7 +1201,7 @@ $classes = Arr::toCssStyles($array);
 */
 ```
 
-이 메서드는 라라벨의 [Blade 컴포넌트의 속성 bag에 클래스 병합](/docs/{{version}}/blade#conditionally-merge-classes) 기능과 `@class` [Blade 디렉티브](/docs/{{version}}/blade#conditional-classes)를 지원합니다.
+이 메서드는 라라벨의 [Blade 컴포넌트의 속성 bag에 클래스 병합](/docs/12.x/blade#conditionally-merge-classes) 기능과 `@class` [Blade 디렉티브](/docs/12.x/blade#conditional-classes)를 지원합니다.
 
 <a name="method-array-undot"></a>
 #### `Arr::undot()` {.collection-method}
@@ -1906,7 +1906,7 @@ $path = lang_path('en/messages.php');
 <a name="method-mix"></a>
 #### `mix()` {.collection-method}
 
-`mix` 함수는 [버전이 지정된 Mix 파일](/docs/{{version}}/mix)의 경로를 반환합니다.
+`mix` 함수는 [버전이 지정된 Mix 파일](/docs/12.x/mix)의 경로를 반환합니다.
 
 ```php
 $path = mix('css/app.css');
@@ -1985,7 +1985,7 @@ $url = asset('img/photo.jpg'); // http://example.com/assets/img/photo.jpg
 <a name="method-route"></a>
 #### `route()` {.collection-method}
 
-`route` 함수는 [이름이 지정된 라우트](/docs/{{version}}/routing#named-routes)에 대한 URL을 생성합니다.
+`route` 함수는 [이름이 지정된 라우트](/docs/12.x/routing#named-routes)에 대한 URL을 생성합니다.
 
 ```php
 $url = route('route.name');
@@ -2026,7 +2026,7 @@ $url = secure_url('user/profile', [1]);
 <a name="method-to-route"></a>
 #### `to_route()` {.collection-method}
 
-`to_route` 함수는 [임의의 라우트 이름](/docs/{{version}}/routing#named-routes)에 해당하는 [리다이렉트 HTTP 응답](/docs/{{version}}/responses#redirects)를 생성합니다.
+`to_route` 함수는 [임의의 라우트 이름](/docs/12.x/routing#named-routes)에 해당하는 [리다이렉트 HTTP 응답](/docs/12.x/responses#redirects)를 생성합니다.
 
 ```php
 return to_route('users.show', ['user' => 1]);
@@ -2065,7 +2065,7 @@ use App\Http\Controllers\UserIndexController;
 $uri = uri(UserIndexController::class);
 ```
 
-또한, `uri` 함수에 지정된 값이 [이름이 지정된 라우트](/docs/{{version}}/routing#named-routes)와 일치한다면 해당 라우트에 대한 URI 인스턴스를 생성합니다.
+또한, `uri` 함수에 지정된 값이 [이름이 지정된 라우트](/docs/12.x/routing#named-routes)와 일치한다면 해당 라우트에 대한 URI 인스턴스를 생성합니다.
 
 ```php
 $uri = uri('users.show', ['user' => $user]);
@@ -2098,7 +2098,7 @@ $previous = url()->previous();
 <a name="method-abort"></a>
 #### `abort()` {.collection-method}
 
-`abort` 함수는 [HTTP 예외](/docs/{{version}}/errors#http-exceptions)를 발생시키며, 해당 예외는 [예외 핸들러](/docs/{{version}}/errors#handling-exceptions)에 의해 렌더링됩니다.
+`abort` 함수는 [HTTP 예외](/docs/12.x/errors#http-exceptions)를 발생시키며, 해당 예외는 [예외 핸들러](/docs/12.x/errors#handling-exceptions)에 의해 렌더링됩니다.
 
 ```php
 abort(403);
@@ -2135,7 +2135,7 @@ abort_unless(Auth::user()->isAdmin(), 403);
 <a name="method-app"></a>
 #### `app()` {.collection-method}
 
-`app` 함수는 [서비스 컨테이너](/docs/{{version}}/container) 인스턴스를 반환합니다.
+`app` 함수는 [서비스 컨테이너](/docs/12.x/container) 인스턴스를 반환합니다.
 
 ```php
 $container = app();
@@ -2150,7 +2150,7 @@ $api = app('HelpSpot\API');
 <a name="method-auth"></a>
 #### `auth()` {.collection-method}
 
-`auth` 함수는 [인증 기능을 제공하는 인스턴스](/docs/{{version}}/authentication)를 반환합니다. `Auth` 파사드의 대안으로 사용할 수 있습니다.
+`auth` 함수는 [인증 기능을 제공하는 인스턴스](/docs/12.x/authentication)를 반환합니다. `Auth` 파사드의 대안으로 사용할 수 있습니다.
 
 ```php
 $user = auth()->user();
@@ -2165,7 +2165,7 @@ $user = auth('admin')->user();
 <a name="method-back"></a>
 #### `back()` {.collection-method}
 
-`back` 함수는 사용자의 이전 위치로 [리다이렉트 HTTP 응답](/docs/{{version}}/responses#redirects)를 생성합니다.
+`back` 함수는 사용자의 이전 위치로 [리다이렉트 HTTP 응답](/docs/12.x/responses#redirects)를 생성합니다.
 
 ```php
 return back($status = 302, $headers = [], $fallback = '/');
@@ -2176,7 +2176,7 @@ return back();
 <a name="method-bcrypt"></a>
 #### `bcrypt()` {.collection-method}
 
-`bcrypt` 함수는 주어진 값을 Bcrypt로 [해시](/docs/{{version}}/hashing)합니다. `Hash` 파사드의 대체로 사용할 수 있습니다.
+`bcrypt` 함수는 주어진 값을 Bcrypt로 [해시](/docs/12.x/hashing)합니다. `Hash` 파사드의 대체로 사용할 수 있습니다.
 
 ```php
 $password = bcrypt('my-secret-password');
@@ -2207,7 +2207,7 @@ blank(false);
 <a name="method-broadcast"></a>
 #### `broadcast()` {.collection-method}
 
-`broadcast` 함수는 주어진 [이벤트](/docs/{{version}}/events)를 [브로드캐스팅](/docs/{{version}}/broadcasting)합니다.
+`broadcast` 함수는 주어진 [이벤트](/docs/12.x/events)를 [브로드캐스팅](/docs/12.x/broadcasting)합니다.
 
 ```php
 broadcast(new UserRegistered($user));
@@ -2218,7 +2218,7 @@ broadcast(new UserRegistered($user))->toOthers();
 <a name="method-cache"></a>
 #### `cache()` {.collection-method}
 
-`cache` 함수는 [캐시](/docs/{{version}}/cache)에서 값을 가져올 때 사용할 수 있습니다. 지정한 키가 캐시에 없을 경우, 두 번째 인자로 전달한 기본값이 반환됩니다.
+`cache` 함수는 [캐시](/docs/12.x/cache)에서 값을 가져올 때 사용할 수 있습니다. 지정한 키가 캐시에 없을 경우, 두 번째 인자로 전달한 기본값이 반환됩니다.
 
 ```php
 $value = cache('key');
@@ -2246,7 +2246,7 @@ $traits = class_uses_recursive(App\Models\User::class);
 <a name="method-collect"></a>
 #### `collect()` {.collection-method}
 
-`collect` 함수는 주어진 값을 이용해 [컬렉션](/docs/{{version}}/collections) 인스턴스를 만듭니다.
+`collect` 함수는 주어진 값을 이용해 [컬렉션](/docs/12.x/collections) 인스턴스를 만듭니다.
 
 ```php
 $collection = collect(['taylor', 'abigail']);
@@ -2255,7 +2255,7 @@ $collection = collect(['taylor', 'abigail']);
 <a name="method-config"></a>
 #### `config()` {.collection-method}
 
-`config` 함수는 [설정값](/docs/{{version}}/configuration)을 조회할 때 사용합니다. 값은 "점(dot) 표기법"을 이용해 파일명과 옵션명을 함께 입력합니다. 옵션이 존재하지 않을 경우 사용할 기본값도 두 번째 인수로 지정할 수 있습니다.
+`config` 함수는 [설정값](/docs/12.x/configuration)을 조회할 때 사용합니다. 값은 "점(dot) 표기법"을 이용해 파일명과 옵션명을 함께 입력합니다. 옵션이 존재하지 않을 경우 사용할 기본값도 두 번째 인수로 지정할 수 있습니다.
 
 ```php
 $value = config('app.timezone');
@@ -2273,7 +2273,7 @@ config(['app.debug' => true]);
 
 #### `context()` {.collection-method}
 
-`context` 함수는 [현재 컨텍스트](/docs/{{version}}/context)에서 값을 가져옵니다. 만약 해당 컨텍스트 키가 존재하지 않으면 기본값을 지정할 수 있으며, 이 기본값이 반환됩니다.
+`context` 함수는 [현재 컨텍스트](/docs/12.x/context)에서 값을 가져옵니다. 만약 해당 컨텍스트 키가 존재하지 않으면 기본값을 지정할 수 있으며, 이 기본값이 반환됩니다.
 
 ```php
 $value = context('trace_id');
@@ -2292,7 +2292,7 @@ context(['trace_id' => Str::uuid()->toString()]);
 <a name="method-cookie"></a>
 #### `cookie()` {.collection-method}
 
-`cookie` 함수는 새로운 [쿠키](/docs/{{version}}/requests#cookies) 인스턴스를 생성합니다.
+`cookie` 함수는 새로운 [쿠키](/docs/12.x/requests#cookies) 인스턴스를 생성합니다.
 
 ```php
 $cookie = cookie('name', 'value', $minutes);
@@ -2301,7 +2301,7 @@ $cookie = cookie('name', 'value', $minutes);
 <a name="method-csrf-field"></a>
 #### `csrf_field()` {.collection-method}
 
-`csrf_field` 함수는 CSRF 토큰의 값을 담은 HTML `hidden` 입력 필드를 생성합니다. 예를 들어, [Blade 문법](/docs/{{version}}/blade)을 사용할 때 다음과 같이 작성할 수 있습니다.
+`csrf_field` 함수는 CSRF 토큰의 값을 담은 HTML `hidden` 입력 필드를 생성합니다. 예를 들어, [Blade 문법](/docs/12.x/blade)을 사용할 때 다음과 같이 작성할 수 있습니다.
 
 ```blade
 {{ csrf_field() }}
@@ -2319,7 +2319,7 @@ $token = csrf_token();
 <a name="method-decrypt"></a>
 #### `decrypt()` {.collection-method}
 
-`decrypt` 함수는 주어진 값을 [복호화](/docs/{{version}}/encryption)합니다. 이 함수는 `Crypt` 파사드의 대체 함수로 사용할 수 있습니다.
+`decrypt` 함수는 주어진 값을 [복호화](/docs/12.x/encryption)합니다. 이 함수는 `Crypt` 파사드의 대체 함수로 사용할 수 있습니다.
 
 ```php
 $password = decrypt($value);
@@ -2341,7 +2341,7 @@ dd($value1, $value2, $value3, ...);
 <a name="method-dispatch"></a>
 #### `dispatch()` {.collection-method}
 
-`dispatch` 함수는 전달된 [잡(job)](/docs/{{version}}/queues#creating-jobs)를 라라벨 [잡 큐](/docs/{{version}}/queues)에 추가합니다.
+`dispatch` 함수는 전달된 [잡(job)](/docs/12.x/queues#creating-jobs)를 라라벨 [잡 큐](/docs/12.x/queues)에 추가합니다.
 
 ```php
 dispatch(new App\Jobs\SendEmails);
@@ -2350,7 +2350,7 @@ dispatch(new App\Jobs\SendEmails);
 <a name="method-dispatch-sync"></a>
 #### `dispatch_sync()` {.collection-method}
 
-`dispatch_sync` 함수는 전달된 잡을 [동기(sync)](/docs/{{version}}/queues#synchronous-dispatching) 큐에 추가하여 즉시 처리합니다.
+`dispatch_sync` 함수는 전달된 잡을 [동기(sync)](/docs/12.x/queues#synchronous-dispatching) 큐에 추가하여 즉시 처리합니다.
 
 ```php
 dispatch_sync(new App\Jobs\SendEmails);
@@ -2372,7 +2372,7 @@ dump($value1, $value2, $value3, ...);
 <a name="method-encrypt"></a>
 #### `encrypt()` {.collection-method}
 
-`encrypt` 함수는 주어진 값을 [암호화](/docs/{{version}}/encryption)합니다. 이 함수는 `Crypt` 파사드의 대체 함수로 사용할 수 있습니다.
+`encrypt` 함수는 주어진 값을 [암호화](/docs/12.x/encryption)합니다. 이 함수는 `Crypt` 파사드의 대체 함수로 사용할 수 있습니다.
 
 ```php
 $secret = encrypt('my-secret-value');
@@ -2381,7 +2381,7 @@ $secret = encrypt('my-secret-value');
 <a name="method-env"></a>
 #### `env()` {.collection-method}
 
-`env` 함수는 [환경 변수](/docs/{{version}}/configuration#environment-configuration)의 값을 가져오거나, 지정된 기본값을 반환합니다.
+`env` 함수는 [환경 변수](/docs/12.x/configuration#environment-configuration)의 값을 가져오거나, 지정된 기본값을 반환합니다.
 
 ```php
 $env = env('APP_ENV');
@@ -2395,7 +2395,7 @@ $env = env('APP_ENV', 'production');
 <a name="method-event"></a>
 #### `event()` {.collection-method}
 
-`event` 함수는 전달된 [이벤트](/docs/{{version}}/events)를 리스너에 전달(디스패치)합니다.
+`event` 함수는 전달된 [이벤트](/docs/12.x/events)를 리스너에 전달(디스패치)합니다.
 
 ```php
 event(new UserRegistered($user));
@@ -2449,7 +2449,7 @@ filled(collect());
 <a name="method-info"></a>
 #### `info()` {.collection-method}
 
-`info` 함수는 애플리케이션의 [로그](/docs/{{version}}/logging)에 정보를 기록합니다.
+`info` 함수는 애플리케이션의 [로그](/docs/12.x/logging)에 정보를 기록합니다.
 
 ```php
 info('Some helpful information!');
@@ -2479,7 +2479,7 @@ $obj->languages; // ['PHP', 'Ruby']
 <a name="method-logger"></a>
 #### `logger()` {.collection-method}
 
-`logger` 함수는 [로그](/docs/{{version}}/logging)에 `debug` 레벨 메시지를 기록할 때 사용할 수 있습니다.
+`logger` 함수는 [로그](/docs/12.x/logging)에 `debug` 레벨 메시지를 기록할 때 사용할 수 있습니다.
 
 ```php
 logger('Debug message');
@@ -2491,7 +2491,7 @@ logger('Debug message');
 logger('User has logged in.', ['id' => $user->id]);
 ```
 
-함수에 아무 값도 전달하지 않으면 [logger](/docs/{{version}}/logging) 인스턴스를 반환합니다.
+함수에 아무 값도 전달하지 않으면 [logger](/docs/12.x/logging) 인스턴스를 반환합니다.
 
 ```php
 logger()->error('You are not allowed here.');
@@ -2500,7 +2500,7 @@ logger()->error('You are not allowed here.');
 <a name="method-method-field"></a>
 #### `method_field()` {.collection-method}
 
-`method_field` 함수는 폼의 HTTP 메서드를 숨겨진 값으로 포함하는 HTML `hidden` 입력 필드를 생성합니다. [Blade 문법](/docs/{{version}}/blade)에서 주로 사용됩니다.
+`method_field` 함수는 폼의 HTTP 메서드를 숨겨진 값으로 포함하는 HTML `hidden` 입력 필드를 생성합니다. [Blade 문법](/docs/12.x/blade)에서 주로 사용됩니다.
 
 ```blade
 <form method="POST">
@@ -2520,7 +2520,7 @@ $now = now();
 <a name="method-old"></a>
 #### `old()` {.collection-method}
 
-`old` 함수는 세션에 플래시된 [이전 입력값(old input)](/docs/{{version}}/requests#old-input)을 [가져옵니다](/docs/{{version}}/requests#retrieving-input).
+`old` 함수는 세션에 플래시된 [이전 입력값(old input)](/docs/12.x/requests#old-input)을 [가져옵니다](/docs/12.x/requests#retrieving-input).
 
 ```php
 $value = old('value');
@@ -2601,7 +2601,7 @@ return optional(User::find($id), function (User $user) {
 <a name="method-policy"></a>
 #### `policy()` {.collection-method}
 
-`policy` 메서드는 지정한 클래스의 [정책(policy)](/docs/{{version}}/authorization#creating-policies) 인스턴스를 반환합니다.
+`policy` 메서드는 지정한 클래스의 [정책(policy)](/docs/12.x/authorization#creating-policies) 인스턴스를 반환합니다.
 
 ```php
 $policy = policy(App\Models\User::class);
@@ -2610,7 +2610,7 @@ $policy = policy(App\Models\User::class);
 <a name="method-redirect"></a>
 #### `redirect()` {.collection-method}
 
-`redirect` 함수는 [리다이렉트 HTTP 응답](/docs/{{version}}/responses#redirects)를 반환하거나, 인수를 주지 않으면 redirector 인스턴스를 반환합니다.
+`redirect` 함수는 [리다이렉트 HTTP 응답](/docs/12.x/responses#redirects)를 반환하거나, 인수를 주지 않으면 redirector 인스턴스를 반환합니다.
 
 ```php
 return redirect($to = null, $status = 302, $headers = [], $https = null);
@@ -2623,7 +2623,7 @@ return redirect()->route('route.name');
 <a name="method-report"></a>
 #### `report()` {.collection-method}
 
-`report` 함수는 [예외 핸들러](/docs/{{version}}/errors#handling-exceptions)를 통해 예외를 리포트(보고)합니다.
+`report` 함수는 [예외 핸들러](/docs/12.x/errors#handling-exceptions)를 통해 예외를 리포트(보고)합니다.
 
 ```php
 report($e);
@@ -2638,7 +2638,7 @@ report('Something went wrong.');
 <a name="method-report-if"></a>
 #### `report_if()` {.collection-method}
 
-`report_if` 함수는 지정한 조건이 `true`일 때, [예외 핸들러](/docs/{{version}}/errors#handling-exceptions)를 통해 예외를 리포트합니다.
+`report_if` 함수는 지정한 조건이 `true`일 때, [예외 핸들러](/docs/12.x/errors#handling-exceptions)를 통해 예외를 리포트합니다.
 
 ```php
 report_if($shouldReport, $e);
@@ -2649,7 +2649,7 @@ report_if($shouldReport, 'Something went wrong.');
 <a name="method-report-unless"></a>
 #### `report_unless()` {.collection-method}
 
-`report_unless` 함수는 지정한 조건이 `false`일 때, [예외 핸들러](/docs/{{version}}/errors#handling-exceptions)를 통해 예외를 리포트합니다.
+`report_unless` 함수는 지정한 조건이 `false`일 때, [예외 핸들러](/docs/12.x/errors#handling-exceptions)를 통해 예외를 리포트합니다.
 
 ```php
 report_unless($reportingDisabled, $e);
@@ -2660,7 +2660,7 @@ report_unless($reportingDisabled, 'Something went wrong.');
 <a name="method-request"></a>
 #### `request()` {.collection-method}
 
-`request` 함수는 현재 [요청(request)](/docs/{{version}}/requests) 인스턴스를 반환하거나, 현재 요청의 입력 필드 값을 가져옵니다.
+`request` 함수는 현재 [요청(request)](/docs/12.x/requests) 인스턴스를 반환하거나, 현재 요청의 입력 필드 값을 가져옵니다.
 
 ```php
 $request = request();
@@ -2671,7 +2671,7 @@ $value = request('key', $default);
 <a name="method-rescue"></a>
 #### `rescue()` {.collection-method}
 
-`rescue` 함수는 전달된 클로저를 실행하고, 그 과정에서 발생하는 예외를 잡아서 처리합니다. 잡힌 모든 예외는 [예외 핸들러](/docs/{{version}}/errors#handling-exceptions)로 전송되지만, 요청 처리는 계속됩니다.
+`rescue` 함수는 전달된 클로저를 실행하고, 그 과정에서 발생하는 예외를 잡아서 처리합니다. 잡힌 모든 예외는 [예외 핸들러](/docs/12.x/errors#handling-exceptions)로 전송되지만, 요청 처리는 계속됩니다.
 
 ```php
 return rescue(function () {
@@ -2706,7 +2706,7 @@ return rescue(function () {
 <a name="method-resolve"></a>
 #### `resolve()` {.collection-method}
 
-`resolve` 함수는 주어진 클래스나 인터페이스명을 [서비스 컨테이너](/docs/{{version}}/container)를 통해 인스턴스로 반환합니다.
+`resolve` 함수는 주어진 클래스나 인터페이스명을 [서비스 컨테이너](/docs/12.x/container)를 통해 인스턴스로 반환합니다.
 
 ```php
 $api = resolve('HelpSpot\API');
@@ -2715,7 +2715,7 @@ $api = resolve('HelpSpot\API');
 <a name="method-response"></a>
 #### `response()` {.collection-method}
 
-`response` 함수는 [HTTP 응답](/docs/{{version}}/responses) 인스턴스를 생성하거나, 응답 팩토리 인스턴스를 반환합니다.
+`response` 함수는 [HTTP 응답](/docs/12.x/responses) 인스턴스를 생성하거나, 응답 팩토리 인스턴스를 반환합니다.
 
 ```php
 return response('Hello World', 200, $headers);
@@ -2769,7 +2769,7 @@ return retry(5, function () {
 <a name="method-session"></a>
 #### `session()` {.collection-method}
 
-`session` 함수는 [세션](/docs/{{version}}/session) 값을 가져오거나 설정하는 데 사용할 수 있습니다.
+`session` 함수는 [세션](/docs/12.x/session) 값을 가져오거나 설정하는 데 사용할 수 있습니다.
 
 ```php
 $value = session('key');
@@ -2894,7 +2894,7 @@ $result = transform(null, $callback, 'The value is blank');
 <a name="method-validator"></a>
 #### `validator()` {.collection-method}
 
-`validator` 함수는 주어진 인자로 새로운 [validator](/docs/{{version}}/validation) 인스턴스를 생성합니다. 이 함수는 `Validator` 파사드의 대체로 사용할 수 있습니다.
+`validator` 함수는 주어진 인자로 새로운 [validator](/docs/12.x/validation) 인스턴스를 생성합니다. 이 함수는 `Validator` 파사드의 대체로 사용할 수 있습니다.
 
 ```php
 $validator = validator($data, $rules, $messages);
@@ -2930,7 +2930,7 @@ $result = value(function (string $name) {
 <a name="method-view"></a>
 #### `view()` {.collection-method}
 
-`view` 함수는 [뷰](/docs/{{version}}/views) 인스턴스를 반환합니다.
+`view` 함수는 [뷰](/docs/12.x/views) 인스턴스를 반환합니다.
 
 ```php
 return view('auth.login');
@@ -3039,7 +3039,7 @@ Carbon과 그 모든 기능에 대한 더 자세한 내용은 [공식 Carbon 문
 > [!WARNING]
 > 현재 지연 함수는 커뮤니티 피드백을 받고 있는 베타 기능입니다.
 
-라라벨의 [큐잉된 작업(queued jobs)](/docs/{{version}}/queues)을 사용하면 백그라운드에서 작업을 처리할 수 있지만, 별도의 큐 워커를 설정하거나 관리할 필요 없이 간단히 실행을 지연시키고 싶은 경우도 있을 수 있습니다.
+라라벨의 [큐잉된 작업(queued jobs)](/docs/12.x/queues)을 사용하면 백그라운드에서 작업을 처리할 수 있지만, 별도의 큐 워커를 설정하거나 관리할 필요 없이 간단히 실행을 지연시키고 싶은 경우도 있을 수 있습니다.
 
 지연 함수(deferred function)를 활용하면 HTTP 응답이 사용자에게 전송된 이후에 클로저의 실행을 지연시킬 수 있어, 애플리케이션이 더욱 빠르고 반응성 있게 느껴집니다. 클로저의 실행을 지연하려면 `Illuminate\Support\defer` 함수에 클로저를 전달하기만 하면 됩니다.
 
@@ -3207,11 +3207,11 @@ $user = Pipeline::send($user)
     ->then(fn (User $user) => $user);
 ```
 
-보시다시피, 파이프라인의 각 invokable 클래스나 클로저는 입력과 `$next` 클로저를 매개변수로 받습니다. `$next` 클로저를 호출하면 다음 콜러블이 호출됩니다. 이 구조는 [미들웨어](/docs/{{version}}/middleware)와 매우 비슷합니다.
+보시다시피, 파이프라인의 각 invokable 클래스나 클로저는 입력과 `$next` 클로저를 매개변수로 받습니다. `$next` 클로저를 호출하면 다음 콜러블이 호출됩니다. 이 구조는 [미들웨어](/docs/12.x/middleware)와 매우 비슷합니다.
 
 마지막 콜러블에서 `$next` 클로저를 호출하면, `then` 메서드에 전달된 콜러블이 실행됩니다. 일반적으로 이 콜러블은 전달된 입력값을 그대로 반환합니다.
 
-그리고 반드시 클로저만 사용할 필요는 없습니다. invokable 클래스명을 전달할 수도 있습니다. 클래스명을 전달하면 라라벨 [서비스 컨테이너](/docs/{{version}}/container)가 클래스를 인스턴스화하며, 의존성 주입도 지원됩니다.
+그리고 반드시 클로저만 사용할 필요는 없습니다. invokable 클래스명을 전달할 수도 있습니다. 클래스명을 전달하면 라라벨 [서비스 컨테이너](/docs/12.x/container)가 클래스를 인스턴스화하며, 의존성 주입도 지원됩니다.
 
 ```php
 $user = Pipeline::send($user)
@@ -3367,7 +3367,7 @@ Sleep::assertNeverSlept();
 Sleep::assertInsomniac();
 ```
 
-경우에 따라, 애플리케이션 코드 내에서 fake된 sleep이 발생할 때마다 특정 동작을 수행하고 싶을 수 있습니다. 이를 위해 `whenFakingSleep` 메서드에 콜백을 등록할 수 있습니다. 아래 예시는 라라벨 [시간 제어 헬퍼](/docs/{{version}}/mocking#interacting-with-time)를 사용해 sleep마다 시간 경과를 즉시 반영합니다.
+경우에 따라, 애플리케이션 코드 내에서 fake된 sleep이 발생할 때마다 특정 동작을 수행하고 싶을 수 있습니다. 이를 위해 `whenFakingSleep` 메서드에 콜백을 등록할 수 있습니다. 아래 예시는 라라벨 [시간 제어 헬퍼](/docs/12.x/mocking#interacting-with-time)를 사용해 sleep마다 시간 경과를 즉시 반영합니다.
 
 ```php
 use Carbon\CarbonInterval as Duration;

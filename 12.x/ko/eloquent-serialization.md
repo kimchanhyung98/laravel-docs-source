@@ -14,7 +14,7 @@
 라라벨로 API를 개발할 때, 모델 및 관계 데이터를 배열이나 JSON 형식으로 변환해야 할 때가 많습니다. 일러퀀트(Eloquent)에서는 이러한 변환을 편리하게 처리할 수 있는 메서드들을 제공하며, 직렬화 시 모델에서 어떤 속성들이 포함될지 세밀하게 제어할 수 있습니다.
 
 > [!NOTE]
-> 일러퀀트 모델 및 컬렉션의 JSON 직렬화를 더 견고하게 관리하고 싶다면 [Eloquent API 리소스](/docs/{{version}}/eloquent-resources) 문서를 참고하시기 바랍니다.
+> 일러퀀트 모델 및 컬렉션의 JSON 직렬화를 더 견고하게 관리하고 싶다면 [Eloquent API 리소스](/docs/12.x/eloquent-resources) 문서를 참고하시기 바랍니다.
 
 <a name="serializing-models-and-collections"></a>
 ## 모델 및 컬렉션 직렬화하기
@@ -22,7 +22,7 @@
 <a name="serializing-to-arrays"></a>
 ### 배열로 직렬화
 
-모델과 로드된 [관계](/docs/{{version}}/eloquent-relationships)를 배열로 변환하려면 `toArray` 메서드를 사용하면 됩니다. 이 메서드는 재귀적으로 동작하여, 모델의 모든 속성과 모든 관계(하위 관계까지 모두) 역시 배열로 변환됩니다.
+모델과 로드된 [관계](/docs/12.x/eloquent-relationships)를 배열로 변환하려면 `toArray` 메서드를 사용하면 됩니다. 이 메서드는 재귀적으로 동작하여, 모델의 모든 속성과 모든 관계(하위 관계까지 모두) 역시 배열로 변환됩니다.
 
 ```php
 use App\Models\User;
@@ -40,7 +40,7 @@ $user = User::first();
 return $user->attributesToArray();
 ```
 
-또한, 모델의 [컬렉션](/docs/{{version}}/eloquent-collections) 전체도 컬렉션 인스턴스에 `toArray` 메서드를 호출해서 배열로 변환할 수 있습니다.
+또한, 모델의 [컬렉션](/docs/12.x/eloquent-collections) 전체도 컬렉션 인스턴스에 `toArray` 메서드를 호출해서 배열로 변환할 수 있습니다.
 
 ```php
 $users = User::all();
@@ -154,7 +154,7 @@ return $user->setHidden(['email', 'password', 'remember_token'])->toArray();
 <a name="appending-values-to-json"></a>
 ## JSON에 값 추가하기
 
-모델을 배열이나 JSON으로 변환할 때, 실제 데이터베이스에 존재하지 않는 가상 속성(예: 연산된 값)을 추가하고 싶을 때가 있습니다. 이 경우, 먼저 해당 값을 위한 [접근자(accessor)](/docs/{{version}}/eloquent-mutators)를 정의합니다.
+모델을 배열이나 JSON으로 변환할 때, 실제 데이터베이스에 존재하지 않는 가상 속성(예: 연산된 값)을 추가하고 싶을 때가 있습니다. 이 경우, 먼저 해당 값을 위한 [접근자(accessor)](/docs/12.x/eloquent-mutators)를 정의합니다.
 
 ```php
 <?php
@@ -232,7 +232,7 @@ protected function serializeDate(DateTimeInterface $date): string
 <a name="customizing-the-date-format-per-attribute"></a>
 #### 속성별로 날짜 포맷 커스터마이즈
 
-특정 일러퀀트 날짜 속성별로 직렬화 포맷을 따로 지정하고 싶다면, 모델의 [캐스팅 선언](/docs/{{version}}/eloquent-mutators#attribute-casting)에서 각 속성별로 데이터 포맷을 지정할 수 있습니다.
+특정 일러퀀트 날짜 속성별로 직렬화 포맷을 따로 지정하고 싶다면, 모델의 [캐스팅 선언](/docs/12.x/eloquent-mutators#attribute-casting)에서 각 속성별로 데이터 포맷을 지정할 수 있습니다.
 
 ```php
 protected function casts(): array

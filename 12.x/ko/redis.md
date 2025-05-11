@@ -15,7 +15,7 @@
 
 [Redis](https://redis.io)은 오픈 소스이며 고급 키-값(key-value) 저장소입니다. 키에 [문자열](https://redis.io/docs/data-types/strings/), [해시](https://redis.io/docs/data-types/hashes/), [리스트](https://redis.io/docs/data-types/lists/), [셋](https://redis.io/docs/data-types/sets/), [정렬된 셋](https://redis.io/docs/data-types/sorted-sets/)과 같은 다양한 데이터 구조를 저장할 수 있기 때문에, 일반적으로 데이터 구조 서버라고도 불립니다.
 
-라라벨에서 Redis를 사용하기 전에, PECL을 이용해 [PhpRedis](https://github.com/phpredis/phpredis) PHP 확장 모듈을 설치하고 사용하는 것을 권장합니다. 이 확장 모듈은 "유저랜드" PHP 패키지에 비해 설치 과정이 다소 복잡하지만, Redis를 많이 사용하는 애플리케이션에서는 더 나은 성능을 제공할 수 있습니다. [Laravel Sail](/docs/{{version}}/sail)를 사용 중이라면, 이 확장 모듈은 애플리케이션의 Docker 컨테이너에 이미 설치되어 있습니다.
+라라벨에서 Redis를 사용하기 전에, PECL을 이용해 [PhpRedis](https://github.com/phpredis/phpredis) PHP 확장 모듈을 설치하고 사용하는 것을 권장합니다. 이 확장 모듈은 "유저랜드" PHP 패키지에 비해 설치 과정이 다소 복잡하지만, Redis를 많이 사용하는 애플리케이션에서는 더 나은 성능을 제공할 수 있습니다. [Laravel Sail](/docs/12.x/sail)를 사용 중이라면, 이 확장 모듈은 애플리케이션의 Docker 컨테이너에 이미 설치되어 있습니다.
 
 PhpRedis 확장 모듈을 설치할 수 없는 경우에는 Composer를 통해 `predis/predis` 패키지를 설치할 수도 있습니다. Predis는 PHP로 작성된 Redis 클라이언트이며, 별도의 확장 모듈 설치가 필요하지 않습니다.
 
@@ -248,7 +248,7 @@ PhpRedis 확장 모듈은 여러 종류의 직렬화(serialize) 및 압축(compr
 <a name="interacting-with-redis"></a>
 ## Redis와 상호작용하기
 
-[Redis 파사드](/docs/{{version}}/facades)를 통해 다양한 메서드를 호출하여 Redis와 상호작용할 수 있습니다. Redis 파사드는 동적 메서드를 지원하기 때문에, 거의 모든 [Redis 명령어](https://redis.io/commands)를 파사드 메서드로 호출할 수 있으며, 이러한 명령어가 직접 Redis 서버로 전송됩니다. 예를 들어, Redis의 `GET` 명령어는 Redis 파사드의 `get` 메서드로 호출할 수 있습니다.
+[Redis 파사드](/docs/12.x/facades)를 통해 다양한 메서드를 호출하여 Redis와 상호작용할 수 있습니다. Redis 파사드는 동적 메서드를 지원하기 때문에, 거의 모든 [Redis 명령어](https://redis.io/commands)를 파사드 메서드로 호출할 수 있으며, 이러한 명령어가 직접 Redis 서버로 전송됩니다. 예를 들어, Redis의 `GET` 명령어는 Redis 파사드의 `get` 메서드로 호출할 수 있습니다.
 
 ```php
 <?php
@@ -365,7 +365,7 @@ Facades\Redis::pipeline(function (Redis $pipe) {
 
 라라벨은 Redis의 `publish`, `subscribe` 명령어를 쉽게 사용할 수 있는 인터페이스를 제공합니다. 이 명령어들은 특정 "채널"에서 메시지를 수신하거나("구독") 메시지를 전송("발행")할 때 사용할 수 있습니다. 다른 애플리케이션이나 다른 언어로 작성된 서비스에서도 채널에 메시지를 발행할 수 있기 때문에, 여러 애플리케이션/프로세스 간의 간편한 통신이 가능합니다.
 
-먼저, `subscribe` 메서드를 사용해 채널 리스너를 설정해보겠습니다. `subscribe` 메서드는 실행 후 오랫동안 실행되는 프로세스이기 때문에, 보통 [Artisan 명령어](/docs/{{version}}/artisan)에서 사용합니다.
+먼저, `subscribe` 메서드를 사용해 채널 리스너를 설정해보겠습니다. `subscribe` 메서드는 실행 후 오랫동안 실행되는 프로세스이기 때문에, 보통 [Artisan 명령어](/docs/12.x/artisan)에서 사용합니다.
 
 ```php
 <?php

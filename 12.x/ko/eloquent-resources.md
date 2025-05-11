@@ -395,7 +395,7 @@ return User::all()->toResourceCollection();
 }
 ```
 
-만약 리소스의 최상위 래핑(`data` 키 삽입)을 원하지 않는다면, 기본 `Illuminate\Http\Resources\Json\JsonResource` 클래스의 `withoutWrapping` 메서드를 호출하면 됩니다. 일반적으로 이 메서드는 `AppServiceProvider`나 매 요청마다 로드되는 [서비스 프로바이더](/docs/{{version}}/providers)에서 호출해야 합니다:
+만약 리소스의 최상위 래핑(`data` 키 삽입)을 원하지 않는다면, 기본 `Illuminate\Http\Resources\Json\JsonResource` 클래스의 `withoutWrapping` 메서드를 호출하면 됩니다. 일반적으로 이 메서드는 `AppServiceProvider`나 매 요청마다 로드되는 [서비스 프로바이더](/docs/12.x/providers)에서 호출해야 합니다:
 
 ```php
 <?php
@@ -741,7 +741,7 @@ public function toArray(Request $request): array
 }
 ```
 
-관계가 [커스텀 중간 테이블 모델](/docs/{{version}}/eloquent-relationships#defining-custom-intermediate-table-models)을 사용하는 경우, `whenPivotLoaded`의 첫 번째 인자로 해당 모델 인스턴스를 전달하면 됩니다:
+관계가 [커스텀 중간 테이블 모델](/docs/12.x/eloquent-relationships#defining-custom-intermediate-table-models)을 사용하는 경우, `whenPivotLoaded`의 첫 번째 인자로 해당 모델 인스턴스를 전달하면 됩니다:
 
 ```php
 'expires_at' => $this->whenPivotLoaded(new Membership, function () {

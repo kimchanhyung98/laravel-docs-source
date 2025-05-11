@@ -229,7 +229,7 @@
 <a name="method-__"></a>
 #### `__()` {.collection-method}
 
-`__` 함수는 주어진 번역 문자열 또는 번역 키를 [언어 파일](/docs/{{version}}/localization)을 이용해 번역합니다.
+`__` 함수는 주어진 번역 문자열 또는 번역 키를 [언어 파일](/docs/12.x/localization)을 이용해 번역합니다.
 
 ```php
 echo __('Welcome to our application');
@@ -1022,7 +1022,7 @@ $password = Str::password(12);
 <a name="method-str-plural"></a>
 #### `Str::plural()` {.collection-method}
 
-`Str::plural` 메서드는 단수형 문자열을 복수형으로 변환합니다. 이 함수는 [라라벨의 복수화 기능을 지원하는 모든 언어](/docs/{{version}}/localization#pluralization-language)를 지원합니다.
+`Str::plural` 메서드는 단수형 문자열을 복수형으로 변환합니다. 이 함수는 [라라벨의 복수화 기능을 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)를 지원합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1053,7 +1053,7 @@ $singular = Str::plural('child', 1);
 <a name="method-str-plural-studly"></a>
 #### `Str::pluralStudly()` {.collection-method}
 
-`Str::pluralStudly` 메서드는 StudlyCaps 형태의 단어 문자열을 복수형으로 변환합니다. 이 함수 역시 [라라벨의 복수화 기능을 지원하는 모든 언어](/docs/{{version}}/localization#pluralization-language)를 지원합니다.
+`Str::pluralStudly` 메서드는 StudlyCaps 형태의 단어 문자열을 복수형으로 변환합니다. 이 함수 역시 [라라벨의 복수화 기능을 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)를 지원합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1297,7 +1297,7 @@ $reversed = Str::reverse('Hello World');
 <a name="method-str-singular"></a>
 #### `Str::singular()` {.collection-method}
 
-`Str::singular` 메서드는 복수형 문자열을 단수형으로 변환합니다. 이 함수는 [라라벨의 복수화 기능이 지원하는 모든 언어](/docs/{{version}}/localization#pluralization-language)에서 동작합니다.
+`Str::singular` 메서드는 복수형 문자열을 단수형으로 변환합니다. 이 함수는 [라라벨의 복수화 기능이 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)에서 동작합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1774,7 +1774,7 @@ $snake = str()->snake('FooBar');
 <a name="method-trans"></a>
 #### `trans()` {.collection-method}
 
-`trans` 함수는 주어진 번역 키를 사용해 [언어 파일](/docs/{{version}}/localization)에서 번역된 문자열을 반환합니다.
+`trans` 함수는 주어진 번역 키를 사용해 [언어 파일](/docs/12.x/localization)에서 번역된 문자열을 반환합니다.
 
 ```php
 echo trans('messages.welcome');
@@ -2703,7 +2703,7 @@ $closure = Str::of('foo')->pipe(function (Stringable $str) {
 <a name="method-fluent-str-plural"></a>
 #### `plural` {.collection-method}
 
-`plural` 메서드는 단수 명사 문자열을 복수 형태로 변환합니다. 이 기능은 [라라벨의 복수화가 지원하는 모든 언어](/docs/{{version}}/localization#pluralization-language)를 지원합니다.
+`plural` 메서드는 단수 명사 문자열을 복수 형태로 변환합니다. 이 기능은 [라라벨의 복수화가 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)를 지원합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2927,7 +2927,7 @@ $collection = Str::of('filename.jpg')->scan('%[^.].%s');
 <a name="method-fluent-str-singular"></a>
 #### `singular` {.collection-method}
 
-`singular` 메서드는 문자열을 단수형으로 변환합니다. 이 함수는 [라라벨의 복수화 지원 언어](/docs/{{version}}/localization#pluralization-language)를 모두 지원합니다:
+`singular` 메서드는 문자열을 단수형으로 변환합니다. 이 함수는 [라라벨의 복수화 지원 언어](/docs/12.x/localization#pluralization-language)를 모두 지원합니다:
 
 ```php
 use Illuminate\Support\Str;

@@ -306,7 +306,7 @@ php artisan make:mail OrderShipped
 
 메일러블 클래스를 생성했다면, 해당 파일을 열고 그 안의 내용을 살펴보겠습니다. 메일러블 클래스의 설정은 `envelope`, `content`, `attachments` 등 여러 메서드에서 이루어집니다.
 
-`envelope` 메서드는 메시지의 제목(subject)과 때로는 수신자 정보를 정의하는 `Illuminate\Mail\Mailables\Envelope` 객체를 반환합니다. `content` 메서드는 메시지 본문 생성을 위해 [Blade 템플릿](/docs/{{version}}/blade)을 지정하는 `Illuminate\Mail\Mailables\Content` 객체를 반환합니다.
+`envelope` 메서드는 메시지의 제목(subject)과 때로는 수신자 정보를 정의하는 `Illuminate\Mail\Mailables\Envelope` 객체를 반환합니다. `content` 메서드는 메시지 본문 생성을 위해 [Blade 템플릿](/docs/12.x/blade)을 지정하는 `Illuminate\Mail\Mailables\Content` 객체를 반환합니다.
 
 <a name="configuring-the-sender"></a>
 ### 발신자 설정
@@ -365,7 +365,7 @@ return new Envelope(
 <a name="configuring-the-view"></a>
 ### 뷰(view) 설정
 
-메일러블 클래스의 `content` 메서드에서 이메일 내용 렌더링에 사용할 뷰(템플릿)를 정의할 수 있습니다. 각 이메일은 보통 [Blade 템플릿](/docs/{{version}}/blade)을 활용해 내용을 렌더링하므로, Blade의 강력한 기능을 사용해 자유롭게 HTML을 작성할 수 있습니다:
+메일러블 클래스의 `content` 메서드에서 이메일 내용 렌더링에 사용할 뷰(템플릿)를 정의할 수 있습니다. 각 이메일은 보통 [Blade 템플릿](/docs/12.x/blade)을 활용해 내용을 렌더링하므로, Blade의 강력한 기능을 사용해 자유롭게 HTML을 작성할 수 있습니다:
 
 ```php
 /**
@@ -552,7 +552,7 @@ public function attachments(): array
 <a name="attaching-files-from-disk"></a>
 #### 디스크에서 파일 첨부하기
 
-[파일 시스템 디스크](/docs/{{version}}/filesystem)에 저장된 파일을 메일에 첨부하려면, `fromStorage` 첨부 메서드를 사용할 수 있습니다:
+[파일 시스템 디스크](/docs/12.x/filesystem)에 저장된 파일을 메일에 첨부하려면, `fromStorage` 첨부 메서드를 사용할 수 있습니다:
 
 ```php
 /**
@@ -696,7 +696,7 @@ public function attachments(): array
 }
 ```
 
-물론 첨부파일 데이터가 Amazon S3와 같은 외부 파일 저장소 서비스에 저장될 수도 있습니다. 그래서 라라벨은 애플리케이션의 [파일 시스템 디스크](/docs/{{version}}/filesystem) 중 하나에 저장된 데이터를 기반으로 첨부파일 인스턴스를 만들 수 있도록 지원합니다.
+물론 첨부파일 데이터가 Amazon S3와 같은 외부 파일 저장소 서비스에 저장될 수도 있습니다. 그래서 라라벨은 애플리케이션의 [파일 시스템 디스크](/docs/12.x/filesystem) 중 하나에 저장된 데이터를 기반으로 첨부파일 인스턴스를 만들 수 있도록 지원합니다.
 
 ```php
 // 기본 디스크에 있는 파일로부터 첨부파일을 생성...
@@ -802,7 +802,7 @@ public function envelope(): Envelope
 <a name="markdown-mailables"></a>
 ## Markdown 메일러블
 
-Markdown 메일러블 메시지를 사용하면, [메일 알림](/docs/{{version}}/notifications#mail-notifications)에 내장된 템플릿과 컴포넌트를 메일러블에서 그대로 활용할 수 있습니다. 메시지를 Markdown으로 작성하면 라라벨이 보기 좋은 반응형 HTML 템플릿을 자동으로 렌더링해주며, 동시에 플레인 텍스트 버전도 자동으로 생성해줍니다.
+Markdown 메일러블 메시지를 사용하면, [메일 알림](/docs/12.x/notifications#mail-notifications)에 내장된 템플릿과 컴포넌트를 메일러블에서 그대로 활용할 수 있습니다. 메시지를 Markdown으로 작성하면 라라벨이 보기 좋은 반응형 HTML 템플릿을 자동으로 렌더링해주며, 동시에 플레인 텍스트 버전도 자동으로 생성해줍니다.
 
 <a name="generating-markdown-mailables"></a>
 ### Markdown 메일러블 생성
@@ -914,7 +914,7 @@ php artisan vendor:publish --tag=laravel-mail
 <a name="sending-mail"></a>
 ## 메일 발송하기
 
-메일을 보내려면 [Mail 파사드](/docs/{{version}}/facades)의 `to` 메서드를 사용합니다. `to` 메서드는 이메일 주소, 사용자 인스턴스, 또는 사용자 컬렉션을 받을 수 있습니다. 객체나 객체 배열을 전달하는 경우, 메일러는 해당 객체의 `email` 및 `name` 속성(attribute)에 자동으로 접근하여 수신자를 결정합니다. 따라서 이 속성들이 객체에 반드시 정의되어 있어야 합니다. 수신자를 지정한 후, 메일러블 클래스 인스턴스를 `send` 메서드에 인수로 전달하면 됩니다.
+메일을 보내려면 [Mail 파사드](/docs/12.x/facades)의 `to` 메서드를 사용합니다. `to` 메서드는 이메일 주소, 사용자 인스턴스, 또는 사용자 컬렉션을 받을 수 있습니다. 객체나 객체 배열을 전달하는 경우, 메일러는 해당 객체의 `email` 및 `name` 속성(attribute)에 자동으로 접근하여 수신자를 결정합니다. 따라서 이 속성들이 객체에 반드시 정의되어 있어야 합니다. 수신자를 지정한 후, 메일러블 클래스 인스턴스를 `send` 메서드에 인수로 전달하면 됩니다.
 
 ```php
 <?php
@@ -982,7 +982,7 @@ Mail::mailer('postmark')
 <a name="queueing-a-mail-message"></a>
 #### 메일 메시지 큐에 넣기
 
-이메일 전송은 애플리케이션의 응답 속도에 악영향을 줄 수 있으므로, 많은 개발자들이 이메일을 백그라운드에서 큐를 통해 발송하기를 선호합니다. 라라벨에서는 자체 [통합 큐 API](/docs/{{version}}/queues)를 통해 이것을 손쉽게 처리할 수 있습니다. 메일 메시지를 큐에 보내려면, 수신자를 지정한 후 `Mail` 파사드의 `queue` 메서드를 사용하면 됩니다.
+이메일 전송은 애플리케이션의 응답 속도에 악영향을 줄 수 있으므로, 많은 개발자들이 이메일을 백그라운드에서 큐를 통해 발송하기를 선호합니다. 라라벨에서는 자체 [통합 큐 API](/docs/12.x/queues)를 통해 이것을 손쉽게 처리할 수 있습니다. 메일 메시지를 큐에 보내려면, 수신자를 지정한 후 `Mail` 파사드의 `queue` 메서드를 사용하면 됩니다.
 
 ```php
 Mail::to($request->user())
@@ -991,7 +991,7 @@ Mail::to($request->user())
     ->queue(new OrderShipped($order));
 ```
 
-이 방식은 큐에 작업을 자동으로 푸시하며, 메일이 백그라운드에서 전송되도록 처리합니다. [큐 설정](/docs/{{version}}/queues)을 먼저 마쳐야 이 기능을 사용할 수 있습니다.
+이 방식은 큐에 작업을 자동으로 푸시하며, 메일이 백그라운드에서 전송되도록 처리합니다. [큐 설정](/docs/12.x/queues)을 먼저 마쳐야 이 기능을 사용할 수 있습니다.
 
 <a name="delayed-message-queueing"></a>
 #### 지연 전송(Delayed) 메시지 큐잉
@@ -1075,7 +1075,7 @@ class OrderShipped extends Mailable implements ShouldQueue
 ```
 
 > [!NOTE]
-> 이러한 문제들을 우회하는 방법에 대한 더 자세한 내용은 [큐 작업과 데이터베이스 트랜잭션](/docs/{{version}}/queues#jobs-and-database-transactions) 가이드를 참고하십시오.
+> 이러한 문제들을 우회하는 방법에 대한 더 자세한 내용은 [큐 작업과 데이터베이스 트랜잭션](/docs/12.x/queues#jobs-and-database-transactions) 가이드를 참고하십시오.
 
 <a name="rendering-mailables"></a>
 ## 메일러블 렌더링
@@ -1378,14 +1378,14 @@ Mail::assertNotOutgoing(function (OrderShipped $mail) use ($order) {
 <a name="log-driver"></a>
 #### 로그 드라이버(Log Driver)
 
-이메일을 실제로 발송하는 대신, `log` 메일 드라이버는 모든 이메일 메시지를 로그 파일에 기록합니다. 일반적으로 이 드라이버는 로컬 개발 환경에서만 사용합니다. 환경별로 애플리케이션을 어떻게 설정하는지에 대해서는 [설정(configuration) 문서](/docs/{{version}}/configuration#environment-configuration)를 참고하세요.
+이메일을 실제로 발송하는 대신, `log` 메일 드라이버는 모든 이메일 메시지를 로그 파일에 기록합니다. 일반적으로 이 드라이버는 로컬 개발 환경에서만 사용합니다. 환경별로 애플리케이션을 어떻게 설정하는지에 대해서는 [설정(configuration) 문서](/docs/12.x/configuration#environment-configuration)를 참고하세요.
 
 <a name="mailtrap"></a>
 #### HELO / Mailtrap / Mailpit
 
 다른 방법으로는 [HELO](https://usehelo.com)나 [Mailtrap](https://mailtrap.io)과 같은 서비스를 `smtp` 드라이버와 함께 사용하여, 실제 이메일 클라이언트에서 확인할 수 있는 "더미" 메일박스로 이메일을 전송할 수 있습니다. 이 방식의 장점은, Mailtrap 메시지 뷰어를 통해 최종 이메일을 실제로 검토할 수 있다는 점입니다.
 
-[Laravel Sail](/docs/{{version}}/sail)를 사용하는 경우, [Mailpit](https://github.com/axllent/mailpit)을 통해 메시지를 미리볼 수 있습니다. Sail이 실행 중이라면, 다음 주소에서 Mailpit 인터페이스를 확인할 수 있습니다: `http://localhost:8025`.
+[Laravel Sail](/docs/12.x/sail)를 사용하는 경우, [Mailpit](https://github.com/axllent/mailpit)을 통해 메시지를 미리볼 수 있습니다. Sail이 실행 중이라면, 다음 주소에서 Mailpit 인터페이스를 확인할 수 있습니다: `http://localhost:8025`.
 
 <a name="using-a-global-to-address"></a>
 #### 전체 전송 주소(Global to Address) 사용
@@ -1409,7 +1409,7 @@ public function boot(): void
 <a name="events"></a>
 ## 이벤트(Events)
 
-라라벨은 메일 메시지를 보내는 동안 두 가지 이벤트를 발생시킵니다. `MessageSending` 이벤트는 메시지가 발송되기 **직전**에 발생하고, `MessageSent` 이벤트는 메시지가 **발송된 후**에 발생합니다. 주의할 점은, 이 이벤트들은 메일을 직접 **발송(send)** 할 때 발생하며, **큐잉(queued)** 시에는 발생하지 않는다는 것입니다. 이 이벤트들에 대해 [이벤트 리스너](/docs/{{version}}/events)를 만들어 사용할 수 있습니다.
+라라벨은 메일 메시지를 보내는 동안 두 가지 이벤트를 발생시킵니다. `MessageSending` 이벤트는 메시지가 발송되기 **직전**에 발생하고, `MessageSent` 이벤트는 메시지가 **발송된 후**에 발생합니다. 주의할 점은, 이 이벤트들은 메일을 직접 **발송(send)** 할 때 발생하며, **큐잉(queued)** 시에는 발생하지 않는다는 것입니다. 이 이벤트들에 대해 [이벤트 리스너](/docs/12.x/events)를 만들어 사용할 수 있습니다.
 
 ```php
 use Illuminate\Mail\Events\MessageSending;

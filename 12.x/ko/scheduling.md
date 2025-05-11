@@ -67,7 +67,7 @@ php artisan schedule:list
 <a name="scheduling-artisan-commands"></a>
 ### Artisan 명령어 스케줄링
 
-클로저 뿐만 아니라, [Artisan 명령어](/docs/{{version}}/artisan)나 시스템 명령어도 예약할 수 있습니다. 예를 들어, `command` 메서드를 사용해서 Artisan 명령어를 이름이나 클래스 명으로 스케줄링할 수 있습니다.
+클로저 뿐만 아니라, [Artisan 명령어](/docs/12.x/artisan)나 시스템 명령어도 예약할 수 있습니다. 예를 들어, `command` 메서드를 사용해서 Artisan 명령어를 이름이나 클래스 명으로 스케줄링할 수 있습니다.
 
 명령어 클래스를 사용할 때는 추가 인수(옵션 포함)를 배열 형태로 전달할 수 있습니다.
 
@@ -102,7 +102,7 @@ Artisan::command('emails:send {user} {--force}', function ($user) {
 <a name="scheduling-queued-jobs"></a>
 ### 큐 작업 스케줄링
 
-`job` 메서드를 사용하면 [큐 작업](/docs/{{version}}/queues)을 예약할 수 있습니다. 이 방법을 쓰면, 클로저로 큐를 등록하는 대신 더 간편하게 사용하는 것이 가능합니다.
+`job` 메서드를 사용하면 [큐 작업](/docs/12.x/queues)을 예약할 수 있습니다. 이 방법을 쓰면, 클로저로 큐를 등록하는 대신 더 간편하게 사용하는 것이 가능합니다.
 
 ```php
 use App\Jobs\Heartbeat;
@@ -290,7 +290,7 @@ Schedule::command('emails:send')->daily()->skip(function () {
 <a name="environment-constraints"></a>
 #### 환경(Environment) 제약 조건
 
-`environments` 메서드를 사용하면, 지정된 환경(`APP_ENV` [환경 변수](/docs/{{version}}/configuration#environment-configuration))에서만 작업을 실행하도록 제한할 수 있습니다.
+`environments` 메서드를 사용하면, 지정된 환경(`APP_ENV` [환경 변수](/docs/12.x/configuration#environment-configuration))에서만 작업을 실행하도록 제한할 수 있습니다.
 
 ```php
 Schedule::command('emails:send')
@@ -333,7 +333,7 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('emails:send')->withoutOverlapping();
 ```
 
-이 예제에서 `emails:send` [Artisan 명령어](/docs/{{version}}/artisan)는 이미 실행 중이 아니라면 매 분마다 실행됩니다. 이 기능은 각 작업의 실행 시간 차이가 커서, 작업이 끝나는 시간을 예측할 수 없는 경우에 특히 유용합니다.
+이 예제에서 `emails:send` [Artisan 명령어](/docs/12.x/artisan)는 이미 실행 중이 아니라면 매 분마다 실행됩니다. 이 기능은 각 작업의 실행 시간 차이가 커서, 작업이 끝나는 시간을 예측할 수 없는 경우에 특히 유용합니다.
 
 필요하다면 "중복 방지" 락이 만료되기까지 기다려야 하는 시간을 분 단위로 지정할 수 있습니다. 기본값은 24시간입니다.
 
@@ -341,7 +341,7 @@ Schedule::command('emails:send')->withoutOverlapping();
 Schedule::command('emails:send')->withoutOverlapping(10);
 ```
 
-내부적으로, `withoutOverlapping` 메서드는 애플리케이션의 [캐시](/docs/{{version}}/cache) 기능을 사용해 락을 관리합니다. 만약 예기치 않은 서버 문제로 인해 작업이 중단되어 락이 남아있다면, `schedule:clear-cache` Artisan 명령어로 락을 수동으로 해제할 수 있습니다. 보통 이런 경우에만 필요합니다.
+내부적으로, `withoutOverlapping` 메서드는 애플리케이션의 [캐시](/docs/12.x/cache) 기능을 사용해 락을 관리합니다. 만약 예기치 않은 서버 문제로 인해 작업이 중단되어 락이 남아있다면, `schedule:clear-cache` Artisan 명령어로 락을 수동으로 해제할 수 있습니다. 보통 이런 경우에만 필요합니다.
 
 <a name="running-tasks-on-one-server"></a>
 ### 단일 서버에서만 작업 실행하기
@@ -413,7 +413,7 @@ Schedule::command('analytics:report')
 <a name="maintenance-mode"></a>
 ### 유지보수 모드
 
-애플리케이션이 [유지보수 모드](/docs/{{version}}/configuration#maintenance-mode)인 경우에는, 예약 작업이 자동으로 실행되지 않습니다. 이는 서버에서 진행 중인 유지보수 작업에 예약 작업이 방해가 되지 않도록 하기 위함입니다. 그러나, 특정 작업만은 유지보수 모드에서도 강제로 실행하고 싶다면, 작업 정의 시 `evenInMaintenanceMode` 메서드를 사용할 수 있습니다.
+애플리케이션이 [유지보수 모드](/docs/12.x/configuration#maintenance-mode)인 경우에는, 예약 작업이 자동으로 실행되지 않습니다. 이는 서버에서 진행 중인 유지보수 작업에 예약 작업이 방해가 되지 않도록 하기 위함입니다. 그러나, 특정 작업만은 유지보수 모드에서도 강제로 실행하고 싶다면, 작업 정의 시 `evenInMaintenanceMode` 메서드를 사용할 수 있습니다.
 
 ```php
 Schedule::command('emails:send')->evenInMaintenanceMode();
@@ -515,7 +515,7 @@ Schedule::command('emails:send')
     ->appendOutputTo($filePath);
 ```
 
-`emailOutputTo` 메서드를 사용하면 예약 작업의 출력 결과를 원하는 이메일 주소로 전송할 수 있습니다. 이 기능을 사용하기 전에 라라벨의 [메일 서비스](/docs/{{version}}/mail)를 구성해야 합니다.
+`emailOutputTo` 메서드를 사용하면 예약 작업의 출력 결과를 원하는 이메일 주소로 전송할 수 있습니다. 이 기능을 사용하기 전에 라라벨의 [메일 서비스](/docs/12.x/mail)를 구성해야 합니다.
 
 ```php
 Schedule::command('report:generate')
@@ -619,7 +619,7 @@ Schedule::command('emails:send')
 <a name="events"></a>
 ## 이벤트
 
-라라벨은 예약 작업 실행 과정에서 다양한 [이벤트](/docs/{{version}}/events)를 발생시킵니다. 아래 이벤트들에 대해 [리스너](/docs/{{version}}/events)를 직접 정의해서 사용할 수 있습니다.
+라라벨은 예약 작업 실행 과정에서 다양한 [이벤트](/docs/12.x/events)를 발생시킵니다. 아래 이벤트들에 대해 [리스너](/docs/12.x/events)를 직접 정의해서 사용할 수 있습니다.
 
 <div class="overflow-auto">
 

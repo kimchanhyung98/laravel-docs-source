@@ -16,9 +16,9 @@
 <a name="introduction"></a>
 ## 소개
 
-Laravel Precognition을 사용하면 미래에 발생할 HTTP 요청의 결과를 미리 예측할 수 있습니다. Precognition의 주요 활용 사례 중 하나는, 프론트엔드 자바스크립트 애플리케이션의 유효성 검증 규칙을 백엔드에 중복 작성할 필요 없이 "실시간" 유효성 검증을 제공하는 것입니다. Precognition은 Laravel Inertia 기반의 [스타터 키트](/docs/{{version}}/starter-kits)와 함께 사용할 때 특히 효과적입니다.
+Laravel Precognition을 사용하면 미래에 발생할 HTTP 요청의 결과를 미리 예측할 수 있습니다. Precognition의 주요 활용 사례 중 하나는, 프론트엔드 자바스크립트 애플리케이션의 유효성 검증 규칙을 백엔드에 중복 작성할 필요 없이 "실시간" 유효성 검증을 제공하는 것입니다. Precognition은 Laravel Inertia 기반의 [스타터 키트](/docs/12.x/starter-kits)와 함께 사용할 때 특히 효과적입니다.
 
-Laravel이 "프리코그니티브(precognitive) 요청"을 수신하면, 해당 라우트의 모든 미들웨어를 실행하고 컨트롤러 의존성도 해결합니다. 여기에는 [폼 리퀘스트](/docs/{{version}}/validation#form-request-validation) 기반의 유효성 검증도 포함됩니다. 단, 실제로 라우트의 컨트롤러 메서드는 실행하지 않습니다.
+Laravel이 "프리코그니티브(precognitive) 요청"을 수신하면, 해당 라우트의 모든 미들웨어를 실행하고 컨트롤러 의존성도 해결합니다. 여기에는 [폼 리퀘스트](/docs/12.x/validation#form-request-validation) 기반의 유효성 검증도 포함됩니다. 단, 실제로 라우트의 컨트롤러 메서드는 실행하지 않습니다.
 
 <a name="live-validation"></a>
 ## 라이브 유효성 검증
@@ -28,7 +28,7 @@ Laravel이 "프리코그니티브(precognitive) 요청"을 수신하면, 해당 
 
 Laravel Precognition을 이용하면 프론트엔드 Vue 애플리케이션에서 유효성 검증 규칙을 별도로 중복하지 않고도, 사용자에게 실시간 라이브 유효성 검증 경험을 제공할 수 있습니다. 동작 방식을 이해하기 위해, 애플리케이션 내의 사용자 생성 폼을 예시로 살펴보겠습니다.
 
-먼저 Precognition을 라우트에 적용하려면, 해당 라우트 정의에 `HandlePrecognitiveRequests` 미들웨어를 추가해야 합니다. 또한 해당 라우트의 유효성 검증 규칙을 담을 [폼 리퀘스트](/docs/{{version}}/validation#form-request-validation)를 만들어야 합니다.
+먼저 Precognition을 라우트에 적용하려면, 해당 라우트 정의에 `HandlePrecognitiveRequests` 미들웨어를 추가해야 합니다. 또한 해당 라우트의 유효성 검증 규칙을 담을 [폼 리퀘스트](/docs/12.x/validation#form-request-validation)를 만들어야 합니다.
 
 ```php
 use App\Http\Requests\StoreUserRequest;
@@ -191,7 +191,7 @@ const submit = () => form.submit()
 ### Vue와 Inertia 함께 사용하기
 
 > [!NOTE]
-> Vue와 Inertia로 Laravel 애플리케이션 개발을 빠르게 시작하고 싶다면, [스타터 키트](/docs/{{version}}/starter-kits)를 활용해보세요. Laravel의 스타터 키트는 백엔드와 프론트엔드 인증까지 기본적으로 구현해줍니다.
+> Vue와 Inertia로 Laravel 애플리케이션 개발을 빠르게 시작하고 싶다면, [스타터 키트](/docs/12.x/starter-kits)를 활용해보세요. Laravel의 스타터 키트는 백엔드와 프론트엔드 인증까지 기본적으로 구현해줍니다.
 
 Vue와 Inertia에서 Precognition을 활용하기 전에, [Vue용 Precognition 사용법](#using-vue)을 먼저 참고하세요. Inertia와 함께 사용할 경우 Precognition의 Inertia 호환 라이브러리를 NPM으로 설치해야 합니다.
 
@@ -224,7 +224,7 @@ const submit = () => form.submit({
 
 Laravel Precognition을 활용하면 프론트엔드 React 애플리케이션에서도 유효성 검증 규칙을 중복하지 않고, 사용자에게 실시간 검증 경험을 제공할 수 있습니다. 동작 방식을 이해하기 위해, 신규 사용자 생성 폼 예제를 살펴보겠습니다.
 
-먼저 Precognition을 라우트에 적용하려면, `HandlePrecognitiveRequests` 미들웨어를 라우트에 추가해야 하며, 해당 라우트의 유효성 검증 규칙을 위한 [폼 리퀘스트](/docs/{{version}}/validation#form-request-validation)를 생성해야 합니다.
+먼저 Precognition을 라우트에 적용하려면, `HandlePrecognitiveRequests` 미들웨어를 라우트에 추가해야 하며, 해당 라우트의 유효성 검증 규칙을 위한 [폼 리퀘스트](/docs/12.x/validation#form-request-validation)를 생성해야 합니다.
 
 ```php
 use App\Http\Requests\StoreUserRequest;
@@ -382,7 +382,7 @@ const submit = (e) => {
 ### React와 Inertia 함께 사용하기
 
 > [!NOTE]
-> React와 Inertia로 Laravel 애플리케이션을 빠르게 개발하고 싶다면, [스타터 키트](/docs/{{version}}/starter-kits)를 사용해보세요. 백엔드와 프론트엔드 인증이 기본으로 구현되어 있습니다.
+> React와 Inertia로 Laravel 애플리케이션을 빠르게 개발하고 싶다면, [스타터 키트](/docs/12.x/starter-kits)를 사용해보세요. 백엔드와 프론트엔드 인증이 기본으로 구현되어 있습니다.
 
 React와 Inertia에서 Precognition을 활용하기 전에, [React에서 Precognition 사용법](#using-react)을 먼저 참고하세요. Inertia와 함께 사용하려면 Inertia 전용 Precognition 라이브러리를 NPM으로 설치해야 합니다.
 
@@ -417,7 +417,7 @@ const submit = (e) => {
 
 Laravel Precognition을 활용하면 프론트엔드 Alpine 애플리케이션에서도 유효성 검증 규칙 중복 없이, 실시간 검증 경험을 제공할 수 있습니다. 동작 방식을 예시로, 사용자 생성 폼을 직접 구현해 보겠습니다.
 
-먼저 Precognition을 라우트에 적용하려면, 해당 라우트에 `HandlePrecognitiveRequests` 미들웨어를 추가하고, [폼 리퀘스트](/docs/{{version}}/validation#form-request-validation)를 만들어서 유효성 검증 규칙을 정의해야 합니다.
+먼저 Precognition을 라우트에 적용하려면, 해당 라우트에 `HandlePrecognitiveRequests` 미들웨어를 추가하고, [폼 리퀘스트](/docs/12.x/validation#form-request-validation)를 만들어서 유효성 검증 규칙을 정의해야 합니다.
 
 ```php
 use App\Http\Requests\CreateUserRequest;

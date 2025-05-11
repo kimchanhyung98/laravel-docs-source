@@ -46,7 +46,7 @@ Route::get('/greeting', function () {
 <a name="the-default-route-files"></a>
 ### 기본 라우트 파일
 
-라라벨에서 사용하는 모든 라우트는 `routes` 디렉토리에 위치한 라우트 파일에 정의되어 있습니다. 이 파일들은 애플리케이션의 `bootstrap/app.php` 파일에 설정된 구성에 따라 자동으로 로드됩니다. `routes/web.php` 파일은 웹 인터페이스용 라우트를 정의하는 용도로 사용되며, 이 파일에 정의된 라우트는 `web` [미들웨어 그룹](/docs/{{version}}/middleware#laravels-default-middleware-groups)에 할당되어 세션 상태 관리, CSRF 보호 등 다양한 웹 관련 기능을 제공합니다.
+라라벨에서 사용하는 모든 라우트는 `routes` 디렉토리에 위치한 라우트 파일에 정의되어 있습니다. 이 파일들은 애플리케이션의 `bootstrap/app.php` 파일에 설정된 구성에 따라 자동으로 로드됩니다. `routes/web.php` 파일은 웹 인터페이스용 라우트를 정의하는 용도로 사용되며, 이 파일에 정의된 라우트는 `web` [미들웨어 그룹](/docs/12.x/middleware#laravels-default-middleware-groups)에 할당되어 세션 상태 관리, CSRF 보호 등 다양한 웹 관련 기능을 제공합니다.
 
 대부분의 애플리케이션에서는 먼저 `routes/web.php` 파일에 라우트를 정의하는 것부터 시작합니다. 이렇게 정의된 라우트는 웹 브라우저에서 라우트의 URL로 접근할 수 있습니다. 예를 들어, 아래 라우트에 정의된 경로는 브라우저에서 `http://example.com/user`로 접근할 수 있습니다.
 
@@ -65,7 +65,7 @@ Route::get('/user', [UserController::class, 'index']);
 php artisan install:api
 ```
 
-`install:api` 명령어는 [Laravel Sanctum](/docs/{{version}}/sanctum)을 설치합니다. Sanctum은 서드파티 API 소비자, SPA, 모바일 애플리케이션 등에서 사용할 수 있는 간단하고 강력한 API 토큰 인증 가드를 제공합니다. 또한 이 명령어로 `routes/api.php` 파일도 생성됩니다.
+`install:api` 명령어는 [Laravel Sanctum](/docs/12.x/sanctum)을 설치합니다. Sanctum은 서드파티 API 소비자, SPA, 모바일 애플리케이션 등에서 사용할 수 있는 간단하고 강력한 API 토큰 인증 가드를 제공합니다. 또한 이 명령어로 `routes/api.php` 파일도 생성됩니다.
 
 ```php
 Route::get('/user', function (Request $request) {
@@ -73,7 +73,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 ```
 
-`routes/api.php`에 정의된 라우트는 상태를 저장하지 않으며, `api` [미들웨어 그룹](/docs/{{version}}/middleware#laravels-default-middleware-groups)에 할당됩니다. 추가로, 이 파일에 정의된 모든 라우트는 자동으로 `/api` URI 접두사가 적용되므로, 별도로 직접 적용할 필요가 없습니다. 접두사는 애플리케이션의 `bootstrap/app.php` 파일을 수정하여 변경할 수 있습니다.
+`routes/api.php`에 정의된 라우트는 상태를 저장하지 않으며, `api` [미들웨어 그룹](/docs/12.x/middleware#laravels-default-middleware-groups)에 할당됩니다. 추가로, 이 파일에 정의된 모든 라우트는 자동으로 `/api` URI 접두사가 적용되므로, 별도로 직접 적용할 필요가 없습니다. 접두사는 애플리케이션의 `bootstrap/app.php` 파일을 수정하여 변경할 수 있습니다.
 
 ```php
 ->withRouting(
@@ -115,7 +115,7 @@ Route::any('/', function () {
 <a name="dependency-injection"></a>
 #### 의존성 주입
 
-라우트의 콜백 함수(클로저) 시그니처에 필요한 의존성을 타입 힌트로 지정하면, 라라벨의 [서비스 컨테이너](/docs/{{version}}/container)가 자동으로 해당 의존성을 해결(resolving)해 콜백에 주입해줍니다. 예를 들어, `Illuminate\Http\Request` 클래스를 타입 힌트로 지정하면 현재 HTTP 요청(Request)이 자동으로 주입됩니다.
+라우트의 콜백 함수(클로저) 시그니처에 필요한 의존성을 타입 힌트로 지정하면, 라라벨의 [서비스 컨테이너](/docs/12.x/container)가 자동으로 해당 의존성을 해결(resolving)해 콜백에 주입해줍니다. 예를 들어, `Illuminate\Http\Request` 클래스를 타입 힌트로 지정하면 현재 HTTP 요청(Request)이 자동으로 주입됩니다.
 
 ```php
 use Illuminate\Http\Request;
@@ -128,7 +128,7 @@ Route::get('/users', function (Request $request) {
 <a name="csrf-protection"></a>
 #### CSRF 보호
 
-`web` 라우트 파일에 정의된 `POST`, `PUT`, `PATCH`, `DELETE` 라우트를 대상으로 하는 모든 HTML 폼에는 반드시 CSRF 토큰 필드가 포함되어야 합니다. 그렇지 않으면 요청이 거부됩니다. CSRF 보호에 대한 더 자세한 내용은 [CSRF 문서](/docs/{{version}}/csrf)를 참고하세요.
+`web` 라우트 파일에 정의된 `POST`, `PUT`, `PATCH`, `DELETE` 라우트를 대상으로 하는 모든 HTML 폼에는 반드시 CSRF 토큰 필드가 포함되어야 합니다. 그렇지 않으면 요청이 거부됩니다. CSRF 보호에 대한 더 자세한 내용은 [CSRF 문서](/docs/12.x/csrf)를 참고하세요.
 
 ```blade
 <form method="POST" action="/profile">
@@ -164,7 +164,7 @@ Route::permanentRedirect('/here', '/there');
 <a name="view-routes"></a>
 ### 뷰 라우트
 
-라우트가 단순히 [뷰](/docs/{{version}}/views)만 반환하면 되는 경우, `Route::view` 메서드를 사용할 수 있습니다. 이 메서드도 redirect처럼 간단하게 라우트를 정의할 수 있으며, 전체 라우트나 컨트롤러를 별도로 작성할 필요가 없습니다. `view` 메서드는 첫 번째 인자로 URI, 두 번째 인자로 뷰 이름을 받고, 세 번째 인자로 뷰에 전달할 데이터를 배열로(optional) 넘길 수 있습니다.
+라우트가 단순히 [뷰](/docs/12.x/views)만 반환하면 되는 경우, `Route::view` 메서드를 사용할 수 있습니다. 이 메서드도 redirect처럼 간단하게 라우트를 정의할 수 있으며, 전체 라우트나 컨트롤러를 별도로 작성할 필요가 없습니다. `view` 메서드는 첫 번째 인자로 URI, 두 번째 인자로 뷰 이름을 받고, 세 번째 인자로 뷰에 전달할 데이터를 배열로(optional) 넘길 수 있습니다.
 
 ```php
 Route::view('/welcome', 'welcome');
@@ -466,7 +466,7 @@ $url = route('profile', ['id' => 1, 'photos' => 'yes']);
 ```
 
 > [!NOTE]
-> 예를 들어 현재 로케일 등, 요청 전역에서 기본값을 적용하고 싶다면 [URL::defaults 메서드](/docs/{{version}}/urls#default-values)를 사용할 수 있습니다.
+> 예를 들어 현재 로케일 등, 요청 전역에서 기본값을 적용하고 싶다면 [URL::defaults 메서드](/docs/12.x/urls#default-values)를 사용할 수 있습니다.
 
 <a name="inspecting-the-current-route"></a>
 #### 현재 라우트 정보 확인하기
@@ -503,7 +503,7 @@ public function handle(Request $request, Closure $next): Response
 <a name="route-group-middleware"></a>
 ### 미들웨어
 
-[미들웨어](/docs/{{version}}/middleware)를 그룹 내 모든 라우트에 적용하려면, 그룹 정의 전에 `middleware` 메서드를 사용하면 됩니다. 배열에 나열한 순서대로 미들웨어가 실행됩니다.
+[미들웨어](/docs/12.x/middleware)를 그룹 내 모든 라우트에 적용하려면, 그룹 정의 전에 `middleware` 메서드를 사용하면 됩니다. 배열에 나열한 순서대로 미들웨어가 실행됩니다.
 
 ```php
 Route::middleware(['first', 'second'])->group(function () {
@@ -520,7 +520,7 @@ Route::middleware(['first', 'second'])->group(function () {
 <a name="route-group-controllers"></a>
 ### 컨트롤러
 
-그룹 내 모든 라우트에서 동일한 [컨트롤러](/docs/{{version}}/controllers)를 사용하는 경우에는, `controller` 메서드로 공통 컨트롤러를 미리 지정할 수 있습니다. 그러면 각 라우트에서는 호출할 컨트롤러 메서드만 작성하면 됩니다.
+그룹 내 모든 라우트에서 동일한 [컨트롤러](/docs/12.x/controllers)를 사용하는 경우에는, `controller` 메서드로 공통 컨트롤러를 미리 지정할 수 있습니다. 그러면 각 라우트에서는 호출할 컨트롤러 메서드만 작성하면 됩니다.
 
 ```php
 use App\Http\Controllers\OrderController;
@@ -613,7 +613,7 @@ public function show(User $user)
 <a name="implicit-soft-deleted-models"></a>
 #### Soft Delete된 모델 바인딩
 
-일반적으로 암묵적 모델 바인딩은 [소프트 삭제](/docs/{{version}}/eloquent#soft-deleting)된 모델을 가져오지 않습니다. 그러나, 라우트 정의에 `withTrashed` 메서드를 체이닝하면 이런 모델도 바인딩할 수 있습니다.
+일반적으로 암묵적 모델 바인딩은 [소프트 삭제](/docs/12.x/eloquent#soft-deleting)된 모델을 가져오지 않습니다. 그러나, 라우트 정의에 `withTrashed` 메서드를 체이닝하면 이런 모델도 바인딩할 수 있습니다.
 
 ```php
 use App\Models\User;
@@ -949,7 +949,7 @@ RateLimiter::for('uploads', function (Request $request) {
 <a name="attaching-rate-limiters-to-routes"></a>
 ### 라우트에 속도 제한기 적용하기
 
-속도 제한기는 `throttle` [미들웨어](/docs/{{version}}/middleware)를 이용해 라우트 또는 라우트 그룹에 추가할 수 있습니다. 이때 `throttle` 미들웨어에는 사용할 제한기 이름을 지정합니다.
+속도 제한기는 `throttle` [미들웨어](/docs/12.x/middleware)를 이용해 라우트 또는 라우트 그룹에 추가할 수 있습니다. 이때 `throttle` 미들웨어에는 사용할 제한기 이름을 지정합니다.
 
 ```php
 Route::middleware(['throttle:uploads'])->group(function () {
@@ -987,7 +987,7 @@ HTML 폼은 기본적으로 `PUT`, `PATCH`, `DELETE` 액션을 지원하지 않�
 </form>
 ```
 
-좀 더 편리하게, [Blade 지시어](/docs/{{version}}/blade)인 `@method`를 사용하면 `_method` input 필드를 자동으로 생성할 수 있습니다.
+좀 더 편리하게, [Blade 지시어](/docs/12.x/blade)인 `@method`를 사용하면 `_method` input 필드를 자동으로 생성할 수 있습니다.
 
 ```blade
 <form action="/example" method="POST">
@@ -1009,12 +1009,12 @@ $name = Route::currentRouteName(); // string
 $action = Route::currentRouteAction(); // string
 ```
 
-이 외에도 라우터 및 라우트 클래스에서 사용할 수 있는 모든 메서드는 라라벨 [Route 파사드의 기반 클래스 문서](https://api.laravel.com/docs/{{version}}/Illuminate/Routing/Router.html)와 [Route 인스턴스 문서](https://api.laravel.com/docs/{{version}}/Illuminate/Routing/Route.html)를 참고하세요.
+이 외에도 라우터 및 라우트 클래스에서 사용할 수 있는 모든 메서드는 라라벨 [Route 파사드의 기반 클래스 문서](https://api.laravel.com/docs/12.x/Illuminate/Routing/Router.html)와 [Route 인스턴스 문서](https://api.laravel.com/docs/12.x/Illuminate/Routing/Route.html)를 참고하세요.
 
 <a name="cors"></a>
 ## 교차 출처 리소스 공유(CORS)
 
-라라벨은 CORS의 `OPTIONS` HTTP 요청에 대해 미리 설정한 값으로 자동 응답할 수 있습니다. 이러한 `OPTIONS` 요청은 애플리케이션 전체의 글로벌 미들웨어 스택에 기본 포함된 `HandleCors` [미들웨어](/docs/{{version}}/middleware)가 자동 처리합니다.
+라라벨은 CORS의 `OPTIONS` HTTP 요청에 대해 미리 설정한 값으로 자동 응답할 수 있습니다. 이러한 `OPTIONS` 요청은 애플리케이션 전체의 글로벌 미들웨어 스택에 기본 포함된 `HandleCors` [미들웨어](/docs/12.x/middleware)가 자동 처리합니다.
 
 애플리케이션의 CORS 설정 값을 직접 커스터마이즈하고 싶을 때는, Artisan 명령어인 `config:publish`를 통해 `cors` 설정 파일을 퍼블리시할 수 있습니다.
 
