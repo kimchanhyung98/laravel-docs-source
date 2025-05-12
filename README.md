@@ -27,6 +27,7 @@
 - 코드 블록 변환 : 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환합니다.
 - 스타일 태그 제거 : `<style>` 태그와 그 내용을 제거합니다.
 - 이미지 태그 수정 : 이미지 태그(`<img>`)를 닫는 태그(`<img />`)로 변환합니다.
+- 툴팁 형식 표준화 : 다양한 형태의 툴팁/노트(`> {note}`, `> [!NOTE]`)를 `> [!NOTE]\n> message` 형식으로 통일합니다.
 - 버전 플레이스홀더 치환 : 문서 내 `{{version}}` 플레이스홀더를 해당 버전 문자열(`master`, `12.x` 등)로 치환합니다.
 
 ## 실행
@@ -38,7 +39,7 @@
     ```dotenv
     TRANSLATION_PROVIDER=openai
     TRANSLATION_MODEL=gpt-4.1
-    
+
     OPENAI_API_KEY=your_openai_api_key
     ```
 
@@ -47,7 +48,7 @@
     ```dotenv
     TRANSLATION_PROVIDER=azure
     TRANSLATION_MODEL=gpt-4.1
-    
+
     AZURE_OPENAI_API_KEY=your_azure_api_key
     AZURE_OPENAI_API_VERSION=2025-05-01-preview
     AZURE_OPENAI_ENDPOINT=https://your-endpoint.openai.azure.com/
