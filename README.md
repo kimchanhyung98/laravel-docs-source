@@ -18,11 +18,11 @@
 
 - 지원 버전 : `master`, `12.x`, `11.x`, `10.x`, `9.x`, `8.x`
 - 업데이트 주기 : 매일 04시 (KST)
-- 번역 엔진 : OpenAI GPT-4.1 및 [번역 프롬프트](translation_prompt.txt)
+- 번역 엔진 : OpenAI 및 [번역 프롬프트](translation_prompt.txt)
 
 ### 필터링
 
-마크다운 문서에 다음과 같은 필터링을 적용합니다:
+마크다운 문서에 다음과 같은 필터링을 적용합니다.
 
 - 코드 블록 변환 : 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환합니다.
 - 스타일 태그 제거 : `<style>` 태그와 그 내용을 제거합니다.
@@ -31,13 +31,34 @@
 
 ## 실행
 
-전체 번역 및 동기화 스크립트를 로컬 환경에서 간편하게 실행해 볼 수 있습니다.
-`.env.example` 파일을 복사하여 `.env` 파일을 만들어, `OPENAI_API_KEY`를 추가하고, 스크립트를 실행합니다.
+`.env.example` 파일을 복사하여 `.env` 파일을 만들고 번역 제공자를 설정한 후 스크립트를 실행합니다.
 
-```bash
-chmod +x run.sh
-./run.sh
-```
+1. OpenAI
+
+    ```dotenv
+    TRANSLATION_PROVIDER=openai
+    TRANSLATION_MODEL=gpt-4.1
+    
+    OPENAI_API_KEY=your_openai_api_key
+    ```
+
+2. Azure OpenAI** (`.env` 설정)
+
+    ```dotenv
+    TRANSLATION_PROVIDER=azure
+    TRANSLATION_MODEL=gpt-4.1
+    
+    AZURE_OPENAI_API_KEY=your_azure_api_key
+    AZURE_OPENAI_API_VERSION=2025-05-01-preview
+    AZURE_OPENAI_ENDPOINT=https://your-endpoint.openai.azure.com/
+    ```
+
+전체 번역 및 동기화 스크립트를 로컬 도커 환경에서 간편하게 실행해 볼 수 있습니다.
+
+   ```bash
+   chmod +x run.sh
+   ./run.sh
+   ```
 
 ## 라이선스
 

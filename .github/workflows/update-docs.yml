@@ -28,8 +28,9 @@ jobs:
         run: python main.py
         timeout-minutes: 30
         env:
+          TRANSLATION_PROVIDER: ${{ secrets.TRANSLATION_PROVIDER }}
+          TRANSLATION_MODEL: ${{ secrets.TRANSLATION_MODEL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TRANSLATION_MODEL: 'gpt-4.1'
 
       - name: Commit and push changes
         run: |
