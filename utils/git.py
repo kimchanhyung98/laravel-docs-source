@@ -12,7 +12,7 @@ def get_git_changes():
     """git을 사용하여 현재 프로젝트의 변경된 마크다운 파일 목록을 가져옴
 
     Returns:
-        list: 변경된 마크다운 파일 경로 목록 (branch/en/filename.md 형식)
+        list: 변경된 마크다운 파일 경로 목록 (branch/origin/filename.md 형식)
     """
     try:
         # git status 명령어 실행
@@ -29,7 +29,7 @@ def get_git_changes():
             if file_path.endswith('.md'):
                 # 파일 경로에서 브랜치 추출
                 path_parts = file_path.split('/')
-                if len(path_parts) >= 3 and path_parts[1] == 'en':
+                if len(path_parts) >= 3 and path_parts[1] == 'origin':
                     changed_files.add(file_path)
 
         return sorted(list(changed_files))

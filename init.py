@@ -45,12 +45,12 @@ def main():
         print(f"브랜치 체크아웃: {branch}")
 
         # 디렉토리 설정 및 생성
-        en_dir = os.path.join(os.getcwd(), branch, "en")
+        origin_dir = os.path.join(os.getcwd(), branch, "origin")
         ko_dir = os.path.join(os.getcwd(), branch, "ko")
 
-        os.makedirs(en_dir, exist_ok=True)
+        os.makedirs(origin_dir, exist_ok=True)
         os.makedirs(ko_dir, exist_ok=True)
-        print(f"디렉토리 생성: {en_dir}, {ko_dir}")
+        print(f"디렉토리 생성: {origin_dir}, {ko_dir}")
 
         # 마크다운 파일 목록 가져오기
         md_files = [f for f in os.listdir(temp_dir) if f.endswith(".md")]
@@ -62,10 +62,10 @@ def main():
         for file_name in md_files:
             source_path = os.path.join(temp_dir, file_name)
 
-            # en 디렉토리에 파일 복사
-            en_target_path = os.path.join(en_dir, file_name)
-            shutil.copy2(source_path, en_target_path)
-            print(f"파일 복사: {file_name} -> {en_dir}")
+            # origin 디렉토리에 파일 복사
+            origin_target_path = os.path.join(origin_dir, file_name)
+            shutil.copy2(source_path, origin_target_path)
+            print(f"파일 복사: {file_name} -> {origin_dir}")
 
             # ko 디렉토리에 파일 복사 또는 번역
             ko_target_path = os.path.join(ko_dir, file_name)
