@@ -69,9 +69,10 @@ def main():
                     print(f"예외 파일: {file_key}")
                     continue
 
-                # 경로 생성 및 검증
-                source_path = os.path.join(os.getcwd(), branch, 'origin', filename)
-                target_path = os.path.join(os.getcwd(), branch, 'ko', filename)
+                # 경로 생성 및 검증 - 절대 경로 사용
+                cwd = os.path.abspath(os.getcwd())
+                source_path = os.path.normpath(os.path.join(cwd, branch, 'origin', filename))
+                target_path = os.path.normpath(os.path.join(cwd, branch, 'ko', filename))
 
                 # 원본 파일 존재 확인
                 if not os.path.exists(source_path):
