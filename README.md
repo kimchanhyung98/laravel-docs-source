@@ -5,6 +5,7 @@
 [![Laravel Version](https://img.shields.io/packagist/v/laravel/framework)](https://packagist.org/packages/laravel/framework)
 [![Last Updated](https://img.shields.io/github/last-commit/kimchanhyung98/laravel-docs-source/main?label=Last%20Updated)](https://github.com/kimchanhyung98/laravel-docs-source/commits/main)
 [![License](https://img.shields.io/github/license/kimchanhyung98/laravel-docs-source)](https://github.com/kimchanhyung98/laravel-docs-source/blob/main/LICENSE)
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/kimchanhyung98/laravel-docs-source?utm_source=oss&utm_medium=github&utm_campaign=kimchanhyung98%2Flaravel-docs-source&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 
 [라라벨 공식 문서](https://laravel.com) | [라라벨 한국어 문서](https://laravel.chanhyung.kim)
 
