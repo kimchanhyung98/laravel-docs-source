@@ -177,6 +177,34 @@ def replace_version_placeholder(content: str, version: str) -> str:
     return re.sub(pattern, version, content)
 
 
+def remove_title_braces(content: str) -> str:
+    """마크다운 제목 옆에 있는 중괄호와 그 내용을 제거
+
+    예:
+    - "#### `after()` {.collection-method .first-collection-method}" -> "#### `after()`"
+    - "### `all()` {.collection-method}" -> "### `all()`"
+
+    Args:
+        content: 처리할 마크다운 원본 문자열
+
+    Returns:
+        제목에서 중괄호가 제거된 마크다운 문자열
+    """
+    pattern = r'^(#+\s+.+?)\s+\{[^}]*\}\s*$'
+
+    lines = content.splitlines()
+    result_lines = []
+
+    for line in lines:
+        match = re.match(pattern, line)
+        if match:
+            result_lines.append(match.group(1))
+        else:
+            result_lines.append(line)
+
+    return "\n".join(result_lines)
+
+
 def standardize_callouts(content: str) -> str:
     """마크다운 내용에서 다양한 형태의 툴팁/노트 형식을 표준화
 
@@ -239,9 +267,10 @@ def filter_markdown(content: str, version: str = None) -> str:
     1. 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환 (언어 태그 없음)
     2. HTML <style> 태그와 그 내용을 완전히 제거
     3. 닫히지 않은 이미지 태그(<img>)를 자동으로 닫는 태그(<img />)로 변환
-    4. 다양한 형태의 툴팁/노트 형식을 표준화
-    5. {{version}} 플레이스홀더를 지정된 버전으로 치환 (version 매개변수가 제공된 경우)
-    6. 파일 끝을 하나의 빈 줄로 표준화 (문서 중간의 빈 줄은 유지)
+    4. 제목 옆에 있는 중괄호와 그 내용을 제거 ("# 설치 {.installation}" -> "# 설치")
+    5. 다양한 형태의 툴팁/노트 형식을 표준화
+    6. {{version}} 플레이스홀더를 지정된 버전으로 치환 (version 매개변수가 제공된 경우)
+    7. 파일 끝을 하나의 빈 줄로 표준화 (문서 중간의 빈 줄은 유지)
 
     Args:
         content: 필터링할 원본 마크다운 문자열
@@ -252,6 +281,7 @@ def filter_markdown(content: str, version: str = None) -> str:
     content = convert_indented_code_blocks(content)
     content = remove_style_tags(content)
     content = fix_unclosed_img_tags(content)
+    content = remove_title_braces(content)
     content = standardize_callouts(content)
 
     # 버전 플레이스홀더 치환 (버전이 제공된 경우에만)
