@@ -13,8 +13,50 @@ from utils.common import retry, timeout
 from utils.filtering import filter_markdown
 
 
+def get_translation_client():
+    """번역에 사용할 AI 클라이언트를 가져옴
+
+    TRANSLATION_PROVIDER 환경변수에 따라 OpenAI 또는 Azure OpenAI 클라이언트를 반환
+
+    Returns:
+        tuple: (client, model) - AI 클라이언트와 모델명
+
+    Raises:
+        ValueError: 필요한 환경변수가 설정되지 않은 경우
+    """
+    provider = os.environ.get("TRANSLATION_PROVIDER", "openai").lower()
+    model = os.environ.get("TRANSLATION_MODEL", "gpt-4.1")
+
+    if provider == "openai":
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY 미설정")
+
+        openai.api_key = api_key
+        client = openai.OpenAI()
+        return client, model
+
+    elif provider == "azure":
+        api_key = os.environ.get("AZURE_OPENAI_API_KEY")
+        endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
+        api_version = os.environ.get("AZURE_OPENAI_API_VERSION", "2025-05-01-preview")
+
+        if not api_key or not endpoint:
+            raise ValueError("AZURE_OPENAI_API_KEY 또는 AZURE_OPENAI_ENDPOINT 미설정")
+
+        client = openai.AzureOpenAI(
+            api_key=api_key,
+            api_version=api_version,
+            azure_endpoint=endpoint
+        )
+        return client, model
+
+    else:
+        raise ValueError(f"지원하지 않는 번역 제공자: {provider}. 'openai' 또는 'azure'를 사용하세요.")
+
+
 def translate_text_with_openai(text_to_translate, system_prompt):
-    """OpenAI API를 사용하여 텍스트를 번역
+    """AI API를 사용하여 텍스트를 번역
 
     Args:
         text_to_translate: 번역할 텍스트
@@ -26,20 +68,15 @@ def translate_text_with_openai(text_to_translate, system_prompt):
     Raises:
         Exception: API 호출 중 오류 발생 시
     """
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        raise ValueError("OPENAI_API_KEY 미설정")
-
-    # OpenAI 클라이언트 설정
-    openai.api_key = api_key
-    client = openai.OpenAI()
+    # 클라이언트와 모델 가져오기
+    client, model = get_translation_client()
 
     system_message = ChatCompletionSystemMessageParam(role="system", content=system_prompt)
     user_message = ChatCompletionUserMessageParam(role="user", content=text_to_translate)
 
     # 번역 요청
     response = client.chat.completions.create(
-        model=os.environ.get("TRANSLATION_MODEL", "gpt-4.1"),
+        model=model,
         messages=[system_message, user_message]
     )
     return response.choices[0].message.content

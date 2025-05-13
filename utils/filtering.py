@@ -177,6 +177,61 @@ def replace_version_placeholder(content: str, version: str) -> str:
     return re.sub(pattern, version, content)
 
 
+def standardize_callouts(content: str) -> str:
+    """마크다운 내용에서 다양한 형태의 툴팁/노트 형식을 표준화
+
+    다음과 같은 형태를 모두 `> [!NOTE]\n> message` 형식으로 통일:
+    1. `> {tip} message` -> `> [!TIP]\n> message`
+    2. `> {note} message` -> `> [!NOTE]\n> message`
+    3. `> [!NOTE] message` -> `> [!NOTE]\n> message`
+
+    Args:
+        content: 처리할 마크다운 원본 문자열
+
+    Returns:
+        툴팁/노트 형식이 표준화된 마크다운 문자열
+    """
+    # 패턴 1: > {tip} message 형태
+    pattern1 = r'^(\s*)>\s*\{(tip|note)\}\s*(.+)$'
+
+    # 패턴 2: > [!NOTE] message 형태 (한 줄에 노트와 메시지가 함께 있는 경우)
+    pattern2 = r'^(\s*)>\s*\[!(NOTE|WARNING)\]\s*(.+)$'
+
+    # 줄별 처리
+    lines = content.splitlines()
+    result_lines = []
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        # 패턴 1 처리: > {tip} message -> > [!TIP]\n> message
+        match1 = re.match(pattern1, line)
+        if match1:
+            indent, callout_type, message = match1.groups()
+            # tip -> TIP, note -> NOTE
+            callout_type = callout_type.upper()
+            result_lines.append(f"{indent}> [!{callout_type}]")
+            result_lines.append(f"{indent}> {message}")
+            i += 1
+            continue
+
+        # 패턴 2 처리: > [!NOTE] message -> > [!NOTE]\n> message
+        match2 = re.match(pattern2, line)
+        if match2:
+            indent, callout_type, message = match2.groups()
+            result_lines.append(f"{indent}> [!{callout_type}]")
+            result_lines.append(f"{indent}> {message}")
+            i += 1
+            continue
+
+        # 다른 패턴이 아니면 그대로 추가
+        result_lines.append(line)
+        i += 1
+
+    return "\n".join(result_lines)
+
+
 def filter_markdown(content: str, version: str = None) -> str:
     """마크다운 내용에 여러 필터링 함수를 순차적으로 적용
 
@@ -184,8 +239,9 @@ def filter_markdown(content: str, version: str = None) -> str:
     1. 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환 (언어 태그 없음)
     2. HTML <style> 태그와 그 내용을 완전히 제거
     3. 닫히지 않은 이미지 태그(<img>)를 자동으로 닫는 태그(<img />)로 변환
-    4. {{version}} 플레이스홀더를 지정된 버전으로 치환 (version 매개변수가 제공된 경우)
-    5. 파일 끝을 하나의 빈 줄로 표준화 (문서 중간의 빈 줄은 유지)
+    4. 다양한 형태의 툴팁/노트 형식을 표준화
+    5. {{version}} 플레이스홀더를 지정된 버전으로 치환 (version 매개변수가 제공된 경우)
+    6. 파일 끝을 하나의 빈 줄로 표준화 (문서 중간의 빈 줄은 유지)
 
     Args:
         content: 필터링할 원본 마크다운 문자열
@@ -196,6 +252,7 @@ def filter_markdown(content: str, version: str = None) -> str:
     content = convert_indented_code_blocks(content)
     content = remove_style_tags(content)
     content = fix_unclosed_img_tags(content)
+    content = standardize_callouts(content)
 
     # 버전 플레이스홀더 치환 (버전이 제공된 경우에만)
     if version is not None:

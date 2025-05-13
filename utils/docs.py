@@ -48,11 +48,11 @@ def update_branch_docs(branch, temp_dir, excluded_files):
 
         # 현재 프로젝트의 해당 브랜치 디렉토리 확인
         branch_dir = os.path.join(os.getcwd(), branch)
-        en_dir = os.path.join(branch_dir, "en")
+        origin_dir = os.path.join(branch_dir, "origin")
         ko_dir = os.path.join(branch_dir, "ko")
 
         # 디렉토리가 없으면 생성
-        os.makedirs(en_dir, exist_ok=True)
+        os.makedirs(origin_dir, exist_ok=True)
         os.makedirs(ko_dir, exist_ok=True)
 
         # 원본 마크다운 파일 목록 가져오기
@@ -61,7 +61,7 @@ def update_branch_docs(branch, temp_dir, excluded_files):
         # 각 마크다운 파일 복사
         for file_name in md_files:
             source_path = os.path.join(temp_dir, file_name)
-            shutil.copy2(source_path, os.path.join(en_dir, file_name))
+            shutil.copy2(source_path, os.path.join(origin_dir, file_name))
             # 번역 제외 파일은 그대로 복사
             if file_name.lower() in excluded_files:
                 shutil.copy2(source_path, os.path.join(ko_dir, file_name))

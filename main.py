@@ -47,7 +47,7 @@ def main():
     else:
         for file_path in changed_files:
             path_parts = file_path.split('/')
-            if len(path_parts) >= 3 and path_parts[1] == 'en':
+            if len(path_parts) >= 3 and path_parts[1] == 'origin':
                 branch = path_parts[0]
                 filename = path_parts[2]
 
@@ -65,7 +65,7 @@ def main():
 
                 # 번역
                 translate_file(
-                    os.path.join(os.getcwd(), branch, 'en', filename),
+                    os.path.join(os.getcwd(), branch, 'origin', filename),
                     os.path.join(os.getcwd(), branch, 'ko', filename)
                 )
 
