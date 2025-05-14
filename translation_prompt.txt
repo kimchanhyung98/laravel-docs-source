@@ -114,14 +114,17 @@ AI는 아래의 모든 세부 지침을 적용하기에 앞서, 항상 이 기�
 * attribute : 속성(attribute)
 * authenticate : 인증 (또는 인증하다)
 * authorization : 인가 (또는 인가하다)
+* collection : 컬렉션
 * column : 컬럼
 * command : 명령어
 * dependency injection : 의존성 주입
+* eloquent : Eloquent (또는 Eloquent ORM)
 * enum : 열거형 (또는 Enum)
 * explicit : 명시적
 * implicit : 암묵적
 * method : 메서드
 * property : 속성(property)
+* relationships : 연관관계
 * resolve : (의존성 등을) 해결하다 (또는 서비스 컨테이너 관련 문맥에서는 `resolve` 자체 사용 고려)
 * validation : 유효성 검증
 
