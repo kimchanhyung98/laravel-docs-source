@@ -5,6 +5,7 @@
 [![Laravel Version](https://img.shields.io/packagist/v/laravel/framework)](https://packagist.org/packages/laravel/framework)
 [![Last Updated](https://img.shields.io/github/last-commit/kimchanhyung98/laravel-docs-source/main?label=Last%20Updated)](https://github.com/kimchanhyung98/laravel-docs-source/commits/main)
 [![License](https://img.shields.io/github/license/kimchanhyung98/laravel-docs-source)](https://github.com/kimchanhyung98/laravel-docs-source/blob/main/LICENSE)
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/kimchanhyung98/laravel-docs-source?utm_source=oss&utm_medium=github&utm_campaign=kimchanhyung98%2Flaravel-docs-source&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 
 [라라벨 공식 문서](https://laravel.com) | [라라벨 한국어 문서](https://laravel.chanhyung.kim)
 
@@ -27,6 +28,7 @@
 - 코드 블록 변환 : 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환합니다.
 - 스타일 태그 제거 : `<style>` 태그와 그 내용을 제거합니다.
 - 이미지 태그 수정 : 이미지 태그(`<img>`)를 닫는 태그(`<img />`)로 변환합니다.
+- 제목 중괄호 제거 : 제목 옆에 있는 클래스 옵션 중괄호를 제거합니다 (`### 'after()' {.collection-method}` -> `### 'after()'`).
 - 툴팁 형식 표준화 : 다양한 형태의 툴팁/노트(`> {note}`, `> [!NOTE]`)를 `> [!NOTE]\n> message` 형식으로 통일합니다.
 - 버전 플레이스홀더 치환 : 문서 내 `{{version}}` 플레이스홀더를 해당 버전 문자열(`master`, `12.x` 등)로 치환합니다.
 

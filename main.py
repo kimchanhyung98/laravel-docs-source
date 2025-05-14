@@ -46,8 +46,9 @@ def main():
         print("변경된 문서가 없음")
     else:
         for file_path in changed_files:
-            # 파일 경로를 안전하게 처리
-            path_parts = file_path.split('/')
+            # 파일 경로를 안전하게 처리 - 정규화된 경로 사용
+            norm_path = os.path.normpath(file_path)
+            path_parts = norm_path.split(os.sep)
             if len(path_parts) >= 3 and path_parts[1] == 'origin':
                 branch = path_parts[0]
                 filename = path_parts[2]
@@ -69,9 +70,10 @@ def main():
                     print(f"예외 파일: {file_key}")
                     continue
 
-                # 경로 생성 및 검증
-                source_path = os.path.join(os.getcwd(), branch, 'origin', filename)
-                target_path = os.path.join(os.getcwd(), branch, 'ko', filename)
+                # 경로 생성 및 검증 - 절대 경로 사용
+                cwd = os.path.abspath(os.getcwd())
+                source_path = os.path.normpath(os.path.join(cwd, branch, 'origin', filename))
+                target_path = os.path.normpath(os.path.join(cwd, branch, 'ko', filename))
 
                 # 원본 파일 존재 확인
                 if not os.path.exists(source_path):

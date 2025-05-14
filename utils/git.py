@@ -27,9 +27,12 @@ def get_git_changes():
             file_path = line[3:].strip()
 
             if file_path.endswith('.md'):
-                # 파일 경로에서 브랜치 추출
-                path_parts = file_path.split('/')
-                if len(path_parts) >= 3 and path_parts[1] == 'origin':
+                # 파일 경로에서 브랜치 추출 - 정규화된 경로 사용
+                norm_path = os.path.normpath(file_path)
+                path_parts = norm_path.split(os.sep)
+
+                # 경로 검증: origin 디렉토리가 첫 번째가 아닌 위치에 포함된 경로만 추가
+                if len(path_parts) >= 3 and 'origin' in path_parts[1:]:
                     changed_files.add(file_path)
 
         return sorted(list(changed_files))

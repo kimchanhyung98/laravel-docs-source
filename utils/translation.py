@@ -3,6 +3,7 @@
 번역 관련 유틸리티 함수 모듈
 """
 import os
+import re
 import time
 
 import openai
@@ -106,22 +107,26 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
             print(f"빈 파일: {source_file}")
             return False
 
-        # 파일 경로에서 버전 정보 추출
+        # 파일 경로에서 버전 정보 추출 - 안전한 방법 사용
         version = None
-        # 전체 경로를 문자열로 처리하여 버전 추출
-        source_path_str = str(source_file)
-        if "master" in source_path_str:
-            version = "master"
-        elif "12.x" in source_path_str:
-            version = "12.x"
-        elif "11.x" in source_path_str:
-            version = "11.x"
-        elif "10.x" in source_path_str:
-            version = "10.x"
-        elif "9.x" in source_path_str:
-            version = "9.x"
-        elif "8.x" in source_path_str:
-            version = "8.x"
+
+        # 절대 경로를 사용하여 버전 정보 추출
+        abs_source_path = os.path.abspath(source_file).replace("\\", "/")
+
+        # 정규식을 사용하여 버전 패턴 추출
+        version_patterns = [
+            (r'/master/', "master"),
+            (r'/12\.x/', "12.x"),
+            (r'/11\.x/', "11.x"),
+            (r'/10\.x/', "10.x"),
+            (r'/9\.x/', "9.x"),
+            (r'/8\.x/', "8.x")
+        ]
+
+        for pattern, ver in version_patterns:
+            if re.search(pattern, abs_source_path):
+                version = ver
+                break
 
         # 마크다운 필터링 적용 (버전 정보 포함)
         content = filter_markdown(content, version)
