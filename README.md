@@ -2,6 +2,7 @@
 
 # 라라벨 한국어 문서
 
+[![Laravel](https://img.shields.io/badge/Laravel-%23FF2D20.svg?logo=laravel&logoColor=white)](http://laravel.com)
 [![Laravel Version](https://img.shields.io/packagist/v/laravel/framework)](https://packagist.org/packages/laravel/framework)
 [![Last Updated](https://img.shields.io/github/last-commit/kimchanhyung98/laravel-docs-source/main?label=Last%20Updated)](https://github.com/kimchanhyung98/laravel-docs-source/commits/main)
 [![License](https://img.shields.io/github/license/kimchanhyung98/laravel-docs-source)](https://github.com/kimchanhyung98/laravel-docs-source/blob/main/LICENSE)
