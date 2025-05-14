@@ -46,8 +46,9 @@ def main():
         print("변경된 문서가 없음")
     else:
         for file_path in changed_files:
-            # 파일 경로를 안전하게 처리
-            path_parts = file_path.split('/')
+            # 파일 경로를 안전하게 처리 - 정규화된 경로 사용
+            norm_path = os.path.normpath(file_path)
+            path_parts = norm_path.split(os.sep)
             if len(path_parts) >= 3 and path_parts[1] == 'origin':
                 branch = path_parts[0]
                 filename = path_parts[2]

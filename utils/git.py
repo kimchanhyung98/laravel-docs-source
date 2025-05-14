@@ -31,12 +31,9 @@ def get_git_changes():
                 norm_path = os.path.normpath(file_path)
                 path_parts = norm_path.split(os.sep)
 
-                # 경로 검증
-                if len(path_parts) >= 3 and 'origin' in path_parts:
-                    # origin 디렉토리가 포함된 경로만 추가
-                    origin_index = path_parts.index('origin')
-                    if origin_index > 0:
-                        changed_files.add(file_path)
+                # 경로 검증: origin 디렉토리가 첫 번째가 아닌 위치에 포함된 경로만 추가
+                if len(path_parts) >= 3 and 'origin' in path_parts[1:]:
+                    changed_files.add(file_path)
 
         return sorted(list(changed_files))
     except subprocess.CalledProcessError:
