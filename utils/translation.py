@@ -111,7 +111,7 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
         version = None
 
         # 절대 경로를 사용하여 버전 정보 추출
-        abs_source_path = os.path.abspath(source_file)
+        abs_source_path = os.path.abspath(source_file).replace("\\", "/")
 
         # 정규식을 사용하여 버전 패턴 추출
         version_patterns = [
