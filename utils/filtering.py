@@ -212,7 +212,7 @@ def standardize_callouts(content: str) -> str:
     1. `> {tip} message` -> `> [!TIP]\n> message`
     2. `> {note} message` -> `> [!NOTE]\n> message`
     3. `> [!NOTE] message` -> `> [!NOTE]\n> message`
-    4. `> **Note**  message` -> `> [!NOTE]\n> message`
+    4. `> **Note**` -> `> [!NOTE]`
 
     Args:
         content: 처리할 마크다운 원본 문자열
@@ -226,8 +226,8 @@ def standardize_callouts(content: str) -> str:
     # 패턴 2: > [!NOTE] message 형태 (한 줄에 노트와 메시지가 함께 있는 경우)
     pattern2 = r'^(\s*)>\s*\[!(NOTE|WARNING)\]\s*(.+)$'
 
-    # 패턴 3: > **Note**  message 형태 (9.x 버전에서 사용)
-    pattern3 = r'^(\s*)>\s*\*\*((?i)note|warning|tip)\*\*\s+(.+)$'
+    # 패턴 3: > **Note** 형태
+    pattern3 = r'^(\s*)>\s*\*\*(note|warning|tip)\*\*\s*(.*)$'
 
     # 줄별 처리
     lines = content.splitlines()
@@ -257,16 +257,21 @@ def standardize_callouts(content: str) -> str:
             i += 1
             continue
 
-        # 패턴 3 처리: > **Note**  message -> > [!NOTE]\n> message
-        match3 = re.match(pattern3, line)
+        # 패턴 3 처리: > **Note** -> > [!NOTE]
+        match3 = re.match(pattern3, line, re.IGNORECASE)
         if match3:
             indent, callout_type, message = match3.groups()
             # note -> NOTE, warning -> WARNING, tip -> TIP
             callout_type = callout_type.upper()
             result_lines.append(f"{indent}> [!{callout_type}]")
-            result_lines.append(f"{indent}> {message}")
+
+            # 메시지가 있는 경우에만 추가
+            if message:
+                result_lines.append(f"{indent}> {message}")
+
             i += 1
             continue
+
 
         # 다른 패턴이 아니면 그대로 추가
         result_lines.append(line)
