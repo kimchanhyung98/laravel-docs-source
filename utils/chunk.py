@@ -180,7 +180,7 @@ def orchestrate_chunk_translation(
             translated_chunks.append(chunk_content)
 
         if i < total_chunks - 1:
-            time.sleep(1.5)
+            time.sleep(3)
 
     processed_translated_chunks = []
     for tc in translated_chunks:
