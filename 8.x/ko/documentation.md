@@ -5,15 +5,15 @@
 - ## 시작하기
     - [설치](/docs/{{version}}/installation)
     - [환경 설정](/docs/{{version}}/configuration)
-    - [디렉토리 구조](/docs/{{version}}/structure)
-    - [스타터 킷](/docs/{{version}}/starter-kits)
+    - [디렉터리 구조](/docs/{{version}}/structure)
+    - [스타터 키트](/docs/{{version}}/starter-kits)
     - [배포](/docs/{{version}}/deployment)
 - ## 아키텍처 개념
     - [요청 라이프사이클](/docs/{{version}}/lifecycle)
     - [서비스 컨테이너](/docs/{{version}}/container)
     - [서비스 프로바이더](/docs/{{version}}/providers)
     - [파사드](/docs/{{version}}/facades)
-- ## 기본 사용법
+- ## 기본
     - [라우팅](/docs/{{version}}/routing)
     - [미들웨어](/docs/{{version}}/middleware)
     - [CSRF 보호](/docs/{{version}}/csrf)
@@ -24,11 +24,11 @@
     - [Blade 템플릿](/docs/{{version}}/blade)
     - [URL 생성](/docs/{{version}}/urls)
     - [세션](/docs/{{version}}/session)
-    - [검증](/docs/{{version}}/validation)
-    - [에러 핸들링](/docs/{{version}}/errors)
+    - [유효성 검증](/docs/{{version}}/validation)
+    - [에러 처리](/docs/{{version}}/errors)
     - [로깅](/docs/{{version}}/logging)
-- ## 더 깊이 알아보기
-    - [Artisan 콘솔](/docs/{{version}}/artisan)
+- ## 더 깊이 파보기
+    - [아티즌 콘솔](/docs/{{version}}/artisan)
     - [브로드캐스팅](/docs/{{version}}/broadcasting)
     - [캐시](/docs/{{version}}/cache)
     - [컬렉션](/docs/{{version}}/collections)
@@ -47,7 +47,7 @@
     - [작업 스케줄링](/docs/{{version}}/scheduling)
 - ## 보안
     - [인증](/docs/{{version}}/authentication)
-    - [권한 부여](/docs/{{version}}/authorization)
+    - [인가](/docs/{{version}}/authorization)
     - [이메일 인증](/docs/{{version}}/verification)
     - [암호화](/docs/{{version}}/encryption)
     - [해싱](/docs/{{version}}/hashing)
@@ -61,9 +61,9 @@
     - [Redis](/docs/{{version}}/redis)
 - ## Eloquent ORM
     - [시작하기](/docs/{{version}}/eloquent)
-    - [관계](/docs/{{version}}/eloquent-relationships)
+    - [연관관계](/docs/{{version}}/eloquent-relationships)
     - [컬렉션](/docs/{{version}}/eloquent-collections)
-    - [뮤테이터 / 캐스트](/docs/{{version}}/eloquent-mutators)
+    - [변경자/캐스트](/docs/{{version}}/eloquent-mutators)
     - [API 리소스](/docs/{{version}}/eloquent-resources)
     - [직렬화](/docs/{{version}}/eloquent-serialization)
 - ## 테스트
@@ -72,7 +72,7 @@
     - [콘솔 테스트](/docs/{{version}}/console-tests)
     - [브라우저 테스트](/docs/{{version}}/dusk)
     - [데이터베이스](/docs/{{version}}/database-testing)
-    - [목(Mock) 객체](/docs/{{version}}/mocking)
+    - [모킹](/docs/{{version}}/mocking)
 - ## 패키지
     - [Breeze](/docs/{{version}}/starter-kits#laravel-breeze)
     - [Cashier (Stripe)](/docs/{{version}}/billing)
