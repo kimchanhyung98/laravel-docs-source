@@ -80,7 +80,7 @@ def main():
                 print(f"번역 시작: {file_name}")
                 translate_file(source_path, ko_target_path)
                 print(f"번역 완료: {file_name} -> {ko_dir}")
-                time.sleep(5)
+                time.sleep(60)
 
         print(f"브랜치: {branch} 처리 완료")
 

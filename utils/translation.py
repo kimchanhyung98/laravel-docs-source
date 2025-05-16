@@ -110,23 +110,20 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
         # 파일 경로에서 버전 정보 추출 - 안전한 방법 사용
         version = None
 
-        # 절대 경로를 사용하여 버전 정보 추출
-        abs_source_path = os.path.abspath(source_file).replace("\\", "/")
+        # 타겟 파일 경로에서 버전 정보 추출
+        abs_target_path = os.path.abspath(target_file).replace("\\", "/")
 
-        # 정규식을 사용하여 버전 패턴 추출
-        version_patterns = [
-            (r'/master/', "master"),
-            (r'/12\.x/', "12.x"),
-            (r'/11\.x/', "11.x"),
-            (r'/10\.x/', "10.x"),
-            (r'/9\.x/', "9.x"),
-            (r'/8\.x/', "8.x")
-        ]
-
-        for pattern, ver in version_patterns:
-            if re.search(pattern, abs_source_path):
-                version = ver
-                break
+        # 타겟 파일 경로에서 버전 추출
+        if '/9.x/' in abs_target_path:
+            version = '9.x'
+        elif '/10.x/' in abs_target_path:
+            version = '10.x'
+        elif '/11.x/' in abs_target_path:
+            version = '11.x'
+        elif '/12.x/' in abs_target_path:
+            version = '12.x'
+        elif '/master/' in abs_target_path:
+            version = 'master'
 
         # 마크다운 필터링 적용 (버전 정보 포함)
         content = filter_markdown(content, version)

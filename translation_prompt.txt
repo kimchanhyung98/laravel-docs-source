@@ -120,6 +120,7 @@ AI는 아래의 모든 세부 지침을 적용하기에 앞서, 항상 이 기�
 * dependency injection : 의존성 주입
 * eloquent : Eloquent (또는 Eloquent ORM)
 * enum : 열거형 (또는 Enum)
+* envoy : 엔보이
 * explicit : 명시적
 * implicit : 암묵적
 * method : 메서드
