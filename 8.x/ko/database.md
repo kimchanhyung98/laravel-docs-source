@@ -12,7 +12,7 @@
 <a name="introduction"></a>
 ## 소개
 
-대부분의 최신 웹 애플리케이션은 데이터베이스와 상호작용합니다. 라라벨은 지원하는 다양한 데이터베이스에서 원시 SQL, [유연한 쿼리 빌더](/docs/{{version}}/queries), [Eloquent ORM](/docs/{{version}}/eloquent)을 사용하여 데이터베이스와 쉽게 연동할 수 있도록 해줍니다. 현재 라라벨은 아래 다섯 가지 데이터베이스를 공식적으로 지원합니다.
+대부분의 최신 웹 애플리케이션은 데이터베이스와 상호작용합니다. 라라벨은 지원하는 다양한 데이터베이스에서 원시 SQL, [유연한 쿼리 빌더](/docs/8.x/queries), [Eloquent ORM](/docs/8.x/eloquent)을 사용하여 데이터베이스와 쉽게 연동할 수 있도록 해줍니다. 현재 라라벨은 아래 다섯 가지 데이터베이스를 공식적으로 지원합니다.
 
 <div class="content-list" markdown="1">
 
@@ -29,7 +29,7 @@
 
 라라벨의 데이터베이스 서비스 설정은 애플리케이션의 `config/database.php` 설정 파일에 위치합니다. 이 파일에서 모든 데이터베이스 연결을 정의할 수 있으며, 기본적으로 사용할 연결도 지정할 수 있습니다. 이 파일 내 대부분의 설정 옵션은 애플리케이션의 환경 변수 값을 기반으로 동작합니다. 라라벨에서 지원하는 대부분의 데이터베이스 시스템에 대한 예시가 이 파일에 포함되어 있습니다.
 
-기본적으로, 라라벨의 샘플 [환경 설정](/docs/{{version}}/configuration#environment-configuration)은 로컬 환경에서 라라벨 애플리케이션을 개발할 수 있도록 도와주는 도커 환경인 [Laravel Sail](/docs/{{version}}/sail)과 바로 사용할 수 있도록 되어 있습니다. 물론, 필요에 따라 로컬 데이터베이스에 맞게 데이터베이스 설정을 자유롭게 변경하실 수 있습니다.
+기본적으로, 라라벨의 샘플 [환경 설정](/docs/8.x/configuration#environment-configuration)은 로컬 환경에서 라라벨 애플리케이션을 개발할 수 있도록 도와주는 도커 환경인 [Laravel Sail](/docs/8.x/sail)과 바로 사용할 수 있도록 되어 있습니다. 물론, 필요에 따라 로컬 데이터베이스에 맞게 데이터베이스 설정을 자유롭게 변경하실 수 있습니다.
 
 <a name="sqlite-configuration"></a>
 #### SQLite 설정
@@ -257,7 +257,7 @@ $pdo = DB::connection()->getPdo();
 <a name="listening-for-query-events"></a>
 ### 쿼리 이벤트 리스닝
 
-애플리케이션에서 실행되는 각 SQL 쿼리마다 특정 클로저(익명 함수)를 호출하고 싶을 때에는, `DB` 파사드의 `listen` 메서드를 사용할 수 있습니다. 이 기능은 쿼리 로깅이나 디버깅에 유용합니다. 쿼리 리스너 클로저는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 등록할 수 있습니다.
+애플리케이션에서 실행되는 각 SQL 쿼리마다 특정 클로저(익명 함수)를 호출하고 싶을 때에는, `DB` 파사드의 `listen` 메서드를 사용할 수 있습니다. 이 기능은 쿼리 로깅이나 디버깅에 유용합니다. 쿼리 리스너 클로저는 [서비스 프로바이더](/docs/8.x/providers)의 `boot` 메서드에서 등록할 수 있습니다.
 
 ```
 <?php
@@ -349,7 +349,7 @@ DB::commit();
 ```
 
 > [!TIP]
-> `DB` 파사드의 트랜잭션 관련 메서드는 [쿼리 빌더](/docs/{{version}}/queries)와 [Eloquent ORM](/docs/{{version}}/eloquent) 모두에 적용됩니다.
+> `DB` 파사드의 트랜잭션 관련 메서드는 [쿼리 빌더](/docs/8.x/queries)와 [Eloquent ORM](/docs/8.x/eloquent) 모두에 적용됩니다.
 
 <a name="connecting-to-the-database-cli"></a>
 ## 데이터베이스 CLI 연결

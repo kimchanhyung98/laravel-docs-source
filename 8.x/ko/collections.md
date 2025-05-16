@@ -36,7 +36,7 @@ $collection = collect([1, 2, 3]);
 ```
 
 > [!TIP]
-> [Eloquent](/docs/{{version}}/eloquent) 쿼리의 결과는 항상 `Collection` 인스턴스로 반환됩니다.
+> [Eloquent](/docs/8.x/eloquent) 쿼리의 결과는 항상 `Collection` 인스턴스로 반환됩니다.
 
 <a name="extending-collections"></a>
 ### 컬렉션 확장
@@ -60,7 +60,7 @@ $upper = $collection->toUpper();
 // ['FIRST', 'SECOND']
 ```
 
-일반적으로 컬렉션 매크로는 [서비스 프로바이더](/docs/{{version}}/providers)의 `boot` 메서드에서 선언하길 권장합니다.
+일반적으로 컬렉션 매크로는 [서비스 프로바이더](/docs/8.x/providers)의 `boot` 메서드에서 선언하길 권장합니다.
 
 <a name="macro-arguments"></a>
 #### 매크로 인수
@@ -284,7 +284,7 @@ $chunks->all();
 // [[1, 2, 3, 4], [5, 6, 7]]
 ```
 
-이 메서드는 [뷰](/docs/{{version}}/views)에서 [Bootstrap](https://getbootstrap.com/docs/4.1/layout/grid/)과 같은 그리드 시스템을 사용할 때 매우 유용합니다. 예를 들어, [Eloquent](/docs/{{version}}/eloquent) 모델 컬렉션을 그리드 형태로 보여주고 싶을 때 다음과 같이 활용할 수 있습니다.
+이 메서드는 [뷰](/docs/8.x/views)에서 [Bootstrap](https://getbootstrap.com/docs/4.1/layout/grid/)과 같은 그리드 시스템을 사용할 때 매우 유용합니다. 예를 들어, [Eloquent](/docs/8.x/eloquent) 모델 컬렉션을 그리드 형태로 보여주고 싶을 때 다음과 같이 활용할 수 있습니다.
 
 ```
 @foreach ($products->chunk(3) as $chunk)
@@ -452,7 +452,7 @@ $collection->contains('product', 'Bookcase');
 이 메서드는 [`contains`](#method-contains) 메서드와 동일한 시그니처를 가지지만, 모든 값의 비교를 "엄격하게(strict)" 수행합니다.
 
 > [!TIP]
-> 이 메서드는 [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-contains)과 함께 사용할 때 동작이 다를 수 있습니다.
+> 이 메서드는 [Eloquent 컬렉션](/docs/8.x/eloquent-collections#method-contains)과 함께 사용할 때 동작이 다를 수 있습니다.
 
 <a name="method-count"></a>
 #### `count()`
@@ -576,7 +576,7 @@ $diff->all();
 ```
 
 > [!TIP]
-> [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-diff)을 사용할 경우, 이 메서드의 동작이 다소 달라집니다.
+> [Eloquent 컬렉션](/docs/8.x/eloquent-collections#method-diff)을 사용할 경우, 이 메서드의 동작이 다소 달라집니다.
 
 <a name="method-diffassoc"></a>
 #### `diffAssoc()`
@@ -811,7 +811,7 @@ $filtered->all();
 `except`의 반대 동작을 원한다면 [only](#method-only) 메서드를 참고하세요.
 
 > [!TIP]
-> [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-except)을 사용할 경우, 이 메서드의 동작이 다소 달라집니다.
+> [Eloquent 컬렉션](/docs/8.x/eloquent-collections#method-except)을 사용할 경우, 이 메서드의 동작이 다소 달라집니다.
 
 <a name="method-filter"></a>
 #### `filter()`
@@ -1204,7 +1204,7 @@ $intersect->all();
 ```
 
 > [!TIP]
-> [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-intersect)을 사용할 경우, 이 메서드의 동작이 달라집니다.
+> [Eloquent 컬렉션](/docs/8.x/eloquent-collections#method-intersect)을 사용할 경우, 이 메서드의 동작이 달라집니다.
 
 <a name="method-intersectbykeys"></a>
 #### `intersectByKeys()`
@@ -1656,7 +1656,7 @@ $filtered->all();
 반대로 지정한 키를 제외하고 싶다면 [except](#method-except) 메서드를 참고하세요.
 
 > [!TIP]
-> [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-only)을 사용할 경우, 이 메서드의 동작이 달라집니다.
+> [Eloquent 컬렉션](/docs/8.x/eloquent-collections#method-only)을 사용할 경우, 이 메서드의 동작이 달라집니다.
 
 <a name="method-pad"></a>
 #### `pad()`
@@ -2838,7 +2838,7 @@ $collection->all();
 <a name="method-toarray"></a>
 #### `toArray()`
 
-`toArray` 메서드는 컬렉션을 일반 PHP `array`로 변환합니다. 만약 컬렉션의 값이 [Eloquent](/docs/{{version}}/eloquent) 모델이라면, 모델 역시 배열로 변환됩니다.
+`toArray` 메서드는 컬렉션을 일반 PHP `array`로 변환합니다. 만약 컬렉션의 값이 [Eloquent](/docs/8.x/eloquent) 모델이라면, 모델 역시 배열로 변환됩니다.
 
 ```
 $collection = collect(['name' => 'Desk', 'price' => 200]);
@@ -3001,7 +3001,7 @@ $unique->values()->all();
 `unique` 메서드는 항목 값을 비교할 때 "느슨한(loose)" 비교를 사용합니다. 즉, 문자열로 표현된 정수 값과 진짜 정수 값을 동일하다고 간주합니다. "엄격한(strict)" 비교를 적용하고 싶으면 [`uniqueStrict`](#method-uniquestrict) 메서드를 사용하세요.
 
 > [!TIP]
-> [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections#method-unique)를 사용할 때는 이 메서드의 동작이 일부 달라질 수 있습니다.
+> [Eloquent 컬렉션](/docs/8.x/eloquent-collections#method-unique)를 사용할 때는 이 메서드의 동작이 일부 달라질 수 있습니다.
 
 <a name="method-uniquestrict"></a>
 #### `uniqueStrict()`
@@ -3758,7 +3758,7 @@ $lazyCollection->each(function ($number) {
 // 59
 ```
 
-이 메서드의 사용 예시로, 데이터베이스에서 청구서(invoice)를 커서를 사용하여 순차적으로 제출(submit)하는 애플리케이션을 생각해 보겠습니다. [스케줄 작업](/docs/{{version}}/scheduling)을 15분마다 실행하고 매회 14분까지만 청구서를 처리하도록 할 수 있습니다.
+이 메서드의 사용 예시로, 데이터베이스에서 청구서(invoice)를 커서를 사용하여 순차적으로 제출(submit)하는 애플리케이션을 생각해 보겠습니다. [스케줄 작업](/docs/8.x/scheduling)을 15분마다 실행하고 매회 14분까지만 청구서를 처리하도록 할 수 있습니다.
 
 ```
 use App\Models\Invoice;

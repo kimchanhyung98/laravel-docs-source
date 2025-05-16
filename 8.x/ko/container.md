@@ -69,7 +69,7 @@ class UserController extends Controller
 }
 ```
 
-위 예제에서 `UserController`는 사용자 정보를 어떤 데이터 소스에서 가져와야 합니다. 이를 위해 사용자 정보를 제공하는 서비스를 **주입**받고 있습니다. 이제 `UserRepository`는 대개 [Eloquent](/docs/{{version}}/eloquent)를 사용하여 데이터베이스에서 사용자 정보를 가져올 것입니다. 하지만 이렇게 저장소 객체를 주입 받으면, 나중에 같은 인터페이스를 구현한 다른 저장소로 교체하거나, 테스트 시에는 `UserRepository`의 더미(가짜) 구현체를 손쉽게 주입할 수 있습니다.
+위 예제에서 `UserController`는 사용자 정보를 어떤 데이터 소스에서 가져와야 합니다. 이를 위해 사용자 정보를 제공하는 서비스를 **주입**받고 있습니다. 이제 `UserRepository`는 대개 [Eloquent](/docs/8.x/eloquent)를 사용하여 데이터베이스에서 사용자 정보를 가져올 것입니다. 하지만 이렇게 저장소 객체를 주입 받으면, 나중에 같은 인터페이스를 구현한 다른 저장소로 교체하거나, 테스트 시에는 `UserRepository`의 더미(가짜) 구현체를 손쉽게 주입할 수 있습니다.
 
 라라벨 서비스 컨테이너의 원리를 깊이 있게 이해하면, 강력하고 확장성 있는 애플리케이션을 구축할 수 있을 뿐 아니라 라라벨 핵심 기능에도 직접 기여할 수 있습니다.
 
@@ -93,7 +93,7 @@ Route::get('/', function (Service $service) {
 
 이 예제에서 `/` 경로로 요청이 들어오면, 라라벨이 자동으로 `Service` 클래스를 해석하여 라우트에 주입합니다. 즉, 복잡한 설정 파일 없이도 의존성 주입의 강력함을 누릴 수 있습니다.
 
-라라벨로 애플리케이션을 만들 때 작성하게 되는 많은 클래스들은, [컨트롤러](/docs/{{version}}/controllers), [이벤트 리스너](/docs/{{version}}/events), [미들웨어](/docs/{{version}}/middleware) 등에서 자동으로 컨테이너를 거쳐 의존성이 주입됩니다. 또한 [큐 작업](/docs/{{version}}/queues)의 `handle` 메서드에서도 타입힌트로 의존성을 받을 수 있습니다. 한 번 이 자동 의존성 주입의 편리함을 맛보면, 이제 컨테이너 없이는 개발할 수 없게 됩니다!
+라라벨로 애플리케이션을 만들 때 작성하게 되는 많은 클래스들은, [컨트롤러](/docs/8.x/controllers), [이벤트 리스너](/docs/8.x/events), [미들웨어](/docs/8.x/middleware) 등에서 자동으로 컨테이너를 거쳐 의존성이 주입됩니다. 또한 [큐 작업](/docs/8.x/queues)의 `handle` 메서드에서도 타입힌트로 의존성을 받을 수 있습니다. 한 번 이 자동 의존성 주입의 편리함을 맛보면, 이제 컨테이너 없이는 개발할 수 없게 됩니다!
 
 <a name="when-to-use-the-container"></a>
 ### 컨테이너를 언제 사용해야 하는가
@@ -108,11 +108,11 @@ Route::get('/', function (Request $request) {
 });
 ```
 
-이처럼 자동 의존성 주입과 [파사드](/docs/{{version}}/facades)를 이용하면 **직접 바인딩이나 해석을 신경 쓰지 않아도** 라라벨 애플리케이션을 개발하는 일이 가능합니다.  
+이처럼 자동 의존성 주입과 [파사드](/docs/8.x/facades)를 이용하면 **직접 바인딩이나 해석을 신경 쓰지 않아도** 라라벨 애플리케이션을 개발하는 일이 가능합니다.  
 **그렇다면 언제 직접 컨테이너와 상호작용하는 것이 필요할까요?** 대표적으로 두 가지 상황이 있습니다.
 
 첫 번째는, 어떤 클래스를 특정 인터페이스를 구현하도록 만들고, 그 인터페이스에 타입힌트할 때입니다. 이런 경우에는 반드시 [컨테이너에 이 인터페이스와 구현체를 바인딩](#binding-interfaces-to-implementations)해 주어야 합니다.  
-두 번째는, [라라벨 패키지](/docs/{{version}}/packages)를 작성해 다른 라라벨 개발자와 공유하려는 경우로, 이 경우 패키지의 서비스를 컨테이너에 바인딩해야 할 수 있습니다.
+두 번째는, [라라벨 패키지](/docs/8.x/packages)를 작성해 다른 라라벨 개발자와 공유하려는 경우로, 이 경우 패키지의 서비스를 컨테이너에 바인딩해야 할 수 있습니다.
 
 <a name="binding"></a>
 ## 바인딩
@@ -123,7 +123,7 @@ Route::get('/', function (Request $request) {
 <a name="simple-bindings"></a>
 #### 단순 바인딩
 
-대부분의 서비스 컨테이너 바인딩은 [서비스 프로바이더](/docs/{{version}}/providers) 내에서 등록하게 됩니다. 그래서 아래 예제들 역시 이 문맥을 기준으로 설명합니다.
+대부분의 서비스 컨테이너 바인딩은 [서비스 프로바이더](/docs/8.x/providers) 내에서 등록하게 됩니다. 그래서 아래 예제들 역시 이 문맥을 기준으로 설명합니다.
 
 서비스 프로바이더 내에서는 항상 `$this->app` 프로퍼티를 통해 컨테이너에 접근할 수 있습니다. `bind` 메서드를 사용해 바인딩하려는 클래스나 인터페이스의 이름과, 해당 클래스의 인스턴스를 반환하는 클로저를 등록할 수 있습니다.
 
@@ -138,7 +138,7 @@ $this->app->bind(Transistor::class, function ($app) {
 
 이때, 클로저의 인자로 컨테이너 자신이 전달됩니다. 이를 활용해서 해당 객체의 하위 의존성도 컨테이너를 통해 해석할 수 있습니다.
 
-보통 서비스 프로바이더 내에서 컨테이너와 상호작용하지만, 프로바이더 바깥에서 직접 컨테이너를 사용하고 싶다면 `App` [파사드](/docs/{{version}}/facades)를 사용할 수 있습니다.
+보통 서비스 프로바이더 내에서 컨테이너와 상호작용하지만, 프로바이더 바깥에서 직접 컨테이너를 사용하고 싶다면 `App` [파사드](/docs/8.x/facades)를 사용할 수 있습니다.
 
 ```
 use App\Services\Transistor;
@@ -170,7 +170,7 @@ $this->app->singleton(Transistor::class, function ($app) {
 #### Scoped 싱글턴 바인딩
 
 `scoped` 메서드는 라라벨의 요청(Request)이나 작업(Job) 수명 주기 동안에만 한 번 해석되어 그 주기 안에서 같은 인스턴스를 재사용하게 만듭니다.  
-이 메서드는 `singleton`과 비슷하지만, [Laravel Octane](/docs/{{version}}/octane) 워커가 새로운 요청을 처리하거나, [queue worker](/docs/{{version}}/queues)가 새 작업을 처리할 때마다 등록된 인스턴스가 리셋됩니다.
+이 메서드는 `singleton`과 비슷하지만, [Laravel Octane](/docs/8.x/octane) 워커가 새로운 요청을 처리하거나, [queue worker](/docs/8.x/queues)가 새 작업을 처리할 때마다 등록된 인스턴스가 리셋됩니다.
 
 ```
 use App\Services\Transistor;
@@ -229,7 +229,7 @@ public function __construct(EventPusher $pusher)
 ### 컨텍스트별 바인딩
 
 한 프로젝트에서 같은 인터페이스를 사용하는 여러 클래스가, 서로 다른 구현체를 받아야 하는 경우가 있습니다.  
-예를 들어, 두 개의 컨트롤러가 `Illuminate\Contracts\Filesystem\Filesystem` [컨트랙트](/docs/{{version}}/contracts)의 서로 다른 구현체에 의존해야 할 때, 라라벨은 이를 위한 간단하고 직관적인 API를 제공합니다.
+예를 들어, 두 개의 컨트롤러가 `Illuminate\Contracts\Filesystem\Filesystem` [컨트랙트](/docs/8.x/contracts)의 서로 다른 구현체에 의존해야 할 때, 라라벨은 이를 위한 간단하고 직관적인 API를 제공합니다.
 
 ```
 use App\Http\Controllers\PhotoController;
@@ -419,7 +419,7 @@ use App\Services\Transistor;
 $transistor = $this->app->makeWith(Transistor::class, ['id' => 1]);
 ```
 
-서비스 프로바이더 바깥, 즉 `$app` 변수를 직접 쓸 수 없는 코드 위치에서는 `App` [파사드](/docs/{{version}}/facades)를 통해 인스턴스를 해석할 수 있습니다.
+서비스 프로바이더 바깥, 즉 `$app` 변수를 직접 쓸 수 없는 코드 위치에서는 `App` [파사드](/docs/8.x/facades)를 통해 인스턴스를 해석할 수 있습니다.
 
 ```
 use App\Services\Transistor;
@@ -448,7 +448,7 @@ public function __construct(Container $container)
 <a name="automatic-injection"></a>
 ### 자동 주입
 
-또한 도메인 객체의 생성자(예: [컨트롤러](/docs/{{version}}/controllers), [이벤트 리스너](/docs/{{version}}/events), [미들웨어](/docs/{{version}}/middleware) 등)에서 의존성을 타입힌트하면, 대부분의 의존성이 자동으로 주입됩니다. [큐 작업](/docs/{{version}}/queues)의 `handle` 메서드도 마찬가지입니다. 실제로는 이런 방식으로 대부분의 객체를 컨테이너가 자동으로 해석하도록 구현하는 것이 가장 좋습니다.
+또한 도메인 객체의 생성자(예: [컨트롤러](/docs/8.x/controllers), [이벤트 리스너](/docs/8.x/events), [미들웨어](/docs/8.x/middleware) 등)에서 의존성을 타입힌트하면, 대부분의 의존성이 자동으로 주입됩니다. [큐 작업](/docs/8.x/queues)의 `handle` 메서드도 마찬가지입니다. 실제로는 이런 방식으로 대부분의 객체를 컨테이너가 자동으로 해석하도록 구현하는 것이 가장 좋습니다.
 
 예를 들어, 컨트롤러의 생성자에서 저장소(Repository)를 타입힌트로 명시하면, 이 저장소는 자동으로 해석되어 주입됩니다.
 

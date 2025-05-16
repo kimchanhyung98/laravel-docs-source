@@ -63,7 +63,7 @@ class ExampleTest extends TestCase
 <a name="concept-overview"></a>
 ### 개념 개요
 
-먼저, Eloquent 모델 팩토리에 대해 알아보겠습니다. 테스트를 작성할 때, 데이터를 직접 일일이 컬럼 값으로 지정하지 않고 데이터베이스에 여러 레코드를 삽입해야 하는 경우가 자주 있습니다. 이때 라라벨의 모델 팩토리를 이용하면 각 [Eloquent 모델](/docs/{{version}}/eloquent)별로 기본 속성(attribute) 세트를 정의해놓고 필요할 때마다 간편하게 테스트 데이터를 생성할 수 있습니다.
+먼저, Eloquent 모델 팩토리에 대해 알아보겠습니다. 테스트를 작성할 때, 데이터를 직접 일일이 컬럼 값으로 지정하지 않고 데이터베이스에 여러 레코드를 삽입해야 하는 경우가 자주 있습니다. 이때 라라벨의 모델 팩토리를 이용하면 각 [Eloquent 모델](/docs/8.x/eloquent)별로 기본 속성(attribute) 세트를 정의해놓고 필요할 때마다 간편하게 테스트 데이터를 생성할 수 있습니다.
 
 팩토리 예시를 보려면 애플리케이션의 `database/factories/UserFactory.php` 파일을 확인해 보십시오. 이 팩토리는 모든 신규 라라벨 프로젝트에 기본 포함되어 있으며, 아래와 같은 팩토리 정의를 가지고 있습니다.
 
@@ -103,7 +103,7 @@ class UserFactory extends Factory
 <a name="generating-factories"></a>
 ### 팩토리 생성
 
-새로운 팩토리를 생성하려면, `make:factory` [Artisan 명령어](/docs/{{version}}/artisan)를 실행합니다.
+새로운 팩토리를 생성하려면, `make:factory` [Artisan 명령어](/docs/8.x/artisan)를 실행합니다.
 
 ```
 php artisan make:factory PostFactory
@@ -258,7 +258,7 @@ $user = User::factory()->state([
 ```
 
 > [!TIP]
-> 팩토리로 모델을 생성할 때는 [대량 할당 보호](https://laravel.com/docs/{{version}}/eloquent#mass-assignment)가 자동으로 비활성화됩니다.
+> 팩토리로 모델을 생성할 때는 [대량 할당 보호](https://laravel.com/docs/8.x/eloquent#mass-assignment)가 자동으로 비활성화됩니다.
 
 <a name="persisting-models"></a>
 ### 모델 저장
@@ -513,7 +513,7 @@ $user = User::factory()
 <a name="polymorphic-relationships"></a>
 ### 폴리모픽(Polymorphic) 관계
 
-[폴리모픽 관계](/docs/{{version}}/eloquent-relationships#polymorphic-relationships) 또한 팩토리로 생성할 수 있습니다. 폴리모픽 "morph many" 관계 생성법은 1:N 관계와 동일합니다. 예시: `App\Models\Post` 모델이 `App\Models\Comment` 모델과 morphMany 관계를 가진 경우입니다.
+[폴리모픽 관계](/docs/8.x/eloquent-relationships#polymorphic-relationships) 또한 팩토리로 생성할 수 있습니다. 폴리모픽 "morph many" 관계 생성법은 1:N 관계와 동일합니다. 예시: `App\Models\Post` 모델이 `App\Models\Comment` 모델과 morphMany 관계를 가진 경우입니다.
 
 ```
 use App\Models\Post;
@@ -604,7 +604,7 @@ public function definition()
 <a name="running-seeders"></a>
 ## 시더(Seeder) 실행하기
 
-[데이터베이스 시더](/docs/{{version}}/seeding)를 활용해 기능 테스트 중에 데이터베이스를 채우고 싶다면, `seed` 메서드를 호출하면 됩니다. 기본적으로 `seed` 메서드만 실행하면 `DatabaseSeeder` 클래스가 실행되어 다른 모든 시더도 자동 실행됩니다. 특정 시더만 실행하고 싶을 땐 클래스명을 직접 넘겨주면 됩니다.
+[데이터베이스 시더](/docs/8.x/seeding)를 활용해 기능 테스트 중에 데이터베이스를 채우고 싶다면, `seed` 메서드를 호출하면 됩니다. 기본적으로 `seed` 메서드만 실행하면 `DatabaseSeeder` 클래스가 실행되어 다른 모든 시더도 자동 실행됩니다. 특정 시더만 실행하고 싶을 땐 클래스명을 직접 넘겨주면 됩니다.
 
 ```
 <?php

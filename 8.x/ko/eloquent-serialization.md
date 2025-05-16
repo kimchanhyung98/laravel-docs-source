@@ -14,7 +14,7 @@
 라라벨로 API를 구축할 때는 모델 및 연관관계를 배열 또는 JSON으로 변환해야 하는 경우가 많습니다. Eloquent는 이러한 변환을 손쉽게 처리할 수 있는 메서드를 제공하며, 직렬화된 모델 표현에서 포함할 속성을 제어할 수 있는 기능도 지원합니다.
 
 > [!TIP]
-> Eloquent 모델 및 컬렉션의 JSON 직렬화를 보다 강력하게 다루고 싶다면 [Eloquent API 리소스](/docs/{{version}}/eloquent-resources) 문서도 참고하시기 바랍니다.
+> Eloquent 모델 및 컬렉션의 JSON 직렬화를 보다 강력하게 다루고 싶다면 [Eloquent API 리소스](/docs/8.x/eloquent-resources) 문서도 참고하시기 바랍니다.
 
 <a name="serializing-models-and-collections"></a>
 ## 모델 및 컬렉션 직렬화
@@ -22,7 +22,7 @@
 <a name="serializing-to-arrays"></a>
 ### 배열로 직렬화하기
 
-모델과 로드된 [연관관계](/docs/{{version}}/eloquent-relationships)를 배열로 변환하려면 `toArray` 메서드를 사용하면 됩니다. 이 메서드는 재귀적으로 동작하므로, 모든 속성과 연관관계(심지어 연관관계의 연관관계까지)도 배열로 변환됩니다.
+모델과 로드된 [연관관계](/docs/8.x/eloquent-relationships)를 배열로 변환하려면 `toArray` 메서드를 사용하면 됩니다. 이 메서드는 재귀적으로 동작하므로, 모든 속성과 연관관계(심지어 연관관계의 연관관계까지)도 배열로 변환됩니다.
 
 ```
 use App\Models\User;
@@ -40,7 +40,7 @@ $user = User::first();
 return $user->attributesToArray();
 ```
 
-또한, 모델 [컬렉션](/docs/{{version}}/eloquent-collections) 전체를 컬렉션 인스턴스에서 `toArray`를 호출하여 배열로 변환할 수도 있습니다.
+또한, 모델 [컬렉션](/docs/8.x/eloquent-collections) 전체를 컬렉션 인스턴스에서 `toArray`를 호출하여 배열로 변환할 수도 있습니다.
 
 ```
 $users = User::all();
@@ -146,7 +146,7 @@ return $user->makeHidden('attribute')->toArray();
 <a name="appending-values-to-json"></a>
 ## JSON에 값 추가하기
 
-모델을 배열 또는 JSON으로 변환할 때, 데이터베이스 컬럼에는 존재하지 않는 속성을 추가하고 싶을 때가 있습니다. 이 경우, 먼저 해당 값을 위한 [접근자(Accessor)](/docs/{{version}}/eloquent-mutators)를 정의하십시오.
+모델을 배열 또는 JSON으로 변환할 때, 데이터베이스 컬럼에는 존재하지 않는 속성을 추가하고 싶을 때가 있습니다. 이 경우, 먼저 해당 값을 위한 [접근자(Accessor)](/docs/8.x/eloquent-mutators)를 정의하십시오.
 
 ```
 <?php
@@ -226,7 +226,7 @@ protected function serializeDate(DateTimeInterface $date)
 <a name="customizing-the-date-format-per-attribute"></a>
 #### 속성별 날짜 포맷 커스터마이징
 
-개별 Eloquent 날짜 속성의 직렬화 포맷을 변경하고 싶다면, 모델의 [캡스팅 선언](/docs/{{version}}/eloquent-mutators#attribute-casting)에서 날짜 포맷을 지정할 수 있습니다.
+개별 Eloquent 날짜 속성의 직렬화 포맷을 변경하고 싶다면, 모델의 [캡스팅 선언](/docs/8.x/eloquent-mutators#attribute-casting)에서 날짜 포맷을 지정할 수 있습니다.
 
 ```
 protected $casts = [

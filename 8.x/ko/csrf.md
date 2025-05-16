@@ -35,7 +35,7 @@ CSRF 보호가 없다면, 악의적인 웹사이트가 아래와 같이 여러�
 <a name="preventing-csrf-requests"></a>
 ## CSRF 요청 방지
 
-라라벨은 애플리케이션이 관리하는 각 [사용자 세션](/docs/{{version}}/session)마다 자동으로 CSRF “토큰”을 생성합니다. 이 토큰은 인증된 사용자가 실제로 요청을 보낸 당사자인지 확인하는 데 사용됩니다. 이 토큰은 사용자의 세션에 저장되며, 세션이 재생성될 때마다 변경되기 때문에 악의적인 애플리케이션이 이 값을 알아내는 것은 불가능합니다.
+라라벨은 애플리케이션이 관리하는 각 [사용자 세션](/docs/8.x/session)마다 자동으로 CSRF “토큰”을 생성합니다. 이 토큰은 인증된 사용자가 실제로 요청을 보낸 당사자인지 확인하는 데 사용됩니다. 이 토큰은 사용자의 세션에 저장되며, 세션이 재생성될 때마다 변경되기 때문에 악의적인 애플리케이션이 이 값을 알아내는 것은 불가능합니다.
 
 현재 세션의 CSRF 토큰은 요청의 세션이나 `csrf_token` 헬퍼 함수를 통해 가져올 수 있습니다.
 
@@ -62,12 +62,12 @@ Route::get('/token', function (Request $request) {
 </form>
 ```
 
-기본적으로 `web` 미들웨어 그룹에 포함되어 있는 `App\Http\Middleware\VerifyCsrfToken` [미들웨어](/docs/{{version}}/middleware)는 요청의 입력값에 포함된 토큰이 세션에 저장된 토큰과 일치하는지 자동으로 확인합니다. 두 토큰이 일치한다면, 요청한 사람이 실제로 인증된 사용자임을 신뢰할 수 있습니다.
+기본적으로 `web` 미들웨어 그룹에 포함되어 있는 `App\Http\Middleware\VerifyCsrfToken` [미들웨어](/docs/8.x/middleware)는 요청의 입력값에 포함된 토큰이 세션에 저장된 토큰과 일치하는지 자동으로 확인합니다. 두 토큰이 일치한다면, 요청한 사람이 실제로 인증된 사용자임을 신뢰할 수 있습니다.
 
 <a name="csrf-tokens-and-spas"></a>
 ### CSRF 토큰과 SPA
 
-만약 여러분이 라라벨을 API 백엔드로 활용하고 있는 SPA(Single Page Application)를 개발 중이라면, API 인증 및 CSRF 취약점 방지에 관한 자세한 내용은 [Laravel Sanctum 문서](/docs/{{version}}/sanctum)를 참고하시기 바랍니다.
+만약 여러분이 라라벨을 API 백엔드로 활용하고 있는 SPA(Single Page Application)를 개발 중이라면, API 인증 및 CSRF 취약점 방지에 관한 자세한 내용은 [Laravel Sanctum 문서](/docs/8.x/sanctum)를 참고하시기 바랍니다.
 
 <a name="csrf-excluding-uris"></a>
 ### CSRF 보호에서 URI 제외하기
@@ -99,7 +99,7 @@ class VerifyCsrfToken extends Middleware
 ```
 
 > [!TIP]
-> 편의를 위해, [테스트를 실행할 때](/docs/{{version}}/testing)는 모든 라우트에 대해 CSRF 미들웨어가 자동으로 비활성화됩니다.
+> 편의를 위해, [테스트를 실행할 때](/docs/8.x/testing)는 모든 라우트에 대해 CSRF 미들웨어가 자동으로 비활성화됩니다.
 
 <a name="csrf-x-csrf-token"></a>
 ## X-CSRF-TOKEN

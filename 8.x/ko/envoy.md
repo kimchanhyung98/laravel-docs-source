@@ -1,4 +1,4 @@
-# 라라벨 앙보이 (Laravel Envoy)
+# 라라벨 엔보이 (Laravel Envoy)
 
 - [소개](#introduction)
 - [설치](#installation)
@@ -20,18 +20,18 @@
 <a name="introduction"></a>
 ## 소개
 
-[라라벨 앙보이(Laravel Envoy)](https://github.com/laravel/envoy)는 원격 서버에서 자주 수행하는 작업을 손쉽게 실행할 수 있게 도와주는 도구입니다. [Blade](/docs/{{version}}/blade) 스타일의 문법을 활용하여 배포, Artisan 명령어 실행 등 다양한 작업을 간편하게 정의할 수 있습니다. 현재 앙보이는 Mac과 Linux 운영체제만 지원합니다. 하지만 [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10)를 사용하면 Windows에서도 사용할 수 있습니다.
+[라라벨 엔보이(Laravel Envoy)](https://github.com/laravel/envoy)는 원격 서버에서 자주 수행하는 작업을 손쉽게 실행할 수 있게 도와주는 도구입니다. [Blade](/docs/8.x/blade) 스타일의 문법을 활용하여 배포, Artisan 명령어 실행 등 다양한 작업을 간편하게 정의할 수 있습니다. 현재 엔보이는 Mac과 Linux 운영체제만 지원합니다. 하지만 [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install-win10)를 사용하면 Windows에서도 사용할 수 있습니다.
 
 <a name="installation"></a>
 ## 설치
 
-우선, Composer 패키지 관리자를 이용해 프로젝트에 앙보이를 설치합니다:
+우선, Composer 패키지 관리자를 이용해 프로젝트에 엔보이를 설치합니다:
 
 ```
 composer require laravel/envoy --dev
 ```
 
-앙보이 설치가 완료되면, 애플리케이션의 `vendor/bin` 디렉터리에서 앙보이 실행 파일을 사용할 수 있습니다:
+엔보이 설치가 완료되면, 애플리케이션의 `vendor/bin` 디렉터리에서 엔보이 실행 파일을 사용할 수 있습니다:
 
 ```
 php vendor/bin/envoy
@@ -43,9 +43,9 @@ php vendor/bin/envoy
 <a name="defining-tasks"></a>
 ### 작업 정의하기
 
-작업(Task)은 앙보이의 기본 단위입니다. 작업은 해당 작업이 호출될 때 원격 서버에서 어떤 셸 명령어를 실행할지 정의합니다. 예를 들어, 모든 큐 워커 서버에서 `php artisan queue:restart` 명령어를 실행하는 작업을 만들 수도 있습니다.
+작업(Task)은 엔보이의 기본 단위입니다. 작업은 해당 작업이 호출될 때 원격 서버에서 어떤 셸 명령어를 실행할지 정의합니다. 예를 들어, 모든 큐 워커 서버에서 `php artisan queue:restart` 명령어를 실행하는 작업을 만들 수도 있습니다.
 
-모든 앙보이 작업은 애플리케이션 루트에 위치한 `Envoy.blade.php` 파일에 정의해야 합니다. 아래는 간단한 예시입니다:
+모든 엔보이 작업은 애플리케이션 루트에 위치한 `Envoy.blade.php` 파일에 정의해야 합니다. 아래는 간단한 예시입니다:
 
 ```bash
 @servers(['web' => ['user@192.168.1.1'], 'workers' => ['user@192.168.1.2']])
@@ -68,9 +68,9 @@ php vendor/bin/envoy
 ```
 
 <a name="importing-envoy-tasks"></a>
-#### 앙보이 작업 가져오기(Importing Envoy Tasks)
+#### 엔보이 작업 가져오기(Importing Envoy Tasks)
 
-`@import` 지시어를 이용하면 다른 앙보이 파일을 가져와서 그 안의 스토리와 작업을 현재 파일에서 사용할 수 있습니다. 가져온 후에는, 자신의 Envoy 파일에서 정의한 것처럼 해당 작업을 실행할 수 있습니다:
+`@import` 지시어를 이용하면 다른 엔보이 파일을 가져와서 그 안의 스토리와 작업을 현재 파일에서 사용할 수 있습니다. 가져온 후에는, 자신의 Envoy 파일에서 정의한 것처럼 해당 작업을 실행할 수 있습니다:
 
 ```bash
 @import('vendor/package/Envoy.blade.php')
@@ -79,7 +79,7 @@ php vendor/bin/envoy
 <a name="multiple-servers"></a>
 ### 여러 서버 사용
 
-앙보이를 이용하면 한 번에 여러 서버에서 작업을 손쉽게 실행할 수 있습니다. 우선 `@servers` 선언에 추가로 여러 서버를 등록하세요. 각 서버는 고유한 이름을 가져야 합니다. 이후, 작업의 `on` 배열에 여러 서버 이름을 나열하면 됩니다:
+엔보이를 이용하면 한 번에 여러 서버에서 작업을 손쉽게 실행할 수 있습니다. 우선 `@servers` 선언에 추가로 여러 서버를 등록하세요. 각 서버는 고유한 이름을 가져야 합니다. 이후, 작업의 `on` 배열에 여러 서버 이름을 나열하면 됩니다:
 
 ```bash
 @servers(['web-1' => '192.168.1.1', 'web-2' => '192.168.1.2'])
@@ -185,7 +185,7 @@ php vendor/bin/envoy run deploy
 <a name="completion-hooks"></a>
 ### 후크(Hooks)
 
-작업과 스토리가 실행될 때, 여러 종류의 후크(Hook)가 사용될 수 있습니다. 앙보이에서 지원하는 후크 유형에는 `@before`, `@after`, `@error`, `@success`, `@finished`가 있습니다. 이러한 후크에서 작성한 모든 코드는 PHP로 해석되며 원격 서버가 아니라 로컬에서 실행됩니다.
+작업과 스토리가 실행될 때, 여러 종류의 후크(Hook)가 사용될 수 있습니다. 엔보이에서 지원하는 후크 유형에는 `@before`, `@after`, `@error`, `@success`, `@finished`가 있습니다. 이러한 후크에서 작성한 모든 코드는 PHP로 해석되며 원격 서버가 아니라 로컬에서 실행됩니다.
 
 각 후크 유형은 필요에 따라 원하는 만큼 정의할 수 있으며, Envoy 스크립트 내 작성된 순서대로 실행됩니다.
 
@@ -280,7 +280,7 @@ php vendor/bin/envoy run deploy
 <a name="slack"></a>
 ### Slack
 
-앙보이는 모든 작업이 실행된 후 [Slack](https://slack.com)으로 알림을 보낼 수 있습니다. `@slack` 지시어는 Slack 훅(hook) URL과 채널 또는 사용자 이름을 인자로 받습니다. Slack 관리 패널에서 "Incoming WebHooks" 통합을 생성해 Webhook URL을 얻을 수 있습니다.
+엔보이는 모든 작업이 실행된 후 [Slack](https://slack.com)으로 알림을 보낼 수 있습니다. `@slack` 지시어는 Slack 훅(hook) URL과 채널 또는 사용자 이름을 인자로 받습니다. Slack 관리 패널에서 "Incoming WebHooks" 통합을 생성해 Webhook URL을 얻을 수 있습니다.
 
 `@slack` 지시어의 첫 번째 인수로 전체 Webhook URL을, 두 번째 인수로 채널명(`#channel`) 또는 사용자명(`@user`)을 전달해야 합니다:
 
@@ -290,7 +290,7 @@ php vendor/bin/envoy run deploy
 @endfinished
 ```
 
-기본적으로, 앙보이 알림은 실행된 작업을 설명하는 메시지를 알림 채널로 전송합니다. 별도의 메시지를 전달하고 싶다면, 세 번째 인수로 커스텀 메시지를 지정할 수 있습니다:
+기본적으로, 엔보이 알림은 실행된 작업을 설명하는 메시지를 알림 채널로 전송합니다. 별도의 메시지를 전달하고 싶다면, 세 번째 인수로 커스텀 메시지를 지정할 수 있습니다:
 
 ```
 @finished
@@ -301,7 +301,7 @@ php vendor/bin/envoy run deploy
 <a name="discord"></a>
 ### Discord
 
-앙보이는 모든 작업이 실행된 후 [Discord](https://discord.com)로도 알림을 보낼 수 있습니다. `@discord` 지시어는 Discord Webhook URL과 메시지를 인자로 받습니다. Server Settings에서 "Webhook"을 생성하고, Webhook이 게시될 채널을 선택해 Webhook URL을 얻을 수 있습니다. 전체 Webhook URL을 `@discord` 지시어에 전달하면 됩니다:
+엔보이는 모든 작업이 실행된 후 [Discord](https://discord.com)로도 알림을 보낼 수 있습니다. `@discord` 지시어는 Discord Webhook URL과 메시지를 인자로 받습니다. Server Settings에서 "Webhook"을 생성하고, Webhook이 게시될 채널을 선택해 Webhook URL을 얻을 수 있습니다. 전체 Webhook URL을 `@discord` 지시어에 전달하면 됩니다:
 
 ```
 @finished
@@ -312,7 +312,7 @@ php vendor/bin/envoy run deploy
 <a name="telegram"></a>
 ### Telegram
 
-앙보이는 모든 작업 실행 후 [Telegram](https://telegram.org)으로도 알림을 전송할 수 있습니다. `@telegram` 지시어는 Telegram 봇 ID와 채팅 ID를 인자로 받습니다. [BotFather](https://t.me/botfather)로 새 봇을 생성해 봇 ID를 얻을 수 있으며, [@username_to_id_bot](https://t.me/username_to_id_bot)을 사용하면 유효한 채팅 ID를 구할 수 있습니다. 두 인자를 모두 `@telegram` 지시어에 넣어 사용하세요:
+엔보이는 모든 작업 실행 후 [Telegram](https://telegram.org)으로도 알림을 전송할 수 있습니다. `@telegram` 지시어는 Telegram 봇 ID와 채팅 ID를 인자로 받습니다. [BotFather](https://t.me/botfather)로 새 봇을 생성해 봇 ID를 얻을 수 있으며, [@username_to_id_bot](https://t.me/username_to_id_bot)을 사용하면 유효한 채팅 ID를 구할 수 있습니다. 두 인자를 모두 `@telegram` 지시어에 넣어 사용하세요:
 
 ```
 @finished
@@ -323,7 +323,7 @@ php vendor/bin/envoy run deploy
 <a name="microsoft-teams"></a>
 ### Microsoft Teams
 
-앙보이는 모든 작업 실행 후 [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams)로도 알림을 보낼 수 있습니다. `@microsoftTeams` 지시어는 필수로 Teams Webhook과 메시지, 테마 색상(success, info, warning, error), 그리고 옵션 배열을 받을 수 있습니다. Teams Webhook은 [incoming webhook](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook)을 새로 만들어 얻을 수 있습니다. Teams API는 메시지 박스를 수정할 수 있는 title, summary, sections와 같은 여러 속성을 지원합니다. 더 자세한 내용은 [Microsoft Teams 공식 문서](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/connectors-using?tabs=cURL#example-of-connector-message)에서 확인할 수 있습니다. 전체 Webhook URL을 `@microsoftTeams` 지시어에 전달하도록 하세요:
+엔보이는 모든 작업 실행 후 [Microsoft Teams](https://www.microsoft.com/en-us/microsoft-teams)로도 알림을 보낼 수 있습니다. `@microsoftTeams` 지시어는 필수로 Teams Webhook과 메시지, 테마 색상(success, info, warning, error), 그리고 옵션 배열을 받을 수 있습니다. Teams Webhook은 [incoming webhook](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook)을 새로 만들어 얻을 수 있습니다. Teams API는 메시지 박스를 수정할 수 있는 title, summary, sections와 같은 여러 속성을 지원합니다. 더 자세한 내용은 [Microsoft Teams 공식 문서](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/connectors-using?tabs=cURL#example-of-connector-message)에서 확인할 수 있습니다. 전체 Webhook URL을 `@microsoftTeams` 지시어에 전달하도록 하세요:
 
 ```
 @finished

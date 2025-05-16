@@ -18,7 +18,7 @@
 <a name="contracts-vs-facades"></a>
 ### 컨트랙트와 파사드 비교
 
-라라벨의 [파사드](/docs/{{version}}/facades)와 헬퍼 함수들은 라라벨의 서비스를 쉽게 사용할 수 있도록 해 줍니다. 즉, 서비스 컨테이너에서 컨트랙트를 직접 타입 힌트하거나 resolve(해결)하지 않아도 된다는 장점이 있습니다. 대부분의 경우, 각 파사드는 해당하는 컨트랙트가 존재합니다.
+라라벨의 [파사드](/docs/8.x/facades)와 헬퍼 함수들은 라라벨의 서비스를 쉽게 사용할 수 있도록 해 줍니다. 즉, 서비스 컨테이너에서 컨트랙트를 직접 타입 힌트하거나 resolve(해결)하지 않아도 된다는 장점이 있습니다. 대부분의 경우, 각 파사드는 해당하는 컨트랙트가 존재합니다.
 
 파사드는 클래스를 정의할 때 생성자에 별도의 의존성을 주입하지 않고도 사용할 수 있는 반면, 컨트랙트를 사용하면 클래스에 명확하게 의존성을 선언할 수 있습니다. 일부 개발자들은 이런 방식으로 의존성을 명확하게 드러내는 것을 선호해 컨트랙트를 사용하고, 다른 개발자들은 파사드의 간편함을 선호하기도 합니다. **일반적으로 대부분의 애플리케이션은 개발 과정에서 파사드를 문제 없이 사용할 수 있습니다.**
 
@@ -34,7 +34,7 @@
 
 그렇다면, 컨트랙트의 구현체는 어떻게 가져올 수 있을까요? 실제로는 매우 간단합니다.
 
-라라벨의 다양한 클래스(컨트롤러, 이벤트 리스너, 미들웨어, 큐 작업, 라우트 클로저 등)는 모두 [서비스 컨테이너](/docs/{{version}}/container)를 통해 resolve(해결)됩니다. 따라서 컨트랙트의 구현체를 사용하려면, 해당 클래스의 생성자에서 해당 인터페이스를 타입 힌트(명시적으로 작성)하면 됩니다.
+라라벨의 다양한 클래스(컨트롤러, 이벤트 리스너, 미들웨어, 큐 작업, 라우트 클로저 등)는 모두 [서비스 컨테이너](/docs/8.x/container)를 통해 resolve(해결)됩니다. 따라서 컨트랙트의 구현체를 사용하려면, 해당 클래스의 생성자에서 해당 인터페이스를 타입 힌트(명시적으로 작성)하면 됩니다.
 
 예를 들어, 아래 이벤트 리스너 예시를 살펴보세요.
 
@@ -80,7 +80,7 @@ class CacheOrderInformation
 }
 ```
 
-이벤트 리스너가 resolve(해결)될 때, 서비스 컨테이너가 클래스 생성자의 타입 힌트를 자동으로 읽어들여 적절한 값(여기서는 Redis 팩토리 구현 객체)을 주입해 줍니다. 서비스 컨테이너에 리소스를 등록하는 자세한 방법은 [컨테이너 문서](/docs/{{version}}/container)를 참고하세요.
+이벤트 리스너가 resolve(해결)될 때, 서비스 컨테이너가 클래스 생성자의 타입 힌트를 자동으로 읽어들여 적절한 값(여기서는 Redis 팩토리 구현 객체)을 주입해 줍니다. 서비스 컨테이너에 리소스를 등록하는 자세한 방법은 [컨테이너 문서](/docs/8.x/container)를 참고하세요.
 
 <a name="contract-reference"></a>
 ## 컨트랙트 레퍼런스
@@ -89,82 +89,82 @@ class CacheOrderInformation
 
 Contract  |  대응되는 파사드(Facade)
 ------------- | -------------
-[Illuminate\Contracts\Auth\Access\Authorizable](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Authorizable.php) | &nbsp;
-[Illuminate\Contracts\Auth\Access\Gate](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Access/Gate.php) | `Gate`
-[Illuminate\Contracts\Auth\Authenticatable](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Authenticatable.php) | &nbsp;
-[Illuminate\Contracts\Auth\CanResetPassword](https://github.com/illuminate/contracts/blob/{{version}}/Auth/CanResetPassword.php) | &nbsp;
-[Illuminate\Contracts\Auth\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Factory.php) | `Auth`
-[Illuminate\Contracts\Auth\Guard](https://github.com/illuminate/contracts/blob/{{version}}/Auth/Guard.php) | `Auth::guard()`
-[Illuminate\Contracts\Auth\PasswordBroker](https://github.com/illuminate/contracts/blob/{{version}}/Auth/PasswordBroker.php) | `Password::broker()`
-[Illuminate\Contracts\Auth\PasswordBrokerFactory](https://github.com/illuminate/contracts/blob/{{version}}/Auth/PasswordBrokerFactory.php) | `Password`
-[Illuminate\Contracts\Auth\StatefulGuard](https://github.com/illuminate/contracts/blob/{{version}}/Auth/StatefulGuard.php) | &nbsp;
-[Illuminate\Contracts\Auth\SupportsBasicAuth](https://github.com/illuminate/contracts/blob/{{version}}/Auth/SupportsBasicAuth.php) | &nbsp;
-[Illuminate\Contracts\Auth\UserProvider](https://github.com/illuminate/contracts/blob/{{version}}/Auth/UserProvider.php) | &nbsp;
-[Illuminate\Contracts\Bus\Dispatcher](https://github.com/illuminate/contracts/blob/{{version}}/Bus/Dispatcher.php) | `Bus`
-[Illuminate\Contracts\Bus\QueueingDispatcher](https://github.com/illuminate/contracts/blob/{{version}}/Bus/QueueingDispatcher.php) | `Bus::dispatchToQueue()`
-[Illuminate\Contracts\Broadcasting\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Broadcasting/Factory.php) | `Broadcast`
-[Illuminate\Contracts\Broadcasting\Broadcaster](https://github.com/illuminate/contracts/blob/{{version}}/Broadcasting/Broadcaster.php)  | `Broadcast::connection()`
-[Illuminate\Contracts\Broadcasting\ShouldBroadcast](https://github.com/illuminate/contracts/blob/{{version}}/Broadcasting/ShouldBroadcast.php) | &nbsp;
-[Illuminate\Contracts\Broadcasting\ShouldBroadcastNow](https://github.com/illuminate/contracts/blob/{{version}}/Broadcasting/ShouldBroadcastNow.php) | &nbsp;
-[Illuminate\Contracts\Cache\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Cache/Factory.php) | `Cache`
-[Illuminate\Contracts\Cache\Lock](https://github.com/illuminate/contracts/blob/{{version}}/Cache/Lock.php) | &nbsp;
-[Illuminate\Contracts\Cache\LockProvider](https://github.com/illuminate/contracts/blob/{{version}}/Cache/LockProvider.php) | &nbsp;
-[Illuminate\Contracts\Cache\Repository](https://github.com/illuminate/contracts/blob/{{version}}/Cache/Repository.php) | `Cache::driver()`
-[Illuminate\Contracts\Cache\Store](https://github.com/illuminate/contracts/blob/{{version}}/Cache/Store.php) | &nbsp;
-[Illuminate\Contracts\Config\Repository](https://github.com/illuminate/contracts/blob/{{version}}/Config/Repository.php) | `Config`
-[Illuminate\Contracts\Console\Application](https://github.com/illuminate/contracts/blob/{{version}}/Console/Application.php) | &nbsp;
-[Illuminate\Contracts\Console\Kernel](https://github.com/illuminate/contracts/blob/{{version}}/Console/Kernel.php) | `Artisan`
-[Illuminate\Contracts\Container\Container](https://github.com/illuminate/contracts/blob/{{version}}/Container/Container.php) | `App`
-[Illuminate\Contracts\Cookie\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Cookie/Factory.php) | `Cookie`
-[Illuminate\Contracts\Cookie\QueueingFactory](https://github.com/illuminate/contracts/blob/{{version}}/Cookie/QueueingFactory.php) | `Cookie::queue()`
-[Illuminate\Contracts\Database\ModelIdentifier](https://github.com/illuminate/contracts/blob/{{version}}/Database/ModelIdentifier.php) | &nbsp;
-[Illuminate\Contracts\Debug\ExceptionHandler](https://github.com/illuminate/contracts/blob/{{version}}/Debug/ExceptionHandler.php) | &nbsp;
-[Illuminate\Contracts\Encryption\Encrypter](https://github.com/illuminate/contracts/blob/{{version}}/Encryption/Encrypter.php) | `Crypt`
-[Illuminate\Contracts\Events\Dispatcher](https://github.com/illuminate/contracts/blob/{{version}}/Events/Dispatcher.php) | `Event`
-[Illuminate\Contracts\Filesystem\Cloud](https://github.com/illuminate/contracts/blob/{{version}}/Filesystem/Cloud.php) | `Storage::cloud()`
-[Illuminate\Contracts\Filesystem\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Filesystem/Factory.php) | `Storage`
-[Illuminate\Contracts\Filesystem\Filesystem](https://github.com/illuminate/contracts/blob/{{version}}/Filesystem/Filesystem.php) | `Storage::disk()`
-[Illuminate\Contracts\Foundation\Application](https://github.com/illuminate/contracts/blob/{{version}}/Foundation/Application.php) | `App`
-[Illuminate\Contracts\Hashing\Hasher](https://github.com/illuminate/contracts/blob/{{version}}/Hashing/Hasher.php) | `Hash`
-[Illuminate\Contracts\Http\Kernel](https://github.com/illuminate/contracts/blob/{{version}}/Http/Kernel.php) | &nbsp;
-[Illuminate\Contracts\Mail\MailQueue](https://github.com/illuminate/contracts/blob/{{version}}/Mail/MailQueue.php) | `Mail::queue()`
-[Illuminate\Contracts\Mail\Mailable](https://github.com/illuminate/contracts/blob/{{version}}/Mail/Mailable.php) | &nbsp;
-[Illuminate\Contracts\Mail\Mailer](https://github.com/illuminate/contracts/blob/{{version}}/Mail/Mailer.php) | `Mail`
-[Illuminate\Contracts\Notifications\Dispatcher](https://github.com/illuminate/contracts/blob/{{version}}/Notifications/Dispatcher.php) | `Notification`
-[Illuminate\Contracts\Notifications\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Notifications/Factory.php) | `Notification`
-[Illuminate\Contracts\Pagination\LengthAwarePaginator](https://github.com/illuminate/contracts/blob/{{version}}/Pagination/LengthAwarePaginator.php) | &nbsp;
-[Illuminate\Contracts\Pagination\Paginator](https://github.com/illuminate/contracts/blob/{{version}}/Pagination/Paginator.php) | &nbsp;
-[Illuminate\Contracts\Pipeline\Hub](https://github.com/illuminate/contracts/blob/{{version}}/Pipeline/Hub.php) | &nbsp;
-[Illuminate\Contracts\Pipeline\Pipeline](https://github.com/illuminate/contracts/blob/{{version}}/Pipeline/Pipeline.php) | &nbsp;
-[Illuminate\Contracts\Queue\EntityResolver](https://github.com/illuminate/contracts/blob/{{version}}/Queue/EntityResolver.php) | &nbsp;
-[Illuminate\Contracts\Queue\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Queue/Factory.php) | `Queue`
-[Illuminate\Contracts\Queue\Job](https://github.com/illuminate/contracts/blob/{{version}}/Queue/Job.php) | &nbsp;
-[Illuminate\Contracts\Queue\Monitor](https://github.com/illuminate/contracts/blob/{{version}}/Queue/Monitor.php) | `Queue`
-[Illuminate\Contracts\Queue\Queue](https://github.com/illuminate/contracts/blob/{{version}}/Queue/Queue.php) | `Queue::connection()`
-[Illuminate\Contracts\Queue\QueueableCollection](https://github.com/illuminate/contracts/blob/{{version}}/Queue/QueueableCollection.php) | &nbsp;
-[Illuminate\Contracts\Queue\QueueableEntity](https://github.com/illuminate/contracts/blob/{{version}}/Queue/QueueableEntity.php) | &nbsp;
-[Illuminate\Contracts\Queue\ShouldQueue](https://github.com/illuminate/contracts/blob/{{version}}/Queue/ShouldQueue.php) | &nbsp;
-[Illuminate\Contracts\Redis\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Redis/Factory.php) | `Redis`
-[Illuminate\Contracts\Routing\BindingRegistrar](https://github.com/illuminate/contracts/blob/{{version}}/Routing/BindingRegistrar.php) | `Route`
-[Illuminate\Contracts\Routing\Registrar](https://github.com/illuminate/contracts/blob/{{version}}/Routing/Registrar.php) | `Route`
-[Illuminate\Contracts\Routing\ResponseFactory](https://github.com/illuminate/contracts/blob/{{version}}/Routing/ResponseFactory.php) | `Response`
-[Illuminate\Contracts\Routing\UrlGenerator](https://github.com/illuminate/contracts/blob/{{version}}/Routing/UrlGenerator.php) | `URL`
-[Illuminate\Contracts\Routing\UrlRoutable](https://github.com/illuminate/contracts/blob/{{version}}/Routing/UrlRoutable.php) | &nbsp;
-[Illuminate\Contracts\Session\Session](https://github.com/illuminate/contracts/blob/{{version}}/Session/Session.php) | `Session::driver()`
-[Illuminate\Contracts\Support\Arrayable](https://github.com/illuminate/contracts/blob/{{version}}/Support/Arrayable.php) | &nbsp;
-[Illuminate\Contracts\Support\Htmlable](https://github.com/illuminate/contracts/blob/{{version}}/Support/Htmlable.php) | &nbsp;
-[Illuminate\Contracts\Support\Jsonable](https://github.com/illuminate/contracts/blob/{{version}}/Support/Jsonable.php) | &nbsp;
-[Illuminate\Contracts\Support\MessageBag](https://github.com/illuminate/contracts/blob/{{version}}/Support/MessageBag.php) | &nbsp;
-[Illuminate\Contracts\Support\MessageProvider](https://github.com/illuminate/contracts/blob/{{version}}/Support/MessageProvider.php) | &nbsp;
-[Illuminate\Contracts\Support\Renderable](https://github.com/illuminate/contracts/blob/{{version}}/Support/Renderable.php) | &nbsp;
-[Illuminate\Contracts\Support\Responsable](https://github.com/illuminate/contracts/blob/{{version}}/Support/Responsable.php) | &nbsp;
-[Illuminate\Contracts\Translation\Loader](https://github.com/illuminate/contracts/blob/{{version}}/Translation/Loader.php) | &nbsp;
-[Illuminate\Contracts\Translation\Translator](https://github.com/illuminate/contracts/blob/{{version}}/Translation/Translator.php) | `Lang`
-[Illuminate\Contracts\Validation\Factory](https://github.com/illuminate/contracts/blob/{{version}}/Validation/Factory.php) | `Validator`
-[Illuminate\Contracts\Validation\ImplicitRule](https://github.com/illuminate/contracts/blob/{{version}}/Validation/ImplicitRule.php) | &nbsp;
-[Illuminate\Contracts\Validation\Rule](https://github.com/illuminate/contracts/blob/{{version}}/Validation/Rule.php) | &nbsp;
-[Illuminate\Contracts\Validation\ValidatesWhenResolved](https://github.com/illuminate/contracts/blob/{{version}}/Validation/ValidatesWhenResolved.php) | &nbsp;
-[Illuminate\Contracts\Validation\Validator](https://github.com/illuminate/contracts/blob/{{version}}/Validation/Validator.php) | `Validator::make()`
-[Illuminate\Contracts\View\Engine](https://github.com/illuminate/contracts/blob/{{version}}/View/Engine.php) | &nbsp;
-[Illuminate\Contracts\View\Factory](https://github.com/illuminate/contracts/blob/{{version}}/View/Factory.php) | `View`
-[Illuminate\Contracts\View\View](https://github.com/illuminate/contracts/blob/{{version}}/View/View.php) | `View::make()`
+[Illuminate\Contracts\Auth\Access\Authorizable](https://github.com/illuminate/contracts/blob/8.x/Auth/Access/Authorizable.php) | &nbsp;
+[Illuminate\Contracts\Auth\Access\Gate](https://github.com/illuminate/contracts/blob/8.x/Auth/Access/Gate.php) | `Gate`
+[Illuminate\Contracts\Auth\Authenticatable](https://github.com/illuminate/contracts/blob/8.x/Auth/Authenticatable.php) | &nbsp;
+[Illuminate\Contracts\Auth\CanResetPassword](https://github.com/illuminate/contracts/blob/8.x/Auth/CanResetPassword.php) | &nbsp;
+[Illuminate\Contracts\Auth\Factory](https://github.com/illuminate/contracts/blob/8.x/Auth/Factory.php) | `Auth`
+[Illuminate\Contracts\Auth\Guard](https://github.com/illuminate/contracts/blob/8.x/Auth/Guard.php) | `Auth::guard()`
+[Illuminate\Contracts\Auth\PasswordBroker](https://github.com/illuminate/contracts/blob/8.x/Auth/PasswordBroker.php) | `Password::broker()`
+[Illuminate\Contracts\Auth\PasswordBrokerFactory](https://github.com/illuminate/contracts/blob/8.x/Auth/PasswordBrokerFactory.php) | `Password`
+[Illuminate\Contracts\Auth\StatefulGuard](https://github.com/illuminate/contracts/blob/8.x/Auth/StatefulGuard.php) | &nbsp;
+[Illuminate\Contracts\Auth\SupportsBasicAuth](https://github.com/illuminate/contracts/blob/8.x/Auth/SupportsBasicAuth.php) | &nbsp;
+[Illuminate\Contracts\Auth\UserProvider](https://github.com/illuminate/contracts/blob/8.x/Auth/UserProvider.php) | &nbsp;
+[Illuminate\Contracts\Bus\Dispatcher](https://github.com/illuminate/contracts/blob/8.x/Bus/Dispatcher.php) | `Bus`
+[Illuminate\Contracts\Bus\QueueingDispatcher](https://github.com/illuminate/contracts/blob/8.x/Bus/QueueingDispatcher.php) | `Bus::dispatchToQueue()`
+[Illuminate\Contracts\Broadcasting\Factory](https://github.com/illuminate/contracts/blob/8.x/Broadcasting/Factory.php) | `Broadcast`
+[Illuminate\Contracts\Broadcasting\Broadcaster](https://github.com/illuminate/contracts/blob/8.x/Broadcasting/Broadcaster.php)  | `Broadcast::connection()`
+[Illuminate\Contracts\Broadcasting\ShouldBroadcast](https://github.com/illuminate/contracts/blob/8.x/Broadcasting/ShouldBroadcast.php) | &nbsp;
+[Illuminate\Contracts\Broadcasting\ShouldBroadcastNow](https://github.com/illuminate/contracts/blob/8.x/Broadcasting/ShouldBroadcastNow.php) | &nbsp;
+[Illuminate\Contracts\Cache\Factory](https://github.com/illuminate/contracts/blob/8.x/Cache/Factory.php) | `Cache`
+[Illuminate\Contracts\Cache\Lock](https://github.com/illuminate/contracts/blob/8.x/Cache/Lock.php) | &nbsp;
+[Illuminate\Contracts\Cache\LockProvider](https://github.com/illuminate/contracts/blob/8.x/Cache/LockProvider.php) | &nbsp;
+[Illuminate\Contracts\Cache\Repository](https://github.com/illuminate/contracts/blob/8.x/Cache/Repository.php) | `Cache::driver()`
+[Illuminate\Contracts\Cache\Store](https://github.com/illuminate/contracts/blob/8.x/Cache/Store.php) | &nbsp;
+[Illuminate\Contracts\Config\Repository](https://github.com/illuminate/contracts/blob/8.x/Config/Repository.php) | `Config`
+[Illuminate\Contracts\Console\Application](https://github.com/illuminate/contracts/blob/8.x/Console/Application.php) | &nbsp;
+[Illuminate\Contracts\Console\Kernel](https://github.com/illuminate/contracts/blob/8.x/Console/Kernel.php) | `Artisan`
+[Illuminate\Contracts\Container\Container](https://github.com/illuminate/contracts/blob/8.x/Container/Container.php) | `App`
+[Illuminate\Contracts\Cookie\Factory](https://github.com/illuminate/contracts/blob/8.x/Cookie/Factory.php) | `Cookie`
+[Illuminate\Contracts\Cookie\QueueingFactory](https://github.com/illuminate/contracts/blob/8.x/Cookie/QueueingFactory.php) | `Cookie::queue()`
+[Illuminate\Contracts\Database\ModelIdentifier](https://github.com/illuminate/contracts/blob/8.x/Database/ModelIdentifier.php) | &nbsp;
+[Illuminate\Contracts\Debug\ExceptionHandler](https://github.com/illuminate/contracts/blob/8.x/Debug/ExceptionHandler.php) | &nbsp;
+[Illuminate\Contracts\Encryption\Encrypter](https://github.com/illuminate/contracts/blob/8.x/Encryption/Encrypter.php) | `Crypt`
+[Illuminate\Contracts\Events\Dispatcher](https://github.com/illuminate/contracts/blob/8.x/Events/Dispatcher.php) | `Event`
+[Illuminate\Contracts\Filesystem\Cloud](https://github.com/illuminate/contracts/blob/8.x/Filesystem/Cloud.php) | `Storage::cloud()`
+[Illuminate\Contracts\Filesystem\Factory](https://github.com/illuminate/contracts/blob/8.x/Filesystem/Factory.php) | `Storage`
+[Illuminate\Contracts\Filesystem\Filesystem](https://github.com/illuminate/contracts/blob/8.x/Filesystem/Filesystem.php) | `Storage::disk()`
+[Illuminate\Contracts\Foundation\Application](https://github.com/illuminate/contracts/blob/8.x/Foundation/Application.php) | `App`
+[Illuminate\Contracts\Hashing\Hasher](https://github.com/illuminate/contracts/blob/8.x/Hashing/Hasher.php) | `Hash`
+[Illuminate\Contracts\Http\Kernel](https://github.com/illuminate/contracts/blob/8.x/Http/Kernel.php) | &nbsp;
+[Illuminate\Contracts\Mail\MailQueue](https://github.com/illuminate/contracts/blob/8.x/Mail/MailQueue.php) | `Mail::queue()`
+[Illuminate\Contracts\Mail\Mailable](https://github.com/illuminate/contracts/blob/8.x/Mail/Mailable.php) | &nbsp;
+[Illuminate\Contracts\Mail\Mailer](https://github.com/illuminate/contracts/blob/8.x/Mail/Mailer.php) | `Mail`
+[Illuminate\Contracts\Notifications\Dispatcher](https://github.com/illuminate/contracts/blob/8.x/Notifications/Dispatcher.php) | `Notification`
+[Illuminate\Contracts\Notifications\Factory](https://github.com/illuminate/contracts/blob/8.x/Notifications/Factory.php) | `Notification`
+[Illuminate\Contracts\Pagination\LengthAwarePaginator](https://github.com/illuminate/contracts/blob/8.x/Pagination/LengthAwarePaginator.php) | &nbsp;
+[Illuminate\Contracts\Pagination\Paginator](https://github.com/illuminate/contracts/blob/8.x/Pagination/Paginator.php) | &nbsp;
+[Illuminate\Contracts\Pipeline\Hub](https://github.com/illuminate/contracts/blob/8.x/Pipeline/Hub.php) | &nbsp;
+[Illuminate\Contracts\Pipeline\Pipeline](https://github.com/illuminate/contracts/blob/8.x/Pipeline/Pipeline.php) | &nbsp;
+[Illuminate\Contracts\Queue\EntityResolver](https://github.com/illuminate/contracts/blob/8.x/Queue/EntityResolver.php) | &nbsp;
+[Illuminate\Contracts\Queue\Factory](https://github.com/illuminate/contracts/blob/8.x/Queue/Factory.php) | `Queue`
+[Illuminate\Contracts\Queue\Job](https://github.com/illuminate/contracts/blob/8.x/Queue/Job.php) | &nbsp;
+[Illuminate\Contracts\Queue\Monitor](https://github.com/illuminate/contracts/blob/8.x/Queue/Monitor.php) | `Queue`
+[Illuminate\Contracts\Queue\Queue](https://github.com/illuminate/contracts/blob/8.x/Queue/Queue.php) | `Queue::connection()`
+[Illuminate\Contracts\Queue\QueueableCollection](https://github.com/illuminate/contracts/blob/8.x/Queue/QueueableCollection.php) | &nbsp;
+[Illuminate\Contracts\Queue\QueueableEntity](https://github.com/illuminate/contracts/blob/8.x/Queue/QueueableEntity.php) | &nbsp;
+[Illuminate\Contracts\Queue\ShouldQueue](https://github.com/illuminate/contracts/blob/8.x/Queue/ShouldQueue.php) | &nbsp;
+[Illuminate\Contracts\Redis\Factory](https://github.com/illuminate/contracts/blob/8.x/Redis/Factory.php) | `Redis`
+[Illuminate\Contracts\Routing\BindingRegistrar](https://github.com/illuminate/contracts/blob/8.x/Routing/BindingRegistrar.php) | `Route`
+[Illuminate\Contracts\Routing\Registrar](https://github.com/illuminate/contracts/blob/8.x/Routing/Registrar.php) | `Route`
+[Illuminate\Contracts\Routing\ResponseFactory](https://github.com/illuminate/contracts/blob/8.x/Routing/ResponseFactory.php) | `Response`
+[Illuminate\Contracts\Routing\UrlGenerator](https://github.com/illuminate/contracts/blob/8.x/Routing/UrlGenerator.php) | `URL`
+[Illuminate\Contracts\Routing\UrlRoutable](https://github.com/illuminate/contracts/blob/8.x/Routing/UrlRoutable.php) | &nbsp;
+[Illuminate\Contracts\Session\Session](https://github.com/illuminate/contracts/blob/8.x/Session/Session.php) | `Session::driver()`
+[Illuminate\Contracts\Support\Arrayable](https://github.com/illuminate/contracts/blob/8.x/Support/Arrayable.php) | &nbsp;
+[Illuminate\Contracts\Support\Htmlable](https://github.com/illuminate/contracts/blob/8.x/Support/Htmlable.php) | &nbsp;
+[Illuminate\Contracts\Support\Jsonable](https://github.com/illuminate/contracts/blob/8.x/Support/Jsonable.php) | &nbsp;
+[Illuminate\Contracts\Support\MessageBag](https://github.com/illuminate/contracts/blob/8.x/Support/MessageBag.php) | &nbsp;
+[Illuminate\Contracts\Support\MessageProvider](https://github.com/illuminate/contracts/blob/8.x/Support/MessageProvider.php) | &nbsp;
+[Illuminate\Contracts\Support\Renderable](https://github.com/illuminate/contracts/blob/8.x/Support/Renderable.php) | &nbsp;
+[Illuminate\Contracts\Support\Responsable](https://github.com/illuminate/contracts/blob/8.x/Support/Responsable.php) | &nbsp;
+[Illuminate\Contracts\Translation\Loader](https://github.com/illuminate/contracts/blob/8.x/Translation/Loader.php) | &nbsp;
+[Illuminate\Contracts\Translation\Translator](https://github.com/illuminate/contracts/blob/8.x/Translation/Translator.php) | `Lang`
+[Illuminate\Contracts\Validation\Factory](https://github.com/illuminate/contracts/blob/8.x/Validation/Factory.php) | `Validator`
+[Illuminate\Contracts\Validation\ImplicitRule](https://github.com/illuminate/contracts/blob/8.x/Validation/ImplicitRule.php) | &nbsp;
+[Illuminate\Contracts\Validation\Rule](https://github.com/illuminate/contracts/blob/8.x/Validation/Rule.php) | &nbsp;
+[Illuminate\Contracts\Validation\ValidatesWhenResolved](https://github.com/illuminate/contracts/blob/8.x/Validation/ValidatesWhenResolved.php) | &nbsp;
+[Illuminate\Contracts\Validation\Validator](https://github.com/illuminate/contracts/blob/8.x/Validation/Validator.php) | `Validator::make()`
+[Illuminate\Contracts\View\Engine](https://github.com/illuminate/contracts/blob/8.x/View/Engine.php) | &nbsp;
+[Illuminate\Contracts\View\Factory](https://github.com/illuminate/contracts/blob/8.x/View/Factory.php) | `View`
+[Illuminate\Contracts\View\View](https://github.com/illuminate/contracts/blob/8.x/View/View.php) | `View::make()`

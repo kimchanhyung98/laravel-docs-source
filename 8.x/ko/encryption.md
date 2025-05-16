@@ -12,7 +12,7 @@
 <a name="configuration"></a>
 ## 설정
 
-라라벨의 encrypter를 사용하기 전에, 먼저 `config/app.php` 설정 파일에서 `key` 옵션을 반드시 설정해야 합니다. 이 설정 값은 `APP_KEY` 환경 변수에 의해 결정됩니다. `php artisan key:generate` 명령어를 사용해 이 환경 변수 값을 생성하는 것이 좋습니다. `key:generate` 명령어는 PHP의 보안 무작위 바이트 생성기를 사용해, 암호적으로 안전한 키를 애플리케이션에 맞게 생성합니다. 보통 [라라벨 설치](/docs/{{version}}/installation) 과정에서 `APP_KEY` 환경 변수 값이 자동으로 생성됩니다.
+라라벨의 encrypter를 사용하기 전에, 먼저 `config/app.php` 설정 파일에서 `key` 옵션을 반드시 설정해야 합니다. 이 설정 값은 `APP_KEY` 환경 변수에 의해 결정됩니다. `php artisan key:generate` 명령어를 사용해 이 환경 변수 값을 생성하는 것이 좋습니다. `key:generate` 명령어는 PHP의 보안 무작위 바이트 생성기를 사용해, 암호적으로 안전한 키를 애플리케이션에 맞게 생성합니다. 보통 [라라벨 설치](/docs/8.x/installation) 과정에서 `APP_KEY` 환경 변수 값이 자동으로 생성됩니다.
 
 <a name="using-the-encrypter"></a>
 ## Encrypter 사용하기

@@ -108,12 +108,12 @@ php artisan make:controller ProvisionServer --invokable
 ```
 
 > [!TIP]
-> 컨트롤러 스텁은 [스텁 게시](/docs/{{version}}/artisan#stub-customization)를 통해 커스터마이즈 할 수 있습니다.
+> 컨트롤러 스텁은 [스텁 게시](/docs/8.x/artisan#stub-customization)를 통해 커스터마이즈 할 수 있습니다.
 
 <a name="controller-middleware"></a>
 ## 컨트롤러 미들웨어
 
-[미들웨어](/docs/{{version}}/middleware)는 라우트 파일 내 컨트롤러 라우트에 지정할 수 있습니다.
+[미들웨어](/docs/8.x/middleware)는 라우트 파일 내 컨트롤러 라우트에 지정할 수 있습니다.
 
 ```
 Route::get('profile', [UserController::class, 'show'])->middleware('auth');
@@ -208,7 +208,7 @@ Route::resource('photos', PhotoController::class)
 <a name="specifying-the-resource-model"></a>
 #### 리소스 모델 지정
 
-[라우트 모델 바인딩](/docs/{{version}}/routing#route-model-binding)을 활용하며, 리소스 컨트롤러의 메서드에서 모델 인스턴스를 타입힌트로 지정하고 싶다면, 컨트롤러를 생성할 때 `--model` 옵션을 사용할 수 있습니다.
+[라우트 모델 바인딩](/docs/8.x/routing#route-model-binding)을 활용하며, 리소스 컨트롤러의 메서드에서 모델 인스턴스를 타입힌트로 지정하고 싶다면, 컨트롤러를 생성할 때 `--model` 옵션을 사용할 수 있습니다.
 
 ```
 php artisan make:controller PhotoController --model=Photo --resource
@@ -217,7 +217,7 @@ php artisan make:controller PhotoController --model=Photo --resource
 <a name="generating-form-requests"></a>
 #### 폼 리퀘스트 클래스 자동 생성
 
-리소스 컨트롤러를 생성할 때 `--requests` 옵션도 함께 주면, 컨트롤러의 저장 및 수정 메서드에서 사용할 [폼 리퀘스트 클래스](/docs/{{version}}/validation#form-request-validation)가 Artisan에 의해 자동 생성됩니다.
+리소스 컨트롤러를 생성할 때 `--requests` 옵션도 함께 주면, 컨트롤러의 저장 및 수정 메서드에서 사용할 [폼 리퀘스트 클래스](/docs/8.x/validation#form-request-validation)가 Artisan에 의해 자동 생성됩니다.
 
 ```
 php artisan make:controller PhotoController --model=Photo --resource --requests
@@ -289,7 +289,7 @@ Route::resource('photos.comments', PhotoCommentController::class);
 <a name="scoping-nested-resources"></a>
 #### 중첩 리소스 스코핑
 
-라라벨의 [암묵적 모델 바인딩](/docs/{{version}}/routing#implicit-model-binding-scoping) 기능을 이용하면, 고유적으로 스코프된 중첩 바인딩이 가능해집니다. 즉, 자식 모델이 반드시 부모 모델에 속해 있는지 확인하는 방식입니다. 중첩 리소스를 정의할 때 `scoped` 메서드를 사용하면 자동 스코핑을 활성화할 수 있고, 자식 리소스를 어떤 필드로 조회할지도 지정할 수 있습니다. 자세한 내용은 [리소스 라우트 스코핑](#restful-scoping-resource-routes) 문서를 참고하세요.
+라라벨의 [암묵적 모델 바인딩](/docs/8.x/routing#implicit-model-binding-scoping) 기능을 이용하면, 고유적으로 스코프된 중첩 바인딩이 가능해집니다. 즉, 자식 모델이 반드시 부모 모델에 속해 있는지 확인하는 방식입니다. 중첩 리소스를 정의할 때 `scoped` 메서드를 사용하면 자동 스코핑을 활성화할 수 있고, 자식 리소스를 어떤 필드로 조회할지도 지정할 수 있습니다. 자세한 내용은 [리소스 라우트 스코핑](#restful-scoping-resource-routes) 문서를 참고하세요.
 
 <a name="shallow-nesting"></a>
 #### 얕은 중첩(Shallow Nesting)
@@ -349,7 +349,7 @@ Route::resource('users', AdminUserController::class)->parameters([
 <a name="restful-scoping-resource-routes"></a>
 ### 리소스 라우트 스코핑
 
-라라벨의 [스코프 암묵적 모델 바인딩](/docs/{{version}}/routing#implicit-model-binding-scoping)는 중첩된 라우트에서 자식 모델이 반드시 부모 모델에 속하는지 자동으로 확인해 줍니다. 중첩 리소스를 정의할 때 `scoped` 메서드로 자동 스코핑을 활성화할 수 있으며, 자식 리소스를 어떤 필드로 조회할지도 간편하게 지정 가능합니다.
+라라벨의 [스코프 암묵적 모델 바인딩](/docs/8.x/routing#implicit-model-binding-scoping)는 중첩된 라우트에서 자식 모델이 반드시 부모 모델에 속하는지 자동으로 확인해 줍니다. 중첩 리소스를 정의할 때 `scoped` 메서드로 자동 스코핑을 활성화할 수 있으며, 자식 리소스를 어떤 필드로 조회할지도 간편하게 지정 가능합니다.
 
 ```
 use App\Http\Controllers\PhotoCommentController;
@@ -418,7 +418,7 @@ Route::resource('photos', PhotoController::class);
 <a name="constructor-injection"></a>
 #### 생성자 인젝션
 
-라라벨의 [서비스 컨테이너](/docs/{{version}}/container)는 모든 컨트롤러를 자동으로 resolve(해결)합니다. 따라서, 컨트롤러의 생성자에 필요한 의존성을 타입힌트로 지정하면 라라벨이 자동으로 주입해 줍니다. 아래 예제를 참고하세요.
+라라벨의 [서비스 컨테이너](/docs/8.x/container)는 모든 컨트롤러를 자동으로 resolve(해결)합니다. 따라서, 컨트롤러의 생성자에 필요한 의존성을 타입힌트로 지정하면 라라벨이 자동으로 주입해 줍니다. 아래 예제를 참고하세요.
 
 ```
 <?php

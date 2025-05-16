@@ -77,7 +77,7 @@ APP_NAME="My Application"
 <a name="determining-the-current-environment"></a>
 ### 현재 환경 결정하기
 
-현재 애플리케이션의 환경은 `.env` 파일의 `APP_ENV` 변수를 통해 결정됩니다. 이 값은 `App` [파사드](/docs/{{version}}/facades)의 `environment` 메서드를 통해 가져올 수 있습니다:
+현재 애플리케이션의 환경은 `.env` 파일의 `APP_ENV` 변수를 통해 결정됩니다. 이 값은 `App` [파사드](/docs/8.x/facades)의 `environment` 메서드를 통해 가져올 수 있습니다:
 
 ```
 use Illuminate\Support\Facades\App;
@@ -213,7 +213,7 @@ php artisan up
 <a name="maintenance-mode-queues"></a>
 #### 유지보수 모드와 큐
 
-애플리케이션이 유지보수 모드일 때는 [큐에 등록된 작업](/docs/{{version}}/queues)이 처리되지 않습니다. 유지보수 모드가 해제되면 대기 중이던 작업이 정상적으로 처리됩니다.
+애플리케이션이 유지보수 모드일 때는 [큐에 등록된 작업](/docs/8.x/queues)이 처리되지 않습니다. 유지보수 모드가 해제되면 대기 중이던 작업이 정상적으로 처리됩니다.
 
 <a name="alternatives-to-maintenance-mode"></a>
 #### 유지보수 모드의 대안

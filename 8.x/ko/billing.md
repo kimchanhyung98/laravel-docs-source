@@ -1,4 +1,4 @@
-# 라라벨 Cashier (Stripe) (Laravel Cashier (Stripe))
+# 라라벨 Cashier, Stripe (Laravel Cashier (Stripe))
 
 - [소개](#introduction)
 - [Cashier 업그레이드](#upgrading-cashier)
@@ -790,7 +790,7 @@ $user->newSubscription('default', 'price_monthly')->add();
 <a name="creating-subscriptions-from-the-stripe-dashboard"></a>
 #### Stripe 대시보드에서 구독 생성하기
 
-Stripe 대시보드에서도 구독을 생성할 수 있습니다. 이 경우, Cashier가 새로 추가된 구독을 동기화하고 구독 이름을 `default`로 지정합니다. 대시보드에서 생성된 구독의 이름을 커스터마이징하려면, [`WebhookController`를 확장](/docs/{{version}}/billing#defining-webhook-event-handlers)하고 `newSubscriptionName` 메서드를 오버라이드해야 합니다.
+Stripe 대시보드에서도 구독을 생성할 수 있습니다. 이 경우, Cashier가 새로 추가된 구독을 동기화하고 구독 이름을 `default`로 지정합니다. 대시보드에서 생성된 구독의 이름을 커스터마이징하려면, [`WebhookController`를 확장](/docs/8.x/billing#defining-webhook-event-handlers)하고 `newSubscriptionName` 메서드를 오버라이드해야 합니다.
 
 또한, Stripe 대시보드에서는 한 종류의 구독만 생성할 수 있습니다. 애플리케이션이 여러 구독을 지원하는 경우, 각 이름별로 하나의 구독만 Stripe 대시보드를 통해 추가할 수 있습니다.
 
@@ -807,7 +807,7 @@ if ($user->subscribed('default')) {
 }
 ```
 
-또한, `subscribed` 메서드는 [라우트 미들웨어](/docs/{{version}}/middleware)로 사용하여 사용자의 구독 상태에 따라 라우트와 컨트롤러 접근을 제어하는 데 적합합니다.
+또한, `subscribed` 메서드는 [라우트 미들웨어](/docs/8.x/middleware)로 사용하여 사용자의 구독 상태에 따라 라우트와 컨트롤러 접근을 제어하는 데 적합합니다.
 
 ```
 <?php
@@ -1533,7 +1533,7 @@ $user = User::create([
 ```
 
 > [!NOTE]
-> 청구 가능 모델 클래스 정의에 [date cast](/docs/{{version}}/eloquent-mutators##date-casting)에서 `trial_ends_at` 속성을 날짜로 변환하는 캐스팅 설정을 꼭 추가하세요.
+> 청구 가능 모델 클래스 정의에 [date cast](/docs/8.x/eloquent-mutators##date-casting)에서 `trial_ends_at` 속성을 날짜로 변환하는 캐스팅 설정을 꼭 추가하세요.
 
 Cashier에서는 이런 체험을 '일반(generic) 체험'으로 부르며, 아직 실제 구독과 연결되지 않은 상태입니다. 청구 가능 모델 인스턴스의 `onTrial` 메서드는 현재 날짜가 `trial_ends_at` 값보다 이전일 때 `true`를 반환합니다.
 
@@ -1637,7 +1637,7 @@ php artisan cashier:webhook --disabled
 <a name="webhooks-csrf-protection"></a>
 #### 웹훅 & CSRF 보호
 
-Stripe 웹훅은 Laravel의 [CSRF 보호](/docs/{{version}}/csrf)를 우회해야 하므로, 애플리케이션의 `App\Http\Middleware\VerifyCsrfToken` 미들웨어에 웹훅 URI를 예외로 등록하거나, 해당 라우트를 `web` 미들웨어 그룹 외부에 두어야 합니다.
+Stripe 웹훅은 Laravel의 [CSRF 보호](/docs/8.x/csrf)를 우회해야 하므로, 애플리케이션의 `App\Http\Middleware\VerifyCsrfToken` 미들웨어에 웹훅 URI를 예외로 등록하거나, 해당 라우트를 `web` 미들웨어 그룹 외부에 두어야 합니다.
 
 ```
 protected $except = [
@@ -1653,7 +1653,7 @@ Cashier는 결제 실패로 인한 구독 취소 등 흔히 발생하는 Stripe 
 - `Laravel\Cashier\Events\WebhookReceived`
 - `Laravel\Cashier\Events\WebhookHandled`
 
-두 이벤트 모두 Stripe 웹훅의 전체 페이로드 정보를 담고 있습니다. 예를 들어 `invoice.payment_succeeded` 웹훅을 처리하고 싶다면, [리스너](/docs/{{version}}/events#defining-listeners)를 등록해 이벤트를 처리할 수 있습니다.
+두 이벤트 모두 Stripe 웹훅의 전체 페이로드 정보를 담고 있습니다. 예를 들어 `invoice.payment_succeeded` 웹훅을 처리하고 싶다면, [리스너](/docs/8.x/events#defining-listeners)를 등록해 이벤트를 처리할 수 있습니다.
 
 ```
 <?php

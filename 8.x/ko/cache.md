@@ -87,9 +87,9 @@ Memcached 드라이버를 사용하려면 [Memcached PECL 패키지](https://pec
 <a name="redis"></a>
 #### Redis
 
-라라벨에서 Redis 캐시를 사용하기 전에, PECL을 통해 PhpRedis PHP 확장 모듈을 설치하거나 Composer를 이용해 `predis/predis` 패키지(~1.0)를 설치해야 합니다. [Laravel Sail](/docs/{{version}}/sail)은 이미 이 확장 모듈을 포함하고 있습니다. 또한 [Laravel Forge](https://forge.laravel.com)와 [Laravel Vapor](https://vapor.laravel.com)와 같은 공식 라라벨 배포 플랫폼에도 기본적으로 PhpRedis 확장 모듈이 설치되어 있습니다.
+라라벨에서 Redis 캐시를 사용하기 전에, PECL을 통해 PhpRedis PHP 확장 모듈을 설치하거나 Composer를 이용해 `predis/predis` 패키지(~1.0)를 설치해야 합니다. [Laravel Sail](/docs/8.x/sail)은 이미 이 확장 모듈을 포함하고 있습니다. 또한 [Laravel Forge](https://forge.laravel.com)와 [Laravel Vapor](https://vapor.laravel.com)와 같은 공식 라라벨 배포 플랫폼에도 기본적으로 PhpRedis 확장 모듈이 설치되어 있습니다.
 
-Redis 설정에 대한 자세한 내용은 [라라벨 문서의 Redis 페이지](/docs/{{version}}/redis#configuration)를 참고해 주세요.
+Redis 설정에 대한 자세한 내용은 [라라벨 문서의 Redis 페이지](/docs/8.x/redis#configuration)를 참고해 주세요.
 
 <a name="dynamodb"></a>
 #### DynamoDB
@@ -306,7 +306,7 @@ cache()->remember('users', $seconds, function () {
 ```
 
 > [!TIP]
-> 전역 `cache` 함수 호출을 테스트할 때는, [파사드 테스트](/docs/{{version}}/mocking#mocking-facades)에서와 같이 `Cache::shouldReceive` 메서드를 활용할 수 있습니다.
+> 전역 `cache` 함수 호출을 테스트할 때는, [파사드 테스트](/docs/8.x/mocking#mocking-facades)에서와 같이 `Cache::shouldReceive` 메서드를 활용할 수 있습니다.
 
 <a name="cache-tags"></a>
 ## 캐시 태그
@@ -459,7 +459,7 @@ Cache::lock('processing')->forceRelease();
 <a name="writing-the-driver"></a>
 ### 드라이버 작성하기
 
-커스텀 캐시 드라이버를 만들려면, 우선 `Illuminate\Contracts\Cache\Store` [계약](/docs/{{version}}/contracts)을 구현해야 합니다. 예를 들어 MongoDB 캐시 드라이버는 아래와 같이 구현할 수 있습니다:
+커스텀 캐시 드라이버를 만들려면, 우선 `Illuminate\Contracts\Cache\Store` [계약](/docs/8.x/contracts)을 구현해야 합니다. 예를 들어 MongoDB 캐시 드라이버는 아래와 같이 구현할 수 있습니다:
 
 ```
 <?php
@@ -536,14 +536,14 @@ class CacheServiceProvider extends ServiceProvider
 }
 ```
 
-`extend` 메서드의 첫 번째 인자는 드라이버 이름이며, 이는 `config/cache.php` 설정 파일의 `driver` 옵션과 일치해야 합니다. 두 번째 인자는 `Illuminate\Cache\Repository` 인스턴스를 반환해야 하는 클로저인데, 이 클로저에는 [서비스 컨테이너](/docs/{{version}}/container) 인스턴스인 `$app`이 전달됩니다.
+`extend` 메서드의 첫 번째 인자는 드라이버 이름이며, 이는 `config/cache.php` 설정 파일의 `driver` 옵션과 일치해야 합니다. 두 번째 인자는 `Illuminate\Cache\Repository` 인스턴스를 반환해야 하는 클로저인데, 이 클로저에는 [서비스 컨테이너](/docs/8.x/container) 인스턴스인 `$app`이 전달됩니다.
 
 드라이버 확장이 등록되면, `config/cache.php` 설정 파일의 `driver` 항목에 해당 확장 이름을 지정해주면 됩니다.
 
 <a name="events"></a>
 ## 이벤트
 
-각 캐시 동작 시마다 코드를 실행하려면, 캐시에서 발생하는 [이벤트](/docs/{{version}}/events)를 구독하면 됩니다. 보통 이 이벤트 리스너들은 애플리케이션의 `App\Providers\EventServiceProvider` 클래스에 등록합니다:
+각 캐시 동작 시마다 코드를 실행하려면, 캐시에서 발생하는 [이벤트](/docs/8.x/events)를 구독하면 됩니다. 보통 이 이벤트 리스너들은 애플리케이션의 `App\Providers\EventServiceProvider` 클래스에 등록합니다:
 
 ```
 /**

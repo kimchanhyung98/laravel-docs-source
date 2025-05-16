@@ -43,9 +43,9 @@
 
 최근 웹 애플리케이션에서는 실시간(Realtime), 라이브 업데이트 UI를 구현하기 위해 WebSocket을 널리 사용합니다. 서버에서 데이터가 변경되면, 일반적으로 WebSocket 연결을 통해 메시지가 전송되며, 클라이언트는 이를 받아 UI를 즉시 갱신할 수 있습니다. 이러한 방식은 데이터 변경 사항을 확인하기 위해 애플리케이션 서버에 반복적으로 요청(polling)하는 것보다 훨씬 효율적입니다.
 
-예를 들어, 여러분의 애플리케이션이 사용자의 데이터를 CSV 파일로 내보내고 해당 파일을 이메일로 발송하는 기능을 제공한다고 가정해보겠습니다. CSV 파일 생성에는 몇 분이 소요될 수 있으므로, 이 작업을 [큐에 등록된 작업](/docs/{{version}}/queues)으로 처리한다고 해봅니다. CSV 파일이 완성되어 사용자의 이메일로 발송되면, 우리는 `App\Events\UserDataExported` 이벤트를 브로드캐스팅하여 애플리케이션의 JavaScript에서 수신하도록 할 수 있습니다. 이 이벤트를 수신하면, 사용자는 페이지를 새로고침하지 않아도 CSV가 이메일로 전송되었다는 안내 메시지를 실시간으로 확인할 수 있습니다.
+예를 들어, 여러분의 애플리케이션이 사용자의 데이터를 CSV 파일로 내보내고 해당 파일을 이메일로 발송하는 기능을 제공한다고 가정해보겠습니다. CSV 파일 생성에는 몇 분이 소요될 수 있으므로, 이 작업을 [큐에 등록된 작업](/docs/8.x/queues)으로 처리한다고 해봅니다. CSV 파일이 완성되어 사용자의 이메일로 발송되면, 우리는 `App\Events\UserDataExported` 이벤트를 브로드캐스팅하여 애플리케이션의 JavaScript에서 수신하도록 할 수 있습니다. 이 이벤트를 수신하면, 사용자는 페이지를 새로고침하지 않아도 CSV가 이메일로 전송되었다는 안내 메시지를 실시간으로 확인할 수 있습니다.
 
-이와 같은 기능을 쉽게 구현할 수 있도록, 라라벨은 서버 사이드의 [이벤트](/docs/{{version}}/events)를 WebSocket 연결을 통해 간단하게 “브로드캐스트”할 수 있는 기능을 제공합니다. 라라벨 이벤트를 브로드캐스팅하면 서버 사이드의 라라벨 애플리케이션과 클라이언트 사이드의 JavaScript 애플리케이션 모두에서 동일한 이벤트 이름과 데이터를 손쉽게 공유할 수 있습니다.
+이와 같은 기능을 쉽게 구현할 수 있도록, 라라벨은 서버 사이드의 [이벤트](/docs/8.x/events)를 WebSocket 연결을 통해 간단하게 “브로드캐스트”할 수 있는 기능을 제공합니다. 라라벨 이벤트를 브로드캐스팅하면 서버 사이드의 라라벨 애플리케이션과 클라이언트 사이드의 JavaScript 애플리케이션 모두에서 동일한 이벤트 이름과 데이터를 손쉽게 공유할 수 있습니다.
 
 브로드캐스팅의 핵심 개념은 단순합니다. 클라이언트는 프론트엔드에서 정의된 채널에 접속하고, 라라벨 애플리케이션은 백엔드에서 해당 채널로 이벤트를 브로드캐스트합니다. 이 이벤트에는 프론트엔드에서 사용할 수 있도록 원하는 추가 데이터를 포함할 수 있습니다.
 
@@ -55,7 +55,7 @@
 라라벨은 기본적으로 두 가지 서버 사이드 브로드캐스팅 드라이버를 제공합니다: [Pusher Channels](https://pusher.com/channels)과 [Ably](https://ably.io)가 이에 해당합니다. 그 외에도, 커뮤니티에서 제공하는 [laravel-websockets](https://beyondco.de/docs/laravel-websockets/getting-started/introduction), [soketi](https://docs.soketi.app/) 등은 상용 브로드캐스팅 서비스에 의존하지 않아도 사용할 수 있는 브로드캐스팅 드라이버를 제공합니다.
 
 > [!TIP]
-> 이벤트 브로드캐스팅을 시작하기 전에, 라라벨 [이벤트와 리스너](/docs/{{version}}/events) 문서를 먼저 읽어보시기 바랍니다.
+> 이벤트 브로드캐스팅을 시작하기 전에, 라라벨 [이벤트와 리스너](/docs/8.x/events) 문서를 먼저 읽어보시기 바랍니다.
 
 <a name="server-side-installation"></a>
 ## 서버 사이드 설치
@@ -67,7 +67,7 @@
 <a name="configuration"></a>
 ### 설정
 
-애플리케이션의 이벤트 브로드캐스트와 관련된 모든 설정은 `config/broadcasting.php` 설정 파일에 저장됩니다. 라라벨은 기본적으로 [Pusher Channels](https://pusher.com/channels), [Redis](/docs/{{version}}/redis), 그리고 로컬 개발 및 디버깅용 `log` 드라이버 등 여러 브로드캐스트 드라이버를 지원합니다. 또한, 테스트 환경에서 브로드캐스팅을 완전히 비활성화하고 싶을 때 사용할 수 있는 `null` 드라이버도 포함되어 있습니다. 각 드라이버에 대한 설정 예시는 `config/broadcasting.php` 파일에 미리 준비되어 있습니다.
+애플리케이션의 이벤트 브로드캐스트와 관련된 모든 설정은 `config/broadcasting.php` 설정 파일에 저장됩니다. 라라벨은 기본적으로 [Pusher Channels](https://pusher.com/channels), [Redis](/docs/8.x/redis), 그리고 로컬 개발 및 디버깅용 `log` 드라이버 등 여러 브로드캐스트 드라이버를 지원합니다. 또한, 테스트 환경에서 브로드캐스팅을 완전히 비활성화하고 싶을 때 사용할 수 있는 `null` 드라이버도 포함되어 있습니다. 각 드라이버에 대한 설정 예시는 `config/broadcasting.php` 파일에 미리 준비되어 있습니다.
 
 <a name="broadcast-service-provider"></a>
 #### 브로드캐스트 서비스 프로바이더
@@ -77,7 +77,7 @@
 <a name="queue-configuration"></a>
 #### 큐 설정
 
-또한, [큐 워커](/docs/{{version}}/queues)를 설정하고 실행해야 합니다. 모든 이벤트 브로드캐스팅은 큐에 등록된 작업(queued job)을 통해 이루어지므로, 이벤트 브로드캐스트로 인해 애플리케이션 응답속도에 영향을 미치지 않게 할 수 있습니다.
+또한, [큐 워커](/docs/8.x/queues)를 설정하고 실행해야 합니다. 모든 이벤트 브로드캐스팅은 큐에 등록된 작업(queued job)을 통해 이루어지므로, 이벤트 브로드캐스트로 인해 애플리케이션 응답속도에 영향을 미치지 않게 할 수 있습니다.
 
 <a name="pusher-channels"></a>
 ### Pusher Channels
@@ -88,7 +88,7 @@
 composer require pusher/pusher-php-server
 ```
 
-그 다음, `config/broadcasting.php` 설정 파일에 Pusher Channels 인증 정보를 추가해줍니다. 이 파일에는 이미 Pusher Channels 설정 예시가 포함되어 있으므로, 여러분은 키(key), 시크릿(secret), 애플리케이션 ID만 지정해주면 빠르게 시작할 수 있습니다. 일반적으로 이러한 값들은 `PUSHER_APP_KEY`, `PUSHER_APP_SECRET`, `PUSHER_APP_ID`와 같은 [환경 변수](/docs/{{version}}/configuration#environment-configuration)를 통해 설정합니다:
+그 다음, `config/broadcasting.php` 설정 파일에 Pusher Channels 인증 정보를 추가해줍니다. 이 파일에는 이미 Pusher Channels 설정 예시가 포함되어 있으므로, 여러분은 키(key), 시크릿(secret), 애플리케이션 ID만 지정해주면 빠르게 시작할 수 있습니다. 일반적으로 이러한 값들은 `PUSHER_APP_KEY`, `PUSHER_APP_SECRET`, `PUSHER_APP_ID`와 같은 [환경 변수](/docs/8.x/configuration#environment-configuration)를 통해 설정합니다:
 
 ```
 PUSHER_APP_ID=your-pusher-app-id
@@ -121,7 +121,7 @@ BROADCAST_DRIVER=pusher
 composer require ably/ably-php
 ```
 
-그 다음, `config/broadcasting.php` 설정 파일에 Ably 인증 정보를 추가해야 합니다. 이 파일에도 이미 Ably 설정 예시가 포함되어 있어, key만 빠르게 지정해주면 됩니다. 일반적으로 이 값은 `ABLY_KEY` [환경 변수](/docs/{{version}}/configuration#environment-configuration)로 설정합니다:
+그 다음, `config/broadcasting.php` 설정 파일에 Ably 인증 정보를 추가해야 합니다. 이 파일에도 이미 Ably 설정 예시가 포함되어 있어, key만 빠르게 지정해주면 됩니다. 일반적으로 이 값은 `ABLY_KEY` [환경 변수](/docs/8.x/configuration#environment-configuration)로 설정합니다:
 
 ```
 ABLY_KEY=your-ably-key
@@ -182,7 +182,7 @@ npm run dev
 ```
 
 > [!TIP]
-> 애플리케이션의 JavaScript 에셋 컴파일 방법에 대해서는 [Laravel Mix](/docs/{{version}}/mix) 문서를 참고하세요.
+> 애플리케이션의 JavaScript 에셋 컴파일 방법에 대해서는 [Laravel Mix](/docs/8.x/mix) 문서를 참고하세요.
 
 <a name="using-an-existing-client-instance"></a>
 #### 기존 클라이언트 인스턴스 사용하기
@@ -240,7 +240,7 @@ npm run dev
 ```
 
 > [!TIP]
-> 애플리케이션의 JavaScript 에셋 컴파일 방법에 대해서는 [Laravel Mix](/docs/{{version}}/mix) 문서를 참고하세요.
+> 애플리케이션의 JavaScript 에셋 컴파일 방법에 대해서는 [Laravel Mix](/docs/8.x/mix) 문서를 참고하세요.
 
 <a name="concept-overview"></a>
 ## 개념 개요
@@ -389,7 +389,7 @@ class ServerCreated implements ShouldBroadcast
 }
 ```
 
-`ShouldBroadcast` 인터페이스를 구현했다면, 이제 일반 이벤트와 똑같이 [이벤트를 발생](/docs/{{version}}/events)시키면 됩니다. 이벤트가 발생하면, [큐에 등록된 작업](/docs/{{version}}/queues)을 통해 자동으로 지정한 브로드캐스트 드라이버로 이벤트가 브로드캐스팅됩니다.
+`ShouldBroadcast` 인터페이스를 구현했다면, 이제 일반 이벤트와 똑같이 [이벤트를 발생](/docs/8.x/events)시키면 됩니다. 이벤트가 발생하면, [큐에 등록된 작업](/docs/8.x/queues)을 통해 자동으로 지정한 브로드캐스트 드라이버로 이벤트가 브로드캐스팅됩니다.
 
 <a name="broadcast-name"></a>
 ### 브로드캐스트 이름
@@ -534,7 +534,7 @@ class ServerCreated implements ShouldBroadcast
 ```
 
 > [!TIP]
-> 이러한 문제를 우회하는 방법에 대해 더 자세히 알고 싶다면, [큐 작업과 데이터베이스 트랜잭션](/docs/{{version}}/queues#jobs-and-database-transactions) 문서를 참고하세요.
+> 이러한 문제를 우회하는 방법에 대해 더 자세히 알고 싶다면, [큐 작업과 데이터베이스 트랜잭션](/docs/8.x/queues#jobs-and-database-transactions) 문서를 참고하세요.
 
 <a name="authorizing-channels"></a>
 ## 채널 인가(Authorization)
@@ -615,7 +615,7 @@ Broadcast::channel('orders.{orderId}', function ($user, $orderId) {
 <a name="authorization-callback-model-binding"></a>
 #### 인증 콜백과 모델 바인딩
 
-HTTP 라우트와 마찬가지로, 채널 라우트에서도 [라우트 모델 바인딩](/docs/{{version}}/routing#route-model-binding)의 명시적 및 암묵적 방식 모두를 활용할 수 있습니다. 예를 들어, 문자열이나 숫자 형태의 주문 ID 대신 실제 `Order` 모델 인스턴스를 받을 수도 있습니다.
+HTTP 라우트와 마찬가지로, 채널 라우트에서도 [라우트 모델 바인딩](/docs/8.x/routing#route-model-binding)의 명시적 및 암묵적 방식 모두를 활용할 수 있습니다. 예를 들어, 문자열이나 숫자 형태의 주문 ID 대신 실제 `Order` 모델 인스턴스를 받을 수도 있습니다.
 
 ```
 use App\Models\Order;
@@ -626,7 +626,7 @@ Broadcast::channel('orders.{order}', function ($user, Order $order) {
 ```
 
 > [!NOTE]
-> HTTP 라우트 모델 바인딩과 달리, 채널 모델 바인딩은 자동 [암묵적 모델 바인딩 스코프](/docs/{{version}}/routing#implicit-model-binding-scoping)를 지원하지 않습니다. 하지만 대부분의 경우, 채널은 단일 모델의 고유 기본 키로 범위가 지정되기 때문에 이 점이 문제되는 경우는 드뭅니다.
+> HTTP 라우트 모델 바인딩과 달리, 채널 모델 바인딩은 자동 [암묵적 모델 바인딩 스코프](/docs/8.x/routing#implicit-model-binding-scoping)를 지원하지 않습니다. 하지만 대부분의 경우, 채널은 단일 모델의 고유 기본 키로 범위가 지정되기 때문에 이 점이 문제되는 경우는 드뭅니다.
 
 <a name="authorization-callback-authentication"></a>
 #### 인증 콜백의 인증 처리
@@ -693,7 +693,7 @@ class OrderChannel
 ```
 
 > [!TIP]
-> 라라벨의 여러 클래스와 마찬가지로, 채널 클래스도 [서비스 컨테이너](/docs/{{version}}/container)에 의해 자동으로 resolve됩니다. 따라서 생성자에서 필요한 의존성을 타입 힌트로 명시하면, 자동으로 주입받을 수 있습니다.
+> 라라벨의 여러 클래스와 마찬가지로, 채널 클래스도 [서비스 컨테이너](/docs/8.x/container)에 의해 자동으로 resolve됩니다. 따라서 생성자에서 필요한 의존성을 타입 힌트로 명시하면, 자동으로 주입받을 수 있습니다.
 
 <a name="broadcasting-events"></a>
 ## 이벤트 브로드캐스팅
@@ -940,7 +940,7 @@ Echo.join(`chat.${roomId}`)
 > [!NOTE]
 > 모델 브로드캐스팅 관련 섹션을 읽기 전에, 라라벨의 모델 브로드캐스팅 서비스의 기본 개념과, 브로드캐스트 이벤트를 직접 생성 및 청취하는 방법을 충분히 숙지하시길 권장합니다.
 
-애플리케이션의 [Eloquent 모델](/docs/{{version}}/eloquent)이 생성, 수정, 삭제될 때 이벤트를 브로드캐스트하는 것은 매우 일반적입니다. 물론, 이런 처리를 위해 [Eloquent 모델 상태 변화에 대한 커스텀 이벤트](/docs/{{version}}/eloquent#events)를 직접 정의하고, 이 이벤트에 `ShouldBroadcast` 인터페이스를 구현하는 방식도 사용할 수 있습니다.
+애플리케이션의 [Eloquent 모델](/docs/8.x/eloquent)이 생성, 수정, 삭제될 때 이벤트를 브로드캐스트하는 것은 매우 일반적입니다. 물론, 이런 처리를 위해 [Eloquent 모델 상태 변화에 대한 커스텀 이벤트](/docs/8.x/eloquent#events)를 직접 정의하고, 이 이벤트에 `ShouldBroadcast` 인터페이스를 구현하는 방식도 사용할 수 있습니다.
 
 그렇지만, 다른 용도가 없이 오직 브로드캐스트만을 위해 이벤트 클래스를 만드는 것이 번거로울 수 있습니다. 이를 해결하기 위해, 라라벨은 Eloquent 모델이 상태 변화를 자동으로 브로드캐스트할 수 있도록 지원합니다.
 
@@ -1159,7 +1159,7 @@ Echo.private(`chat.${roomId}`)
 <a name="notifications"></a>
 ## 알림
 
-이벤트 브로드캐스팅을 [알림](/docs/{{version}}/notifications) 기능과 연동하면, 자바스크립트 애플리케이션이 페이지를 새로고침하지 않아도 새로운 알림이 도착하면 실시간으로 받아볼 수 있습니다. 시작하기 전에 [브로드캐스트 알림 채널](/docs/{{version}}/notifications#broadcast-notifications) 사용법에 관한 문서를 반드시 먼저 살펴보시기 바랍니다.
+이벤트 브로드캐스팅을 [알림](/docs/8.x/notifications) 기능과 연동하면, 자바스크립트 애플리케이션이 페이지를 새로고침하지 않아도 새로운 알림이 도착하면 실시간으로 받아볼 수 있습니다. 시작하기 전에 [브로드캐스트 알림 채널](/docs/8.x/notifications#broadcast-notifications) 사용법에 관한 문서를 반드시 먼저 살펴보시기 바랍니다.
 
 알림이 브로드캐스트 채널을 사용하도록 설정됐다면, Echo의 `notification` 메서드를 사용해 브로드캐스트 알림 이벤트를 수신할 수 있습니다. 이때, 채널 이름은 알림을 받는 엔티티의 클래스명을 기준으로 해야 합니다.
 

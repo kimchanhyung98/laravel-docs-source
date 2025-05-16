@@ -1,4 +1,4 @@
-# 라라벨 Cashier (Paddle) (Laravel Cashier (Paddle))
+# 라라벨 Cashier, Paddle (Laravel Cashier (Paddle))
 
 - [소개](#introduction)
 - [Cashier 업그레이드](#upgrading-cashier)
@@ -236,7 +236,7 @@ Route::get('/user/subscribe', function (Request $request) {
 });
 ```
 
-Cashier에는 `paddle-button` [Blade 컴포넌트](/docs/{{version}}/blade#components)가 준비되어 있습니다. 이 컴포넌트의 prop으로 페이 링크 URL을 전달하면, 버튼 클릭 시 Paddle 결제 위젯이 자동으로 나타납니다.
+Cashier에는 `paddle-button` [Blade 컴포넌트](/docs/8.x/blade#components)가 준비되어 있습니다. 이 컴포넌트의 prop으로 페이 링크 URL을 전달하면, 버튼 클릭 시 Paddle 결제 위젯이 자동으로 나타납니다.
 
 ```html
 <x-paddle-button :url="$payLink" class="px-8 py-4">
@@ -530,7 +530,7 @@ Route::get('/user/subscribe', function (Request $request) {
 
 `newSubscription` 메서드의 첫 번째 인수는 구독의 내부 명칭입니다. 애플리케이션이 단일 구독만 제공하는 경우라면 `default` 또는 `primary`처럼 명명하면 됩니다. 이 구독 이름은 내부 애플리케이션 로직에서만 사용되므로, 사용자에게 노출하거나 변경하지 않아야 하며, 공백 없이 설정해야 합니다. 두 번째 인수는 사용자가 가입할 구체적인 플랜(Plan)의 식별자입니다. 이 값은 Paddle에서 플랜을 구분하는 값과 일치해야 합니다. `returnTo` 메서드에는 결제가 성공적으로 완료된 뒤 사용자를 리다이렉트할 URL을 지정합니다.
 
-`create` 메서드는 실제로 사용할 수 있는 페이 링크를 생성합니다. 결제 버튼은 Cashier Paddle이 제공하는 `paddle-button` [Blade 컴포넌트](/docs/{{version}}/blade#components)를 사용해 만들 수 있습니다.
+`create` 메서드는 실제로 사용할 수 있는 페이 링크를 생성합니다. 결제 버튼은 Cashier Paddle이 제공하는 `paddle-button` [Blade 컴포넌트](/docs/8.x/blade#components)를 사용해 만들 수 있습니다.
 
 ```html
 <x-paddle-button :url="$payLink" class="px-8 py-4">
@@ -592,7 +592,7 @@ if ($user->subscribed('default')) {
 }
 ```
 
-`subscribed` 메서드는 [라우트 미들웨어](/docs/{{version}}/middleware)에 활용하기에도 적합합니다. 이를 통해 사용자의 구독 상태에 따라 라우트와 컨트롤러의 접근을 제한할 수 있습니다.
+`subscribed` 메서드는 [라우트 미들웨어](/docs/8.x/middleware)에 활용하기에도 적합합니다. 이를 통해 사용자의 구독 상태에 따라 라우트와 컨트롤러의 접근을 제한할 수 있습니다.
 
 ```
 <?php
@@ -1072,12 +1072,12 @@ Paddle은 다양한 이벤트를 웹훅을 통해 애플리케이션에 알릴 �
 - Subscription Payment Succeeded
 
 > [!NOTE]
-> Cashier에서 제공하는 [웹훅 서명 검증](/docs/{{version}}/cashier-paddle#verifying-webhook-signatures) 미들웨어로 수신 요청을 안전하게 보호해야 합니다.
+> Cashier에서 제공하는 [웹훅 서명 검증](/docs/8.x/cashier-paddle#verifying-webhook-signatures) 미들웨어로 수신 요청을 안전하게 보호해야 합니다.
 
 <a name="webhooks-csrf-protection"></a>
 #### 웹훅 & CSRF 보호
 
-Paddle 웹훅은 Laravel의 [CSRF 보호](/docs/{{version}}/csrf)를 우회해야 하므로, 반드시 `App\Http\Middleware\VerifyCsrfToken` 미들웨어에서 이 URI를 예외 목록에 추가하거나, `web` 미들웨어 그룹 밖에서 라우트를 선언해야 합니다.
+Paddle 웹훅은 Laravel의 [CSRF 보호](/docs/8.x/csrf)를 우회해야 하므로, 반드시 `App\Http\Middleware\VerifyCsrfToken` 미들웨어에서 이 URI를 예외 목록에 추가하거나, `web` 미들웨어 그룹 밖에서 라우트를 선언해야 합니다.
 
 ```
 protected $except = [
@@ -1088,7 +1088,7 @@ protected $except = [
 <a name="webhooks-local-development"></a>
 #### 웹훅 & 로컬 개발 환경
 
-로컬 개발 단계에서 Paddle이 웹훅을 전송할 수 있도록 하려면 [Ngrok](https://ngrok.com/)이나 [Expose](https://expose.dev/docs/introduction)와 같은 사이트 공유 서비스로 애플리케이션을 외부에 노출시켜야 합니다. [Laravel Sail](/docs/{{version}}/sail)로 개발한다면 Sail의 [사이트 공유 명령어](/docs/{{version}}/sail#sharing-your-site)를 사용할 수 있습니다.
+로컬 개발 단계에서 Paddle이 웹훅을 전송할 수 있도록 하려면 [Ngrok](https://ngrok.com/)이나 [Expose](https://expose.dev/docs/introduction)와 같은 사이트 공유 서비스로 애플리케이션을 외부에 노출시켜야 합니다. [Laravel Sail](/docs/8.x/sail)로 개발한다면 Sail의 [사이트 공유 명령어](/docs/8.x/sail#sharing-your-site)를 사용할 수 있습니다.
 
 <a name="defining-webhook-event-handlers"></a>
 ### 웹훅 이벤트 핸들러 정의
@@ -1098,7 +1098,7 @@ Cashier는 결제 실패 시 구독 자동 취소 등 일반적인 Paddle 웹훅
 - `Laravel\Paddle\Events\WebhookReceived`
 - `Laravel\Paddle\Events\WebhookHandled`
 
-각 이벤트에는 Paddle의 전체 페이로드가 담겨 있습니다. 예를 들어, `invoice.payment_succeeded` 웹훅을 처리하려면 [리스너](/docs/{{version}}/events#defining-listeners)를 등록하여 다음과 같이 구현할 수 있습니다.
+각 이벤트에는 Paddle의 전체 페이로드가 담겨 있습니다. 예를 들어, `invoice.payment_succeeded` 웹훅을 처리하려면 [리스너](/docs/8.x/events#defining-listeners)를 등록하여 다음과 같이 구현할 수 있습니다.
 
 ```
 <?php
@@ -1362,4 +1362,4 @@ class WebhookController extends CashierController
 
 빌링 플로우가 정상적으로 동작하는지 수동으로 테스트해보는 것이 좋습니다.
 
-CI 환경을 포함한 자동화 테스트에서는 [라라벨 HTTP 클라이언트](/docs/{{version}}/http-client#testing)를 사용해 Paddle로의 HTTP 호출을 가짜로 만들어 처리할 수 있습니다. 비록 Paddle의 실제 응답을 테스트할 수는 없지만, Paddle API에 실제로 요청을 보내지 않고도 애플리케이션의 동작을 검증할 수 있습니다.
+CI 환경을 포함한 자동화 테스트에서는 [라라벨 HTTP 클라이언트](/docs/8.x/http-client#testing)를 사용해 Paddle로의 HTTP 호출을 가짜로 만들어 처리할 수 있습니다. 비록 Paddle의 실제 응답을 테스트할 수는 없지만, Paddle API에 실제로 요청을 보내지 않고도 애플리케이션의 동작을 검증할 수 있습니다.

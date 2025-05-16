@@ -42,7 +42,7 @@
 
 블레이드(Blade)는 라라벨에 기본 포함된 간결하면서도 강력한 템플릿 엔진입니다. 일부 PHP 템플릿 엔진과 달리, 블레이드는 템플릿 내에서 일반 PHP 코드를 자유롭게 사용할 수 있도록 제한하지 않습니다. 실제로, 블레이드 템플릿은 모두 일반 PHP 코드로 컴파일되어 수정될 때까지 캐싱됩니다. 따라서 블레이드가 애플리케이션에 거의 성능 오버헤드를 발생시키지 않습니다. 블레이드 템플릿 파일의 확장자는 `.blade.php`이며, 보통 `resources/views` 디렉터리에 저장됩니다.
 
-블레이드 뷰는 라우트 또는 컨트롤러에서 전역 `view` 헬퍼를 사용해 반환할 수 있습니다. 물론, [뷰](/docs/{{version}}/views) 문서에서 언급한 것처럼, `view` 헬퍼의 두 번째 인수를 통해 데이터도 블레이드 뷰로 전달할 수 있습니다.
+블레이드 뷰는 라우트 또는 컨트롤러에서 전역 `view` 헬퍼를 사용해 반환할 수 있습니다. 물론, [뷰](/docs/8.x/views) 문서에서 언급한 것처럼, `view` 헬퍼의 두 번째 인수를 통해 데이터도 블레이드 뷰로 전달할 수 있습니다.
 
 ```
 Route::get('/', function () {
@@ -227,7 +227,7 @@ Hello, @{{ name }}.
 <a name="authentication-directives"></a>
 #### 인증 관련 디렉티브
 
-`@auth` 및 `@guest` 디렉티브를 사용하면 현재 사용자가 [인증된 상태](/docs/{{version}}/authentication)인지, 혹은 게스트(비로그인)인지 간단히 확인할 수 있습니다.
+`@auth` 및 `@guest` 디렉티브를 사용하면 현재 사용자가 [인증된 상태](/docs/8.x/authentication)인지, 혹은 게스트(비로그인)인지 간단히 확인할 수 있습니다.
 
 ```
 @auth
@@ -799,7 +799,7 @@ public function render()
 <a name="additional-dependencies"></a>
 #### 추가 의존성 주입하기
 
-컴포넌트에서 라라벨의 [서비스 컨테이너](/docs/{{version}}/container)에서 의존성을 주입받을 필요가 있을 경우, 컴포넌트의 데이터 속성들 앞에 의존성을 나열하면 컨테이너가 자동으로 주입해줍니다.
+컴포넌트에서 라라벨의 [서비스 컨테이너](/docs/8.x/container)에서 의존성을 주입받을 필요가 있을 경우, 컴포넌트의 데이터 속성들 앞에 의존성을 나열하면 컨테이너가 자동으로 주입해줍니다.
 
 ```
 use App\Services\AlertCreator
@@ -1453,7 +1453,7 @@ Route::get('/tasks', function () {
 <a name="csrf-field"></a>
 ### CSRF 필드
 
-애플리케이션에서 HTML 폼을 정의할 때는, [CSRF 보호](/docs/{{version}}/csrf) 미들웨어가 요청을 검증할 수 있도록 폼 내에 숨겨진 CSRF 토큰 필드를 항상 포함해야 합니다. `@csrf` Blade 디렉티브를 사용해서 이 토큰 필드를 생성할 수 있습니다.
+애플리케이션에서 HTML 폼을 정의할 때는, [CSRF 보호](/docs/8.x/csrf) 미들웨어가 요청을 검증할 수 있도록 폼 내에 숨겨진 CSRF 토큰 필드를 항상 포함해야 합니다. `@csrf` Blade 디렉티브를 사용해서 이 토큰 필드를 생성할 수 있습니다.
 
 ```html
 <form method="POST" action="/profile">
@@ -1479,7 +1479,7 @@ HTML 폼은 `PUT`, `PATCH`, `DELETE` 요청을 직접 보낼 수 없기 때문�
 <a name="validation-errors"></a>
 ### 유효성 검증 에러
 
-`@error` 디렉티브는 [유효성 검증 에러 메시지](/docs/{{version}}/validation#quick-displaying-the-validation-errors)가 특정 속성에 대해 존재하는지 빠르게 확인할 수 있습니다. `@error` 블록 내부에서는 `$message` 변수를 바로 출력해 에러 메시지를 표시할 수 있습니다.
+`@error` 디렉티브는 [유효성 검증 에러 메시지](/docs/8.x/validation#quick-displaying-the-validation-errors)가 특정 속성에 대해 존재하는지 빠르게 확인할 수 있습니다. `@error` 블록 내부에서는 `$message` 변수를 바로 출력해 에러 메시지를 표시할 수 있습니다.
 
 ```html
 <!-- /resources/views/post/create.blade.php -->
@@ -1503,7 +1503,7 @@ HTML 폼은 `PUT`, `PATCH`, `DELETE` 요청을 직접 보낼 수 없기 때문�
 <input id="email" type="email" class="@error('email') is-invalid @else is-valid @enderror">
 ```
 
-여러 개의 폼이 있는 페이지에서 [특정 에러 백(error bag) 이름](/docs/{{version}}/validation#named-error-bags)을 두 번째 인자로 전달해, 해당 이름을 가진 에러 메시지를 얻을 수도 있습니다.
+여러 개의 폼이 있는 페이지에서 [특정 에러 백(error bag) 이름](/docs/8.x/validation#named-error-bags)을 두 번째 인자로 전달해, 해당 이름을 가진 에러 메시지를 얻을 수도 있습니다.
 
 ```html
 <!-- /resources/views/auth.blade.php -->
@@ -1555,7 +1555,7 @@ Blade에서는 명명된 스택에 콘텐츠를 추가(push)하고, 이 스택�
 <a name="service-injection"></a>
 ## 서비스 주입 (Service Injection)
 
-`@inject` 디렉티브를 사용해 Laravel의 [서비스 컨테이너](/docs/{{version}}/container)에서 서비스를 내려받을 수 있습니다. 첫 번째 인자는 서비스가 할당될 변수명이며, 두 번째 인자는 주입할 서비스의 클래스나 인터페이스 이름입니다.
+`@inject` 디렉티브를 사용해 Laravel의 [서비스 컨테이너](/docs/8.x/container)에서 서비스를 내려받을 수 있습니다. 첫 번째 인자는 서비스가 할당될 변수명이며, 두 번째 인자는 주입할 서비스의 클래스나 인터페이스 이름입니다.
 
 ```html
 @inject('metrics', 'App\Services\MetricsService')

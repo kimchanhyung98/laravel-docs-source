@@ -382,7 +382,7 @@ class UserResource extends JsonResource
 }
 ```
 
-최상위 리소스의 래핑을 아예 비활성화하고 싶으면, 기본 `Illuminate\Http\Resources\Json\JsonResource` 클래스의 `withoutWrapping` 메서드를 호출해야 합니다. 보통 이 메서드는 `AppServiceProvider` 또는 모든 요청에서 로드되는 [서비스 프로바이더](/docs/{{version}}/providers)에서 호출해야 합니다.
+최상위 리소스의 래핑을 아예 비활성화하고 싶으면, 기본 `Illuminate\Http\Resources\Json\JsonResource` 클래스의 `withoutWrapping` 메서드를 호출해야 합니다. 보통 이 메서드는 `AppServiceProvider` 또는 모든 요청에서 로드되는 [서비스 프로바이더](/docs/8.x/providers)에서 호출해야 합니다.
 
 ```
 <?php
@@ -658,7 +658,7 @@ public function toArray($request)
 }
 ```
 
-[커스텀 중간 테이블 모델](/docs/{{version}}/eloquent-relationships#defining-custom-intermediate-table-models)를 사용하는 경우, `whenPivotLoaded` 메서드의 첫 번째 인자로 중간 테이블 모델 인스턴스를 전달할 수 있습니다.
+[커스텀 중간 테이블 모델](/docs/8.x/eloquent-relationships#defining-custom-intermediate-table-models)를 사용하는 경우, `whenPivotLoaded` 메서드의 첫 번째 인자로 중간 테이블 모델 인스턴스를 전달할 수 있습니다.
 
 ```
 'expires_at' => $this->whenPivotLoaded(new Membership, function () {

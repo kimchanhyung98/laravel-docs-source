@@ -1,4 +1,4 @@
-# Eloquent: 접근자(Mutators) & 타입 캐스팅(Casting) (Eloquent: Mutators & Casting)
+# Eloquent: 접근자 & 타입 캐스팅 (Eloquent: Mutators & Casting)
 
 - [소개](#introduction)
 - [접근자와 변경자](#accessors-and-mutators)
@@ -20,7 +20,7 @@
 <a name="introduction"></a>
 ## 소개
 
-접근자(accessor), 변경자(mutator), 그리고 속성 타입 캐스팅(casting)은 Eloquent 모델 인스턴스에서 속성 값을 조회하거나 설정할 때 해당 값을 변환할 수 있도록 해줍니다. 예를 들어, [라라벨 암호화기](/docs/{{version}}/encryption)를 이용해 값을 데이터베이스에 저장할 때 암호화하고, Eloquent 모델에서 해당 속성을 조회할 때 자동으로 복호화할 수 있습니다. 또는 데이터베이스에 저장된 JSON 문자열을 Eloquent 모델에서 접근할 때 자동으로 배열로 변환하고 싶을 수도 있습니다.
+접근자(accessor), 변경자(mutator), 그리고 속성 타입 캐스팅(casting)은 Eloquent 모델 인스턴스에서 속성 값을 조회하거나 설정할 때 해당 값을 변환할 수 있도록 해줍니다. 예를 들어, [라라벨 암호화기](/docs/8.x/encryption)를 이용해 값을 데이터베이스에 저장할 때 암호화하고, Eloquent 모델에서 해당 속성을 조회할 때 자동으로 복호화할 수 있습니다. 또는 데이터베이스에 저장된 JSON 문자열을 Eloquent 모델에서 접근할 때 자동으로 배열로 변환하고 싶을 수도 있습니다.
 
 <a name="accessors-and-mutators"></a>
 ## 접근자와 변경자
@@ -79,7 +79,7 @@ public function getFullNameAttribute()
 ```
 
 > [!TIP]
-> 계산된 속성이 모델의 배열 또는 JSON 표현에 포함되게 하려면, [이 값을 추가로 등록해야 합니다](/docs/{{version}}/eloquent-serialization#appending-values-to-json).
+> 계산된 속성이 모델의 배열 또는 JSON 표현에 포함되게 하려면, [이 값을 추가로 등록해야 합니다](/docs/8.x/eloquent-serialization#appending-values-to-json).
 
 <a name="defining-a-mutator"></a>
 ### 변경자 정의하기
@@ -201,7 +201,7 @@ $user->mergeCasts([
 <a name="stringable-casting"></a>
 #### Stringable 캐스팅
 
-모델 속성을 [fluent `Illuminate\Support\Stringable` 객체](/docs/{{version}}/helpers#fluent-strings-method-list)로 캐스팅하려면 `Illuminate\Database\Eloquent\Casts\AsStringable` 캐스트 클래스를 사용할 수 있습니다.
+모델 속성을 [fluent `Illuminate\Support\Stringable` 객체](/docs/8.x/helpers#fluent-strings-method-list)로 캐스팅하려면 `Illuminate\Database\Eloquent\Casts\AsStringable` 캐스트 클래스를 사용할 수 있습니다.
 
 ```
 <?php
@@ -299,7 +299,7 @@ protected $casts = [
 ];
 ```
 
-마찬가지로, 라라벨에서는 JSON 속성을 [Collection](/docs/{{version}}/collections) 인스턴스로 변환해주는 `AsCollection` 캐스트도 제공합니다.
+마찬가지로, 라라벨에서는 JSON 속성을 [Collection](/docs/8.x/collections) 인스턴스로 변환해주는 `AsCollection` 캐스트도 제공합니다.
 
 ```
 use Illuminate\Database\Eloquent\Casts\AsCollection;
@@ -319,7 +319,7 @@ protected $casts = [
 
 기본적으로 Eloquent는 `created_at`, `updated_at` 컬럼을 [Carbon](https://github.com/briannesbitt/Carbon) 객체로 캐스팅합니다. Carbon은 PHP의 `DateTime` 클래스를 확장한 라이브러리로, 다양한 날짜 관련 유틸리티 기능을 제공합니다. 모델의 `$casts` 속성 배열에 추가적으로 다른 날짜 속성들을 등록해서 자동으로 캐스팅하도록 할 수 있습니다. 일반적으로 날짜는 `datetime` 또는 `immutable_datetime` 캐스팅 타입으로 변환하는 것이 권장됩니다.
 
-`date` 또는 `datetime` 캐스트를 정의할 때, 날짜 형식을 지정할 수도 있습니다. 이 형식은 [모델을 배열 또는 JSON으로 변환할 때](/docs/{{version}}/eloquent-serialization) 적용됩니다.
+`date` 또는 `datetime` 캐스트를 정의할 때, 날짜 형식을 지정할 수도 있습니다. 이 형식은 [모델을 배열 또는 JSON으로 변환할 때](/docs/8.x/eloquent-serialization) 적용됩니다.
 
 ```
 /**
@@ -401,7 +401,7 @@ if ($server->status == ServerStatus::provisioned) {
 <a name="encrypted-casting"></a>
 ### 암호화된 캐스팅
 
-`encrypted` 캐스트는 모델의 속성 값을 라라벨 내장 [암호화](/docs/{{version}}/encryption) 기능으로 암호화해서 데이터베이스에 저장하고, 조회 시 자동 복호화해줍니다. 또한 `encrypted:array`, `encrypted:collection`, `encrypted:object`, `AsEncryptedArrayObject`, `AsEncryptedCollection`과 같은 캐스트들은 암호화되지 않은 캐스트와 동일하게 동작하며, 단지 데이터베이스에는 암호화해서 저장만 합니다.
+`encrypted` 캐스트는 모델의 속성 값을 라라벨 내장 [암호화](/docs/8.x/encryption) 기능으로 암호화해서 데이터베이스에 저장하고, 조회 시 자동 복호화해줍니다. 또한 `encrypted:array`, `encrypted:collection`, `encrypted:object`, `AsEncryptedArrayObject`, `AsEncryptedCollection`과 같은 캐스트들은 암호화되지 않은 캐스트와 동일하게 동작하며, 단지 데이터베이스에는 암호화해서 저장만 합니다.
 
 암호화된 텍스트의 길이는 예측할 수 없으며, 원래 데이터보다 길기 때문에 해당 컬럼의 타입은 반드시 `TEXT` 이상이어야 합니다. 또한, 암호화된 속성 값은 데이터베이스에서 직접 검색하거나 쿼리할 수 없습니다.
 

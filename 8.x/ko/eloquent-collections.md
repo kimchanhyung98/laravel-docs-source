@@ -7,7 +7,7 @@
 <a name="introduction"></a>
 ## 소개
 
-여러 개의 모델 결과를 반환하는 모든 Eloquent 메서드는 `get` 메서드로 데이터를 조회할 때나, 관계를 통해 접근할 때와 같이 항상 `Illuminate\Database\Eloquent\Collection` 클래스의 인스턴스를 반환합니다. 이 Eloquent 컬렉션 객체는 라라벨의 [기본 컬렉션](/docs/{{version}}/collections)을 확장하고 있으므로, Eloquent 모델로 이루어진 내부 배열을 유연하게 다룰 수 있는 다양한 메서드를 그대로 사용할 수 있습니다. 이 유용한 메서드들에 대해서는 라라벨 컬렉션 공식 문서를 꼭 참고해보시기 바랍니다.
+여러 개의 모델 결과를 반환하는 모든 Eloquent 메서드는 `get` 메서드로 데이터를 조회할 때나, 관계를 통해 접근할 때와 같이 항상 `Illuminate\Database\Eloquent\Collection` 클래스의 인스턴스를 반환합니다. 이 Eloquent 컬렉션 객체는 라라벨의 [기본 컬렉션](/docs/8.x/collections)을 확장하고 있으므로, Eloquent 모델로 이루어진 내부 배열을 유연하게 다룰 수 있는 다양한 메서드를 그대로 사용할 수 있습니다. 이 유용한 메서드들에 대해서는 라라벨 컬렉션 공식 문서를 꼭 참고해보시기 바랍니다.
 
 Eloquent 컬렉션도 반복자(iterator)이기 때문에, 간단한 PHP 배열처럼 컬렉션을 순회할 수도 있습니다:
 
@@ -34,12 +34,12 @@ $names = User::all()->reject(function ($user) {
 <a name="eloquent-collection-conversion"></a>
 #### Eloquent 컬렉션 변환
 
-대부분의 Eloquent 컬렉션 메서드는 새로운 Eloquent 컬렉션 인스턴스를 반환하지만, `collapse`, `flatten`, `flip`, `keys`, `pluck`, `zip` 메서드는 [기본 컬렉션](/docs/{{version}}/collections) 인스턴스를 반환합니다. 비슷하게, `map` 연산 결과에 Eloquent 모델이 하나도 없다면, 결과가 기본 컬렉션 인스턴스로 변환됩니다.
+대부분의 Eloquent 컬렉션 메서드는 새로운 Eloquent 컬렉션 인스턴스를 반환하지만, `collapse`, `flatten`, `flip`, `keys`, `pluck`, `zip` 메서드는 [기본 컬렉션](/docs/8.x/collections) 인스턴스를 반환합니다. 비슷하게, `map` 연산 결과에 Eloquent 모델이 하나도 없다면, 결과가 기본 컬렉션 인스턴스로 변환됩니다.
 
 <a name="available-methods"></a>
 ## 사용 가능한 메서드
 
-모든 Eloquent 컬렉션은 기본 [라라벨 컬렉션](/docs/{{version}}/collections#available-methods) 객체를 확장하므로, 기본 컬렉션 클래스에서 제공하는 강력한 메서드들을 그대로 사용할 수 있습니다.
+모든 Eloquent 컬렉션은 기본 [라라벨 컬렉션](/docs/8.x/collections#available-methods) 객체를 확장하므로, 기본 컬렉션 클래스에서 제공하는 강력한 메서드들을 그대로 사용할 수 있습니다.
 
 추가로, `Illuminate\Database\Eloquent\Collection` 클래스는 모델 컬렉션을 편리하게 다룰 수 있도록 몇 가지 확장 메서드도 제공합니다. 대부분의 메서드는 `Illuminate\Database\Eloquent\Collection` 인스턴스를 반환하지만, `modelKeys`와 같은 일부 메서드는 `Illuminate\Support\Collection` 인스턴스를 반환합니다.
 
@@ -164,7 +164,7 @@ $users->modelKeys();
 <a name="method-makeVisible"></a>
 #### `makeVisible($attributes)`
 
-`makeVisible` 메서드는 컬렉션 내 각 모델에서 평소 "숨겨진" 상태인 [속성들을 보이도록 처리](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)합니다.
+`makeVisible` 메서드는 컬렉션 내 각 모델에서 평소 "숨겨진" 상태인 [속성들을 보이도록 처리](/docs/8.x/eloquent-serialization#hiding-attributes-from-json)합니다.
 
 ```
 $users = $users->makeVisible(['address', 'phone_number']);
@@ -173,7 +173,7 @@ $users = $users->makeVisible(['address', 'phone_number']);
 <a name="method-makeHidden"></a>
 #### `makeHidden($attributes)`
 
-`makeHidden` 메서드는 컬렉션 내 각 모델에서 평소 "보이는" 상태인 [속성들을 숨기도록 처리](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)합니다.
+`makeHidden` 메서드는 컬렉션 내 각 모델에서 평소 "보이는" 상태인 [속성들을 숨기도록 처리](/docs/8.x/eloquent-serialization#hiding-attributes-from-json)합니다.
 
 ```
 $users = $users->makeHidden(['address', 'phone_number']);

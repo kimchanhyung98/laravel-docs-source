@@ -60,7 +60,7 @@
 <a name="defining-relationships"></a>
 ## 연관관계 정의하기
 
-Eloquent에서 연관관계는 Eloquent 모델 클래스의 메서드로 정의합니다. 연관관계 또한 강력한 [쿼리 빌더](/docs/{{version}}/queries)의 역할을 하므로, 메서드로 정의하면 메서드 체이닝과 편리한 쿼리 작성이 가능합니다. 예를 들어, 아래와 같이 `posts` 연관관계에 추가로 쿼리 조건을 연결할 수 있습니다.
+Eloquent에서 연관관계는 Eloquent 모델 클래스의 메서드로 정의합니다. 연관관계 또한 강력한 [쿼리 빌더](/docs/8.x/queries)의 역할을 하므로, 메서드로 정의하면 메서드 체이닝과 편리한 쿼리 작성이 가능합니다. 예를 들어, 아래와 같이 `posts` 연관관계에 추가로 쿼리 조건을 연결할 수 있습니다.
 
 ```
 $user->posts()->where('active', 1)->get();
@@ -186,7 +186,7 @@ class Post extends Model
 
 Eloquent는 `Comment` 모델의 외래키 컬럼명을 자동으로 결정합니다. 기본적으로, 부모 모델 이름을 스네이크 케이스(snake case) 변환 후 `_id`를 붙인 컬럼이 외래키로 사용됩니다. 이 예시라면 `Comment` 모델의 외래키 컬럼은 `post_id`가 됩니다.
 
-연관관계 메서드를 정의한 후에는, [컬렉션](/docs/{{version}}/eloquent-collections) 형태로 관련 댓글들을 쉽게 조회할 수 있습니다. Eloquent의 "동적 연관 속성" 덕분에, 마치 속성처럼 연관관계 메서드에 접근할 수 있습니다.
+연관관계 메서드를 정의한 후에는, [컬렉션](/docs/8.x/eloquent-collections) 형태로 관련 댓글들을 쉽게 조회할 수 있습니다. Eloquent의 "동적 연관 속성" 덕분에, 마치 속성처럼 연관관계 메서드에 접근할 수 있습니다.
 
 ```
 use App\Models\Post;
@@ -1213,7 +1213,7 @@ $class = Relation::getMorphedModel($alias);
 
 `resolveRelationUsing` 메서드를 사용하면 Eloquent 모델 간의 관계를 런타임에 동적으로 정의할 수 있습니다. 일반적인 애플리케이션 개발에서는 주로 권장되지 않지만, 라라벨 패키지 개발 등에서는 유용할 수 있습니다.
 
-`resolveRelationUsing`의 첫 번째 인수로 원하는 관계명을 지정하고, 두 번째 인수로는 모델 인스턴스를 받아 유효한 Eloquent 관계 정의를 반환하는 클로저를 전달해야 합니다. 보통 이런 동적 관계 정의는 [서비스 프로바이더](/docs/{{version}}/providers) 클래스의 boot 메서드에서 수행합니다.
+`resolveRelationUsing`의 첫 번째 인수로 원하는 관계명을 지정하고, 두 번째 인수로는 모델 인스턴스를 받아 유효한 Eloquent 관계 정의를 반환하는 클로저를 전달해야 합니다. 보통 이런 동적 관계 정의는 [서비스 프로바이더](/docs/8.x/providers) 클래스의 boot 메서드에서 수행합니다.
 
 ```
 use App\Models\Order;
@@ -1230,7 +1230,7 @@ Order::resolveRelationUsing('customer', function ($orderModel) {
 <a name="querying-relations"></a>
 ## 관계 데이터 쿼리하기
 
-모든 Eloquent 관계는 메서드로 정의하므로, 실제 쿼리를 실행하지 않고도 관계 인스턴스를 얻을 수 있습니다. 또한 모든 종류의 Eloquent 관계는 [쿼리 빌더](/docs/{{version}}/queries)로 동작하므로, 데이터베이스에 최종적으로 쿼리를 실행하기 전까지 관계 쿼리에 다양한 조건을 메서드 체이닝 방식으로 추가할 수 있습니다.
+모든 Eloquent 관계는 메서드로 정의하므로, 실제 쿼리를 실행하지 않고도 관계 인스턴스를 얻을 수 있습니다. 또한 모든 종류의 Eloquent 관계는 [쿼리 빌더](/docs/8.x/queries)로 동작하므로, 데이터베이스에 최종적으로 쿼리를 실행하기 전까지 관계 쿼리에 다양한 조건을 메서드 체이닝 방식으로 추가할 수 있습니다.
 
 예를 들어, 블로그 애플리케이션에서 `User` 모델이 여러 개의 `Post` 모델을 가지고 있다고 가정하겠습니다.
 
@@ -1263,7 +1263,7 @@ $user = User::find(1);
 $user->posts()->where('active', 1)->get();
 ```
 
-라라벨의 [쿼리 빌더](/docs/{{version}}/queries) 메서드는 관계 쿼리에도 모두 사용할 수 있으니, 쿼리 빌더 문서를 확인해 다양한 메서드를 익히시기 바랍니다.
+라라벨의 [쿼리 빌더](/docs/8.x/queries) 메서드는 관계 쿼리에도 모두 사용할 수 있으니, 쿼리 빌더 문서를 확인해 다양한 메서드를 익히시기 바랍니다.
 
 <a name="chaining-orwhere-clauses-after-relationships"></a>
 #### 관계 쿼리에서 `orWhere` 체이닝 시 주의점
@@ -1285,7 +1285,7 @@ from posts
 where user_id = ? and active = 1 or votes >= 100
 ```
 
-대부분의 경우, 조건들을 괄호로 묶어서 [논리 그룹](/docs/{{version}}/queries#logical-grouping)을 활용해 별도로 묶어주는 것이 좋습니다.
+대부분의 경우, 조건들을 괄호로 묶어서 [논리 그룹](/docs/8.x/queries#logical-grouping)을 활용해 별도로 묶어주는 것이 좋습니다.
 
 ```
 use Illuminate\Database\Eloquent\Builder;
@@ -1820,7 +1820,7 @@ $users = User::with(['posts' => function ($query) {
 }])->get();
 ```
 
-이 예시에서는, 게시글의 `title` 컬럼에 `code`라는 단어가 포함된 게시글만 eager load 하게 됩니다. 또한, [쿼리 빌더](/docs/{{version}}/queries)의 다른 메서드들을 활용해 eager loading 쿼리를 원하는 대로 커스터마이즈할 수 있습니다.
+이 예시에서는, 게시글의 `title` 컬럼에 `code`라는 단어가 포함된 게시글만 eager load 하게 됩니다. 또한, [쿼리 빌더](/docs/8.x/queries)의 다른 메서드들을 활용해 eager loading 쿼리를 원하는 대로 커스터마이즈할 수 있습니다.
 
 ```
 $users = User::with(['posts' => function ($query) {
@@ -2035,10 +2035,10 @@ $post->comments()->createMany([
 ]);
 ```
 
-또한, 연관관계에 대해 [findOrNew, firstOrNew, firstOrCreate, updateOrCreate](/docs/{{version}}/eloquent#upserts) 등의 메서드도 사용할 수 있습니다.
+또한, 연관관계에 대해 [findOrNew, firstOrNew, firstOrCreate, updateOrCreate](/docs/8.x/eloquent#upserts) 등의 메서드도 사용할 수 있습니다.
 
 > [!TIP]
-> `create` 메서드를 사용하기 전에 [Mass Assignment](/docs/{{version}}/eloquent#mass-assignment) 관련 문서를 꼭 살펴보시기 바랍니다.
+> `create` 메서드를 사용하기 전에 [Mass Assignment](/docs/8.x/eloquent#mass-assignment) 관련 문서를 꼭 살펴보시기 바랍니다.
 
 <a name="updating-belongs-to-relationships"></a>
 ### Belongs To 연관관계

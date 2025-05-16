@@ -26,7 +26,7 @@
 <a name="introduction"></a>
 ## 소개
 
-라라벨은 내장 [인증](/docs/{{version}}/authentication) 서비스 외에도, 특정 리소스에 대해 사용자의 행위를 인가(authorization)할 수 있는 간단한 방법을 제공합니다. 예를 들어, 사용자가 인증되었더라도 애플리케이션이 관리하는 특정 Eloquent 모델이나 데이터베이스 레코드를 수정 또는 삭제할 권한이 없을 수 있습니다. 라라벨의 인가 기능은 이러한 인가 검사를 쉽고 체계적으로 관리할 수 있도록 도와줍니다.
+라라벨은 내장 [인증](/docs/8.x/authentication) 서비스 외에도, 특정 리소스에 대해 사용자의 행위를 인가(authorization)할 수 있는 간단한 방법을 제공합니다. 예를 들어, 사용자가 인증되었더라도 애플리케이션이 관리하는 특정 Eloquent 모델이나 데이터베이스 레코드를 수정 또는 삭제할 권한이 없을 수 있습니다. 라라벨의 인가 기능은 이러한 인가 검사를 쉽고 체계적으로 관리할 수 있도록 도와줍니다.
 
 라라벨은 주로 두 가지 주요 방식으로 행위 인가를 제공합니다: [게이트](#gates)와 [정책](#creating-policies)입니다. 게이트와 정책은 각각 라우트와 컨트롤러와 비슷하다고 생각하시면 이해가 쉽습니다. 게이트는 클로저 기반의 간단한 인가 방법을 제공하며, 정책은 컨트롤러처럼 특정 모델이나 리소스에 인가 로직을 집중시킬 수 있습니다. 이 문서에서는 먼저 게이트를 살펴보고, 이후에 정책을 다루겠습니다.
 
@@ -379,7 +379,7 @@ class PostPolicy
 정책을 생성할 때 아티즌 콘솔에서 `--model` 옵션을 사용했다면, `viewAny`, `view`, `create`, `update`, `delete`, `restore`, `forceDelete` 행위에 대한 메서드가 미리 포함되어 생성됩니다.
 
 > [!TIP]
-> 모든 정책 클래스는 라라벨의 [서비스 컨테이너](/docs/{{version}}/container)로부터 주입받아 생성되므로, 생성자에 필요한 의존성을 타입힌트하면 자동으로 주입받을 수 있습니다.
+> 모든 정책 클래스는 라라벨의 [서비스 컨테이너](/docs/8.x/container)로부터 주입받아 생성되므로, 생성자에 필요한 의존성을 타입힌트하면 자동으로 주입받을 수 있습니다.
 
 <a name="policy-responses"></a>
 ### 정책 응답
@@ -639,9 +639,9 @@ public function create(Request $request)
 <a name="authorizing-resource-controllers"></a>
 #### 리소스 컨트롤러에서 인가 적용
 
-[리소스 컨트롤러](/docs/{{version}}/controllers#resource-controllers)를 사용할 때, 컨트롤러의 생성자에 `authorizeResource` 메서드를 활용할 수 있습니다. 이 메서드는 적절한 `can` 미들웨어 정의를 리소스 컨트롤러의 각 메서드에 자동으로 적용합니다.
+[리소스 컨트롤러](/docs/8.x/controllers#resource-controllers)를 사용할 때, 컨트롤러의 생성자에 `authorizeResource` 메서드를 활용할 수 있습니다. 이 메서드는 적절한 `can` 미들웨어 정의를 리소스 컨트롤러의 각 메서드에 자동으로 적용합니다.
 
-`authorizeResource` 메서드는 첫 번째 인수로 모델의 클래스명, 두 번째 인수로는 라우트/요청 파라미터 이름을 받습니다. 필요에 따라 [리소스 컨트롤러](/docs/{{version}}/controllers#resource-controllers) 생성 시 `--model` 플래그를 사용하면, 필수 시그니처와 타입힌트가 자동으로 생성됩니다:
+`authorizeResource` 메서드는 첫 번째 인수로 모델의 클래스명, 두 번째 인수로는 라우트/요청 파라미터 이름을 받습니다. 필요에 따라 [리소스 컨트롤러](/docs/8.x/controllers#resource-controllers) 생성 시 `--model` 플래그를 사용하면, 필수 시그니처와 타입힌트가 자동으로 생성됩니다:
 
 ```
 <?php
@@ -694,7 +694,7 @@ Route::put('/post/{post}', function (Post $post) {
 })->middleware('can:update,post');
 ```
 
-여기서는 `can` 미들웨어에 인가 대상 행위명과, 정책 메서드에 전달할 라우트 파라미터(여기선 `post`)를 인수로 넘깁니다. [암시적 모델 바인딩](/docs/{{version}}/routing#implicit-binding)을 사용하기 때문에, `App\Models\Post` 모델 인스턴스가 자동으로 정책 메서드에 전달됩니다. 사용자가 행위를 인가받지 못할 경우 403 상태 코드의 HTTP 응답이 반환됩니다.
+여기서는 `can` 미들웨어에 인가 대상 행위명과, 정책 메서드에 전달할 라우트 파라미터(여기선 `post`)를 인수로 넘깁니다. [암시적 모델 바인딩](/docs/8.x/routing#implicit-binding)을 사용하기 때문에, `App\Models\Post` 모델 인스턴스가 자동으로 정책 메서드에 전달됩니다. 사용자가 행위를 인가받지 못할 경우 403 상태 코드의 HTTP 응답이 반환됩니다.
 
 편의상, `can` 메서드로 미들웨어를 라우트에 붙일 수도 있습니다:
 

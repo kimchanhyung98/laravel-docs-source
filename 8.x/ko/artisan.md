@@ -40,7 +40,7 @@ php artisan help migrate
 <a name="laravel-sail"></a>
 #### Laravel Sail
 
-[Laravel Sail](/docs/{{version}}/sail)을 로컬 개발 환경으로 사용 중이라면, 아티즌 명령어를 실행할 때 `sail` 커맨드라인을 사용해야 합니다. Sail은 아티즌 명령어를 애플리케이션의 Docker 컨테이너 내부에서 실행합니다.
+[Laravel Sail](/docs/8.x/sail)을 로컬 개발 환경으로 사용 중이라면, 아티즌 명령어를 실행할 때 `sail` 커맨드라인을 사용해야 합니다. Sail은 아티즌 명령어를 애플리케이션의 Docker 컨테이너 내부에서 실행합니다.
 
 ```
 ./sail artisan list
@@ -122,7 +122,7 @@ php artisan make:command SendEmails
 
 명령어를 생성한 후에는 클래스의 `signature`와 `description` 속성에 적절한 값을 지정해야 합니다. 이 속성들은 `list` 화면에 명령어를 표시할 때 사용됩니다. 또한, `signature` 속성에서는 [명령어 입력값 기대치](#defining-input-expectations)도 정의할 수 있습니다. 명령어가 실제로 실행될 때는 `handle` 메서드가 호출되며, 여기에 명령어의 주요 로직을 작성하면 됩니다.
 
-예시 명령어를 살펴보겠습니다. 아래 예시에서는 필요한 의존성을 `handle` 메서드에서 타입힌트로 직접 주입받고 있습니다. 라라벨 [서비스 컨테이너](/docs/{{version}}/container)는 메서드에 타입힌트된 모든 의존성을 자동으로 주입해줍니다.
+예시 명령어를 살펴보겠습니다. 아래 예시에서는 필요한 의존성을 `handle` 메서드에서 타입힌트로 직접 주입받고 있습니다. 라라벨 [서비스 컨테이너](/docs/8.x/container)는 메서드에 타입힌트된 모든 의존성을 자동으로 주입해줍니다.
 
 ```
 <?php
@@ -596,7 +596,7 @@ protected function commands()
 }
 ```
 
-특정 명령어를 수동으로 등록해야 할 경우, `App\Console\Kernel` 클래스 안에 `$commands` 속성(배열)을 만들어 등록하면 됩니다. 이 속성이 없으면 직접 정의하면 되며, 아티즌이 부팅할 때 이 배열에 있는 모든 명령어가 [서비스 컨테이너](/docs/{{version}}/container)를 통해 불러와집니다.
+특정 명령어를 수동으로 등록해야 할 경우, `App\Console\Kernel` 클래스 안에 `$commands` 속성(배열)을 만들어 등록하면 됩니다. 이 속성이 없으면 직접 정의하면 되며, 아티즌이 부팅할 때 이 배열에 있는 모든 명령어가 [서비스 컨테이너](/docs/8.x/container)를 통해 불러와집니다.
 
 ```
 protected $commands = [
@@ -656,7 +656,7 @@ $exitCode = Artisan::call('migrate:refresh', [
 <a name="queueing-artisan-commands"></a>
 #### 아티즌 명령어 큐에 넣기
 
-`Artisan` 파사드의 `queue` 메서드를 사용하면 아티즌 명령어를 큐(queue)에 넣을 수 있습니다. 이렇게 하면 명령어가 [큐 워커](/docs/{{version}}/queues)에 의해 백그라운드에서 처리됩니다. 이 메서드를 사용하기 전에 큐 설정이 되어 있고 큐 리스너가 실행 중이어야 합니다.
+`Artisan` 파사드의 `queue` 메서드를 사용하면 아티즌 명령어를 큐(queue)에 넣을 수 있습니다. 이렇게 하면 명령어가 [큐 워커](/docs/8.x/queues)에 의해 백그라운드에서 처리됩니다. 이 메서드를 사용하기 전에 큐 설정이 되어 있고 큐 리스너가 실행 중이어야 합니다.
 
 ```
 use Illuminate\Support\Facades\Artisan;

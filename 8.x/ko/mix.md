@@ -1,4 +1,4 @@
-# 에셋 컴파일 (Mix) (Compiling Assets (Mix))
+# 에셋 컴파일, Mix (Compiling Assets (Mix))
 
 - [소개](#introduction)
 - [설치 및 설정](#installation)

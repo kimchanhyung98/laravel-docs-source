@@ -7,7 +7,7 @@
 <a name="introduction"></a>
 ## 소개
 
-HTTP 테스트를 간소화하는 기능 외에도, 라라벨은 애플리케이션의 [사용자 정의 콘솔 명령어](/docs/{{version}}/artisan)를 테스트할 수 있는 간편한 API도 제공합니다.
+HTTP 테스트를 간소화하는 기능 외에도, 라라벨은 애플리케이션의 [사용자 정의 콘솔 명령어](/docs/8.x/artisan)를 테스트할 수 있는 간편한 API도 제공합니다.
 
 <a name="success-failure-expectations"></a>
 ## 성공 / 실패 예상
