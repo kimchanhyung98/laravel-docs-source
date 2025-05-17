@@ -1,4 +1,4 @@
-# 목(mock) 객체 사용 (Mocking)
+# 모킹 (Mocking)
 
 - [소개](#introduction)
 - [객체 목(mock) 생성](#mocking-objects)
