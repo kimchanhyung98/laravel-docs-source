@@ -1,34 +1,34 @@
-# Precognition
+# 프리코그니션 (Precognition)
 
 - [소개](#introduction)
-- [실시간 유효성 검사](#live-validation)
+- [라이브 유효성 검증](#live-validation)
     - [Vue 사용하기](#using-vue)
-    - [Vue와 Inertia 함께 사용하기](#using-vue-and-inertia)
+    - [Vue와 Inertia 사용하기](#using-vue-and-inertia)
     - [React 사용하기](#using-react)
-    - [React와 Inertia 함께 사용하기](#using-react-and-inertia)
+    - [React와 Inertia 사용하기](#using-react-and-inertia)
     - [Alpine과 Blade 사용하기](#using-alpine)
-    - [Axios 구성하기](#configuring-axios)
-- [유효성 검사 규칙 커스터마이징](#customizing-validation-rules)
+    - [Axios 설정하기](#configuring-axios)
+- [유효성 검증 규칙 커스터마이즈](#customizing-validation-rules)
 - [파일 업로드 처리](#handling-file-uploads)
-- [부수 효과 관리](#managing-side-effects)
+- [사이드 이펙트 관리](#managing-side-effects)
 - [테스트](#testing)
 
 <a name="introduction"></a>
 ## 소개
 
-Laravel Precognition은 미래에 실행될 HTTP 요청의 결과를 미리 예측할 수 있도록 해줍니다. Precognition의 주요 사용 사례 중 하나는 백엔드에서 정의한 유효성 검사 규칙을 프론트엔드 자바스크립트 애플리케이션에 중복 없이 "실시간" 유효성 검사를 제공하는 것입니다. Precognition은 Laravel의 Inertia 기반 [스타터 키트](/docs/{{version}}/starter-kits)와 특히 잘 어울립니다.
+Laravel Precognition을 사용하면 앞으로 발생할 HTTP 요청의 결과를 미리 예측할 수 있습니다. Precognition의 주요 사용 사례 중 하나는 프론트엔드 JavaScript 애플리케이션에서 백엔드의 유효성 검증 규칙을 중복하지 않고도 "실시간" 유효성 검증 기능을 제공할 수 있다는 점입니다. Precognition은 특히 Laravel의 Inertia 기반 [스타터 킷](/docs/10.x/starter-kits)과 함께 사용할 때 매우 잘 어울립니다.
 
-Laravel이 "precognitive request(예측 요청)"을 받으면 해당 라우트의 모든 미들웨어를 실행하고, 라우트의 컨트롤러 의존성(포함 [폼 요청](/docs/{{version}}/validation#form-request-validation) 유효성 검사)을 해결합니다. 하지만 실제로 라우트의 컨트롤러 메서드는 실행하지 않습니다.
+Laravel이 "프리코그니션 요청(precognitive request)"을 받으면 해당 라우트의 모든 미들웨어를 실행하고, 라우트의 컨트롤러 의존성도 모두 resolve하며, [폼 요청](/docs/10.x/validation#form-request-validation) 유효성 검증도 수행합니다. 단, 실제로 라우트의 컨트롤러 메서드를 실행하지는 않습니다.
 
 <a name="live-validation"></a>
-## 실시간 유효성 검사
+## 라이브 유효성 검증
 
 <a name="using-vue"></a>
 ### Vue 사용하기
 
-Laravel Precognition을 이용하면 프론트엔드 Vue 애플리케이션에서 유효성 검사 규칙을 중복 작성하지 않고도 사용자에게 실시간 유효성 검사 경험을 제공할 수 있습니다. 예시로, 새 사용자 생성을 위한 폼을 만들어보겠습니다.
+Laravel Precognition을 이용하면 프론트엔드 Vue 애플리케이션에서 유효성 검증 규칙을 중복 없이 사용자에게 실시간 검증을 제공할 수 있습니다. 어떻게 동작하는지 알아보기 위해 새로운 사용자를 생성하는 폼을 예제로 살펴보겠습니다.
 
-먼저, 라우트에서 Precognition을 활성화하려면 `HandlePrecognitiveRequests` 미들웨어를 라우트 정의에 추가해야 합니다. 또한, 라우트의 유효성 검사 규칙을 담을 [폼 요청](/docs/{{version}}/validation#form-request-validation)을 생성해야 합니다.
+먼저, Precognition을 라우트에 적용하려면 `HandlePrecognitiveRequests` 미들웨어를 라우트 정의에 추가해야 합니다. 또한 라우트의 유효성 검증 규칙을 담을 [폼 요청 클래스](/docs/10.x/validation#form-request-validation)도 만들어야 합니다.
 
 ```php
 use App\Http\Requests\StoreUserRequest;
@@ -39,15 +39,15 @@ Route::post('/users', function (StoreUserRequest $request) {
 })->middleware([HandlePrecognitiveRequests::class]);
 ```
 
-다음으로, 프론트엔드에서 Precognition Vue 헬퍼를 NPM으로 설치합니다:
+다음으로, Vue용 Laravel Precognition 프론트엔드 헬퍼를 NPM을 통해 설치합니다.
 
 ```shell
 npm install laravel-precognition-vue
 ```
 
-패키지 설치 후, Precognition의 `useForm` 함수를 통해 HTTP 메서드(`post`), 대상 URL(`/users`), 초기 폼 데이터를 지정하여 폼 객체를 생성할 수 있습니다.
+패키지 설치가 완료되면, Precognition의 `useForm` 함수를 사용하여 폼 객체를 만들 수 있습니다. 이때 HTTP 메서드(`post`), 대상 URL(`/users`), 초기 폼 데이터를 전달합니다.
 
-이제 실시간 유효성 검사를 활성화하려면 각 입력 필드의 `change` 이벤트에서 폼의 `validate` 메소드를 호출하고, 입력의 이름을 전달하면 됩니다:
+이제 라이브 유효성 검증 기능을 활성화하려면 각 입력 필드의 `change` 이벤트에서 폼의 `validate` 메서드를 호출하고, 인풋의 이름을 인수로 넘기면 됩니다.
 
 ```vue
 <script setup>
@@ -63,7 +63,7 @@ const submit = () => form.submit();
 
 <template>
     <form @submit.prevent="submit">
-        <label for="name">이름</label>
+        <label for="name">Name</label>
         <input
             id="name"
             v-model="form.name"
@@ -73,7 +73,7 @@ const submit = () => form.submit();
             {{ form.errors.name }}
         </div>
 
-        <label for="email">이메일</label>
+        <label for="email">Email</label>
         <input
             id="email"
             type="email"
@@ -85,27 +85,27 @@ const submit = () => form.submit();
         </div>
 
         <button :disabled="form.processing">
-            사용자 생성
+            Create User
         </button>
     </form>
 </template>
 ```
 
-이제 사용자가 폼을 채워나가면, Precognition이 라우트의 폼 요청에 정의된 유효성 검사 규칙을 기반으로 실시간 유효성 검사 결과를 제공합니다. 입력값이 변경될 때마다, 디바운스된 "예측" 유효성 검사 요청이 Laravel 애플리케이션으로 전송됩니다. 디바운스 타임아웃은 `setValidationTimeout` 함수를 통해 설정할 수 있습니다:
+이제 사용자가 폼을 입력하면, Precognition이 라우트의 폼 요청에 정의된 검증 규칙을 바탕으로 실시간 유효성 검증 결과를 제공합니다. 입력 값이 변경될 때마다 debounce된 "프리코그니션" 유효성 검증 요청이 Laravel 애플리케이션으로 전송됩니다. 필요하다면 폼의 `setValidationTimeout` 함수를 사용해 디바운스 타임아웃을 조정할 수 있습니다.
 
 ```js
 form.setValidationTimeout(3000);
 ```
 
-유효성 검사 요청이 진행 중일 때는 폼의 `validating` 속성이 `true`가 됩니다:
+유효성 검증 요청이 진행 중일 때는 폼의 `validating` 속성이 `true`가 됩니다.
 
 ```html
 <div v-if="form.validating">
-    유효성 검사 중...
+    Validating...
 </div>
 ```
 
-유효성 검사 또는 폼 제출 시 반환된 모든 유효성 오류는 폼의 `errors` 객체에 자동으로 채워집니다:
+유효성 검증 요청이거나 폼을 제출할 때 발생한 에러들은 자동으로 폼의 `errors` 객체에 채워집니다.
 
 ```html
 <div v-if="form.invalid('email')">
@@ -113,7 +113,7 @@ form.setValidationTimeout(3000);
 </div>
 ```
 
-폼에 오류가 존재하는지는 `hasErrors` 속성으로 확인할 수 있습니다:
+폼에 에러가 있는지 여부는 `hasErrors` 속성으로도 확인할 수 있습니다.
 
 ```html
 <div v-if="form.hasErrors">
@@ -121,7 +121,7 @@ form.setValidationTimeout(3000);
 </div>
 ```
 
-입력값이 유효 혹은 무효한지 여부는 입력명으로 각각 `valid`와 `invalid` 메서드를 호출하여 확인할 수 있습니다:
+입력 필드가 유효성 검증을 통과 또는 실패했는지도 각각 `valid`와 `invalid` 함수를 사용해 확인할 수 있습니다.
 
 ```html
 <span v-if="form.valid('email')">
@@ -133,10 +133,10 @@ form.setValidationTimeout(3000);
 </span>
 ```
 
-> [!WARNING]  
-> 입력 필드는 변경되고 유효성 검사 응답을 받은 이후에만 유효 혹은 무효 상태로 표시됩니다.
+> [!WARNING]
+> 폼 입력값이 실제로 변경되고, 그에 대한 유효성 검증 응답을 받은 이후에만 해당 인풋이 유효/무효 상태로 나타납니다.
 
-Precognition으로 폼 내 일부 입력값만 검사 중이라면, 수동으로 오류를 초기화하는 것이 유용할 수 있습니다. 이때, `forgetError` 함수를 사용할 수 있습니다:
+폼의 일부 입력만 Precognition으로 유효성 검증할 때는 수동으로 에러를 지워야 할 수 있습니다. 이럴 땐 폼의 `forgetError` 함수를 이용하세요.
 
 ```html
 <input
@@ -147,46 +147,46 @@ Precognition으로 폼 내 일부 입력값만 검사 중이라면, 수동으로
 
         form.forgetError('avatar')
     }"
-/>
+>
 ```
 
-또한, 폼 제출 응답 후 특정 동작을 수행할 수도 있습니다. `submit` 함수는 Axios 요청 프로미스를 반환하므로, 응답에 접근하거나 성공 시 입력값 리셋, 실패 시 예외 처리가 가능합니다:
+또한, 폼 제출 응답에 따라 추가로 작업을 수행할 때도 쉽게 처리할 수 있습니다. 예를 들어, 폼의 `submit` 함수는 Axios 요청 프로미스를 반환하므로, 응답을 받아 폼 초기화, 사용자 알림, 에러 처리 등 다양한 동작을 추가할 수 있습니다.
 
 ```js
 const submit = () => form.submit()
     .then(response => {
         form.reset();
 
-        alert('사용자가 생성되었습니다.');
+        alert('User created.');
     })
     .catch(error => {
-        alert('오류가 발생했습니다.');
+        alert('An error occurred.');
     });
 ```
 
-폼 제출 요청 진행 여부는 `processing` 속성으로 확인할 수 있습니다:
+폼 제출 요청이 진행 중인지 확인하려면 `processing` 속성을 확인하면 됩니다.
 
 ```html
 <button :disabled="form.processing">
-    제출
+    Submit
 </button>
 ```
 
 <a name="using-vue-and-inertia"></a>
-### Vue와 Inertia 함께 사용하기
+### Vue와 Inertia 사용하기
 
-> [!NOTE]  
-> Vue와 Inertia로 Laravel 애플리케이션 개발을 빠르게 시작하고 싶다면, 공식 [스타터 키트](/docs/{{version}}/starter-kits)를 활용해보세요. 스타터 키트는 새로운 Laravel 앱의 백엔드/프론트엔드 인증까지 포함해줍니다.
+> [!NOTE]
+> Vue와 Inertia로 Laravel 애플리케이션을 개발할 계획이라면, [스타터 킷](/docs/10.x/starter-kits)을 활용해 빠르게 시작하는 것을 추천합니다. 라라벨의 스타터 킷은 새로운 애플리케이션에서 백엔드와 프론트엔드 인증 기능을 기본적으로 제공해줍니다.
 
-Precognition을 Vue와 Inertia에서 사용하기 전, [Vue에서 Precognition 사용](#using-vue) 문서를 참고하세요. Inertia를 사용할 때는 Inertia 호환 Precognition 라이브러리를 NPM으로 설치해야 합니다:
+Vue와 Inertia에서 Precognition을 사용하기 전에, 먼저 [Vue에서 Precognition 사용하기](#using-vue) 내용을 확인하세요. Vue + Inertia 환경에서는 NPM을 통해 Inertia 호환 Precognition 라이브러리를 설치해야 합니다.
 
 ```shell
 npm install laravel-precognition-vue-inertia
 ```
 
-설치 후 `useForm` 함수는 위에서 설명한 유효성 검사 기능이 추가된 Inertia [폼 헬퍼](https://inertiajs.com/forms#form-helper)를 반환합니다.
+설치가 완료되면, Precognition의 `useForm` 함수는 위에서 설명한 검증 기능들이 추가된 Inertia [form helper](https://inertiajs.com/forms#form-helper)를 반환합니다.
 
-폼 헬퍼의 `submit` 메서드는 HTTP 메서드나 URL 지정 없이, Inertia의 [visit 옵션](https://inertiajs.com/manual-visits)을 첫 번째 인자로만 전달하면 됩니다. 이 외에도, `submit`은 Promise를 반환하지 않습니다. 대신 방문 옵션 내에 Inertia에서 지원하는 [이벤트 콜백](https://inertiajs.com/manual-visits#event-callbacks)을 등록할 수 있습니다:
+폼 헬퍼의 `submit` 메서드는 더 간단하게 설계되어, HTTP 메서드나 URL을 별도로 지정할 필요가 없습니다. 대신 Inertia의 [visit options](https://inertiajs.com/manual-visits)을 첫 번째 인자이자 유일한 인자로 전달합니다. 또한, 위의 Vue 예제와 달리 해당 `submit` 메서드는 Promise를 반환하지 않습니다. 대신, visit options에 Inertia가 지원하는 [이벤트 콜백](https://inertiajs.com/manual-visits#event-callbacks)을 직접 지정하여 사용할 수 있습니다.
 
 ```vue
 <script setup>
@@ -207,9 +207,9 @@ const submit = () => form.submit({
 <a name="using-react"></a>
 ### React 사용하기
 
-Laravel Precognition을 이용해 프론트엔드 React 애플리케이션에서도 유효성 검사 규칙을 중복 작성하지 않고 실시간 유효성 검사 환경을 제공합니다. 사용자 등록 폼 예시로 살펴보겠습니다.
+Laravel Precognition을 활용하면 프론트엔드 React 애플리케이션 내에서도 유효성 검증 규칙을 중복하지 않고 실시간 검증 기능을 제공할 수 있습니다. 새로운 사용자를 생성하는 폼 예제를 통해 동작 방식을 살펴보겠습니다.
 
-먼저 Precognition을 활성화하려면 `HandlePrecognitiveRequests` 미들웨어를 라우트에 추가하고, 유효성 검사 규칙을 담을 [폼 요청](/docs/{{version}}/validation#form-request-validation)을 생성해야 합니다:
+먼저, Precognition을 라우트에 적용하려면 `HandlePrecognitiveRequests` 미들웨어를 라우트에 추가해야 하며, 라우트의 유효성 검증 규칙을 담을 [폼 요청 클래스](/docs/10.x/validation#form-request-validation)를 만들어야 합니다.
 
 ```php
 use App\Http\Requests\StoreUserRequest;
@@ -220,13 +220,15 @@ Route::post('/users', function (StoreUserRequest $request) {
 })->middleware([HandlePrecognitiveRequests::class]);
 ```
 
-프론트엔드에서 Precognition React 헬퍼를 NPM으로 설치합니다:
+그 다음, React용 Laravel Precognition 프론트엔드 헬퍼를 NPM을 통해 설치합니다.
 
 ```shell
 npm install laravel-precognition-react
 ```
 
-설치 후, `useForm` 함수를 사용해 폼 객체를 만듭니다. 실시간 유효성 검사를 위해 각 입력의 `change`와 `blur` 이벤트에 리스너를 등록해야 합니다. `change`에서는 `setData`로 값을 지정하고, `blur`에서는 `validate`를 호출합니다:
+패키지 설치가 끝나면, Precognition의 `useForm` 함수로 폼 객체를 만들 수 있습니다. 이때 HTTP 메서드(`post`), 대상 URL(`/users`), 그리고 초기 폼 데이터를 지정합니다.
+
+실시간 유효성 검증을 위해서는 각 입력값의 `change` 이벤트와 `blur` 이벤트를 감지해야 합니다. `change` 핸들러에서는 `setData`로 데이터를 변경하고, `blur`에서는 `validate` 메서드를 호출해 입력값의 유효성 검증을 실행합니다.
 
 ```jsx
 import { useForm } from 'laravel-precognition-react';
@@ -245,7 +247,7 @@ export default function Form() {
 
     return (
         <form onSubmit={submit}>
-            <label for="name">이름</label>
+            <label for="name">Name</label>
             <input
                 id="name"
                 value={form.data.name}
@@ -254,7 +256,7 @@ export default function Form() {
             />
             {form.invalid('name') && <div>{form.errors.name}</div>}
 
-            <label for="email">이메일</label>
+            <label for="email">Email</label>
             <input
                 id="email"
                 value={form.data.email}
@@ -264,38 +266,38 @@ export default function Form() {
             {form.invalid('email') && <div>{form.errors.email}</div>}
 
             <button disabled={form.processing}>
-                사용자 생성
+                Create User
             </button>
         </form>
     );
 };
 ```
 
-폼이 작성될 때 Precognition이 라우트 폼 요청 규칙에 기반하여 실시간으로 결과를 제공합니다. 입력값 변경 시, 디바운스된 "예측" 유효성 검사 요청이 Laravel로 보내집니다. 디바운스 타임아웃은 다음과 같이 설정할 수 있습니다:
+이제 사용자가 폼을 입력할 때, Precognition이 라우트 폼 요청의 유효성 검증 규칙을 활용해 실시간 검증 결과를 제공합니다. 입력값이 변경되면 디바운스된 "프리코그니션" 검증 요청이 애플리케이션으로 전송됩니다. 필요에 따라 `setValidationTimeout` 함수로 디바운스 타임아웃을 설정할 수 있습니다.
 
 ```js
 form.setValidationTimeout(3000);
 ```
 
-유효성 검사 요청 진행 중엔 `validating` 속성이 `true`가 됩니다:
+유효성 검증 요청이 진행 중일 때는 `validating` 속성이 `true`로 표시됩니다.
 
 ```jsx
-{form.validating && <div>유효성 검사 중...</div>}
+{form.validating && <div>Validating...</div>}
 ```
 
-유효성 검사 또는 폼 제출 시 반환된 오류는 자동으로 `errors` 객체에 반영됩니다:
+유효성 검증 도중이나 폼 제출 시 발생한 에러는 자동으로 `errors` 객체에 채워집니다.
 
 ```jsx
 {form.invalid('email') && <div>{form.errors.email}</div>}
 ```
 
-폼 오류 유무는 `hasErrors`로 확인할 수 있습니다:
+폼에 에러가 있는지 여부는 `hasErrors` 속성으로 확인할 수 있습니다.
 
 ```jsx
 {form.hasErrors && <div><!-- ... --></div>}
 ```
 
-입력값이 유효/무효한지 각각 `valid`와 `invalid`를 통해 확인합니다:
+각 입력값이 유효/무효한지도 `valid`와 `invalid` 함수로 확인할 수 있습니다.
 
 ```jsx
 {form.valid('email') && <span>✅</span>}
@@ -303,10 +305,10 @@ form.setValidationTimeout(3000);
 {form.invalid('email') && <span>❌</span>}
 ```
 
-> [!WARNING]  
-> 입력값은 변경 후 유효성 검사 응답을 받은 이후에만 유효/무효 상태가 가능합니다.
+> [!WARNING]
+> 입력값이 실제로 바뀌고, 그에 대한 유효성 검증 응답을 받은 이후에만 인풋이 유효/무효 상태로 표시됩니다.
 
-Precognition으로 입력의 부분 집합만 검사한다면, `forgetError`로 오류를 수동 초기화하는 것도 가능합니다:
+Precognition으로 폼의 일부 입력만 검증하는 경우, 필요하다면 `forgetError` 함수로 수동 에러 제거가 가능합니다.
 
 ```jsx
 <input
@@ -317,10 +319,10 @@ Precognition으로 입력의 부분 집합만 검사한다면, `forgetError`로 
 
         form.forgetError('avatar');
     }
-/>
+>
 ```
 
-폼 제출 응답에 따라 코드 실행도 가능합니다. `submit` 함수는 Axios 프로미스를 반환하므로 응답을 활용하거나 성공 시 초기화, 실패 시 처리할 수 있습니다:
+또한, 폼 제출 응답에 따라 추가 작업(예: 폼 초기화, 알림 표시 등)도 쉽게 할 수 있습니다. 폼의 `submit` 함수는 Axios 요청 프로미스를 반환하므로, 성공/실패 응답에 따라 각종 로직을 추가할 수 있습니다.
 
 ```js
 const submit = (e) => {
@@ -330,37 +332,37 @@ const submit = (e) => {
         .then(response => {
             form.reset();
 
-            alert('사용자가 생성되었습니다.');
+            alert('User created.');
         })
         .catch(error => {
-            alert('오류가 발생했습니다.');
+            alert('An error occurred.');
         });
 };
 ```
 
-진행 중엔 `processing` 속성으로 버튼 비활성화 처리할 수 있습니다:
+폼 제출 요청 진행 여부는 `processing` 속성으로 알 수 있습니다.
 
 ```html
 <button disabled={form.processing}>
-    제출
+    Submit
 </button>
 ```
 
 <a name="using-react-and-inertia"></a>
-### React와 Inertia 함께 사용하기
+### React와 Inertia 사용하기
 
-> [!NOTE]  
-> React와 Inertia로 Laravel 앱을 빠르게 개발하려면 공식 [스타터 키트](/docs/{{version}}/starter-kits)를 고려하세요. 스타터 키트는 인증 등의 백엔드, 프론트엔드 구조를 제공합니다.
+> [!NOTE]
+> React와 Inertia로 Laravel 애플리케이션을 개발하고 싶다면, [스타터 킷](/docs/10.x/starter-kits)을 사용해 빠르게 시작하는 것을 권장합니다. 라라벨의 스타터 킷은 프론트엔드/백엔드 인증 스캐폴딩을 기본으로 제공합니다.
 
-Precognition을 React와 Inertia에서 사용하기 전, [React에서 Precognition 사용](#using-react) 문서를 참고하세요. Inertia와 사용할 때는 Inertia 호환 Precognition 라이브러리를 NPM으로 설치해야 합니다:
+Precognition을 React와 Inertia 조합에서 사용하기 전엔 [React에서 Precognition 사용하기](#using-react)를 반드시 참고하세요. React + Inertia 환경에서는 NPM을 통해 Inertia 전용 Precognition 라이브러리를 설치해야 합니다.
 
 ```shell
 npm install laravel-precognition-react-inertia
 ```
 
-설치 후, `useForm`은 유효성 검사 기능이 추가된 Inertia [폼 헬퍼](https://inertiajs.com/forms#form-helper)를 반환합니다.
+설치가 완료되면, Precognition의 `useForm` 함수가 위에서 설명한 검증 기능이 추가된 Inertia [form helper](https://inertiajs.com/forms#form-helper)를 반환합니다.
 
-폼 헬퍼의 `submit` 메서드는 HTTP 메서드나 URL 지정 없이 [visit 옵션](https://inertiajs.com/manual-visits)을 첫 번째 인자로 받습니다. 또한, `submit`은 Promise를 반환하지 않으며, 옵션에서 [이벤트 콜백](https://inertiajs.com/manual-visits#event-callbacks)을 사용할 수 있습니다:
+폼 헬퍼의 `submit` 메서드는 HTTP 메서드나 URL을 별도로 지정할 필요 없이, Inertia의 [visit options](https://inertiajs.com/manual-visits)을 첫 번째 인자로 전달합니다. 또한, React 예제와 달리 해당 `submit` 메서드는 Promise를 반환하지 않습니다. 대신, visit options에 Inertia가 지원하는 [이벤트 콜백](https://inertiajs.com/manual-visits#event-callbacks)을 직접 지정해 사용할 수 있습니다.
 
 ```js
 import { useForm } from 'laravel-precognition-react-inertia';
@@ -383,9 +385,9 @@ const submit = (e) => {
 <a name="using-alpine"></a>
 ### Alpine과 Blade 사용하기
 
-Laravel Precognition을 사용하면 프론트엔드 Alpine 애플리케이션에서도 유효성 검사 규칙을 중복 작성하지 않고 실시간 검사를 제공할 수 있습니다. 사용자 등록 폼 예시를 살펴봅니다.
+Laravel Precognition을 활용하면 프론트엔드 Alpine 애플리케이션에서도 유효성 검증 규칙을 중복하지 않고 사용자에게 실시간 검증을 제공할 수 있습니다. 새로운 사용자를 생성하는 폼 예시로 기능을 설명합니다.
 
-먼저, Precognition 활성화를 위해 `HandlePrecognitiveRequests` 미들웨어를 라우트에 추가하고, 필요한 [폼 요청](/docs/{{version}}/validation#form-request-validation) 클래스를 만듭니다:
+먼저 Precognition을 라우트에 적용하려면 `HandlePrecognitiveRequests` 미들웨어를 추가해야 하며, 라우트의 유효성 검증 규칙을 포함할 [폼 요청 클래스](/docs/10.x/validation#form-request-validation)도 작성해야 합니다.
 
 ```php
 use App\Http\Requests\CreateUserRequest;
@@ -396,13 +398,13 @@ Route::post('/users', function (CreateUserRequest $request) {
 })->middleware([HandlePrecognitiveRequests::class]);
 ```
 
-프론트엔드 Alpine 헬퍼를 NPM으로 설치합니다:
+다음으로 Alpine용 Laravel Precognition 프론트엔드 헬퍼를 NPM으로 설치해야 합니다.
 
 ```shell
 npm install laravel-precognition-alpine
 ```
 
-그리고 `resources/js/app.js` 파일에 Precognition 플러그인을 등록합니다:
+설치가 끝나면, `resources/js/app.js` 파일에서 Precognition 플러그인을 Alpine에 등록합니다.
 
 ```js
 import Alpine from 'alpinejs';
@@ -414,7 +416,9 @@ Alpine.plugin(Precognition);
 Alpine.start();
 ```
 
-이제 Precognition의 `$form` "매직"을 이용해 폼 객체를 생성할 수 있습니다. 실시간 유효성 검사를 위해 입력값과 폼 데이터 바인딩, 각 입력의 `change` 이벤트에서 `validate`를 호출해야 합니다:
+Precognition 패키지까지 정상이면, Precognition의 `$form` "매직"을 사용해 폼 객체를 만들 수 있습니다. 이때 HTTP 메서드(`post`), 대상 URL(`/users`), 초기 폼 데이터를 지정하세요.
+
+실시간 유효성 검증을 위해서는 폼의 데이터를 각 입력값에 바인딩하고, 입력 필드별로 `change` 이벤트를 감지해 폼의 `validate` 메서드를 해당 인풋 이름과 함께 호출해야 합니다.
 
 ```html
 <form x-data="{
@@ -424,7 +428,7 @@ Alpine.start();
     }),
 }">
     @csrf
-    <label for="name">이름</label>
+    <label for="name">Name</label>
     <input
         id="name"
         name="name"
@@ -435,7 +439,7 @@ Alpine.start();
         <div x-text="form.errors.name"></div>
     </template>
 
-    <label for="email">이메일</label>
+    <label for="email">Email</label>
     <input
         id="email"
         name="email"
@@ -447,26 +451,26 @@ Alpine.start();
     </template>
 
     <button :disabled="form.processing">
-        사용자 생성
+        Create User
     </button>
 </form>
 ```
 
-이제 입력값이 변경될 때 Precognition이 라우트의 유효성 규칙을 기반으로 실시간 결과를 제공합니다. 입력값 변경 시, 디바운스된 예측 유효성 검사 요청이 Laravel로 보내집니다. 디바운스 타임아웃도 설정 가능합니다:
+이제 사용자가 폼을 작성하면 라우트의 폼 요청에 정의된 유효성 검증 규칙을 기반으로 Precognition이 실시간 검증 결과를 보여줍니다. 입력값이 변경되면 디바운스된 검증 요청이 Laravel 애플리케이션에 전송됩니다. 필요하다면 `setValidationTimeout` 함수로 디바운스 대기시간을 조정할 수 있습니다.
 
 ```js
 form.setValidationTimeout(3000);
 ```
 
-검사 요청 진행 중에는 `validating`이 `true`가 됩니다:
+유효성 검증 요청이 진행 중에는 폼의 `validating` 속성이 `true`가 됩니다.
 
 ```html
 <template x-if="form.validating">
-    <div>유효성 검사 중...</div>
+    <div>Validating...</div>
 </template>
 ```
 
-검사 도중 혹은 폼 제출 시 발생한 오류는 자동으로 `errors` 객체에 반영됩니다:
+검증 과정 또는 폼 제출 시 발생한 에러는 폼의 `errors` 객체에 자동으로 채워집니다.
 
 ```html
 <template x-if="form.invalid('email')">
@@ -474,7 +478,7 @@ form.setValidationTimeout(3000);
 </template>
 ```
 
-폼에 오류 존재 여부는 `hasErrors`로 확인할 수 있습니다:
+폼에 에러가 있는지는 `hasErrors` 속성으로 확인할 수 있습니다.
 
 ```html
 <template x-if="form.hasErrors">
@@ -482,7 +486,7 @@ form.setValidationTimeout(3000);
 </template>
 ```
 
-입력값 유효/무효 여부는 각각 `valid`와 `invalid`로 확인 가능합니다:
+입력값 유효/무효 상태도 각각 `valid`와 `invalid` 함수로 확인할 수 있습니다.
 
 ```html
 <template x-if="form.valid('email')">
@@ -494,21 +498,21 @@ form.setValidationTimeout(3000);
 </template>
 ```
 
-> [!WARNING]  
-> 입력값은 변경 후 유효성 검사 응답을 받을 때만 유효/무효로 표시됩니다.
+> [!WARNING]
+> 입력값이 실제로 바뀌고, 그에 대한 유효성 검증 응답을 받은 경우에만 해당 인풋이 유효/무효로 표시됩니다.
 
-폼 제출 요청 진행 여부는 `processing`을 참고합니다:
+폼 제출 요청 진행 중 여부는 `processing` 속성으로 알 수 있습니다.
 
 ```html
 <button :disabled="form.processing">
-    제출
+    Submit
 </button>
 ```
 
 <a name="repopulating-old-form-data"></a>
-#### 이전 폼 데이터 재설정
+#### 이전 폼 데이터 복원하기
 
-위의 사용자 생성 예시에서는 Precognition으로 실시간 유효성 검사를 하지만, 전통적인 서버 사이드 폼 제출을 직접 수행합니다. 이 경우 서버의 "old" 입력값과 유효성 오류로 폼을 다시 채워야 합니다:
+위 사용 예시에서는 Precognition으로 라이브 유효성 검증만 사용하고, 실제 폼 제출은 서버에서 처리하고 있습니다. 따라서 서버측 폼 제출 후 반환되는 "이전" 입력값 및 검증 에러가 있다면, 폼에 반영해줄 필요가 있습니다.
 
 ```html
 <form x-data="{
@@ -519,7 +523,7 @@ form.setValidationTimeout(3000);
 }">
 ```
 
-또는, XHR로 폼을 제출하고 싶다면 `submit` 함수를 사용할 수 있습니다. 이 함수는 Axios 요청 프로미스를 반환합니다:
+또는 만약 XHR로 폼을 제출하고 싶다면 폼의 `submit` 함수를 사용하세요. 이 함수는 Axios 요청 프로미스를 반환합니다.
 
 ```html
 <form 
@@ -533,10 +537,10 @@ form.setValidationTimeout(3000);
                 .then(response => {
                     form.reset();
 
-                    alert('사용자가 생성되었습니다.')
+                    alert('User created.')
                 })
                 .catch(error => {
-                    alert('오류가 발생했습니다.');
+                    alert('An error occurred.');
                 });
         },
     }"
@@ -545,9 +549,9 @@ form.setValidationTimeout(3000);
 ```
 
 <a name="configuring-axios"></a>
-### Axios 구성하기
+### Axios 설정하기
 
-Precognition 유효성 검사 라이브러리는 [Axios](https://github.com/axios/axios) HTTP 클라이언트를 사용하여 백엔드로 요청을 전송합니다. 필요하다면 해당 Axios 인스턴스를 커스터마이징할 수 있습니다. 예를 들어, `laravel-precognition-vue` 사용 시 `resources/js/app.js`에서 추가 헤더를 설정할 수 있습니다:
+Precognition 유효성 검증 라이브러리는 [Axios](https://github.com/axios/axios) HTTP 클라이언트를 사용해 애플리케이션 백엔드에 요청을 보냅니다. 필요하다면 Axios 인스턴스를 커스터마이즈할 수 있습니다. 예를 들어 `laravel-precognition-vue` 라이브러리를 사용할 때, `resources/js/app.js` 파일에서 요청마다 Authorization 헤더를 추가할 수 있습니다.
 
 ```js
 import { client } from 'laravel-precognition-vue';
@@ -555,7 +559,7 @@ import { client } from 'laravel-precognition-vue';
 client.axios().defaults.headers.common['Authorization'] = authToken;
 ```
 
-이미 별도의 Axios 인스턴스를 구성했다면, Precognition에서 해당 인스턴스를 사용하도록 설정할 수도 있습니다:
+또는 이미 커스텀 Axios 인스턴스가 있다면 Precognition이 해당 인스턴스를 사용하도록 지정할 수도 있습니다.
 
 ```js
 import Axios from 'axios';
@@ -567,15 +571,15 @@ window.axios.defaults.headers.common['Authorization'] = authToken;
 client.use(window.axios)
 ```
 
-> [!WARNING]  
-> Inertia 기반 Precognition 라이브러리는 유효성 검사 요청에만 지정한 Axios 인스턴스를 사용합니다. 폼 제출 요청은 항상 Inertia로 전송됩니다.
+> [!WARNING]
+> Inertia 전용 Precognition 라이브러리는 유효성 검증 요청에만 설정된 Axios 인스턴스를 사용합니다. 폼 제출은 항상 Inertia가 직접 전송합니다.
 
 <a name="customizing-validation-rules"></a>
-## 유효성 검사 규칙 커스터마이징
+## 유효성 검증 규칙 커스터마이즈
 
-요청의 `isPrecognitive` 메서드를 이용하면, precognitive 요청 중에 실행되는 유효성 검사 규칙을 커스터마이징할 수 있습니다.
+프리코그니션 요청에서 실행되는 유효성 검증 규칙은 요청의 `isPrecognitive` 메서드를 이용해 커스터마이즈할 수 있습니다.
 
-예를 들어, 회원가입 폼에서 비밀번호가 "compromised"(노출된 적 없는 비밀번호)인지 검증은 최종 제출 시에만 수행하고, 실시간 검사(precognitive)에는 최소 8자 등만 검사하고 싶을 수 있습니다. `isPrecognitive` 메서드로 폼 요청 클래스의 규칙을 조정할 수 있습니다:
+예를 들어, 사용자 생성 폼에서 실제 최종 제출 때만 비밀번호가 "보안 위협에 노출되지 않았는지" 확인하고 싶을 수 있습니다. 프리코그니션 유효성 검증 요청인 경우엔 비밀번호의 길이 조건만 검사하고, 실제 제출 때만 uncompromised 조건을 추가합니다. `isPrecognitive` 메서드를 활용하면 폼 요청 클래스에서 아래와 같이 규칙을 다르게 지정할 수 있습니다.
 
 ```php
 <?php
@@ -610,9 +614,9 @@ class StoreUserRequest extends FormRequest
 <a name="handling-file-uploads"></a>
 ## 파일 업로드 처리
 
-기본적으로 Laravel Precognition은 precognitive 유효성 검사 요청 중 파일은 업로드/검증하지 않습니다. 이는 대용량 파일의 불필요한 반복 업로드를 막기 위함입니다.
+기본적으로, Laravel Precognition은 프리코그니션 유효성 검증 요청 중에는 파일을 업로드하거나 검증하지 않습니다. 이로 인해 불필요하게 대용량 파일이 여러 번 업로드되는 일을 막아줍니다.
 
-따라서 파일 필드는 [해당 폼 요청의 유효성 검사 규칙을 커스터마이징](#customizing-validation-rules)하여 전체 폼 제출시에만 required가 적용되도록 구성해야 합니다:
+이러한 기본 동작을 고려해, [관련 폼 요청의 유효성 검증 규칙을 커스터마이즈](#customizing-validation-rules)하여 실제 폼 최종 제출에서만 해당 필드가 필수임을 지정해야 합니다.
 
 ```php
 /**
@@ -626,7 +630,7 @@ protected function rules()
         'avatar' => [
             ...$this->isPrecognitive() ? [] : ['required'],
             'image',
-            'mimes:jpg,png',
+            'mimes:jpg,png'
             'dimensions:ratio=3/2',
         ],
         // ...
@@ -634,18 +638,18 @@ protected function rules()
 }
 ```
 
-모든 유효성 검사 요청에 파일을 포함하려면, 클라이언트의 폼 인스턴스에서 `validateFiles`를 호출하세요:
+매번 유효성 검증 요청마다 파일도 함께 전달하고 싶다면, 클라이언트 측 폼 인스턴스에서 `validateFiles` 함수를 호출하면 됩니다.
 
 ```js
 form.validateFiles();
 ```
 
 <a name="managing-side-effects"></a>
-## 부수 효과 관리
+## 사이드 이펙트 관리
 
-라우트에 `HandlePrecognitiveRequests` 미들웨어를 추가할 때, _다른_ 미들웨어에서 precognitive 요청 중 생길 수 있는 부수 효과를 고려해야 합니다.
+라우트에 `HandlePrecognitiveRequests` 미들웨어를 추가할 때, 프리코그니션 요청에서는 *다른* 미들웨어에서 발생할 수 있는 사이드 이펙트를 건너뛰어야 하는지 고려해야 합니다.
 
-예를 들어, 사용자의 "상호작용" 횟수를 증가시키는 미들웨어가 있다면 precognitive 요청은 상호작용 횟수에 포함되지 않도록 할 수 있습니다. 그럴 때는 다음과 같이 `isPrecognitive` 메서드로 분기 처리할 수 있습니다:
+예를 들어, 사용자가 애플리케이션과 상호작용(interaction)할 때마다 카운트를 올리는 미들웨어가 있다면, 프리코그니션 요청은 이러한 상호작용으로 간주하지 않는 것이 바람직할 수 있습니다. 이럴 땐 아래처럼 미들웨어 내에서 `isPrecognitive` 호출로 처리할 수 있습니다.
 
 ```php
 <?php
@@ -675,9 +679,9 @@ class InteractionMiddleware
 <a name="testing"></a>
 ## 테스트
 
-테스트에서 precognitive 요청을 작성하려면, Laravel의 `TestCase`에 포함된 `withPrecognition` 헬퍼를 사용할 수 있습니다. 이 헬퍼는 요청 헤더에 `Precognition`을 추가합니다.
+테스트에서 프리코그니션 요청을 보내고 싶을 때, Laravel의 `TestCase`는 `withPrecognition` 헬퍼를 제공합니다. 이 헬퍼는 `Precognition` 요청 헤더를 자동으로 추가해줍니다.
 
-또한, precognitive 요청이 성공적(즉, 유효성 오류가 없음)임을 단언하려면, 응답에서 `assertSuccessfulPrecognition` 메서드를 사용하면 됩니다:
+또한 프리코그니션 요청이 성공했는지(=유효성 검증 에러가 없는지) 확인하고 싶다면, 응답 객체에 `assertSuccessfulPrecognition` 메서드를 사용할 수 있습니다.
 
 ```php
 public function test_it_validates_registration_form_with_precognition()
