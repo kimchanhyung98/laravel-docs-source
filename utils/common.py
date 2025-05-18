@@ -45,7 +45,7 @@ def retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,)):
     return decorator
 
 
-def timeout(seconds=420):
+def timeout(seconds=600):
     """함수 실행 시 타임아웃을 적용하는 데코레이터
 
     Args:

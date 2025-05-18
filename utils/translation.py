@@ -84,7 +84,7 @@ def translate_text_with_openai(text_to_translate, system_prompt):
 
 
 @retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,))
-@timeout(seconds=300)
+@timeout(seconds=600)
 def translate_file(source_file, target_file, source_lang="en", target_lang="ko"):
     """OpenAI API를 사용하여, 마크다운 파일을 번역하고 저장
     대용량 파일은 청크로 분할하여 번역
