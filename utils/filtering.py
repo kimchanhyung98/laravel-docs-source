@@ -224,7 +224,8 @@ def standardize_callouts(content: str) -> str:
     pattern1 = r'^(\s*)>\s*\{(tip|note)\}\s*(.+)$'
 
     # 패턴 2: > [!NOTE] message 형태 (한 줄에 노트와 메시지가 함께 있는 경우)
-    pattern2 = r'^(\s*)>\s*\[!(NOTE|WARNING)\]\s*(.+)$'
+    # 메시지가 있는 경우에만 매치하도록 수정
+    pattern2 = r'^(\s*)>\s*\[!(NOTE|WARNING|TIP)\]\s+([^\s].+)$'
 
     # 패턴 3: > **Note** 형태
     pattern3 = r'^(\s*)>\s*\*\*(note|warning|tip)\*\*\s*(.*)$'

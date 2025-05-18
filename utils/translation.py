@@ -142,8 +142,8 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
 
         print(f"번역 시작: {source_file} -> {target_file} ({line_count}줄)")
 
-        # 대용량 파일 기준 (1000줄 이상)
-        if line_count > 1000:
+        # 대용량 파일 기준 (800줄 이상)
+        if line_count > 800:
             print(f"대용량 파일 감지: {file_name} - 청크 분할 번역 시작")
             translated_content = orchestrate_chunk_translation(
                 content=content,
