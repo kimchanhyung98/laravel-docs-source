@@ -1,35 +1,35 @@
-# 목(mock) 처리
+# 모킹 (Mocking)
 
 - [소개](#introduction)
-- [객체 목(mock) 처리](#mocking-objects)
-- [파사드 목(mock) 처리](#mocking-facades)
+- [객체 목(mock) 생성](#mocking-objects)
+- [파사드 목(mock) 생성](#mocking-facades)
     - [파사드 스파이](#facade-spies)
-- [Bus 페이크](#bus-fake)
-    - [잡 체인](#bus-job-chains)
-    - [잡 배치](#job-batches)
-- [이벤트 페이크](#event-fake)
+- [버스(Bus) 파사드 페이크](#bus-fake)
+    - [잡 체인(체이닝)](#bus-job-chains)
+    - [잡 배치(batch)](#job-batches)
+- [이벤트(Event) 페이크](#event-fake)
     - [범위 지정 이벤트 페이크](#scoped-event-fakes)
 - [HTTP 페이크](#http-fake)
-- [메일 페이크](#mail-fake)
-- [알림 페이크](#notification-fake)
-- [큐 페이크](#queue-fake)
-    - [잡 체인](#job-chains)
-- [스토리지 페이크](#storage-fake)
-- [시간 조작](#interacting-with-time)
+- [메일(Mail) 페이크](#mail-fake)
+- [알림(Notification) 페이크](#notification-fake)
+- [큐(Queue) 페이크](#queue-fake)
+    - [잡 체인(체이닝)](#job-chains)
+- [스토리지(Storage) 페이크](#storage-fake)
+- [시간 제어와 테스트](#interacting-with-time)
 
 <a name="introduction"></a>
 ## 소개
 
-Laravel 애플리케이션을 테스트할 때, 특정 부분을 "목(mock)" 처리하여 테스트 중 실제로 실행되지 않도록 할 수 있습니다. 예를 들어, 이벤트를 디스패치하는 컨트롤러를 테스트할 때 이벤트 리스너들이 실제로 실행되지 않길 바랄 수 있습니다. 이렇게 하면 이벤트 리스너의 동작을 걱정할 필요 없이 컨트롤러의 HTTP 응답만을 테스트할 수 있습니다. 이벤트 리스너 자체는 별도의 테스트 케이스에서 테스트하면 됩니다.
+라라벨 애플리케이션을 테스트할 때, 테스트 실행 중 실제로 실행되지 않도록 애플리케이션의 특정 부분을 "목(mock)"으로 대체하고 싶을 때가 있습니다. 예를 들어, 이벤트를 디스패치하는 컨트롤러를 테스트할 때는 이벤트 리스너가 실제로 실행되는 걸 막고, 오직 컨트롤러의 HTTP 응답만 테스트하고 싶을 수 있습니다. 이벤트 리스너는 별도의 테스트 케이스에서 따로 검증할 수 있기 때문입니다.
 
-Laravel은 이벤트, 잡, 그리고 기타 파사드를 목 처리할 수 있는 유용한 메서드를 기본적으로 제공합니다. 이러한 헬퍼들은 Mockery 위에 편의 레이어를 제공하므로 직접 복잡한 Mockery 메서드 호출을 작성하지 않아도 됩니다.
+라라벨에는 이벤트, 잡, 그리고 기타 파사드(facade) 등을 손쉽게 목 처리할 수 있는 다양한 메서드가 내장되어 있습니다. 이러한 헬퍼들은 Mockery보다 훨씬 간편하게 목 객체를 만들고 사용할 수 있게 해줍니다.
 
 <a name="mocking-objects"></a>
-## 객체 목(mock) 처리
+## 객체 목(mock) 생성
 
-Laravel의 [서비스 컨테이너](/docs/{{version}}/container)를 통해 애플리케이션에 주입되는 객체를 목 처리할 때, 목 인스턴스를 `instance` 바인딩으로 컨테이너에 바인딩해야 합니다. 이렇게 하면 컨테이너가 직접 객체를 생성하는 대신, 바인딩된 목 인스턴스를 사용하게 됩니다.
+라라벨의 [서비스 컨테이너](/docs/8.x/container)를 통해 주입되는 객체를 목(mock)으로 테스트하려면, 목 객체를 `instance` 바인딩으로 컨테이너에 등록해야 합니다. 이렇게 하면 컨테이너는 객체를 직접 생성하는 대신, 여러분이 생성한 목 객체를 주입하게 됩니다.
 
-```php
+```
 use App\Service;
 use Mockery;
 use Mockery\MockInterface;
@@ -45,9 +45,9 @@ public function test_something_can_be_mocked()
 }
 ```
 
-이 과정을 더 간단하게 하려면, Laravel의 기본 테스트 케이스 클래스에서 제공하는 `mock` 메서드를 사용할 수 있습니다. 아래 예시도 위와 동일합니다.
+이 과정을 더 편리하게 하기 위해, 라라벨의 기본 테스트 케이스 클래스에는 `mock` 메서드가 준비되어 있습니다. 아래 예시는 위와 같은 효과를 갖습니다.
 
-```php
+```
 use App\Service;
 use Mockery\MockInterface;
 
@@ -56,9 +56,9 @@ $mock = $this->mock(Service::class, function (MockInterface $mock) {
 });
 ```
 
-객체의 일부 메서드만 목 처리하고 싶다면 `partialMock`을 사용할 수 있습니다. 목 처리하지 않은 메서드는 정상적으로 실행됩니다.
+객체의 일부 메서드만 목으로 대체하고 싶다면, `partialMock` 메서드를 사용할 수 있습니다. 목 처리하지 않은 다른 메서드들은 호출 시 실제로 동작합니다.
 
-```php
+```
 use App\Service;
 use Mockery\MockInterface;
 
@@ -67,9 +67,9 @@ $mock = $this->partialMock(Service::class, function (MockInterface $mock) {
 });
 ```
 
-마찬가지로, 객체를 [스파이](http://docs.mockery.io/en/latest/reference/spies.html)하고 싶은 경우, `spy` 메서드를 사용할 수 있습니다. 스파이는 테스트 중 코드와의 상호작용을 기록해, 코드 실행 후 주장(assertion)에 사용할 수 있습니다.
+비슷하게, [spy](http://docs.mockery.io/en/latest/reference/spies.html)를 사용해 객체의 실제 동작을 기록만 하고 싶을 때는, 라라벨 테스트 기본 클래스의 `spy` 메서드를 이용할 수 있습니다. 스파이는 목과 유사하지만, 테스트 코드 실행 후 해당 메서드가 실제로 호출됐는지 검증할 수 있도록 상호작용을 기록합니다.
 
-```php
+```
 use App\Service;
 
 $spy = $this->spy(Service::class);
@@ -80,11 +80,13 @@ $spy->shouldHaveReceived('process');
 ```
 
 <a name="mocking-facades"></a>
-## 파사드 목(mock) 처리
+## 파사드 목(mock) 생성
 
-전통적인 정적 메서드 호출과는 달리, [파사드](/docs/{{version}}/facades) (및 [실시간 파사드](/docs/{{version}}/facades#real-time-facades))는 목 처리할 수 있습니다. 이는 전통적인 정적 메서드보다 더 뛰어난 테스트 가능성을 제공합니다. 테스트 중, 컨트롤러에서 호출되는 Laravel 파사드도 종종 목 처리하게 됩니다. 예를 들어, 다음과 같은 컨트롤러 액션을 보겠습니다.
+전통적인 static 메서드 호출과 달리, [파사드(facade)](/docs/8.x/facades)와 [실시간(Real-time) 파사드](/docs/8.x/facades#real-time-facades)는 목(mock) 처리가 가능합니다. 이는 전통적인 static 메서드보다 뛰어난 테스트 작성 가능성을 제공하며, DI(의존성 주입)처럼 쉽게 테스트할 수 있도록 해줍니다.
 
-```php
+테스트 중 컨트롤러 등에서 파사드 메서드 호출을 대체하고 싶다면, 아래와 같이 사용할 수 있습니다.
+
+```
 <?php
 
 namespace App\Http\Controllers;
@@ -94,7 +96,7 @@ use Illuminate\Support\Facades\Cache;
 class UserController extends Controller
 {
     /**
-     * 애플리케이션의 모든 사용자 목록을 조회합니다.
+     * 애플리케이션에 등록된 모든 사용자의 목록을 조회합니다.
      *
      * @return \Illuminate\Http\Response
      */
@@ -107,9 +109,9 @@ class UserController extends Controller
 }
 ```
 
-`Cache` 파사드에 대한 호출은 `shouldReceive` 메서드를 통해 목 처리할 수 있습니다. 이는 [Mockery](https://github.com/padraic/mockery) 목 인스턴스를 반환합니다. 파사드는 Laravel [서비스 컨테이너](/docs/{{version}}/container)로 관리되므로, 일반적인 정적 클래스보다 더 뛰어난 테스트 가능성을 제공합니다. 예를 들어, `Cache` 파사드의 `get` 메서드에 대한 호출을 목 처리해 보겠습니다.
+`Cache` 파사드에 대한 호출을 목으로 대체하려면 `shouldReceive` 메서드를 사용하면 됩니다. 이는 [Mockery](https://github.com/padraic/mockery)의 목 객체를 반환합니다. 파사드는 실제로 라라벨 [서비스 컨테이너](/docs/8.x/container)에서 resolve(해결)되고 관리되므로, 일반 static 클래스보다 높은 테스트 유연성을 제공합니다. `Cache` 파사드의 `get` 메서드 호출을 목 처리하려면 다음과 같이 작성할 수 있습니다.
 
-```php
+```
 <?php
 
 namespace Tests\Feature;
@@ -135,14 +137,15 @@ class UserControllerTest extends TestCase
 }
 ```
 
-> {note} `Request` 파사드는 목 처리하지 마세요. 대신, 테스트를 실행할 때 `get`이나 `post`와 같은 [HTTP 테스트 메서드](/docs/{{version}}/http-tests)에 원하는 입력값을 전달하세요. 마찬가지로, `Config` 파사드를 목 처리하는 대신, 테스트에서 `Config::set` 메서드를 사용하세요.
+> [!NOTE]
+> `Request` 파사드는 목(mock) 처리하지 마시기 바랍니다. 대신, 테스트할 때 [HTTP 테스트 메서드](/docs/8.x/http-tests)에 원하는 입력값을 전달하세요. 마찬가지로, `Config` 파사드를 목 처리하는 대신 테스트 안에서 `Config::set` 메서드를 호출하면 됩니다.
 
 <a name="facade-spies"></a>
 ### 파사드 스파이
 
-파사드를 [스파이](http://docs.mockery.io/en/latest/reference/spies.html)하고 싶다면, 해당 파사드의 `spy` 메서드를 호출할 수 있습니다. 스파이는 테스트 중 코드와의 상호작용을 기록해, 코드 실행 후 주장(assertion)에 사용할 수 있습니다.
+파사드를 [spy](http://docs.mockery.io/en/latest/reference/spies.html)로 감시하고 싶다면, 해당 파사드에서 `spy` 메서드를 호출하면 됩니다. 스파이는 목 객체와 유사하지만, 실제 호출 기록이 남아 이후 검증(assertion)이 가능합니다.
 
-```php
+```
 use Illuminate\Support\Facades\Cache;
 
 public function test_values_are_be_stored_in_cache()
@@ -158,13 +161,13 @@ public function test_values_are_be_stored_in_cache()
 ```
 
 <a name="bus-fake"></a>
-## Bus 페이크
+## 버스(Bus) 파사드 페이크
 
-잡을 디스패치하는 코드를 테스트할 때, 실제로 잡을 큐에 넣거나 실행하지 않고, 특정 잡이 디스패치되었는지 주장(assert)하고자 할 수 있습니다. 잡 실행 자체는 별도의 테스트 클래스에서 테스트할 수 있기 때문입니다.
+잡(jobs)을 디스패치(dispatch)하는 코드를 테스트할 때, 실제로 잡이 큐(queue)에 들어가거나 실행되는 것까지 테스트하고 싶지 않을 수 있습니다. 잡 자체의 실행은 대개 별도의 테스트에서 검증할 수 있기 때문입니다.
 
-`Bus` 파사드의 `fake` 메서드를 사용하면 잡이 큐에 디스패치되는 것을 방지할 수 있습니다. 테스트 코드 실행 이후, `assertDispatched` 및 `assertNotDispatched` 메서드를 통해 애플리케이션이 디스패치 시도한 잡을 검사할 수 있습니다.
+잡이 실제로 큐에 들어가지 않게 하려면, `Bus` 파사드의 `fake` 메서드를 사용할 수 있습니다. 이후 테스트 코드 실행 후 `assertDispatched`, `assertNotDispatched` 등의 메서드로 어떤 잡이 디스패치되려고 했는지 간단히 검증할 수 있습니다.
 
-```php
+```
 <?php
 
 namespace Tests\Feature;
@@ -181,46 +184,46 @@ class ExampleTest extends TestCase
     {
         Bus::fake();
 
-        // 주문 배송 수행...
+        // Perform order shipping...
 
-        // 잡이 디스패치되었는지 주장
+        // 잡이 디스패치 되었는지 검증...
         Bus::assertDispatched(ShipOrder::class);
 
-        // 잡이 디스패치되지 않았는지 주장
+        // 특정 잡이 디스패치되지 않았는지 검증...
         Bus::assertNotDispatched(AnotherJob::class);
 
-        // 동기적으로 잡이 디스패치되었는지 주장
+        // 잡이 동기적으로 디스패치 되었는지 검증...
         Bus::assertDispatchedSync(AnotherJob::class);
 
-        // 동기적으로 잡이 디스패치되지 않았는지 주장
+        // 잡이 동기적으로 디스패치되지 않았는지 검증...
         Bus::assertNotDispatchedSync(AnotherJob::class);
 
-        // 응답 이후 잡 디스패치 주장
+        // 응답 전송 후 잡이 디스패치 되었는지 검증...
         Bus::assertDispatchedAfterResponse(AnotherJob::class);
 
-        // 응답 이후 잡 미디스패치 주장
+        // 응답 전송 후 잡이 디스패치되지 않았는지 검증...
         Bus::assertNotDispatchedAfterResponse(AnotherJob::class);
 
-        // 아무 잡도 디스패치 안됨 주장
+        // 아무런 잡이 디스패치되지 않았는지 검증...
         Bus::assertNothingDispatched();
     }
 }
 ```
 
-클로저를 전달하여 특정 "진실 테스트(truth test)"를 통과하는 잡이 디스패치되었는지 주장할 수도 있습니다. 하나라도 통과하면 성공입니다. 예를 들어, 특정 주문에 대한 잡이 디스패치되었는지 주장할 수 있습니다.
+이러한 메서드들에는 클로저를 전달하여, 주어진 "조건"을 만족하는 잡이 실제로 디스패치됐는지 세밀하게 검증할 수도 있습니다. 예를 들어, 특정 주문에 대한 잡이 디스패치됐는지 확인하려면 다음과 같이 작성합니다.
 
-```php
+```
 Bus::assertDispatched(function (ShipOrder $job) use ($order) {
     return $job->order->id === $order->id;
 });
 ```
 
 <a name="bus-job-chains"></a>
-### 잡 체인
+### 잡 체인(체이닝)
 
-`Bus` 파사드의 `assertChained` 메서드를 사용하면 [잡 체인](/docs/{{version}}/queues#job-chaining)이 디스패치되었는지 주장할 수 있습니다. 첫 번째 인자로 잡 클래스명이 담긴 배열 또는 실제 인스턴스 배열을 받을 수 있습니다.
+`Bus` 파사드의 `assertChained` 메서드를 사용하면, [잡 체인](/docs/8.x/queues#job-chaining)이 디스패치 되었는지 검증할 수 있습니다. 첫 번째 인자로 체인에 포함된 잡들의 배열을 받습니다.
 
-```php
+```
 use App\Jobs\RecordShipment;
 use App\Jobs\ShipOrder;
 use App\Jobs\UpdateInventory;
@@ -233,9 +236,9 @@ Bus::assertChained([
 ]);
 ```
 
-실제 잡 인스턴스 배열도 사용할 수 있습니다. 이때 Laravel은 디스패치된 잡 체인과 클래스 및 프로퍼티 값이 동일한지 검사합니다.
+위 예시처럼, 잡 클래스명을 배열로 제공할 수도 있고, 실제 잡 인스턴스의 배열을 넘겨도 됩니다. 잡 인스턴스를 사용할 경우 라라벨은 인스턴스의 클래스명과 속성 값이 실제 디스패치된 잡과 동일한지까지 확인합니다.
 
-```php
+```
 Bus::assertChained([
     new ShipOrder,
     new RecordShipment,
@@ -244,11 +247,11 @@ Bus::assertChained([
 ```
 
 <a name="job-batches"></a>
-### 잡 배치
+### 잡 배치(batch)
 
-`Bus` 파사드의 `assertBatched` 메서드는 [잡배치](/docs/{{version}}/queues#job-batching)가 디스패치되었는지 주장할 때 사용합니다. 클로저는 `Illuminate\Bus\PendingBatch` 인스턴스를 받아 배치 내 잡을 검사할 수 있습니다.
+`Bus` 파사드의 `assertBatched` 메서드는 [잡 배치](/docs/8.x/queues#job-batching)가 디스패치 되었는지 검증합니다. 전달한 클로저에는 `Illuminate\Bus\PendingBatch` 인스턴스가 전달되며, 배치에 포함된 잡을 확인할 수 있습니다.
 
-```php
+```
 use Illuminate\Bus\PendingBatch;
 use Illuminate\Support\Facades\Bus;
 
@@ -259,11 +262,11 @@ Bus::assertBatched(function (PendingBatch $batch) {
 ```
 
 <a name="event-fake"></a>
-## 이벤트 페이크
+## 이벤트(Event) 페이크
 
-이벤트를 디스패치하는 코드를 테스트할 때, Laravel이 이벤트 리스너를 실제로 실행하지 않도록 할 수 있습니다. `Event` 파사드의 `fake` 메서드를 사용하면 리스너 실행을 막고, 코드 실행 후 `assertDispatched`, `assertNotDispatched`, `assertNothingDispatched`를 통해 어떤 이벤트가 디스패치되었는지 주장할 수 있습니다.
+이벤트를 디스패치하는 코드를 테스트할 때 실제로 이벤트 리스너가 실행되지 않도록 하려면, `Event` 파사드의 `fake` 메서드를 사용하세요. 이렇게 하면, 리스너가 동작하지 않고도 테스트 코드를 실행한 뒤, 어떤 이벤트가 디스패치 됐는지를 `assertDispatched`, `assertNotDispatched`, `assertNothingDispatched` 메서드로 검증할 수 있습니다.
 
-```php
+```
 <?php
 
 namespace Tests\Feature;
@@ -284,48 +287,49 @@ class ExampleTest extends TestCase
     {
         Event::fake();
 
-        // 주문 배송 수행...
+        // Perform order shipping...
 
-        // 이벤트가 디스패치 되었는지 주장
+        // 이벤트가 디스패치 되었는지 검증...
         Event::assertDispatched(OrderShipped::class);
 
-        // 이벤트가 2번 디스패치 되었는지 주장
+        // 이벤트가 두 번 디스패치 되었는지 검증...
         Event::assertDispatched(OrderShipped::class, 2);
 
-        // 이벤트가 디스패치되지 않았는지 주장
+        // 특정 이벤트가 디스패치되지 않았는지 검증...
         Event::assertNotDispatched(OrderFailedToShip::class);
 
-        // 아무 이벤트도 디스패치 안됨 주장
+        // 아무런 이벤트도 디스패치되지 않았는지 검증...
         Event::assertNothingDispatched();
     }
 }
 ```
 
-`assertDispatched` 또는 `assertNotDispatched` 메서드에 클로저를 전달하여 특정 "진실 테스트"를 통과하는 이벤트만 주장할 수 있습니다.
+`assertDispatched`, `assertNotDispatched` 등의 메서드에도 클로저를 전달할 수 있습니다. 클로저는 "조건"을 만족하는 이벤트가 디스패치 됐는지를 세부적으로 검증할 때 유용합니다.
 
-```php
+```
 Event::assertDispatched(function (OrderShipped $event) use ($order) {
     return $event->order->id === $order->id;
 });
 ```
 
-단순히 이벤트 리스너가 특정 이벤트를 리스닝하는지만 주장하고 싶으면 `assertListening`을 사용할 수 있습니다.
+이벤트 리스너가 특정 이벤트를 청취(listen)하는지 검증하고 싶다면, `assertListening` 메서드를 사용할 수 있습니다.
 
-```php
+```
 Event::assertListening(
     OrderShipped::class,
     SendShipmentNotification::class
 );
 ```
 
-> {note} `Event::fake()`를 호출하면 이벤트 리스너가 실행되지 않습니다. 따라서 UUID 생성 등 이벤트에 의존하는 모델 팩토리를 사용하는 경우, 팩토리 실행 **이후**에 `Event::fake()`를 호출해야 합니다.
+> [!NOTE]
+> `Event::fake()`를 호출하면 모든 이벤트 리스너가 실제로 실행되지 않습니다. 만약 테스트에서 이벤트에 의존하는 모델 팩토리(예: 모델 `creating` 이벤트에서 UUID를 생성) 등을 사용하는 경우, 팩토리를 먼저 사용한 뒤 `Event::fake()`를 호출해야 합니다.
 
 <a name="faking-a-subset-of-events"></a>
-#### 특정 이벤트만 페이크 처리하기
+#### 일부 이벤트만 페이크 처리하기
 
-특정 이벤트만 리스너를 페이크 처리하고 싶다면, 배열로 넘겨 `fake` 또는 `fakeFor` 메서드를 사용하세요.
+특정 이벤트에 대해서만 리스너가 실행되지 않도록 하고 싶다면, `fake` 또는 `fakeFor` 메서드에 해당 이벤트 목록을 배열로 전달하면 됩니다.
 
-```php
+```
 /**
  * 주문 처리 테스트
  */
@@ -339,7 +343,7 @@ public function test_orders_can_be_processed()
 
     Event::assertDispatched(OrderCreated::class);
 
-    // 다른 이벤트들은 정상적으로 디스패치됨
+    // 그 외의 이벤트는 평소처럼 디스패치되고 리스너가 실행됩니다...
     $order->update([...]);
 }
 ```
@@ -347,9 +351,9 @@ public function test_orders_can_be_processed()
 <a name="scoped-event-fakes"></a>
 ### 범위 지정 이벤트 페이크
 
-테스트의 일부 구간에서만 이벤트 리스너를 페이크 처리하고 싶다면 `fakeFor` 메서드를 사용하세요.
+테스트의 특정 구간에서만 이벤트 리스너를 실행하지 않도록 페이크 처리하려면, `fakeFor` 메서드를 사용하면 됩니다.
 
-```php
+```
 <?php
 
 namespace Tests\Feature;
@@ -376,7 +380,7 @@ class ExampleTest extends TestCase
             return $order;
         });
 
-        // 이후 이벤트는 정상적으로 디스패치되고, 옵저버도 실행됨...
+        // 이후부터는 이벤트가 정상적으로 디스패치되고 옵저버가 실행됩니다 ...
         $order->update([...]);
     }
 }
@@ -385,16 +389,16 @@ class ExampleTest extends TestCase
 <a name="http-fake"></a>
 ## HTTP 페이크
 
-`Http` 파사드의 `fake` 메서드를 이용하면, HTTP 클라이언트가 요청 시 미리 지정된 더미 응답을 반환하도록 할 수 있습니다. 자세한 내용은 [HTTP 클라이언트 테스트 문서](/docs/{{version}}/http-client#testing)를 참고하세요.
+`Http` 파사드의 `fake` 메서드를 사용하면, HTTP 클라이언트가 외부로 요청을 보내는 대신 미리 준비한 더미/가짜 응답을 반환하도록 변경할 수 있습니다. 외부 HTTP 요청 페이크 처리 방법은 [HTTP 클라이언트 테스트 문서](/docs/8.x/http-client#testing)를 참고하세요.
 
 <a name="mail-fake"></a>
-## 메일 페이크
+## 메일(Mail) 페이크
 
-`Mail` 파사드의 `fake` 메서드를 통해 실제로 메일을 발송하지 않도록 할 수 있습니다. 대부분, 메일 발송은 실제로 테스트하려는 코드와 직접적인 관련이 없습니다. Laravel이 특정 mailable을 전송하도록 지시했는지를 주장하는 것으로 충분합니다.
+`Mail` 파사드의 `fake` 메서드를 사용하면, 실제로 메일이 전송되는 것을 막을 수 있습니다. 일반적으로 메일 전송 자체는 실제로 테스트할 대상과는 직접적 관련이 없는 경우가 많으니, 라라벨이 특정 전달 객체(mailable)를 전송하도록 지시했는지만 검증하는 것으로 충분합니다.
 
-`Mail` 파사드의 `fake` 이후, [mailable](/docs/{{version}}/mail)이 전송 지시되었는지, 수신자 등 데이터도 검증할 수 있습니다.
+`Mail::fake()`를 호출한 후에는, [mailable](/docs/8.x/mail)가 실제로 전송 요청됐는지 여부를 검증하거나, 전달된 데이터까지 확인할 수 있습니다.
 
-```php
+```
 <?php
 
 namespace Tests\Feature;
@@ -411,26 +415,26 @@ class ExampleTest extends TestCase
     {
         Mail::fake();
 
-        // 주문 배송 수행...
+        // Perform order shipping...
 
-        // 아무 mailable도 전송되지 않았는지
+        // 아무런 mailable이 전송되지 않았는지 확인...
         Mail::assertNothingSent();
 
-        // 특정 mailable 전송 주장
+        // 특정 mailable이 전송됐는지 확인...
         Mail::assertSent(OrderShipped::class);
 
-        // mailable이 2번 전송되었는지
+        // 특정 mailable이 두 번 전송됐는지 확인...
         Mail::assertSent(OrderShipped::class, 2);
 
-        // mailable이 전송되지 않았는지
+        // 다른 mailable이 전송되지 않았는지 확인...
         Mail::assertNotSent(AnotherMailable::class);
     }
 }
 ```
 
-백그라운드에서 mailable을 큐에 넣는 경우, `assertSent` 대신 `assertQueued`를 사용해야 합니다.
+만약 mailable을 백그라운드에서 큐로 전송한다면, `assertSent` 대신 `assertQueued` 메서드를 사용해야 합니다.
 
-```php
+```
 Mail::assertQueued(OrderShipped::class);
 
 Mail::assertNotQueued(OrderShipped::class);
@@ -438,17 +442,17 @@ Mail::assertNotQueued(OrderShipped::class);
 Mail::assertNothingQueued();
 ```
 
-`assertSent`, `assertNotSent`, `assertQueued`, `assertNotQueued`에도 클로저를 전달해 특정 조건을 충족하는 mailable 전송을 주장할 수 있습니다.
+`assertSent`, `assertNotSent`, `assertQueued`, `assertNotQueued` 등에는 클로저를 전달해, 조건을 만족하는 mailable이 실제 전송됐는지 세밀하게 검증할 수 있습니다.
 
-```php
+```
 Mail::assertSent(function (OrderShipped $mail) use ($order) {
     return $mail->order->id === $order->id;
 });
 ```
 
-또한 클로저 내 mailable 인스턴스를 통해 수신자 등 정보를 편리하게 검사할 수 있습니다.
+메일 수신자 정보를 확인하려면, 클로저 인자로 전달된 mailable 인스턴스의 편의 메서드를 활용할 수 있습니다.
 
-```php
+```
 Mail::assertSent(OrderShipped::class, function ($mail) use ($user) {
     return $mail->hasTo($user->email) &&
            $mail->hasCc('...') &&
@@ -456,9 +460,9 @@ Mail::assertSent(OrderShipped::class, function ($mail) use ($user) {
 });
 ```
 
-메일 전송이 없음을 주장하는 방법은 `assertNotSent`와 `assertNotQueued` 두 가지가 있으며, 둘 다 만족하는 경우를 위해 `assertNothingOutgoing`과 `assertNotOutgoing`를 사용할 수 있습니다.
+메시지가 전송되지 않았음을 검증하는 메서드는 `assertNotSent`와 `assertNotQueued` 두 가지가 있습니다. 메일이 전송되지 **않았고** 큐에도 들어가지 않았음을 한 번에 확인하려면, `assertNothingOutgoing` 또는 `assertNotOutgoing` 메서드를 사용할 수 있습니다.
 
-```php
+```
 Mail::assertNothingOutgoing();
 
 Mail::assertNotOutgoing(function (OrderShipped $mail) use ($order) {
@@ -467,13 +471,13 @@ Mail::assertNotOutgoing(function (OrderShipped $mail) use ($order) {
 ```
 
 <a name="notification-fake"></a>
-## 알림 페이크
+## 알림(Notification) 페이크
 
-`Notification` 파사드의 `fake` 메서드를 통해 실제로 알림이 전송되지 않도록 할 수 있습니다. 대부분의 경우, Laravel이 특정 알림을 전송하도록 지시했는지만 주장하면 충분합니다.
+`Notification` 파사드의 `fake` 메서드를 사용하면, 실제로 알림이 전송되지 않도록 할 수 있습니다. 거의 대부분의 경우, 전달된 알림이 실제로 사용자에게 전송되는지 보다는, "라라벨이 해당 알림을 전송하도록 지시했는가"만을 확인하는 것으로 충분합니다.
 
-`Notification` 파사드의 `fake` 이후, [알림](/docs/{{version}}/notifications)이 전송 지시되었는지와 받은 데이터도 검증할 수 있습니다.
+`Notification::fake()` 호출 후에는, [알림](/docs/8.x/notifications)이 실제로 전송됐는지, 그리고 어떤 데이터가 전달됐는지 아래와 같이 검증할 수 있습니다.
 
-```php
+```
 <?php
 
 namespace Tests\Feature;
@@ -490,17 +494,17 @@ class ExampleTest extends TestCase
     {
         Notification::fake();
 
-        // 주문 배송 수행...
+        // Perform order shipping...
 
-        // 아무 알림도 전송되지 않았는지
+        // 아무런 알림도 전송되지 않았는지 검증...
         Notification::assertNothingSent();
 
-        // 특정 유저에게 알림이 전송됐는지 주장
+        // 주어진 사용자에게 알림이 전송됐는지 검증...
         Notification::assertSentTo(
             [$user], OrderShipped::class
         );
 
-        // 알림이 전송되지 않았는지 주장
+        // 다른 알림이 전송되지 않았는지 검증...
         Notification::assertNotSentTo(
             [$user], AnotherNotification::class
         );
@@ -508,9 +512,9 @@ class ExampleTest extends TestCase
 }
 ```
 
-`assertSentTo`, `assertNotSentTo`에도 클로저를 전달해 특정 조건을 만족하는 알림 전송을 주장할 수 있습니다.
+`assertSentTo`, `assertNotSentTo`에 클로저를 전달해, 특정 조건을 만족하는 알림이 실제 전송됐는지 세부적으로 검증할 수 있습니다.
 
-```php
+```
 Notification::assertSentTo(
     $user,
     function (OrderShipped $notification, $channels) use ($order) {
@@ -520,11 +524,11 @@ Notification::assertSentTo(
 ```
 
 <a name="on-demand-notifications"></a>
-#### 온디맨드 알림
+#### 온디맨드(즉시) 알림
 
-테스트 중 코드가 [온디맨드 알림](/docs/{{version}}/notifications#on-demand-notifications)을 전송한다면, 반드시 `Illuminate\Notifications\AnonymousNotifiable` 인스턴스로 전송 여부를 주장해야 합니다.
+테스트하는 코드가 [온디맨드 알림](/docs/8.x/notifications#on-demand-notifications)을 전송했다면, 알림이 `Illuminate\Notifications\AnonymousNotifiable` 인스턴스에 전송됐는지 검증해야 합니다.
 
-```php
+```
 use Illuminate\Notifications\AnonymousNotifiable;
 
 Notification::assertSentTo(
@@ -532,9 +536,9 @@ Notification::assertSentTo(
 );
 ```
 
-알림 주장 메서드의 세 번째 인자로 클로저를 전달하면, 온디맨드 알림이 올바른 "라우트" 주소로 전송되었는지 검사할 수 있습니다.
+알림 검증 메서드의 세 번째 인자로 클로저를 전달하면, 온디맨드 알림이 올바른 "route" 주소로 전송됐는지 추가적으로 확인할 수 있습니다.
 
-```php
+```
 Notification::assertSentTo(
     new AnonymousNotifiable,
     OrderShipped::class,
@@ -545,13 +549,13 @@ Notification::assertSentTo(
 ```
 
 <a name="queue-fake"></a>
-## 큐 페이크
+## 큐(Queue) 페이크
 
-`Queue` 파사드의 `fake` 메서드를 사용해 실제 큐 작업이 발생하지 않도록 할 수 있습니다. 일반적으로, 특정 잡이 큐에 전송되었는지만 주장하면 됩니다. 큐 잡 자체는 별도 테스트 클래스로 검증하세요.
+`Queue` 파사드의 `fake` 메서드를 사용하면, 큐에 들어가는 잡이 실제로 큐에 push 되지 않도록 막을 수 있습니다. 대부분의 경우, "라라벨이 특정 잡을 큐에 푸시(push)하도록 지시했는가"만 따져 보고, 잡의 구현 및 실행은 별도 테스트에서 검증하면 충분합니다.
 
-`Queue` 파사드의 `fake` 이후, 애플리케이션이 잡을 큐에 넣으려 했는지 주장할 수 있습니다.
+`Queue::fake()` 호출 후에는, 애플리케이션에서 잡을 큐에 보내려 했는지 다양하게 검증할 수 있습니다.
 
-```php
+```
 <?php
 
 namespace Tests\Feature;
@@ -570,37 +574,37 @@ class ExampleTest extends TestCase
     {
         Queue::fake();
 
-        // 주문 배송 ...
+        // Perform order shipping...
 
-        // 아무 잡도 큐에 안 넣었는지
+        // 아무 잡도 푸시되지 않았는지 검증...
         Queue::assertNothingPushed();
 
-        // 특정 큐에 잡이 들어갔는지
+        // 특정 큐에 잡이 푸시됐는지 검증...
         Queue::assertPushedOn('queue-name', ShipOrder::class);
 
-        // 잡이 2번 들어갔는지
+        // 잡이 두 번 푸시됐는지 검증...
         Queue::assertPushed(ShipOrder::class, 2);
 
-        // 잡이 안 들어갔는지
+        // 잡이 푸시되지 않았는지 검증...
         Queue::assertNotPushed(AnotherJob::class);
     }
 }
 ```
 
-`assertPushed`, `assertNotPushed`에도 클로저를 전달해 특정 조건에 부합하는 잡 전송을 주장할 수 있습니다.
+`assertPushed`, `assertNotPushed` 등의 메서드에는 클로저를 활용해, 조건을 만족하는 잡이 실제로 푸시됐는지 세밀하게 확인할 수 있습니다.
 
-```php
+```
 Queue::assertPushed(function (ShipOrder $job) use ($order) {
     return $job->order->id === $order->id;
 });
 ```
 
 <a name="job-chains"></a>
-### 잡 체인
+### 잡 체인(체이닝)
 
-`Queue` 파사드의 `assertPushedWithChain`과 `assertPushedWithoutChain`으로 잡이 체인과 함께 혹은 별개로 큐에 들어갔는지 주장할 수 있습니다.
+`Queue` 파사드의 `assertPushedWithChain` 및 `assertPushedWithoutChain` 메서드는, 큐에 푸시된 잡의 체인(chain)을 검증하는 용도로 활용할 수 있습니다. `assertPushedWithChain`는 첫 번째 인자로 기본 잡, 두 번째 인자로 체인에 연결될 잡들의 배열을 받습니다.
 
-```php
+```
 use App\Jobs\RecordShipment;
 use App\Jobs\ShipOrder;
 use App\Jobs\UpdateInventory;
@@ -612,27 +616,27 @@ Queue::assertPushedWithChain(ShipOrder::class, [
 ]);
 ```
 
-실제 잡 인스턴스 배열로도 주장할 수 있습니다.
+위 예시처럼 잡 클래스명을 배열로 넘길 수도 있고, 실제 잡 인스턴스의 배열도 막힘없이 사용할 수 있습니다. 잡 인스턴스를 넘기면, 라라벨이 해당 인스턴스의 클래스와 속성 값이 실제 체인과 같은지까지 확인합니다.
 
-```php
+```
 Queue::assertPushedWithChain(ShipOrder::class, [
     new RecordShipment,
     new UpdateInventory,
 ]);
 ```
 
-잡이 체인 없이 큐에 들어갔는지 확인하려면 `assertPushedWithoutChain`을 사용하세요.
+잡 체인 없이 잡이 푸시됐는지 확인하려면 `assertPushedWithoutChain` 메서드를 사용할 수 있습니다.
 
-```php
+```
 Queue::assertPushedWithoutChain(ShipOrder::class);
 ```
 
 <a name="storage-fake"></a>
-## 스토리지 페이크
+## 스토리지(Storage) 페이크
 
-`Storage` 파사드의 `fake` 메서드를 이용하면, `Illuminate\Http\UploadedFile`의 파일 생성 유틸리티와 결합해 파일 업로드 테스트를 간편하게 할 수 있습니다. 예시:
+`Storage` 파사드의 `fake` 메서드를 활용하면, 가짜 디스크를 쉽게 생성해 테스트 파일 업로드를 훨씬 쉽고 빠르게 진행할 수 있습니다. `Illuminate\Http\UploadedFile` 클래스의 파일 생성 기능과 조합해 사용하면 매우 편리합니다.
 
-```php
+```
 <?php
 
 namespace Tests\Feature;
@@ -654,30 +658,31 @@ class ExampleTest extends TestCase
             UploadedFile::fake()->image('photo2.jpg')
         ]);
 
-        // 파일 저장 여부 주장
+        // 한 개 파일 또는 여러 파일이 저장됐는지 확인...
         Storage::disk('photos')->assertExists('photo1.jpg');
         Storage::disk('photos')->assertExists(['photo1.jpg', 'photo2.jpg']);
 
-        // 파일 미저장 주장
+        // 파일이 저장되지 않았는지 확인...
         Storage::disk('photos')->assertMissing('missing.jpg');
         Storage::disk('photos')->assertMissing(['missing.jpg', 'non-existing.jpg']);
     }
 }
 ```
 
-파일 업로드 테스트에 대한 더 자세한 내용은 [HTTP 테스트 문서의 파일 업로드](/docs/{{version}}/http-tests#testing-file-uploads) 부분을 참고하세요.
+파일 업로드 테스트에 대한 자세한 내용은 [HTTP 테스트 문서의 파일 업로드](/docs/8.x/http-tests#testing-file-uploads) 항목을 참고하세요.
 
-> {tip} 기본적으로, `fake` 메서드는 임시 디렉터리의 모든 파일을 삭제합니다. 파일을 유지하고 싶다면 `persistentFake` 메서드를 사용하세요.
+> [!TIP]
+> 기본적으로 `fake` 메서드는 임시 디렉토리 내의 파일을 모두 삭제합니다. 테스트가 끝난 후에도 파일을 유지하고 싶다면, "persistentFake" 메서드를 사용하세요.
 
 <a name="interacting-with-time"></a>
-## 시간 조작
+## 시간 제어와 테스트
 
-테스트 중, `now` 또는 `Illuminate\Support\Carbon::now()`와 같은 헬퍼가 반환하는 시간을 수정해야 할 때가 있습니다. Laravel의 기본 기능 테스트 클래스에는 현재 시간을 조작할 수 있는 헬퍼가 내장되어 있습니다.
+테스트 도중, `now` 또는 `Illuminate\Support\Carbon::now()`와 같은 헬퍼가 반환하는 시간을 임의로 조정해야 할 때가 있습니다. 다행히 라라벨의 기본 feature 테스트 클래스에는 현재 시간을 쉽게 조작할 수 있는 헬퍼 메서드가 포함되어 있습니다.
 
-```php
+```
 public function testTimeCanBeManipulated()
 {
-    // 미래로 이동
+    // 미래로 이동...
     $this->travel(5)->milliseconds();
     $this->travel(5)->seconds();
     $this->travel(5)->minutes();
@@ -686,13 +691,13 @@ public function testTimeCanBeManipulated()
     $this->travel(5)->weeks();
     $this->travel(5)->years();
 
-    // 과거로 이동
+    // 과거로 이동...
     $this->travel(-5)->hours();
 
-    // 특정 시간으로 이동
+    // 특정 시점으로 이동...
     $this->travelTo(now()->subHours(6));
 
-    // 현재로 복귀
+    // 현재 시간으로 복귀...
     $this->travelBack();
 }
 ```

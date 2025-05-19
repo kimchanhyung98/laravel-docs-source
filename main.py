@@ -83,7 +83,7 @@ def main():
 
                 # 번역 실행
                 translate_file(source_path, target_path)
-                time.sleep(5)
+                time.sleep(60)
 
     add_files_to_git()
     print("\n갱신 완료")

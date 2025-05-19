@@ -1,4 +1,4 @@
-# 배포
+# 배포 (Deployment)
 
 - [소개](#introduction)
 - [서버 요구 사항](#server-requirements)
@@ -11,34 +11,34 @@
     - [라우트 캐싱](#optimizing-route-loading)
     - [뷰 캐싱](#optimizing-view-loading)
 - [디버그 모드](#debug-mode)
-- [Forge / Vapor를 통한 간편 배포](#deploying-with-forge-or-vapor)
+- [Forge / Vapor로 쉬운 배포](#deploying-with-forge-or-vapor)
 
 <a name="introduction"></a>
 ## 소개
 
-Laravel 애플리케이션을 프로덕션 환경에 배포할 준비가 되었다면, 애플리케이션이 최대한 효율적으로 실행되도록 할 수 있는 몇 가지 중요한 사항이 있습니다. 이 문서에서는 Laravel 애플리케이션을 올바르게 배포하기 위한 훌륭한 시작점을 안내합니다.
+라라벨 애플리케이션을 운영 환경에 배포할 준비가 되었다면, 애플리케이션이 최대한 효율적으로 동작하도록 하기 위해 취할 수 있는 중요한 사항들이 있습니다. 이 문서에서는 라라벨 애플리케이션을 올바르게 배포하기 위한 가장 기본적인 출발점들을 다루고 있습니다.
 
 <a name="server-requirements"></a>
 ## 서버 요구 사항
 
-Laravel 프레임워크에는 몇 가지 시스템 요구 사항이 있습니다. 웹 서버가 다음의 최소 PHP 버전과 확장 기능을 가지고 있는지 확인해야 합니다.
+라라벨 프레임워크는 몇 가지 시스템 요구 사항이 있습니다. 여러분의 웹 서버가 아래 최소 PHP 버전과 확장 모듈을 갖추고 있는지 반드시 확인해야 합니다.
 
 <div class="content-list" markdown="1">
 
 - PHP >= 8.1
-- Ctype PHP 확장
-- cURL PHP 확장
-- DOM PHP 확장
-- Fileinfo PHP 확장
-- Filter PHP 확장
-- Hash PHP 확장
-- Mbstring PHP 확장
-- OpenSSL PHP 확장
-- PCRE PHP 확장
-- PDO PHP 확장
-- Session PHP 확장
-- Tokenizer PHP 확장
-- XML PHP 확장
+- Ctype PHP Extension
+- cURL PHP Extension
+- DOM PHP Extension
+- Fileinfo PHP Extension
+- Filter PHP Extension
+- Hash PHP Extension
+- Mbstring PHP Extension
+- OpenSSL PHP Extension
+- PCRE PHP Extension
+- PDO PHP Extension
+- Session PHP Extension
+- Tokenizer PHP Extension
+- XML PHP Extension
 
 </div>
 
@@ -48,9 +48,9 @@ Laravel 프레임워크에는 몇 가지 시스템 요구 사항이 있습니다
 <a name="nginx"></a>
 ### Nginx
 
-Nginx가 설치된 서버에 애플리케이션을 배포하는 경우, 다음 설정 파일을 참고하여 웹 서버를 설정할 수 있습니다. 대부분의 경우, 이 파일은 서버 환경에 따라 커스터마이즈 해야 합니다. **서버 관리를 위한 지원이 필요하다면, [Laravel Forge](https://forge.laravel.com)와 같은 공식 Laravel 서버 관리 및 배포 서비스를 고려해보세요.**
+만약 Nginx가 실행 중인 서버에 애플리케이션을 배포한다면, 아래의 설정 파일을 참고하여 웹 서버를 설정할 수 있습니다. 실제로는 여러분의 서버 환경에 맞게 이 파일을 추가로 수정해야 할 가능성이 높습니다. **서버 관리에 도움이 필요하다면, [Laravel Forge](https://forge.laravel.com)와 같은 라라벨 공식 서버 관리 및 배포 서비스를 사용하는 것도 고려해보시기 바랍니다.**
 
-아래 설정과 같이, 웹 서버가 모든 요청을 애플리케이션의 `public/index.php` 파일로 전달하도록 해야 합니다. `index.php` 파일을 프로젝트 루트로 옮기지 마십시오. 프로젝트 루트에서 애플리케이션을 서비스할 경우, 여러 민감한 설정 파일이 외부에 노출될 수 있습니다.
+아래 예시 설정과 같이, 웹 서버가 모든 요청을 애플리케이션의 `public/index.php` 파일로 전달하도록 반드시 설정해야 합니다. 절대로 `index.php` 파일을 프로젝트 루트로 옮기는 시도를 해서는 안 됩니다. 만약 프로젝트의 루트에서 애플리케이션을 서비스하게 되면, 많은 민감한 설정 파일들이 외부에 노출될 수 있습니다.
 
 ```nginx
 server {
@@ -93,33 +93,33 @@ server {
 <a name="autoloader-optimization"></a>
 ### 오토로더 최적화
 
-프로덕션 환경에 배포할 때는 Composer의 클래스 오토로더 맵을 최적화하여, Composer가 클래스에 맞는 파일을 더욱 빠르게 찾을 수 있도록 해야 합니다.
+운영 환경에 배포할 때는 Composer의 클래스 오토로더 맵을 최적화해야 Composer가 클래스를 빠르게 찾아서 로드할 수 있습니다.
 
 ```shell
 composer install --optimize-autoloader --no-dev
 ```
 
-> [!NOTE]  
-> 오토로더 최적화 외에도, 프로젝트의 소스 컨트롤 저장소에 `composer.lock` 파일을 반드시 포함해야 합니다. `composer.lock` 파일이 있으면 프로젝트의 의존성을 훨씬 더 빠르게 설치할 수 있습니다.
+> [!NOTE]
+> 오토로더를 최적화하는 것과 더불어, 반드시 `composer.lock` 파일도 소스 컨트롤 저장소에 포함시켜야 합니다. `composer.lock` 파일이 있으면 프로젝트 의존성 설치 속도가 훨씬 빨라집니다.
 
 <a name="optimizing-configuration-loading"></a>
 ### 설정 캐싱
 
-애플리케이션을 프로덕션 환경에 배포할 때는, 배포 과정 중 반드시 `config:cache` Artisan 명령어를 실행해야 합니다.
+애플리케이션을 운영 환경에 배포할 때는, 배포 과정에서 반드시 `config:cache` 아티즌 명령어를 실행해야 합니다.
 
 ```shell
 php artisan config:cache
 ```
 
-이 명령은 모든 Laravel 설정 파일을 하나의 캐시된 파일로 결합하여, 프레임워크가 설정 값을 로드할 때 파일 시스템에 접근하는 횟수를 대폭 줄여줍니다.
+이 명령어는 라라벨의 모든 설정 파일을 하나의 캐시 파일에 합쳐서 저장합니다. 덕분에 프레임워크가 설정값을 불러올 때 파일 시스템에 접근하는 횟수가 크게 줄어들어 성능이 향상됩니다.
 
-> [!WARNING]  
-> 배포 과정에서 `config:cache` 명령을 실행했다면, 설정 파일 내에서만 `env` 함수를 사용하도록 해야 합니다. 설정이 캐시되면 `.env` 파일이 로드되지 않으므로, 설정 파일 이외에서 `env` 함수를 호출하면 `null`이 반환됩니다.
+> [!NOTE]
+> 배포 과정에서 `config:cache` 명령어를 실행하는 경우, 반드시 설정 파일 내에서만 `env` 함수를 호출해야 합니다. 설정을 캐시하면 `.env` 파일은 더 이상 로드되지 않으며, 이때부터 `.env` 변수의 값을 `env` 함수로 읽으면 항상 `null`을 반환합니다.
 
 <a name="caching-events"></a>
 ### 이벤트 캐싱
 
-애플리케이션에서 [이벤트 자동 탐색](/docs/{{version}}/events#event-discovery)을 사용한다면, 배포 과정에서 이벤트-리스너 매핑을 캐싱해야 합니다. 이를 위해 배포 시 `event:cache` Artisan 명령어를 실행하세요.
+애플리케이션에서 [이벤트 디스커버리](/docs/10.x/events#event-discovery)를 사용 중이라면, 배포 과정에서 애플리케이션의 이벤트-리스너 매핑도 캐싱해야 합니다. 이를 위해 배포 시 `event:cache` 아티즌 명령어를 실행하면 됩니다.
 
 ```shell
 php artisan event:cache
@@ -128,47 +128,47 @@ php artisan event:cache
 <a name="optimizing-route-loading"></a>
 ### 라우트 캐싱
 
-많은 라우트를 가진 대규모 애플리케이션을 개발하는 경우, 배포 과정에서 `route:cache` Artisan 명령어를 실행해야 합니다.
+라우트가 많은 대규모 애플리케이션을 빌드할 경우, 배포 과정에서 `route:cache` 아티즌 명령어를 실행해야 합니다.
 
 ```shell
 php artisan route:cache
 ```
 
-이 명령은 모든 라우트 등록 정보를 하나의 메서드 호출로 캐시된 파일에 저장하여, 수백 개의 라우트를 등록할 때 라우트 등록 성능을 향상시킵니다.
+이 명령어는 모든 라우트 등록 정보를 하나의 캐시 파일 내에서 메서드 호출로 통합하여 저장합니다. 수백 개의 라우트를 등록할 때 라우트 등록 속도를 크게 개선할 수 있습니다.
 
 <a name="optimizing-view-loading"></a>
 ### 뷰 캐싱
 
-애플리케이션을 프로덕션 환경에 배포할 때, 배포 과정에서 `view:cache` Artisan 명령어를 실행해야 합니다.
+운영 환경에 애플리케이션을 배포할 때는, 배포 과정에서 반드시 `view:cache` 아티즌 명령어를 실행해야 합니다.
 
 ```shell
 php artisan view:cache
 ```
 
-이 명령은 모든 Blade 뷰를 미리 컴파일하여, 요청 시마다 뷰를 컴파일하지 않아도 되어 뷰를 반환하는 각 요청의 성능이 향상됩니다.
+이 명령어는 모든 Blade 뷰 파일을 미리 컴파일하여, 실제 요청마다 뷰가 실시간으로 컴파일되는 일이 없도록 하여 각 요청에서의 뷰 렌더링 성능을 높입니다.
 
 <a name="debug-mode"></a>
 ## 디버그 모드
 
-`config/app.php` 설정 파일의 debug 옵션은 오류에 대한 정보를 사용자가 얼마나 볼 수 있는지 결정합니다. 기본적으로 이 옵션은 애플리케이션의 `.env` 파일에 저장된 `APP_DEBUG` 환경 변수의 값을 따릅니다.
+`config/app.php` 설정 파일의 debug 옵션은 에러 발생 시 사용자에게 어느 정도의 정보가 노출되는지를 결정합니다. 기본적으로 이 옵션은 애플리케이션의 `.env` 파일에 저장된 `APP_DEBUG` 환경 변수 값을 따릅니다.
 
-> [!WARNING]  
-> **프로덕션 환경에서는 이 값이 항상 `false`여야 합니다. 프로덕션에서 `APP_DEBUG` 변수가 `true`로 설정되어 있으면, 민감한 설정 정보가 최종 사용자에게 노출될 위험이 있습니다.**
+> [!NOTE]
+> **운영 환경에서는 이 값이 반드시 `false`로 설정되어 있어야 합니다. 운영 환경에서 `APP_DEBUG` 변수가 `true`로 설정되어 있으면, 애플리케이션의 엔드 유저에게 민감한 설정 값이 노출될 위험이 있습니다.**
 
 <a name="deploying-with-forge-or-vapor"></a>
-## Forge / Vapor를 통한 간편 배포
+## Forge / Vapor로 쉬운 배포
 
 <a name="laravel-forge"></a>
 #### Laravel Forge
 
-서버 설정을 직접 관리하는 것이 어렵거나, Laravel 애플리케이션을 운영하기 위한 다양한 서비스를 직접 설정하는 것이 부담스럽다면, [Laravel Forge](https://forge.laravel.com)가 훌륭한 대안이 될 수 있습니다.
+서버 설정을 직접 관리할 준비가 되어 있지 않거나, 라라벨 애플리케이션을 안정적으로 실행하기 위해 필요한 다양한 서비스를 직접 설정하는 것이 어렵다면, [Laravel Forge](https://forge.laravel.com)는 훌륭한 대안이 될 수 있습니다.
 
-Laravel Forge는 DigitalOcean, Linode, AWS 등 다양한 인프라 제공업체에 서버를 생성할 수 있습니다. 또한, Nginx, MySQL, Redis, Memcached, Beanstalk 등 안정적인 Laravel 애플리케이션 개발에 필요한 도구들을 설치 및 관리해 줍니다.
+Laravel Forge를 사용하면 DigitalOcean, Linode, AWS 등 여러 인프라 제공업체에 서버를 생성할 수 있습니다. 또한, Forge는 Nginx, MySQL, Redis, Memcached, Beanstalk 등 강력한 라라벨 애플리케이션에 필요한 도구를 자동으로 설치하고 관리해줍니다.
 
-> [!NOTE]  
-> Laravel Forge를 활용한 전체 배포 가이드가 필요하다면 [Laravel Bootcamp](https://bootcamp.laravel.com/deploying)와 Laracasts의 Forge [영상 시리즈](https://laracasts.com/series/learn-laravel-forge-2022-edition)를 참고해보세요.
+> [!NOTE]
+> Laravel Forge로 배포하는 전체 가이드가 필요하다면 [Laravel Bootcamp](https://bootcamp.laravel.com/deploying)나 Forge의 [Laracasts 영상 시리즈](https://laracasts.com/series/learn-laravel-forge-2022-edition)를 참고하세요.
 
 <a name="laravel-vapor"></a>
 #### Laravel Vapor
 
-완전한 서버리스 환경에서 자동으로 확장되는 Laravel 전용 배포 플랫폼이 필요하다면 [Laravel Vapor](https://vapor.laravel.com)를 살펴보세요. Laravel Vapor는 AWS 기반의 서버리스 배포 플랫폼으로, Laravel 인프라를 손쉽게 구축할 수 있으며 확장성과 단순함을 겸비하고 있습니다. Laravel Vapor는 Laravel 제작진이 프레임워크와 완벽하게 동작하도록 맞춤 최적화되어 있어, 익숙한 방식 그대로 개발을 이어갈 수 있습니다.
+완전히 서버리스(serverless)하며 라라벨에 최적화된 오토스케일링 배포 플랫폼을 원하신다면, [Laravel Vapor](https://vapor.laravel.com)를 확인해 보세요. Laravel Vapor는 AWS 기반의 라라벨 전용 서버리스 배포 플랫폼입니다. Vapor에서 라라벨 인프라를 손쉽게 시작할 수 있으며, 서버 관리의 복잡함 없이 확장 가능한 환경을 즐길 수 있습니다. 라라벨의 제작진이 직접 세밀하게 튜닝했기 때문에 프레임워크와 완벽하게 연동되어, 익숙한 방식으로 라라벨 애플리케이션을 계속 개발할 수 있습니다.

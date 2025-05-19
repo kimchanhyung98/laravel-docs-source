@@ -84,7 +84,7 @@ def translate_text_with_openai(text_to_translate, system_prompt):
 
 
 @retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,))
-@timeout(seconds=300)
+@timeout(seconds=600)
 def translate_file(source_file, target_file, source_lang="en", target_lang="ko"):
     """OpenAI API를 사용하여, 마크다운 파일을 번역하고 저장
     대용량 파일은 청크로 분할하여 번역
@@ -110,23 +110,20 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
         # 파일 경로에서 버전 정보 추출 - 안전한 방법 사용
         version = None
 
-        # 절대 경로를 사용하여 버전 정보 추출
-        abs_source_path = os.path.abspath(source_file).replace("\\", "/")
+        # 타겟 파일 경로에서 버전 정보 추출
+        abs_target_path = os.path.abspath(target_file).replace("\\", "/")
 
-        # 정규식을 사용하여 버전 패턴 추출
-        version_patterns = [
-            (r'/master/', "master"),
-            (r'/12\.x/', "12.x"),
-            (r'/11\.x/', "11.x"),
-            (r'/10\.x/', "10.x"),
-            (r'/9\.x/', "9.x"),
-            (r'/8\.x/', "8.x")
-        ]
-
-        for pattern, ver in version_patterns:
-            if re.search(pattern, abs_source_path):
-                version = ver
-                break
+        # 타겟 파일 경로에서 버전 추출
+        if '/9.x/' in abs_target_path:
+            version = '9.x'
+        elif '/10.x/' in abs_target_path:
+            version = '10.x'
+        elif '/11.x/' in abs_target_path:
+            version = '11.x'
+        elif '/12.x/' in abs_target_path:
+            version = '12.x'
+        elif '/master/' in abs_target_path:
+            version = 'master'
 
         # 마크다운 필터링 적용 (버전 정보 포함)
         content = filter_markdown(content, version)
@@ -145,8 +142,8 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
 
         print(f"번역 시작: {source_file} -> {target_file} ({line_count}줄)")
 
-        # 대용량 파일 기준 (1000줄 이상)
-        if line_count > 1000:
+        # 대용량 파일 기준 (800줄 이상)
+        if line_count > 800:
             print(f"대용량 파일 감지: {file_name} - 청크 분할 번역 시작")
             translated_content = orchestrate_chunk_translation(
                 content=content,
