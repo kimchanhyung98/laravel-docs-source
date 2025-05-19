@@ -2,53 +2,53 @@
 
 - [소개](#introduction)
     - [설정](#configuration)
-    - [드라이버 사전 요구사항](#driver-prerequisites)
-    - [장애 조치(failover) 설정](#failover-configuration)
-    - [라운드 로빈 설정](#round-robin-configuration)
-- [메일러블 클래스 생성](#generating-mailables)
-- [메일러블 클래스 작성](#writing-mailables)
+    - [드라이버 사전 준비사항](#driver-prerequisites)
+    - [페일오버(failover) 구성](#failover-configuration)
+    - [라운드로빈(round robin) 구성](#round-robin-configuration)
+- [메일러블 생성](#generating-mailables)
+- [메일러블 작성](#writing-mailables)
     - [발신자 설정](#configuring-the-sender)
-    - [뷰(View) 설정](#configuring-the-view)
+    - [뷰(view) 설정](#configuring-the-view)
     - [뷰 데이터](#view-data)
     - [첨부 파일](#attachments)
     - [인라인 첨부 파일](#inline-attachments)
-    - [첨부 가능한 객체](#attachable-objects)
+    - [첨부 가능한 객체(Attachable Objects)](#attachable-objects)
     - [헤더](#headers)
     - [태그 및 메타데이터](#tags-and-metadata)
-    - [Symfony 메시지 커스터마이징](#customizing-the-symfony-message)
+    - [Symfony 메시지 커스터마이즈](#customizing-the-symfony-message)
 - [마크다운 메일러블](#markdown-mailables)
     - [마크다운 메일러블 생성](#generating-markdown-mailables)
     - [마크다운 메시지 작성](#writing-markdown-messages)
-    - [컴포넌트 커스터마이징](#customizing-the-components)
+    - [컴포넌트 커스터마이즈](#customizing-the-components)
 - [메일 전송](#sending-mail)
-    - [메일 큐잉](#queueing-mail)
+    - [메일 큐잉(Queueing Mail)](#queueing-mail)
 - [메일러블 렌더링](#rendering-mailables)
-    - [브라우저에서 메일러블 미리보기](#previewing-mailables-in-the-browser)
-- [메일러블 현지화](#localizing-mailables)
+    - [메일러블을 브라우저에서 미리보기](#previewing-mailables-in-the-browser)
+- [메일러블 현지화(Localizing)](#localizing-mailables)
 - [테스트](#testing-mailables)
-    - [메일러블 내용 테스트](#testing-mailable-content)
-    - [메일러블 전송 테스트](#testing-mailable-sending)
+    - [메일러블 본문 테스트](#testing-mailable-content)
+    - [메일러블 발송 테스트](#testing-mailable-sending)
 - [메일과 로컬 개발 환경](#mail-and-local-development)
 - [이벤트](#events)
-- [커스텀 트랜스포트](#custom-transports)
+- [커스텀 트랜스포트(Custom Transports)](#custom-transports)
     - [추가 Symfony 트랜스포트](#additional-symfony-transports)
 
 <a name="introduction"></a>
 ## 소개
 
-이메일 전송은 복잡할 필요가 없습니다. 라라벨은 유명한 [Symfony Mailer](https://symfony.com/doc/current/mailer.html) 컴포넌트를 기반으로 하는 깔끔하고 단순한 이메일 API를 제공합니다. 라라벨과 Symfony Mailer는 SMTP, Mailgun, Postmark, Resend, Amazon SES, `sendmail`을 통한 이메일 전송을 위한 드라이버를 제공하므로, 로컬 또는 클라우드 기반의 원하는 서비스로 빠르게 메일을 보내기 시작할 수 있습니다.
+이메일을 발송하는 작업은 복잡할 필요가 없습니다. 라라벨은 인기 있는 [Symfony Mailer](https://symfony.com/doc/current/mailer.html) 컴포넌트를 기반으로 하는 깔끔하고 간단한 이메일 API를 제공합니다. 라라벨과 Symfony Mailer는 SMTP, Mailgun, Postmark, Resend, Amazon SES, 그리고 `sendmail`을 통한 메일 발송을 지원하는 여러 드라이버를 제공하므로, 여러분이 원하는 로컬 또는 클라우드 기반 서비스로 손쉽게 메일을 발송할 수 있습니다.
 
 <a name="configuration"></a>
 ### 설정
 
-라라벨의 이메일 서비스는 애플리케이션의 `config/mail.php` 설정 파일을 통해 설정합니다. 이 파일에 정의된 각 메일러(mailers)는 고유한 설정 값과 "트랜스포트(transport)"를 가질 수 있으므로, 애플리케이션에서 여러 이메일 서비스를 각각 다르게 활용하여 특정 메일 메시지를 전송할 수 있습니다. 예를 들어, 트랜잭션(거래)성 메일은 Postmark로, 대량 메일은 Amazon SES로 보낼 수 있습니다.
+라라벨의 이메일 서비스는 애플리케이션의 `config/mail.php` 설정 파일을 통해 구성할 수 있습니다. 이 파일 내에서 각 메일러(mailer)는 고유한 설정값과 전송 방식("transport")을 가질 수 있으므로, 특정 이메일 메시지마다 서로 다른 이메일 서비스를 사용할 수도 있습니다. 예를 들어, 애플리케이션은 체크아웃과 같은 트랜잭션 메일은 Postmark를 이용해 보내고, 대량 메일은 Amazon SES로 보낼 수 있습니다.
 
-`mail` 설정 파일에는 `mailers` 설정 배열이 있습니다. 이 배열에는 라라벨이 지원하는 대표적인 메일 드라이버/트랜스포트에 대한 샘플 설정 값이 포함되어 있으며, `default` 설정 값은 애플리케이션에서 이메일을 전송할 때 기본적으로 사용할 메일러를 결정합니다.
+`mail` 설정 파일을 살펴보면, `mailers`라는 배열이 있습니다. 이 배열에는 라라벨에서 지원하는 주요 메일 드라이버/트랜스포트별 샘플 설정이 담겨 있으며, `default` 값에 어떤 메일러를 기본으로 사용할지 지정할 수 있습니다. 애플리케이션이 이메일을 보낼 때 특별히 지정하지 않으면 이 기본 메일러가 사용됩니다.
 
 <a name="driver-prerequisites"></a>
-### 드라이버/트랜스포트 사전 요구사항
+### 드라이버 / 트랜스포트 사전 준비사항
 
-Mailgun, Postmark, Resend, MailerSend와 같이 API 기반의 드라이버들은 일반적으로 SMTP 서버를 이용한 전송보다 더 간단하고 빠릅니다. 가능한 한 이러한 드라이버 중 하나를 사용하는 것을 권장합니다.
+Mailgun, Postmark, Resend, MailerSend와 같은 API 기반 드라이버는 SMTP 서버를 이용하는 것보다 더 간단하고 빠른 경우가 많습니다. 가능하다면 이러한 드라이버 중 하나를 사용하는 것을 권장합니다.
 
 <a name="mailgun-driver"></a>
 #### Mailgun 드라이버
@@ -59,13 +59,13 @@ Mailgun 드라이버를 사용하려면, Composer를 통해 Symfony의 Mailgun M
 composer require symfony/mailgun-mailer symfony/http-client
 ```
 
-그 다음, 애플리케이션의 `config/mail.php` 설정 파일에서 두 가지 변경이 필요합니다. 첫 번째로, 기본 메일러를 `mailgun`으로 지정합니다:
+설치 후, 애플리케이션의 `config/mail.php` 파일에서 두 가지를 변경해야 합니다. 먼저, 기본 메일러를 `mailgun`으로 설정합니다:
 
 ```php
 'default' => env('MAIL_MAILER', 'mailgun'),
 ```
 
-두 번째로, 아래와 같이 `mailers` 배열에 `mailgun` 설정을 추가합니다:
+그리고 나서, 아래와 같은 설정 배열을 `mailers` 배열에 추가하세요:
 
 ```php
 'mailgun' => [
@@ -76,7 +76,7 @@ composer require symfony/mailgun-mailer symfony/http-client
 ],
 ```
 
-기본 메일러를 설정한 후에는 `config/services.php` 설정 파일에 다음 옵션을 추가해야 합니다:
+기본 메일러를 설정한 뒤에는, `config/services.php` 설정 파일에 아래 정보를 추가하세요:
 
 ```php
 'mailgun' => [
@@ -87,7 +87,7 @@ composer require symfony/mailgun-mailer symfony/http-client
 ],
 ```
 
-만약 미국 Mailgun 리전이 아닌 다른 [Mailgun 지역](https://documentation.mailgun.com/en/latest/api-intro.html#mailgun-regions)을 이용한다면, `services` 설정 파일에서 해당 지역의 엔드포인트를 지정할 수 있습니다:
+만약 미국 외 [Mailgun region](https://documentation.mailgun.com/en/latest/api-intro.html#mailgun-regions)을 사용한다면, `services` 설정 파일에서 해당 지역의 endpoint를 지정할 수 있습니다:
 
 ```php
 'mailgun' => [
@@ -107,7 +107,7 @@ composer require symfony/mailgun-mailer symfony/http-client
 composer require symfony/postmark-mailer symfony/http-client
 ```
 
-설치 후, 애플리케이션의 `config/mail.php` 설정 파일에서 `default` 옵션을 `postmark`로 지정하세요. 이후 기본 메일러가 설정되면, `config/services.php` 설정 파일에 아래 옵션이 포함되어 있는지 반드시 확인합니다:
+이후 애플리케이션의 `config/mail.php` 파일에서 `default` 옵션을 `postmark`로 설정합니다. 기본 메일러를 설정한 뒤에는, `config/services.php` 파일에 아래와 같은 옵션이 있는지 확인하세요:
 
 ```php
 'postmark' => [
@@ -115,7 +115,7 @@ composer require symfony/postmark-mailer symfony/http-client
 ],
 ```
 
-특정 메일러가 사용할 Postmark 메시지 스트림을 지정하려면, mailer의 설정 배열에 `message_stream_id` 설정 값을 추가할 수 있습니다. 이 배열은 `config/mail.php` 설정 파일에서 찾을 수 있습니다:
+특정 메일러에서 사용할 Postmark 메시지 스트림을 지정하려면, 메일러 설정 배열에 `message_stream_id` 옵션을 추가하면 됩니다. 이 배열은 애플리케이션의 `config/mail.php` 파일 내에서 확인할 수 있습니다:
 
 ```php
 'postmark' => [
@@ -127,7 +127,7 @@ composer require symfony/postmark-mailer symfony/http-client
 ],
 ```
 
-이렇게 하면 서로 다른 메시지 스트림을 사용하는 여러 Postmark 메일러를 구성할 수 있습니다.
+이렇게 하면, 서로 다른 메시지 스트림을 사용하는 Postmark 메일러를 여러 개 설정할 수도 있습니다.
 
 <a name="resend-driver"></a>
 #### Resend 드라이버
@@ -138,7 +138,7 @@ composer require symfony/postmark-mailer symfony/http-client
 composer require resend/resend-php
 ```
 
-설치 후, `config/mail.php` 설정 파일에서 `default` 옵션을 `resend`로 지정하세요. 기본 메일러 설정이 끝나면, `config/services.php` 설정 파일에 아래 옵션이 포함되어 있는지 확인합니다:
+설치 후에는 애플리케이션의 `config/mail.php` 파일에서 `default` 옵션을 `resend`로 설정합니다. 그리고 `config/services.php` 파일에 아래 항목이 있는지 확인하세요:
 
 ```php
 'resend' => [
@@ -149,13 +149,13 @@ composer require resend/resend-php
 <a name="ses-driver"></a>
 #### SES 드라이버
 
-Amazon SES 드라이버를 사용하려면, 먼저 PHP용 Amazon AWS SDK를 설치해야 합니다. 이 라이브러리는 Composer로 설치할 수 있습니다:
+Amazon SES 드라이버를 사용하기 위해서는 먼저 Amazon AWS SDK for PHP를 설치해야 합니다. Composer 패키지 매니저로 다음 라이브러리를 설치하세요:
 
 ```shell
 composer require aws/aws-sdk-php
 ```
 
-설치 후, `config/mail.php` 설정 파일에서 `default` 옵션을 `ses`로 지정하고, `config/services.php` 설정 파일에 아래와 같은 옵션이 있는지 확인하세요:
+설치가 끝나면, `config/mail.php` 파일에서 `default` 옵션을 `ses`로 하고, `config/services.php` 파일에 아래와 같은 옵션이 포함되어 있는지 확인하세요:
 
 ```php
 'ses' => [
@@ -165,7 +165,7 @@ composer require aws/aws-sdk-php
 ],
 ```
 
-AWS [임시 자격 증명](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html)을 세션 토큰을 통해 사용하려면 SES 설정에 `token` 키를 추가할 수 있습니다:
+AWS의 [임시 자격 증명(temporary credentials)](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html)을 사용하고 싶다면, SES 설정에 `token` 키를 추가할 수 있습니다:
 
 ```php
 'ses' => [
@@ -176,7 +176,7 @@ AWS [임시 자격 증명](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_c
 ],
 ```
 
-SES의 [구독 관리 기능](https://docs.aws.amazon.com/ses/latest/dg/sending-email-subscription-management.html)을 활용하려면, 메일 메시지의 [headers](#headers) 메서드에서 반환되는 배열에 `X-Ses-List-Management-Options` 헤더를 추가할 수 있습니다:
+SES의 [구독 관리(subscription management) 기능](https://docs.aws.amazon.com/ses/latest/dg/sending-email-subscription-management.html)을 활용하려면, 메일 메시지의 [headers](#headers) 메서드에서 아래처럼 헤더 값을 반환하세요:
 
 ```php
 /**
@@ -192,7 +192,7 @@ public function headers(): Headers
 }
 ```
 
-이메일을 보낼 때 라라벨이 AWS SDK의 `SendEmail` 메서드로 전달해야 할 [추가 옵션](https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-sesv2-2019-09-27.html#sendemail)이 있다면, `ses` 설정 내에 `options` 배열을 정의할 수 있습니다:
+라라벨에서 이메일 발송 시 AWS SDK의 `SendEmail` 메서드로 추가 [옵션](https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-sesv2-2019-09-27.html#sendemail)을 전달하고 싶은 경우, SES 설정에 `options` 배열을 정의할 수 있습니다:
 
 ```php
 'ses' => [
@@ -211,13 +211,13 @@ public function headers(): Headers
 <a name="mailersend-driver"></a>
 #### MailerSend 드라이버
 
-[MailerSend](https://www.mailersend.com/)는 트랜잭션 이메일 및 SMS 서비스를 제공하며, 라라벨을 위한 자체 API 기반 메일 드라이버를 제공합니다. 이 드라이버 패키지는 Composer를 사용해서 설치할 수 있습니다:
+[MailerSend](https://www.mailersend.com/)는 트랜잭션 이메일 및 SMS 서비스를 제공하며, 라라벨용 API 기반 메일 드라이버를 자체적으로 제공합니다. 해당 드라이버 패키지는 Composer를 통해 설치할 수 있습니다:
 
 ```shell
 composer require mailersend/laravel-driver
 ```
 
-패키지 설치가 완료되면, 애플리케이션의 `.env` 파일에 `MAILERSEND_API_KEY` 환경 변수를 추가하세요. 그리고 `MAIL_MAILER` 환경 변수는 `mailersend`로 지정해야 합니다:
+패키지를 설치한 후에는, 애플리케이션의 `.env` 파일에 `MAILERSEND_API_KEY` 환경 변수를 추가하세요. 그리고 `MAIL_MAILER` 환경 변수도 `mailersend`로 지정해야 합니다:
 
 ```ini
 MAIL_MAILER=mailersend
@@ -227,7 +227,7 @@ MAIL_FROM_NAME="App Name"
 MAILERSEND_API_KEY=your-api-key
 ```
 
-마지막으로, 애플리케이션의 `config/mail.php` 설정 파일의 `mailers` 배열에 MailerSend를 추가합니다:
+마지막으로, 애플리케이션의 `config/mail.php` 파일 내 `mailers` 배열에 MailerSend를 추가하세요:
 
 ```php
 'mailersend' => [
@@ -235,14 +235,14 @@ MAILERSEND_API_KEY=your-api-key
 ],
 ```
 
-호스팅된 템플릿 사용법 등 MailerSend에 대한 더 많은 내용을 알고 싶다면 [MailerSend 드라이버 문서](https://github.com/mailersend/mailersend-laravel-driver#usage)를 참고하세요.
+MailerSend의 호스팅 템플릿 등 더 자세한 사용법은 [MailerSend 드라이버 공식 문서](https://github.com/mailersend/mailersend-laravel-driver#usage)를 참고하세요.
 
 <a name="failover-configuration"></a>
-### 장애 조치(failover) 설정
+### 페일오버(failover) 구성
 
-외부 서비스에 메일 전송을 맡겼는데 해당 서비스가 다운되는 경우가 있을 수 있습니다. 이런 상황에서는, 기본 전송 드라이버에 장애가 발생했을 때를 대비하여 하나 이상의 백업 메일 전송 설정을 정의할 수 있습니다.
+외부 서비스 중 하나가 다운될 경우, 애플리케이션의 메일 발송이 중단될 수 있습니다. 이런 상황을 대비해서, 주 메일 드라이버가 동작하지 않을 때 사용할 백업 메일 발송 구성을 하나 또는 여러 개 정의해두면 도움이 됩니다.
 
-이를 위해서는 애플리케이션의 `mail` 설정 파일에서 `failover` 트랜스포트를 사용하는 메일러를 정의하면 됩니다. 이때 `failover` 메일러에 대한 설정 배열에는 실제 전송에 사용할 메일러의 우선순위가 지정된 `mailers` 배열이 포함되어야 합니다:
+이를 위해서는 애플리케이션의 `mail` 설정 파일에 `failover` 트랜스포트를 사용하는 메일러를 정의해야 합니다. 이 메일러의 설정 배열에는 사용할 메일러의 우선순위를 배열로 지정할 수 있습니다:
 
 ```php
 'mailers' => [
@@ -259,16 +259,16 @@ MAILERSEND_API_KEY=your-api-key
 ],
 ```
 
-장애 조치 메일러를 정의한 뒤에는, 이 메일러 이름을 애플리케이션의 `mail` 설정 파일 내 `default` 설정 키에 지정하여 애플리케이션이 사용할 기본 메일러로 설정해야 합니다:
+이렇게 페일오버 메일러를 정의한 후에는, 이 메일러의 이름을 `mail` 설정 파일의 `default` 값에 지정해서 애플리케이션에서 기본 메일러로 사용하도록 해야 합니다:
 
 ```php
 'default' => env('MAIL_MAILER', 'failover'),
 ```
 
 <a name="round-robin-configuration"></a>
-### 라운드 로빈 설정
+### 라운드로빈(round robin) 구성
 
-`roundrobin` 트랜스포트를 사용하면 여러 메일러에 메일 전송 작업을 분산시킬 수 있습니다. 사용을 시작하려면, 애플리케이션의 `mail` 설정 파일에서 `roundrobin` 트랜스포트를 사용하는 메일러를 정의해야 합니다. 이때 라운드 로빈 메일러의 설정 배열에는 실제 전송에 사용할 메일러의 목록이 지정된 `mailers` 배열이 포함되어야 합니다:
+`roundrobin` 트랜스포트를 사용하면 여러 메일러에 걸쳐 메일 발송 작업을 분산할 수 있습니다. 시작하려면, `mail` 설정 파일 내에 `roundrobin` 트랜스포트를 사용하는 메일러를 정의하세요. 이 메일러 설정 배열에는 실제로 사용할 메일러 이름을 배열로 지정합니다:
 
 ```php
 'mailers' => [
@@ -284,37 +284,37 @@ MAILERSEND_API_KEY=your-api-key
 ],
 ```
 
-라운드 로빈 메일러를 정의한 뒤에는, 이 이름을 기본 메일러로 지정해줍니다:
+라운드로빈 메일러를 정의한 후에는, 이 메일러 이름을 `mail` 설정 파일의 `default`에 지정해야 합니다:
 
 ```php
 'default' => env('MAIL_MAILER', 'roundrobin'),
 ```
 
-라운드 로빈 트랜스포트는 구성된 메일러 목록에서 무작위로 하나를 선택한 뒤, 이후 메일 전송마다 다음 메일러로 순차적으로 전환됩니다. 이는 장애 조치(`failover`) 트랜스포트가 *[고가용성(high availability)](https://en.wikipedia.org/wiki/High_availability)* 확보에 도움을 준다면, 라운드 로빈(`roundrobin`) 트랜스포트는 *[로드 밸런싱(load balancing)](https://en.wikipedia.org/wiki/Load_balancing_(computing))* 을 제공합니다.
+라운드로빈 트랜스포트는 설정된 메일러 중 하나를 랜덤으로 선택한 뒤, 이후 이메일부터 차례대로 다음 메일러로 자동 전환합니다. 이 방식은 *[고가용성(high availability)](https://en.wikipedia.org/wiki/High_availability)* 을 제공하는 `failover` 트랜스포트와 달리, *[로드 밸런싱(load balancing)](https://en.wikipedia.org/wiki/Load_balancing_(computing))* 을 위해 사용됩니다.
 
 <a name="generating-mailables"></a>
-## 메일러블 클래스 생성
+## 메일러블 생성
 
-라라벨 애플리케이션을 개발할 때, 여러분이 전송하는 각 유형의 이메일은 "메일러블(mailable)" 클래스 형태로 구현하게 됩니다. 이 클래스들은 `app/Mail` 디렉터리에 저장됩니다. 만약 애플리케이션에서 이 디렉터리가 보이지 않는다면 걱정하지 않아도 됩니다. `make:mail` 아티즌 명령어로 첫 번째 메일러블 클래스를 만들면, 해당 디렉터리가 자동으로 생성됩니다:
+라라벨 애플리케이션에서 발송하는 각 이메일 유형은 "메일러블(mailable)" 클래스 하나로 표현됩니다. 이 클래스들은 `app/Mail` 디렉토리에 저장됩니다. 이 디렉토리가 없더라도 걱정하지 마세요. 공식적으로 메일러블 클래스를 처음 생성할 때, `make:mail` 아티즌 명령어가 디렉토리를 자동으로 만들어줍니다:
 
 ```shell
 php artisan make:mail OrderShipped
 ```
 
 <a name="writing-mailables"></a>
-## 메일러블 클래스 작성
+## 메일러블 작성
 
-메일러블 클래스를 생성했다면, 파일을 열어서 그 내용을 살펴보겠습니다. 메일러블 클래스의 설정은 주로 `envelope`, `content`, `attachments` 등의 여러 메서드에서 이루어집니다.
+메일러블 클래스를 생성했다면, 이제 그 파일을 열어 내부 구조를 살펴보겠습니다. 메일러블 클래스의 설정은 주로 `envelope`, `content`, `attachments` 메서드에서 이뤄집니다.
 
-`envelope` 메서드는 메시지의 제목(subject)과 경우에 따라 수신자 정보를 정의하는 `Illuminate\Mail\Mailables\Envelope` 객체를 반환합니다. `content` 메서드는 메시지 본문을 생성할 때 사용되는 [Blade 템플릿](/docs/12.x/blade)을 정의하는 `Illuminate\Mail\Mailables\Content` 객체를 반환합니다.
+`envelope` 메서드는 메시지의 제목과, 경우에 따라 수신자를 정의하는 `Illuminate\Mail\Mailables\Envelope` 객체를 반환합니다. `content` 메서드는 메일 메시지의 본문을 만들 때 사용할 [Blade 템플릿](/docs/12.x/blade)을 정의하는 `Illuminate\Mail\Mailables\Content` 객체를 반환합니다.
 
 <a name="configuring-the-sender"></a>
 ### 발신자 설정
 
 <a name="using-the-envelope"></a>
-#### Envelope를 이용한 발신자 설정
+#### Envelope로 설정하기
 
-우선, 이메일의 발신자 — 즉, 이메일이 "누구로부터" 보내지는지 — 를 설정하는 방법을 살펴봅니다. 발신자 설정 방법은 두 가지가 있습니다. 첫 번째로, 메시지의 envelope(봉투)에 "from" 주소를 지정하는 방법입니다:
+먼저, 이메일의 발신자, 즉 '누구로부터 보내는가'를 어떻게 설정하는지 살펴보겠습니다. 발신자는 두 가지 방법으로 지정할 수 있습니다. 첫 번째는 메시지의 envelope에서 "from" 주소를 직접 지정하는 방법입니다:
 
 ```php
 use Illuminate\Mail\Mailables\Address;
@@ -332,7 +332,7 @@ public function envelope(): Envelope
 }
 ```
 
-그리고 필요하다면 `replyTo` 주소도 지정할 수 있습니다:
+필요하다면 `replyTo` 주소도 함께 지정할 수 있습니다:
 
 ```php
 return new Envelope(
@@ -345,9 +345,9 @@ return new Envelope(
 ```
 
 <a name="using-a-global-from-address"></a>
-#### 글로벌 `from` 주소 사용
+#### 전역 "from" 주소 사용하기
 
-애플리케이션에서 모든 이메일을 동일한 "from" 주소로 보낸다면, 매번 메일러블 클래스를 생성할 때마다 이를 지정하는 것이 번거로울 수 있습니다. 이럴 땐, `config/mail.php` 설정 파일에 글로벌 "from" 주소를 지정할 수 있습니다. 메일러블 클래스에서 별도로 "from" 주소를 지정하지 않을 경우, 이 글로벌 주소가 자동으로 사용됩니다:
+애플리케이션에서 모든 이메일에 동일한 "from" 주소를 사용한다면, 각 메일러블 클래스마다 일일이 지정하는 것이 번거로울 수 있습니다. 이럴 때는 `config/mail.php` 설정 파일의 전역 "from" 주소 항목에 값을 지정해두면, 메일러블 클래스 내에서 별도로 설정하지 않아도 이 주소가 자동으로 사용됩니다:
 
 ```php
 'from' => [
@@ -356,16 +356,16 @@ return new Envelope(
 ],
 ```
 
-또한, `config/mail.php` 파일에서 글로벌 "reply_to" 주소도 정의할 수 있습니다:
+그리고 `config/mail.php` 파일에서 전역 "reply_to" 주소도 정의할 수 있습니다:
 
 ```php
 'reply_to' => ['address' => 'example@example.com', 'name' => 'App Name'],
 ```
 
 <a name="configuring-the-view"></a>
-### 뷰(View) 설정
+### 뷰(view) 설정
 
-메일러블 클래스의 `content` 메서드에서는 이메일 본문을 렌더링할 때 사용할 `view`(템플릿)를 지정할 수 있습니다. 각 이메일은 주로 [Blade 템플릿](/docs/12.x/blade)을 사용하여 내용을 렌더링하므로, 라라벨의 강력하고 편리한 Blade 템플릿 엔진을 그대로 활용할 수 있습니다:
+메일러블 클래스의 `content` 메서드에서는 이메일 내용 렌더링에 사용할 `view`(템플릿)를 지정할 수 있습니다. 일반적으로 이메일은 [Blade 템플릿](/docs/12.x/blade)을 사용해 본문을 렌더링하므로, 라라벨 Blade의 모든 기능을 메일 HTML 작성에 활용할 수 있습니다:
 
 ```php
 /**
@@ -380,12 +380,12 @@ public function content(): Content
 ```
 
 > [!NOTE]
-> 모든 이메일 템플릿을 보관할 `resources/views/emails` 디렉터리를 별도로 만들어 관리하는 것이 좋습니다. 물론, `resources/views` 내에 원하는 위치에 자유롭게 배치해도 괜찮습니다.
+> 이메일 템플릿을 보관할 용도로 `resources/views/emails` 디렉토리를 따로 만드는 것을 추천하지만, `resources/views` 내부 어디든 자유롭게 템플릿을 둘 수 있습니다.
 
 <a name="plain-text-emails"></a>
-#### 일반 텍스트 이메일
+#### 일반 텍스트(plain-text) 이메일
 
-이메일의 일반 텍스트 버전을 정의하고 싶다면 메시지의 `Content` 정의 시 plain-text 템플릿을 지정할 수 있습니다. `view` 파라미터와 마찬가지로, `text` 파라미터 역시 이메일 내용을 렌더링할 템플릿 이름을 지정합니다. HTML과 plain-text 버전의 메시지를 모두 정의할 수 있습니다:
+이메일을 일반 텍스트 형식으로도 보내고 싶다면, 메시지의 `Content` 정의에 plain-text 템플릿을 함께 지정할 수 있습니다. `view`와 마찬가지로 `text` 파라미터에도 렌더링에 사용할 템플릿 이름을 전달합니다. HTML 버전과 plain-text 버전을 함께 정의해도 괜찮습니다:
 
 ```php
 /**
@@ -400,7 +400,7 @@ public function content(): Content
 }
 ```
 
-좀 더 명확하게 작성하려면, `html` 파라미터를 `view` 파라미터의 별칭으로 사용할 수도 있습니다:
+보다 명확하게 하려면, `view` 대신 `html` 파라미터를 사용할 수도 있습니다:
 
 ```php
 return new Content(
@@ -413,9 +413,9 @@ return new Content(
 ### 뷰 데이터
 
 <a name="via-public-properties"></a>
-#### public 프로퍼티를 통한 전달
+#### public 프로퍼티로 데이터 전달
 
-일반적으로 이메일의 HTML을 렌더링할 때 사용할 데이터를 뷰(View)로 전달하고 싶을 것입니다. 이 데이터를 전달하는 방법은 두 가지입니다. 첫 번째는, 메일러블 클래스에 정의된 public 프로퍼티(public property)를 통해 데이터를 전달하는 것입니다. 예를 들어, 생성자에서 데이터를 받아 해당 클래스를 public 속성에 할당하면 됩니다:
+이메일 HTML을 렌더링할 때 뷰로 데이터를 넘겨야 할 때가 많습니다. 뷰에 데이터를 전달하는 방법은 두 가지가 있습니다. 첫째, 메일러블 클래스에 정의된 public 프로퍼티는 자동으로 뷰에서 사용할 수 있게 전달됩니다. 예를 들어, 생성자를 통해 데이터를 전달하고, 그 값을 public 프로퍼티에 할당하면 됩니다:
 
 ```php
 <?php
@@ -451,7 +451,7 @@ class OrderShipped extends Mailable
 }
 ```
 
-이렇게 public 프로퍼티에 데이터를 할당하면, 해당 데이터는 자동으로 뷰에서 사용 가능해지므로 일반 Blade 템플릿 데이터를 다루듯 접근할 수 있습니다:
+데이터가 public 프로퍼티에 할당되면, 뷰에서 일반 Blade 데이터처럼 바로 접근할 수 있습니다:
 
 ```blade
 <div>
@@ -460,9 +460,9 @@ class OrderShipped extends Mailable
 ```
 
 <a name="via-the-with-parameter"></a>
-#### `with` 파라미터를 통한 전달
+#### `with` 파라미터로 전달
 
-템플릿에 데이터를 전달하기 전에 직접 데이터를 가공해서 넘기고 싶다면, `Content` 정의의 `with` 파라미터를 사용하여 데이터를 수동으로 뷰에 전달할 수 있습니다. 일반적으로, 데이터는 여전히 메일러블 클래스의 생성자에 전달하지만, 데이터를 public이 아닌 protected나 private 속성으로 저장해두면 템플릿에 자동으로 노출되지 않습니다:
+이메일에 전달하는 데이터 형식을 직접 커스터마이즈하고 싶다면, Content 정의의 `with` 파라미터를 통해 직접 데이터를 넘길 수 있습니다. 일반적으로 생성자를 통해 데이터를 전달하되, 해당 데이터를 protected나 private 프로퍼티에 저장하고, 뷰로 넘길 때 명시적으로 변환해 전달하는 방식입니다:
 
 ```php
 <?php
@@ -502,7 +502,7 @@ class OrderShipped extends Mailable
 }
 ```
 
-데이터가 `with`에 지정되면, 뷰에서 Blade 템플릿 데이터처럼 자유롭게 사용할 수 있습니다:
+이렇게 `with`로 넘긴 데이터 역시 뷰에서 Blade 변수로 자유롭게 사용할 수 있습니다:
 
 ```blade
 <div>
@@ -513,7 +513,7 @@ class OrderShipped extends Mailable
 <a name="attachments"></a>
 ### 첨부 파일
 
-이메일에 첨부 파일을 추가하려면, 메시지의 `attachments` 메서드가 반환하는 배열에 첨부 파일을 추가하면 됩니다. 먼저, `Attachment` 클래스가 제공하는 `fromPath` 메서드에 파일 경로를 지정해서 첨부 파일을 추가할 수 있습니다:
+이메일에 첨부 파일을 추가하려면, 메시지의 `attachments` 메서드에서 첨부파일을 배열로 반환하면 됩니다. 가장 기본적인 방법은 Attachment 클래스의 `fromPath` 메서드에 파일 경로를 넘기는 것입니다:
 
 ```php
 use Illuminate\Mail\Mailables\Attachment;
@@ -531,7 +531,7 @@ public function attachments(): array
 }
 ```
 
-파일을 첨부하면서 파일의 표시 이름이나 MIME 타입을 함께 지정하고 싶다면 `as` 및 `withMime` 메서드를 사용할 수 있습니다:
+파일을 첨부할 때, 표시될 파일 이름이나 MIME 타입도 `as`와 `withMime` 메서드로 지정할 수 있습니다:
 
 ```php
 /**
@@ -550,9 +550,9 @@ public function attachments(): array
 ```
 
 <a name="attaching-files-from-disk"></a>
-#### 파일시스템 디스크에서 파일 첨부
+#### 파일 시스템 디스크에서 파일 첨부
 
-[파일 시스템 디스크](/docs/12.x/filesystem)에 저장된 파일을 이메일에 첨부하고 싶다면, `fromStorage` 첨부 메서드를 사용할 수 있습니다:
+[파일시스템 디스크](/docs/12.x/filesystem)에 파일을 저장했다면, `fromStorage` 첨부 메서드를 사용해 이메일에 첨부할 수 있습니다:
 
 ```php
 /**
@@ -568,7 +568,7 @@ public function attachments(): array
 }
 ```
 
-물론, 첨부 파일의 이름이나 MIME 타입도 지정할 수 있습니다:
+물론 첨부파일의 이름이나 MIME 타입도 지정할 수 있습니다:
 
 ```php
 /**
@@ -586,7 +586,7 @@ public function attachments(): array
 }
 ```
 
-기본 디스크가 아닌 다른 저장소 디스크를 지정하려면 `fromStorageDisk` 메서드를 사용할 수 있습니다:
+기본 디스크가 아닌 특정 스토리지 디스크를 지정해야 한다면, `fromStorageDisk` 메서드를 사용할 수 있습니다:
 
 ```php
 /**
@@ -606,13 +606,13 @@ public function attachments(): array
 
 <a name="raw-data-attachments"></a>
 
-#### Raw Data 첨부
+#### Raw Data 첨부하기
 
-`fromData` 첨부 메서드를 사용하면 바이트의 원시 문자열 데이터를 첨부파일로 추가할 수 있습니다. 예를 들어, 메모리 내에서 PDF를 생성하고 이를 디스크에 저장하지 않고 이메일에 첨부하고 싶을 때 이 방법을 사용할 수 있습니다. `fromData` 메서드는 첨부할 데이터의 바이트 원시값을 반환하는 클로저와 첨부파일로 지정할 이름을 인수로 받습니다.
+`fromData` 첨부 메서드는 바이트 배열 형태의 원시 문자열을 첨부 파일로 추가할 때 사용할 수 있습니다. 예를 들어, 메모리 상에 PDF 파일을 생성한 후, 파일을 디스크에 저장하지 않고 바로 이메일에 첨부하고 싶을 때 이 방법을 사용할 수 있습니다. `fromData` 메서드는 첨부할 원시 데이터 바이트를 반환하는 클로저와, 첨부 파일로 사용할 파일명을 인수로 받습니다.
 
 ```php
 /**
- * Get the attachments for the message.
+ * 메시지에 첨부될 파일 목록을 반환합니다.
  *
  * @return array<int, \Illuminate\Mail\Mailables\Attachment>
  */
@@ -628,7 +628,7 @@ public function attachments(): array
 <a name="inline-attachments"></a>
 ### 인라인 첨부파일
 
-이메일에 인라인 이미지를 삽입하는 것은 일반적으로 번거로운 작업입니다. 하지만 라라벨에서는 이미지를 이메일에 손쉽게 첨부할 수 있는 편리한 방법을 제공합니다. 인라인 이미지를 삽입하려면 이메일 템플릿 내에서 `$message` 변수의 `embed` 메서드를 사용하면 됩니다. 라라벨은 모든 이메일 템플릿에서 `$message` 변수를 자동으로 사용할 수 있게 해주므로, 별도의 전달 작업이 필요하지 않습니다.
+이메일에 인라인 이미지를 삽입하는 작업은 보통 번거로운 편입니다. 그러나 라라벨에서는 이미지를 손쉽게 첨부할 수 있도록 편리한 방법을 제공합니다. 인라인 이미지를 삽입하려면, 이메일 템플릿 내의 `$message` 변수에서 `embed` 메서드를 사용하면 됩니다. 라라벨에서는 모든 이메일 템플릿에서 `$message` 변수를 자동으로 사용할 수 있도록 제공하므로, 이 변수를 직접 전달할 필요가 없습니다.
 
 ```blade
 <body>
@@ -639,12 +639,12 @@ public function attachments(): array
 ```
 
 > [!WARNING]
-> `$message` 변수는 일반 텍스트 메시지 템플릿에서는 사용할 수 없습니다. 일반 텍스트 메시지는 인라인 첨부파일 기능을 지원하지 않기 때문입니다.
+> `$message` 변수는 일반 텍스트 메일 템플릿에서는 사용할 수 없습니다. 일반 텍스트 메일은 인라인 첨부파일을 지원하지 않기 때문입니다.
 
 <a name="embedding-raw-data-attachments"></a>
-#### 원시 데이터 첨부파일 임베딩
+#### 원시 데이터 첨부파일 인라인 삽입
 
-인라인으로 삽입할 이미지를 원시 데이터 문자열로 이미 보유하고 있다면, `$message` 변수의 `embedData` 메서드를 사용할 수 있습니다. 이 메서드 사용 시, 첨부될 이미지의 파일명을 반드시 인수로 넘겨주어야 합니다.
+이미 이메일 템플릿에 삽입할 이미지의 원시 데이터 문자열이 있다면, `$message` 변수의 `embedData` 메서드를 사용할 수 있습니다. 이 메서드를 사용할 때는, 삽입될 이미지에 사용할 파일명을 추가로 전달해야 합니다.
 
 ```blade
 <body>
@@ -655,11 +655,11 @@ public function attachments(): array
 ```
 
 <a name="attachable-objects"></a>
-### 첨부 가능한(Attachable) 객체
+### Attachable 객체
 
-단순한 문자열 경로를 통해 파일을 첨부하는 것만으로도 충분한 경우가 많지만, 실제 애플리케이션에서는 첨부하고자 하는 대상을 클래스로 표현한 경우가 많습니다. 예를 들어, 애플리케이션이 메시지에 사진을 첨부한다면, 그 사진을 나타내는 `Photo` 모델을 보유하고 있을 수도 있습니다. 이럴 때, `attach` 메서드에 `Photo` 모델을 편리하게 바로 전달할 수 있다면 좋지 않을까요? Attachable 객체를 사용하면 이를 손쉽게 구현할 수 있습니다.
+단순 문자열 경로를 사용하여 파일을 메시지에 첨부하는 것만으로도 대부분의 경우 충분합니다. 그러나 실제로는 애플리케이션 내부에서 첨부할 대상이 별도의 클래스로 표현되는 경우가 많습니다. 예를 들어, 메시지에 사진을 첨부해야 하는 상황이라면, 애플리케이션 내에 해당 사진을 나타내는 `Photo` 모델이 있을 수 있습니다. 이런 경우라면, `attach` 메서드에 `Photo` 모델 인스턴스를 바로 전달할 수 있다면 편리할 것입니다. Attachable 객체는 바로 이런 상황을 지원합니다.
 
-시작하려면, 첨부 가능한 객체 클래스에 `Illuminate\Contracts\Mail\Attachable` 인터페이스를 구현하면 됩니다. 이 인터페이스는 클래스가 `Illuminate\Mail\Attachment` 인스턴스를 반환하는 `toMailAttachment` 메서드를 정의하도록 요구합니다.
+이를 사용하려면, 첨부 가능한 객체에 `Illuminate\Contracts\Mail\Attachable` 인터페이스를 구현하면 됩니다. 이 인터페이스는 클래스에 `toMailAttachment` 메서드를 정의해야 함을 명시합니다. 이 메서드는 `Illuminate\Mail\Attachment` 인스턴스를 반환해야 합니다.
 
 ```php
 <?php
@@ -673,7 +673,7 @@ use Illuminate\Mail\Attachment;
 class Photo extends Model implements Attachable
 {
     /**
-     * Get the attachable representation of the model.
+     * 모델의 attachable 표현을 반환합니다.
      */
     public function toMailAttachment(): Attachment
     {
@@ -682,11 +682,11 @@ class Photo extends Model implements Attachable
 }
 ```
 
-이렇게 attachable 객체를 정의한 후, 이메일 메시지를 생성하며 `attachments` 메서드에서 해당 객체의 인스턴스를 반환할 수 있습니다.
+Attachable 객체를 정의했다면, 이메일 메시지를 생성할 때 `attachments` 메서드에서 해당 객체의 인스턴스를 반환할 수 있습니다.
 
 ```php
 /**
- * Get the attachments for the message.
+ * 메시지에 첨부될 파일 목록을 반환합니다.
  *
  * @return array<int, \Illuminate\Mail\Mailables\Attachment>
  */
@@ -696,23 +696,23 @@ public function attachments(): array
 }
 ```
 
-물론, 첨부파일 데이터가 Amazon S3 같은 원격 파일 저장소에 저장되어 있을 수도 있습니다. 라라벨에서는 애플리케이션의 [파일시스템 디스크](/docs/12.x/filesystem)에 저장된 데이터를 이용해서도 쉽게 첨부파일 인스턴스를 만들 수 있습니다.
+물론, 첨부 파일 데이터가 Amazon S3와 같은 외부 파일 스토리지 서비스에 저장되어 있을 수도 있습니다. 라라벨은 애플리케이션의 [파일시스템 디스크](/docs/12.x/filesystem)에 저장된 파일로부터 첨부파일 인스턴스를 손쉽게 생성할 수 있도록 지원합니다.
 
 ```php
-// 기본 디스크에 있는 파일로 첨부파일 생성...
+// 기본 디스크에 있는 파일을 첨부파일로 생성...
 return Attachment::fromStorage($this->path);
 
-// 특정 디스크에 있는 파일로 첨부파일 생성...
+// 특정 디스크에서 파일을 첨부파일로 생성...
 return Attachment::fromStorageDisk('backblaze', $this->path);
 ```
 
-추가로, 메모리에 보관 중인 데이터로도 첨부파일 인스턴스를 만들 수 있습니다. 이를 위해서는 `fromData` 메서드에 클로저를 전달하면 됩니다. 이 클로저는 첨부파일의 원시 데이터를 반환해야 합니다.
+또한 메모리에 보관 중인 데이터로도 첨부파일 인스턴스를 만들 수 있습니다. 이를 위해서는 `fromData` 메서드에 클로저를 전달하세요. 클로저는 첨부할 원시 데이터를 반환해야 합니다.
 
 ```php
 return Attachment::fromData(fn () => $this->content, 'Photo Name');
 ```
 
-라라벨은 첨부파일을 커스터마이즈할 수 있는 다양한 메서드도 제공합니다. 예를 들어, 파일의 이름과 MIME 타입을 지정할 때 `as`와 `withMime` 메서드를 사용할 수 있습니다.
+라라벨에서는 첨부파일을 커스터마이징할 수 있는 추가적인 메서드도 제공합니다. 예를 들어, 파일명과 MIME 타입을 변경하려면 `as`와 `withMime` 메서드를 사용할 수 있습니다.
 
 ```php
 return Attachment::fromPath('/path/to/file')
@@ -723,15 +723,15 @@ return Attachment::fromPath('/path/to/file')
 <a name="headers"></a>
 ### 헤더
 
-가끔은 발송되는 이메일 메시지에 추가적인 헤더가 필요할 수 있습니다. 예를 들어, 커스텀 `Message-Id` 를 설정하거나 임의의 텍스트 헤더를 추가해야 할 수도 있습니다.
+때로는 발송 메시지에 추가 헤더를 설정해야 할 수 있습니다. 예를 들어, 커스텀 `Message-Id`나 임의의 텍스트 헤더를 추가하는 경우가 그렇습니다.
 
-이럴 땐, mailable 클래스에 `headers` 메서드를 정의합니다. 이 메서드는 `Illuminate\Mail\Mailables\Headers` 인스턴스를 반환해야 합니다. 이 클래스는 `messageId`, `references`, `text` 파라미터를 받으며, 필요에 따라 원하는 항목만 선택해서 제공할 수 있습니다.
+이럴 때는, mailable 클래스에 `headers` 메서드를 정의하세요. `headers` 메서드는 `Illuminate\Mail\Mailables\Headers` 인스턴스를 반환해야 합니다. 이 클래스는 `messageId`, `references`, `text` 파라미터를 받습니다. 필요한 헤더만 골라서 전달하면 됩니다.
 
 ```php
 use Illuminate\Mail\Mailables\Headers;
 
 /**
- * Get the message headers.
+ * 메시지 헤더를 반환합니다.
  */
 public function headers(): Headers
 {
@@ -746,15 +746,15 @@ public function headers(): Headers
 ```
 
 <a name="tags-and-metadata"></a>
-### 태그(Tag)와 메타데이터(Metadata)
+### 태그와 메타데이터
 
-Mailgun, Postmark와 같은 일부 서드파티 이메일 제공업체는 메시지 "태그"와 "메타데이터" 기능을 지원합니다. 이를 활용하면 애플리케이션에서 발송한 이메일을 그룹화하고 추적할 수 있습니다. 태그와 메타데이터는 `Envelope` 정의에 추가하면 됩니다.
+Mailgun이나 Postmark와 같은 일부 외부 이메일 서비스는 메시지를 식별하고 그룹화 및 추적할 수 있도록 "태그(tags)" 및 "메타데이터(metadata)" 기능을 지원합니다. 이메일 메시지에 태그와 메타데이터를 추가하려면, `Envelope` 정의에서 해당 옵션을 지정하면 됩니다.
 
 ```php
 use Illuminate\Mail\Mailables\Envelope;
 
 /**
- * Get the message envelope.
+ * 메시지의 envelope을 반환합니다.
  *
  * @return \Illuminate\Mail\Mailables\Envelope
  */
@@ -770,21 +770,21 @@ public function envelope(): Envelope
 }
 ```
 
-만약 Mailgun 드라이버를 사용 중이라면, 자세한 내용은 Mailgun의 [태그](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/#tagging) 및 [메타데이터](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/#attaching-data-to-messages) 문서를 참고하세요. Postmark 드라이버를 사용할 경우에도 [태그](https://postmarkapp.com/blog/tags-support-for-smtp) 및 [메타데이터](https://postmarkapp.com/support/article/1125-custom-metadata-faq) 관련 문서를 참고할 수 있습니다.
+Mailgun 드라이버를 사용한다면 [Mailgun 태그](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/#tagging), [Mailgun 메타데이터](https://documentation.mailgun.com/docs/mailgun/user-manual/tracking-messages/#attaching-data-to-messages) 관련 공식 문서도 참고하시기 바랍니다. Postmark를 사용할 경우, [Postmark 태그](https://postmarkapp.com/blog/tags-support-for-smtp), [Postmark 메타데이터](https://postmarkapp.com/support/article/1125-custom-metadata-faq) 관련 문서를 참고하세요.
 
-Amazon SES로 이메일을 전송하는 경우에는, `metadata` 메서드를 사용하여 메시지에 [SES "태그"](https://docs.aws.amazon.com/ses/latest/APIReference/API_MessageTag.html)를 추가할 수 있습니다.
+Amazon SES를 통해 이메일을 보낸다면 `metadata` 메서드를 사용하여 메시지에 [SES "tags"](https://docs.aws.amazon.com/ses/latest/APIReference/API_MessageTag.html)를 추가해야 합니다.
 
 <a name="customizing-the-symfony-message"></a>
 ### Symfony 메시지 커스터마이징
 
-라라벨의 메일 시스템은 Symfony Mailer를 기반으로 동작합니다. 라라벨에서는 메시지 전송 전, Symfony의 Message 인스턴스를 커스터마이즈할 수 있도록 커스텀 콜백을 등록할 수 있습니다. 이를 통해 발송 전 메시지를 세부적으로 수정할 수 있습니다. 구현하려면 `Envelope` 정의에 `using` 파라미터를 지정하세요.
+라라벨의 메일 시스템은 Symfony Mailer를 기반으로 동작합니다. 라라벨에서는 메시지 발송 전 Symfony Message 인스턴스에 접근해 커스텀 콜백을 실행할 수 있도록 지원합니다. 이를 통해, 메시지를 심층적으로 커스터마이즈할 수 있습니다. 이를 위해, `Envelope` 정의 내에 `using` 파라미터를 지정하면 됩니다.
 
 ```php
 use Illuminate\Mail\Mailables\Envelope;
 use Symfony\Component\Mime\Email;
 
 /**
- * Get the message envelope.
+ * 메시지의 envelope을 반환합니다.
  */
 public function envelope(): Envelope
 {
@@ -800,26 +800,26 @@ public function envelope(): Envelope
 ```
 
 <a name="markdown-mailables"></a>
-## 마크다운(Markdown) 메일러블
+## 마크다운(Markdown) Mailable
 
-마크다운 메일러블 메시지를 사용하면 [메일 알림](/docs/12.x/notifications#mail-notifications)의 사전 제작된 템플릿과 컴포넌트를 메일러블에서도 활용할 수 있습니다. 메시지가 마크다운 문법으로 작성되기 때문에, 라라벨은 아름답고 반응형인 HTML 템플릿을 자동으로 렌더링하면서, 동시에 일반 텍스트 버전도 자동 생성합니다.
+마크다운 Mailable 메시지를 사용하면 [메일 알림](/docs/12.x/notifications#mail-notifications)의 템플릿과 컴포넌트들을 그대로 활용할 수 있습니다. 메시지는 마크다운 문법으로 작성되므로, 라라벨이 깔끔하고 반응형인 HTML 템플릿을 자동으로 렌더링해주고, 동시에 plain-text 버전도 자동으로 생성해 줍니다.
 
 <a name="generating-markdown-mailables"></a>
-### 마크다운 메일러블 생성
+### 마크다운 Mailable 생성하기
 
-마크다운 템플릿과 함께 메일러블을 생성하려면 `make:mail` 아티즌 명령어에 `--markdown` 옵션을 사용하면 됩니다.
+마크다운 템플릿이 포함된 mailable을 생성하려면, `make:mail` Artisan 명령어에 `--markdown` 옵션을 사용하세요.
 
 ```shell
 php artisan make:mail OrderShipped --markdown=mail.orders.shipped
 ```
 
-그리고 메일러블의 `content` 메서드 안에서 메시지의 Content 정의를 구성할 때, `view` 파라미터 대신에 `markdown` 파라미터를 사용하세요.
+그리고, 해당 mailable의 `content` 메서드에서 mailable의 Content 정의를 구성할 때 `view` 파라미터 대신 `markdown` 파라미터를 사용합니다.
 
 ```php
 use Illuminate\Mail\Mailables\Content;
 
 /**
- * Get the message content definition.
+ * 메시지 내용(content) 정의를 반환합니다.
  */
 public function content(): Content
 {
@@ -833,9 +833,9 @@ public function content(): Content
 ```
 
 <a name="writing-markdown-messages"></a>
-### 마크다운 메시지 작성
+### 마크다운 메시지 작성하기
 
-마크다운 메일러블은 Blade 컴포넌트와 마크다운 문법을 조합하여 사용합니다. 이를 통해 라라벨이 제공하는 사전 제작된 이메일 UI 컴포넌트를 활용하여 손쉽게 메일 메시지를 작성할 수 있습니다.
+마크다운 Mailable은 Blade 컴포넌트와 마크다운 문법을 함께 사용함으로써, 다양한 라라벨의 미리 만들어진 UI 컴포넌트를 활용하여 손쉽게 메일 메시지를 만들 수 있습니다.
 
 ```blade
 <x-mail::message>
@@ -853,12 +853,12 @@ Thanks,<br>
 ```
 
 > [!NOTE]
-> 마크다운 이메일 작성 시 들여쓰기를 과하게 사용하지 마세요. 마크다운 표준에 따라, 마크다운 파서가 들여쓰인 내용은 코드 블록으로 렌더링합니다.
+> 마크다운 이메일 작성 시, 들여쓰기를 과도하게 사용하지 마세요. 마크다운 문법상, 들여쓰기가 있으면 해당 줄이 코드 블록으로 렌더링됩니다.
 
 <a name="button-component"></a>
 #### 버튼 컴포넌트
 
-버튼 컴포넌트는 중앙에 정렬된 버튼 링크를 렌더링합니다. 이 컴포넌트는 필수 인수인 `url`과, 선택적으로 버튼의 색상을 지정하는 `color` 인수를 받습니다. 지원되는 색상은 `primary`, `success`, `error`입니다. 버튼 컴포넌트는 한 메시지 내에 여러 번 사용할 수 있습니다.
+버튼 컴포넌트는 중앙에 정렬된 버튼 링크를 렌더링합니다. 이 컴포넌트는 `url`과 선택적인 `color` 인수를 받습니다. 사용할 수 있는 색상 값은 `primary`, `success`, `error` 입니다. 하나의 메시지에 원하는 만큼 버튼 컴포넌트를 추가할 수 있습니다.
 
 ```blade
 <x-mail::button :url="$url" color="success">
@@ -869,7 +869,7 @@ View Order
 <a name="panel-component"></a>
 #### 패널 컴포넌트
 
-패널 컴포넌트는 특정 블록의 텍스트를 메시지 내 다른 영역보다 약간 다른 배경색의 패널로 감싸 보여줍니다. 이를 통해 사용자의 관심을 특정 부분에 집중시킬 수 있습니다.
+패널 컴포넌트는 주어진 텍스트 블록을 메시지 내에서 주변과 약간 다른 배경색의 패널로 렌더링합니다. 이를 통해 특정 텍스트 영역을 강조할 수 있습니다.
 
 ```blade
 <x-mail::panel>
@@ -880,7 +880,7 @@ This is the panel content.
 <a name="table-component"></a>
 #### 테이블 컴포넌트
 
-테이블 컴포넌트를 사용하면 마크다운 테이블을 HTML 테이블로 변환할 수 있습니다. 이 컴포넌트는 마크다운 테이블을 내용으로 전달받으며, 컬럼 정렬도 마크다운 표준 문법에 따라 지원됩니다.
+테이블 컴포넌트를 사용하면 마크다운 형식의 테이블을 HTML 테이블로 변환할 수 있습니다. 이 컴포넌트는 마크다운 형태의 테이블을 콘텐츠로 받습니다. 컬럼 정렬 역시 기본 마크다운 문법을 그대로 지원합니다.
 
 ```blade
 <x-mail::table>
@@ -894,27 +894,27 @@ This is the panel content.
 <a name="customizing-the-components"></a>
 ### 컴포넌트 커스터마이징
 
-마크다운 메일 컴포넌트를 프로젝트 내에 직접 추출해 수정하고 싶다면, `vendor:publish` 아티즌 명령어를 사용하여 `laravel-mail` 에셋 태그를 퍼블리시하세요.
+마크다운 메일 컴포넌트 전체를 내 애플리케이션으로 내보내(export)해 원하는 대로 커스터마이즈할 수도 있습니다. 컴포넌트를 내보내려면, `laravel-mail` 태그로 `vendor:publish` Artisan 명령어를 실행하세요.
 
 ```shell
 php artisan vendor:publish --tag=laravel-mail
 ```
 
-이 명령어를 실행하면 마크다운 메일 컴포넌트들이 `resources/views/vendor/mail` 디렉터리에 복사됩니다. `mail` 디렉터리에는 각각의 컴포넌트별 HTML과 텍스트(view) 디렉터리가 포함되어 있습니다. 마음껏 원하는 대로 해당 컴포넌트 파일을 수정할 수 있습니다.
+이 명령어를 실행하면, 마크다운 메일 컴포넌트가 `resources/views/vendor/mail` 디렉터리에 복사됩니다. `mail` 디렉터리에는 각각의 컴포넌트에 해당하는 `html`과 `text` 폴더가 존재합니다. 이제 이 파일들을 자유롭게 수정해 나만의 이메일 컴포넌트를 만들 수 있습니다.
 
 <a name="customizing-the-css"></a>
 #### CSS 커스터마이징
 
-컴포넌트를 내보낸 후, `resources/views/vendor/mail/html/themes` 디렉터리에는 `default.css` 파일이 생성됩니다. 이 파일의 CSS 스타일을 자유롭게 수정하면, 해당 스타일이 마크다운 메일 메시지의 HTML 뷰에 자동으로 인라인 CSS로 반영됩니다.
+컴포넌트를 내보낸 이후, `resources/views/vendor/mail/html/themes` 디렉터리 내의 `default.css` 파일을 편집해 스타일을 변경할 수 있습니다. 여기에서 CSS를 변경하면, 내 스타일이 자동으로 HTML 이메일에 인라인(inline) 스타일로 적용됩니다.
 
-라라벨의 마크다운 컴포넌트용으로 완전히 새로운 테마를 구축하고 싶다면, `html/themes` 디렉터리에 CSS 파일을 새로 추가하면 됩니다. 이 파일에 이름을 붙여 저장한 후, 애플리케이션의 `config/mail.php` 설정 파일에서 `theme` 옵션을 새로운 테마의 이름으로 변경하면 됩니다.
+라라벨의 마크다운 컴포넌트에 완전히 새로운 테마를 만들고 싶다면, `html/themes` 디렉터리에 CSS 파일을 추가하면 됩니다. 해당 파일에 이름을 정하고 저장한 후, 애플리케이션의 `config/mail.php` 설정 파일의 `theme` 옵션을 새 테마 이름으로 변경하면 됩니다.
 
-개별 메일러블에 대해 테마를 다르게 하고 싶다면, 메일러블 클래스의 `$theme` 속성에 사용할 테마명을 지정하면 됩니다.
+특정 mailable에만 따로 테마를 지정하고 싶다면, mailable 클래스에서 `$theme` 프로퍼티의 값을 원하는 테마 이름으로 설정하세요.
 
 <a name="sending-mail"></a>
-## 메일 발송
+## 메일 보내기
 
-메시지를 전송하려면, [Mail 파사드](/docs/12.x/facades)의 `to` 메서드를 사용하세요. `to` 메서드는 이메일 주소, 사용자 인스턴스, 또는 사용자 인스턴스 콜렉션을 받을 수 있습니다. 객체 또는 객체 컬렉션을 전달하면, 라라벨은 해당 객체의 `email`과 `name` 속성을 자동으로 참조해 수신자를 결정합니다. 이 속성들이 객체 내에 반드시 존재해야 합니다. 하나 이상의 수신자를 지정한 후, 메일러블 클래스 인스턴스를 `send` 메서드에 전달하면 메일이 발송됩니다.
+이메일 메시지를 발송하려면 [Mail 파사드](/docs/12.x/facades)의 `to` 메서드를 사용하세요. `to` 메서드는 이메일 주소, 사용자 인스턴스, 또는 사용자 컬렉션을 인수로 받을 수 있습니다. 객체나 객체 컬렉션을 전달하면, 해당 객체의 `email`과 `name` 속성을 자동으로 읽어 수신자로 사용하므로, 해당 속성들이 객체에 정의되어야 합니다. 수신자를 지정한 뒤에는 mailable 클래스 인스턴스를 `send` 메서드에 전달하여 실제 발송이 이뤄집니다.
 
 ```php
 <?php
@@ -930,13 +930,13 @@ use Illuminate\Support\Facades\Mail;
 class OrderShipmentController extends Controller
 {
     /**
-     * Ship the given order.
+     * 전달받은 주문을 발송 처리합니다.
      */
     public function store(Request $request): RedirectResponse
     {
         $order = Order::findOrFail($request->order_id);
 
-        // Ship the order...
+        // 주문 발송 처리 코드...
 
         Mail::to($request->user())->send(new OrderShipped($order));
 
@@ -945,7 +945,7 @@ class OrderShipmentController extends Controller
 }
 ```
 
-메일 발송 시 "to" 수신자만 지정할 필요는 없습니다. "to", "cc", "bcc"를 각각 지정하여 여러 방법으로 수신자를 추가할 수 있습니다.
+이메일 발송 시 반드시 "to"만 설정할 필요는 없습니다. "to", "cc", "bcc"를 메서드 체이닝으로 자유롭게 조합하여 사용할 수 있습니다.
 
 ```php
 Mail::to($request->user())
@@ -955,9 +955,9 @@ Mail::to($request->user())
 ```
 
 <a name="looping-over-recipients"></a>
-#### 여러 수신자에게 반복적으로 발송하기
+#### 수신자 반복 처리하기
 
-경우에 따라, 수신자 목록(이메일 주소 배열 등)을 순회하며 일일이 메일러블을 각각 발송해야 할 수도 있습니다. 하지만 `to` 메서드는 호출할 때마다 수신자 리스트에 이메일을 추가하므로, 반복문 안에서 메일러블 인스턴스를 계속 재사용하면 이전까지의 모든 수신자들에게 중복해서 메일이 발송됩니다. 따라서 반드시 각 반복마다 새로운 메일러블 인스턴스를 생성해 사용해야 합니다.
+경우에 따라, 수신자 목록(여러 명의 이메일 주소 또는 객체)에 메일을 반복적으로 보내야 할 수 있습니다. 하지만 `to` 메서드는 반복문을 돌 때마다 이전 수신자도 계속 누적되어 발송 대상이 늘어나게 되므로, 수신자 별로 mailable 인스턴스를 반드시 새로 생성해서 전달해야 합니다.
 
 ```php
 foreach (['taylor@example.com', 'dries@example.com'] as $recipient) {
@@ -966,9 +966,9 @@ foreach (['taylor@example.com', 'dries@example.com'] as $recipient) {
 ```
 
 <a name="sending-mail-via-a-specific-mailer"></a>
-#### 특정 메일러를 통한 메일 발송
+#### 특정 메일러로 메일 보내기
 
-기본적으로 라라벨은 애플리케이션의 `mail` 설정 파일에 지정된 `default` 메일러를 이용해 이메일을 보냅니다. 하지만 `mailer` 메서드를 이용하면 특정 메일러 구성으로 메일을 발송할 수 있습니다.
+라라벨은 기본적으로 애플리케이션의 `mail` 설정 파일에서 `default`로 지정된 메일러를 사용해 이메일을 보냅니다. 하지만, `mailer` 메서드를 사용하면 특정 메일러 설정을 지정하여 메일을 보낼 수 있습니다.
 
 ```php
 Mail::mailer('postmark')
@@ -977,12 +977,12 @@ Mail::mailer('postmark')
 ```
 
 <a name="queueing-mail"></a>
-### 메일 큐잉(Queueing)
+### 메일 큐 처리
 
 <a name="queueing-a-mail-message"></a>
 #### 메일 메시지 큐에 넣기
 
-이메일 발송 작업은 애플리케이션의 응답 속도에 악영향을 줄 수 있으므로, 많은 개발자들은 이메일 메시지를 큐에 넣어 백그라운드에서 발송되게끔 합니다. 라라벨에서는 내장 [통합 큐 API](/docs/12.x/queues)를 통해 이 과정을 쉽게 처리할 수 있습니다. 메일 메시지를 큐잉하려면, `Mail` 파사드에서 수신자 설정 후 `queue` 메서드를 사용하면 됩니다.
+이메일 발송 작업은 애플리케이션의 응답 속도에 부정적인 영향을 줄 수 있기 때문에, 많은 개발자들은 이메일을 백그라운드에서 발송할 수 있도록 큐로 처리합니다. 라라벨은 [일관된 큐 API](/docs/12.x/queues)를 제공하므로 손쉽게 메일을 큐처리할 수 있습니다. 메일을 큐에 넣으려면, 수신자를 지정한 뒤 `Mail` 파사드의 `queue` 메서드를 사용하세요.
 
 ```php
 Mail::to($request->user())
@@ -991,12 +991,12 @@ Mail::to($request->user())
     ->queue(new OrderShipped($order));
 ```
 
-이 방식은 자동으로 큐에 작업이 추가되어 백그라운드에서 메일 발송이 진행됩니다. 이 기능을 사용하려면 [큐 설정](/docs/12.x/queues)을 반드시 미리 해두어야 합니다.
+이 방식은 자동으로 큐에 작업을 추가해서 별도의 백그라운드에서 메시지가 발송되도록 처리합니다. 이 기능을 사용하기 위해서는 먼저 [큐 설정](/docs/12.x/queues)이 되어 있어야 합니다.
 
 <a name="delayed-message-queueing"></a>
-#### 메일 발송 지연(Delay) 큐잉
+#### 지연 메시지 큐 처리
 
-큐에 넣은 메일 메시지의 발송을 일정 시간 지연하고 싶다면, `later` 메서드를 사용할 수 있습니다. 이 메서드의 첫 번째 인수로는 메시지가 발송되어야 할 시점을 나타내는 `DateTime` 인스턴스를 전달하세요.
+큐에 등록된 메일 발송 작업의 실제 발송 시점을 지연시키고 싶다면, `later` 메서드를 사용할 수 있습니다. `later` 메서드는 첫 번째 인수로 언제 발송할지 지정하는 `DateTime` 인스턴스를 전달받습니다.
 
 ```php
 Mail::to($request->user())
@@ -1006,9 +1006,9 @@ Mail::to($request->user())
 ```
 
 <a name="pushing-to-specific-queues"></a>
-#### 특정 큐(Queue)에 넣기
+#### 특정 큐 지정하기
 
-`make:mail` 명령어로 생성되는 모든 메일러블 클래스에는 `Illuminate\Bus\Queueable` 트레이트가 포함됩니다. 따라서, 메일러블 인스턴스에 대해 `onQueue`, `onConnection` 메서드를 호출해 메시지가 사용될 큐의 연결과 이름을 직접 지정할 수 있습니다.
+`make:mail` 명령어로 생성한 모든 mailable 클래스는 자동으로 `Illuminate\Bus\Queueable` 트레이트를 사용합니다. 따라서, mailable 인스턴스에 대해 `onQueue`와 `onConnection` 메서드를 호출하여 메시지 발송에 사용할 큐 연결과 큐명을 지정할 수 있습니다.
 
 ```php
 $message = (new OrderShipped($order))
@@ -1022,9 +1022,9 @@ Mail::to($request->user())
 ```
 
 <a name="queueing-by-default"></a>
-#### 기본적으로 큐잉하도록 설정
+#### 메일 기본 큐 처리
 
-특정 메일러블 클래스가 항상 큐잉되게 하고 싶다면, 해당 클래스에 `ShouldQueue` 계약을 구현하세요. 이제 `send` 메서드를 사용해도, 이 메일러블은 자동으로 큐에 넣어집니다.
+특정 mailable 클래스가 항상 큐로 동작하도록 하려면 클래스에 `ShouldQueue` 계약을 구현하세요. 이렇게 하면, `send` 메서드를 직접 호출해도 해당 mailable은 자동으로 큐에 등록되어 처리됩니다.
 
 ```php
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -1036,11 +1036,11 @@ class OrderShipped extends Mailable implements ShouldQueue
 ```
 
 <a name="queued-mailables-and-database-transactions"></a>
-#### 큐잉된 메일러블과 데이터베이스 트랜잭션
+#### 큐 처리 메일과 데이터베이스 트랜잭션
 
-큐에 넣은 메일러블이 데이터베이스 트랜잭션 내에서 디스패치되는 경우, 큐 프로세스가 실제로 트랜잭션 커밋 전에 실행될 수 있습니다. 이럴 경우, 트랜잭션 중에 데이터베이스 레코드나 모델을 업데이트한 내용이 아직 커밋되지 않아, 큐에서 해당 내용을 읽지 못하게 될 수 있습니다. 또한 트랜잭션 내에서 새로 생성된 모델이나 레코드는 아직 DB에 존재하지 않을 수 있습니다. 만약 메일러블이 이 모델에 의존한다면, 예기치 않은 오류가 발생할 수 있습니다.
+큐로 처리되는 mailable이 데이터베이스 트랜잭션 내에서 디스패치되는 경우, 큐가 트랜잭션 커밋보다 먼저 동작할 수 있습니다. 이런 경우, 트랜잭션 내에서 모델이나 레코드에 적용된 변경사항이 아직 데이터베이스에 커밋되지 않았을 수 있습니다. 또한, 트랜잭션 안에서 생성된 모델이나 레코드는 아직 데이터베이스에 존재하지 않을 수도 있습니다. 만약 mailable이 이러한 모델에 의존한다면, 큐 작업 실행 시 예기치 않은 오류가 발생할 수 있습니다.
 
-큐 커넥션의 `after_commit` 구성 옵션이 `false`로 되어 있는 경우, 특정 큐잉 메일러블을 모든 데이터베이스 트랜잭션 커밋 이후에 디스패치하고 싶다면, 메일 발송 시 `afterCommit` 메서드를 호출하세요.
+큐 연결 설정의 `after_commit` 옵션이 `false`인 경우에도, 메일 발송 시 `afterCommit` 메서드를 호출하면 해당 mailable이 트랜잭션이 전부 커밋되고 나서 디스패치되도록 할 수 있습니다.
 
 ```php
 Mail::to($request->user())->send(
@@ -1048,7 +1048,7 @@ Mail::to($request->user())->send(
 );
 ```
 
-또한 원하는 경우, 메일러블의 생성자에서 `afterCommit` 메서드를 호출할 수도 있습니다.
+또는, mailable 클래스의 생성자에서 `afterCommit` 메서드를 호출해도 동일하게 동작합니다.
 
 ```php
 <?php
@@ -1065,7 +1065,7 @@ class OrderShipped extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     /**
-     * Create a new message instance.
+     * 새 메시지 인스턴스를 생성합니다.
      */
     public function __construct()
     {
@@ -1075,12 +1075,12 @@ class OrderShipped extends Mailable implements ShouldQueue
 ```
 
 > [!NOTE]
-> 이러한 문제의 근본적인 원인과 해결책에 대해 더 알고 싶다면 [큐 작업과 데이터베이스 트랜잭션](/docs/12.x/queues#jobs-and-database-transactions) 관련 문서를 참고하세요.
+> 이 문제를 우회하는 방법에 대한 자세한 내용은 [큐 작업과 데이터베이스 트랜잭션](/docs/12.x/queues#jobs-and-database-transactions) 문서를 참고하시기 바랍니다.
 
 <a name="rendering-mailables"></a>
-## 메일러블 렌더링
+## Mailable 렌더링하기
 
-가끔 메일을 실제로 발송하지 않고, 메일러블의 HTML 콘텐츠만 추출(렌더링)해보고 싶을 때가 있습니다. 이럴 땐 메일러블의 `render` 메서드를 호출하면, 메일러블의 최종 HTML 콘텐츠가 문자열로 반환됩니다.
+메일을 실제로 발송하지 않고, mailable의 HTML 콘텐츠만 따로 추출하고 싶을 때가 있습니다. 이럴 때는, mailable의 `render` 메서드를 호출하면 됩니다. 이 메서드는 해당 mailable의 최종 HTML 내용을 문자열로 평가하여 반환합니다.
 
 ```php
 use App\Mail\InvoicePaid;
@@ -1092,9 +1092,9 @@ return (new InvoicePaid($invoice))->render();
 ```
 
 <a name="previewing-mailables-in-the-browser"></a>
-### 브라우저에서 메일러블 미리보기
+### 브라우저에서 mailable 미리보기
 
-메일러블의 템플릿을 디자인할 때, Blade 템플릿처럼 브라우저에서 빠르게 결과를 바로 확인할 수 있다면 편리하겠죠? 라라벨에서는 이를 위해 라우트 클로저나 컨트롤러 메서드에서 메일러블 자체를 반환할 수 있게 지원합니다. 이 경우 메일러블이 렌더되어 브라우저에 표시되므로, 실제 이메일 주소로 발송하지 않고도 디자인을 쉽고 빠르게 미리볼 수 있습니다.
+mailable의 템플릿을 작업할 때, 일반 블레이드 템플릿처럼 브라우저에서 바로 결과를 미리 확인할 수 있으면 매우 편리합니다. 라라벨에서는 경로(route) 클로저나 컨트롤러에서 mailable 인스턴스를 반환하면, 해당 내용이 브라우저에서 바로 렌더링되어 미리보기가 가능합니다. 실제 이메일 수신자에게 발송하지 않고도 디자인을 바로 확인할 수 있습니다.
 
 ```php
 Route::get('/mailable', function () {
@@ -1105,11 +1105,11 @@ Route::get('/mailable', function () {
 ```
 
 <a name="localizing-mailables"></a>
-## 메일러블의 다국어 지원(Localization)
+## Mailable 다국어 지원
 
-라라벨에서는 요청의 기본 로케일과 다른 언어로 메일러블을 작성해 보낼 수 있습니다. 만약 메일이 큐에 들어가더라도 지정한 로케일 정보가 유지됩니다.
+라라벨에서는 요청의 현재 언어(locale)와 다른 언어로 mailable을 발송할 수 있으며, 메일 발송이 큐에 등록될 경우에도 해당 언어 설정을 기억합니다.
 
-이를 위해 `Mail` 파사드의 `locale` 메서드를 통해 원하는 언어를 지정할 수 있습니다. 메일러블의 템플릿이 렌더링될 때 임시로 해당 로케일로 전환되고, 렌더링이 끝나면 다시 원래 로케일로 돌아갑니다.
+이를 위해 `Mail` 파사드의 `locale` 메서드를 사용하여 원하는 언어를 지정할 수 있습니다. 설정한 언어는 mailable의 템플릿이 렌더링 되는 동안 적용되며, 작업이 끝나면 원래의 언어로 복원됩니다.
 
 ```php
 Mail::to($request->user())->locale('es')->send(
@@ -1118,9 +1118,9 @@ Mail::to($request->user())->locale('es')->send(
 ```
 
 <a name="user-preferred-locales"></a>
-### 사용자별 선호 언어(로케일) 지원
+### 사용자 지정 선호 언어
 
-애플리케이션에서 각 사용자의 선호 로케일을 저장하고 있다면, 한 모델에 `HasLocalePreference` 계약을 구현하여 저장된 로케일 정보를 기반으로 메일을 발송할 수 있습니다.
+애플리케이션에서 각 사용자의 선호 언어 정보를 저장해놓고 있다면, 모델에서 `HasLocalePreference` 계약을 구현함으로써 mailable 발송 시 해당 정보를 자동으로 적용할 수 있습니다.
 
 ```php
 use Illuminate\Contracts\Translation\HasLocalePreference;
@@ -1128,7 +1128,7 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
 class User extends Model implements HasLocalePreference
 {
     /**
-     * Get the user's preferred locale.
+     * 사용자의 선호 언어를 반환합니다.
      */
     public function preferredLocale(): string
     {
@@ -1137,7 +1137,7 @@ class User extends Model implements HasLocalePreference
 }
 ```
 
-이 인터페이스를 구현한 후에는, 라라벨이 자동으로 해당 모델의 선호 로케일을 사용하여 메일러블 및 알림을 발송합니다. 따라서 이 인터페이스를 사용할 때는 별도로 `locale` 메서드를 호출할 필요가 없습니다.
+이 인터페이스를 구현하면, 라라벨은 해당 모델에 대해 mailable과 알림을 보낼 때 자동으로 preferred locale을 적용합니다. 즉, 이 인터페이스를 사용한다면 `locale` 메서드를 명시적으로 호출할 필요가 없습니다.
 
 ```php
 Mail::to($request->user())->send(new OrderShipped($order));
@@ -1147,11 +1147,11 @@ Mail::to($request->user())->send(new OrderShipped($order));
 ## 테스트
 
 <a name="testing-mailable-content"></a>
-### 메일러블 내용 테스트
+### Mailable 내용 테스트하기
 
-라라벨에서는 메일러블의 구조를 확인할 수 있는 다양한 메서드를 제공합니다. 또한, 메일러블에 기대한 내용이 실제로 포함되어 있는지 테스트할 수 있는 여러 편리한 assertion 메서드도 지원합니다. 대표적으로 `assertSeeInHtml`, `assertDontSeeInHtml`, `assertSeeInOrderInHtml`, `assertSeeInText`, `assertDontSeeInText`, `assertSeeInOrderInText`, `assertHasAttachment`, `assertHasAttachedData`, `assertHasAttachmentFromStorage`, `assertHasAttachmentFromStorageDisk` 등이 있습니다.
+라라벨은 mailable의 구조와 내용을 검증할 수 있는 다양한 메서드를 제공합니다. 그 중에서도, 예상하는 내용이나 첨부파일이 실제로 포함되어 있는지 테스트할 수 있는 여러 편리한 메서드를 제공합니다. 주요 메서드는 다음과 같습니다: `assertSeeInHtml`, `assertDontSeeInHtml`, `assertSeeInOrderInHtml`, `assertSeeInText`, `assertDontSeeInText`, `assertSeeInOrderInText`, `assertHasAttachment`, `assertHasAttachedData`, `assertHasAttachmentFromStorage`, `assertHasAttachmentFromStorageDisk`.
 
-이 중 "HTML" 관련 assertion들은 메일러블의 HTML 버전에 특정 문자열이 포함되어 있는지, "text" 관련 assertion들은 일반 텍스트 버전에 문자열이 포함되어 있는지를 검사합니다.
+"HTML" 관련 단정(assert) 메서드는 mailable의 HTML 버전에 특정 문자열이 포함되어 있는지 확인하고, "text" 관련 단정 메서드는 plain-text 버전에 특정 문자열이 포함되어 있는지 확인합니다.
 
 ```php tab=Pest
 use App\Mail\InvoicePaid;
@@ -1222,11 +1222,11 @@ public function test_mailable_content(): void
 
 <a name="testing-mailable-sending"></a>
 
-### 메일러블 전송 테스트하기
+### 메일러블 발송 테스트
 
-특정 메일러블이 실제로 "특정 사용자에게 전송"되었는지 검증하는 테스트와, 메일러블의 내용 자체를 검증하는 테스트는 별도로 작성하는 것을 권장합니다. 일반적으로, 메일러블의 구체적 내용은 여러분이 테스트하려는 코드와 직접적인 관련이 없는 경우가 많으며, 라라벨이 특정 메일러블을 전송하도록 지시받았는지만 확인해도 충분합니다.
+특정 메일러블이 특정 사용자에게 "발송"되었는지를 검증하는 테스트 코드와는 별도로 메일러블의 실제 내용을 따로 테스트하는 것을 권장합니다. 일반적으로, 여러분이 작성하는 테스트 코드에서는 메일러블의 상세 내용 자체가 중요한 경우가 거의 없으므로, 라라벨이 해당 메일러블을 발송하도록 요청받았는지만 검증하면 충분합니다.
 
-메일이 실제로 발송되지 않도록 하려면 `Mail` 파사드의 `fake` 메서드를 사용할 수 있습니다. `Mail::fake()`를 호출한 뒤에는, 어떤 메일러블이 어떤 사용자에게 전송되었는지 검증하거나, 메일러블이 받은 데이터를 직접 확인할 수 있습니다.
+메일이 실제로 발송되는 것을 방지하려면 `Mail` 파사드의 `fake` 메서드를 사용할 수 있습니다. 이 메서드를 호출하면 메일이 발송되지 않고, 이후에 해당 메일러블이 어떤 사용자에게 발송되도록 요청되었는지, 또는 해당 메일러블이 받은 데이터 등을 검증(어설션)할 수 있습니다.
 
 ```php tab=Pest
 <?php
@@ -1237,27 +1237,27 @@ use Illuminate\Support\Facades\Mail;
 test('orders can be shipped', function () {
     Mail::fake();
 
-    // Perform order shipping...
+    // 주문 발송 동작 실행...
 
-    // Assert that no mailables were sent...
+    // 어떤 메일러블도 전송되지 않았는지 확인...
     Mail::assertNothingSent();
 
-    // Assert that a mailable was sent...
+    // 특정 메일러블이 전송되었는지 확인...
     Mail::assertSent(OrderShipped::class);
 
-    // Assert a mailable was sent twice...
+    // 메일러블이 두 번 전송되었는지 확인...
     Mail::assertSent(OrderShipped::class, 2);
 
-    // Assert a mailable was sent to an email address...
+    // 특정 이메일 주소로 메일러블이 전송되었는지 확인...
     Mail::assertSent(OrderShipped::class, 'example@laravel.com');
 
-    // Assert a mailable was sent to multiple email addresses...
+    // 여러 이메일 주소로 메일러블이 전송되었는지 확인...
     Mail::assertSent(OrderShipped::class, ['example@laravel.com', '...']);
 
-    // Assert a mailable was not sent...
+    // 특정 메일러블이 전송되지 않았는지 확인...
     Mail::assertNotSent(AnotherMailable::class);
 
-    // Assert 3 total mailables were sent...
+    // 총 3개의 메일러블이 전송되었는지 확인...
     Mail::assertSentCount(3);
 });
 ```
@@ -1277,33 +1277,33 @@ class ExampleTest extends TestCase
     {
         Mail::fake();
 
-        // Perform order shipping...
+        // 주문 발송 동작 실행...
 
-        // Assert that no mailables were sent...
+        // 어떤 메일러블도 전송되지 않았는지 확인...
         Mail::assertNothingSent();
 
-        // Assert that a mailable was sent...
+        // 특정 메일러블이 전송되었는지 확인...
         Mail::assertSent(OrderShipped::class);
 
-        // Assert a mailable was sent twice...
+        // 메일러블이 두 번 전송되었는지 확인...
         Mail::assertSent(OrderShipped::class, 2);
 
-        // Assert a mailable was sent to an email address...
+        // 특정 이메일 주소로 메일러블이 전송되었는지 확인...
         Mail::assertSent(OrderShipped::class, 'example@laravel.com');
 
-        // Assert a mailable was sent to multiple email addresses...
+        // 여러 이메일 주소로 메일러블이 전송되었는지 확인...
         Mail::assertSent(OrderShipped::class, ['example@laravel.com', '...']);
 
-        // Assert a mailable was not sent...
+        // 특정 메일러블이 전송되지 않았는지 확인...
         Mail::assertNotSent(AnotherMailable::class);
 
-        // Assert 3 total mailables were sent...
+        // 총 3개의 메일러블이 전송되었는지 확인...
         Mail::assertSentCount(3);
     }
 }
 ```
 
-만약 메일러블을 백그라운드에서 큐잉하여 발송하고 있다면, `assertSent` 대신에 `assertQueued` 메서드를 사용해야 합니다.
+만약 메일러블을 백그라운드에서 큐를 통해 발송하도록 한 경우에는 `assertSent` 대신 `assertQueued` 메서드를 사용해야 합니다.
 
 ```php
 Mail::assertQueued(OrderShipped::class);
@@ -1312,7 +1312,7 @@ Mail::assertNothingQueued();
 Mail::assertQueuedCount(3);
 ```
 
-`assertSent`, `assertNotSent`, `assertQueued`, `assertNotQueued` 메서드에는 클로저를 전달하여, 특정 "조건에 맞는" 메일러블이 전송되었는지 검증할 수 있습니다. 주어진 조건을 만족하는 메일러블이 단 하나라도 전송되었다면 해당 검증은 성공합니다.
+`assertSent`, `assertNotSent`, `assertQueued`, `assertNotQueued` 메서드에 클로저를 전달하여, 특정 "조건"을 만족하는 메일러블이 발송(또는 큐잉)되었는지 검증할 수도 있습니다. 해당 조건에 부합하는 메일러블이 하나라도 있다면 어설션은 통과합니다.
 
 ```php
 Mail::assertSent(function (OrderShipped $mail) use ($order) {
@@ -1320,7 +1320,7 @@ Mail::assertSent(function (OrderShipped $mail) use ($order) {
 });
 ```
 
-`Mail` 파사드의 검증 메서드에서 제공하는 클로저로 받은 메일러블 인스턴스는 다양한 정보 확인용 메서드를 제공합니다.
+`Mail` 파사드의 어설션 메서드에 전달된 클로저에서 받을 수 있는 메일러블 인스턴스를 활용하면, 발송된 메일러블에 대해 보다 세부적으로 검사할 수도 있습니다.
 
 ```php
 Mail::assertSent(OrderShipped::class, function (OrderShipped $mail) use ($user) {
@@ -1333,7 +1333,7 @@ Mail::assertSent(OrderShipped::class, function (OrderShipped $mail) use ($user) 
 });
 ```
 
-메일러블 인스턴스는 첨부파일을 검사하기 위한 메서드도 제공합니다.
+메일러블 인스턴스는 첨부 파일에 대한 검사에도 유용한 여러 메서드를 제공합니다.
 
 ```php
 use Illuminate\Mail\Mailables\Attachment;
@@ -1359,7 +1359,7 @@ Mail::assertSent(OrderShipped::class, function (OrderShipped $mail) use ($pdfDat
 });
 ```
 
-메일이 전송되지 않았음을 검증하는 메서드는 `assertNotSent`와 `assertNotQueued`가 있습니다. 그러나 경우에 따라, "아무 메일도 전송 **또는** 큐잉되지 않았다"를 한 번에 검증하고 싶을 수 있습니다. 이때는 `assertNothingOutgoing`, `assertNotOutgoing` 메서드를 사용할 수 있습니다.
+메일이 전송되지 않았는지 확인할 때 `assertNotSent`와 `assertNotQueued` 두 가지 방법이 있습니다. 두 방법 중 어떤 것이건 사용자가 원하는 기준에 맞게 쓸 수 있으며, 경우에 따라 메일이 **전혀 보내지지 않았고** **큐에도 등록되지 않았음**을 한꺼번에 검사하고 싶은 일이 있습니다. 이를 위해 `assertNothingOutgoing` 및 `assertNotOutgoing` 메서드를 사용할 수 있습니다.
 
 ```php
 Mail::assertNothingOutgoing();
@@ -1372,30 +1372,30 @@ Mail::assertNotOutgoing(function (OrderShipped $mail) use ($order) {
 <a name="mail-and-local-development"></a>
 ## 메일과 로컬 개발 환경
 
-이메일을 발송하는 애플리케이션을 개발할 때는, 실제로 존재하는 이메일 주소로 메일이 발송되는 상황을 피하고 싶을 것입니다. 라라벨은 로컬 개발 중에 실제 이메일 전송을 "비활성화"하는 여러 방법을 제공합니다.
+이메일을 발송하는 애플리케이션을 개발할 때, 실제로 실존하는 이메일 주소로 메일을 보내고 싶지 않을 것입니다. 라라벨은 로컬 개발 중 실제로 메일 발송이 이루어지지 않도록 여러 방법을 제공합니다.
 
 <a name="log-driver"></a>
-#### 로그 드라이버
+#### Log 드라이버
 
-이메일을 실질적으로 발송하는 대신, `log` 메일 드라이버를 사용하면 모든 이메일 메시지가 로그 파일에 기록되어 내용을 직접 확인할 수 있습니다. 일반적으로 이 드라이버는 로컬 개발 환경에서만 사용됩니다. 환경별로 애플리케이션을 설정하는 방법에 대해 더 많이 알고 싶다면 [설정 문서](/docs/12.x/configuration#environment-configuration)를 참고하세요.
+메일을 실제로 전송하는 대신, `log` 메일 드라이버를 사용하면 모든 메일 메시지가 로그 파일에 기록되어 나중에 확인할 수 있습니다. 이 드라이버는 주로 로컬 개발 환경에서만 사용됩니다. 환경별로 애플리케이션을 설정하는 방법은 [설정 문서](/docs/12.x/configuration#environment-configuration)를 참고하세요.
 
 <a name="mailtrap"></a>
 #### HELO / Mailtrap / Mailpit
 
-또 다른 방법으로, [HELO](https://usehelo.com)나 [Mailtrap](https://mailtrap.io)과 같은 서비스를 `smtp` 드라이버와 함께 사용하여, 실제 이메일 발송 대신 메시지를 "가상의" 사서함으로 보내고, 이를 이메일 클라이언트에서 직접 확인할 수 있습니다. 이 방식의 장점은, Mailtrap의 메시지 뷰어에서 완성된 이메일을 실제로 확인할 수 있다는 데 있습니다.
+또는 [HELO](https://usehelo.com)나 [Mailtrap](https://mailtrap.io)과 같은 서비스를 이용하거나, `smtp` 드라이버를 사용해 이메일을 "더미" 우편함(테스트용 수신함)으로 보낼 수 있습니다. 이 방식의 장점은 Mailtrap 등의 메시지 뷰어에서 실제 사용자와 동일한 이메일 클라이언트로 최종 결과를 확인할 수 있다는 것입니다.
 
-[Laravel Sail](/docs/12.x/sail)을 사용한다면, [Mailpit](https://github.com/axllent/mailpit)을 이용해 메시지를 미리 볼 수 있습니다. Sail이 실행 중일 때는, `http://localhost:8025`에서 Mailpit 인터페이스에 접속할 수 있습니다.
+[Laravel Sail](/docs/12.x/sail)을 사용한다면 [Mailpit](https://github.com/axllent/mailpit)으로 메시지를 미리 볼 수 있습니다. Sail이 실행 중일 때 `http://localhost:8025`에서 Mailpit 인터페이스에 접속할 수 있습니다.
 
 <a name="using-a-global-to-address"></a>
-#### 전역 `to` 주소 사용하기
+#### 전체 글로벌 `to` 주소 사용
 
-마지막으로, `Mail` 파사드의 `alwaysTo` 메서드를 이용해 특정 이메일 주소로만 모든 메일이 발송되도록 전역 "to" 주소를 지정할 수 있습니다. 이 메서드는 보통 애플리케이션의 서비스 프로바이더 중 하나의 `boot` 메서드에서 호출합니다.
+마지막으로, `Mail` 파사드의 `alwaysTo` 메서드를 통해 전체적으로 "to" 주소를 지정할 수도 있습니다. 이 메서드는 일반적으로 애플리케이션 서비스 제공자 중 하나의 `boot` 메서드에서 호출해야 합니다.
 
 ```php
 use Illuminate\Support\Facades\Mail;
 
 /**
- * Bootstrap any application services.
+ * 애플리케이션 서비스 초기화
  */
 public function boot(): void
 {
@@ -1408,7 +1408,7 @@ public function boot(): void
 <a name="events"></a>
 ## 이벤트
 
-라라벨은 메일 메시지를 전송하는 과정에서 두 개의 이벤트를 발생시킵니다. `MessageSending` 이벤트는 메시지가 **전송되기 전**에 발생하고, `MessageSent` 이벤트는 메시지 **전송 후** 발생합니다. 참고로, 이 이벤트들은 메일이 *전송*될 때만 발생하며, *큐에 등록*될 때는 발생하지 않습니다. 애플리케이션에서 이 이벤트들을 위한 [이벤트 리스너](/docs/12.x/events)를 구현할 수 있습니다.
+라라벨은 메일 메시지를 발송하는 동안 두 가지 이벤트를 발생시킵니다. `MessageSending` 이벤트는 메시지 발송 전에 발생하며, `MessageSent` 이벤트는 메시지 발송 후에 발생합니다. 이 이벤트들은 메일이 *실제로 발송될 때* 발생한다는 점을 기억하세요(큐잉 시점이 아님). 여러분의 애플리케이션에서 [이벤트 리스너](/docs/12.x/events)를 만들어 이러한 이벤트를 처리할 수 있습니다.
 
 ```php
 use Illuminate\Mail\Events\MessageSending;
@@ -1417,7 +1417,7 @@ use Illuminate\Mail\Events\MessageSending;
 class LogMessage
 {
     /**
-     * Handle the event.
+     * 이벤트 처리
      */
     public function handle(MessageSending $event): void
     {
@@ -1427,9 +1427,9 @@ class LogMessage
 ```
 
 <a name="custom-transports"></a>
-## 커스텀 메일 트랜스포트
+## 커스텀 트랜스포트
 
-라라벨은 다양한 메일 트랜스포트를 기본 제공하지만, 지원하지 않는 다른 서비스로 이메일을 발송하고 싶을 때는 직접 트랜스포트를 구현할 수도 있습니다. 먼저, `Symfony\Component\Mailer\Transport\AbstractTransport` 클래스를 상속한 클래스를 정의합니다. 그런 다음, 해당 트랜스포트에서 `doSend`와 `__toString()` 메서드를 구현하면 됩니다.
+라라벨에는 다양한 메일 트랜스포트(메일 발송 방식)가 내장되어 있지만, 때로는 라라벨이 기본적으로 지원하지 않는 다른 서비스와 연동해야 할 수도 있습니다. 이럴 때에는 직접 새로운 트랜스포트를 작성할 수 있습니다. 새 트랜스포트를 만들려면, `Symfony\Component\Mailer\Transport\AbstractTransport` 클래스를 상속하는 클래스를 정의한 뒤, 그 안에 `doSend`와 `__toString()` 메서드를 구현합니다.
 
 ```php
 use MailchimpTransactional\ApiClient;
@@ -1441,7 +1441,7 @@ use Symfony\Component\Mime\MessageConverter;
 class MailchimpTransport extends AbstractTransport
 {
     /**
-     * Create a new Mailchimp transport instance.
+     * 새로운 Mailchimp 트랜스포트 인스턴스 생성
      */
     public function __construct(
         protected ApiClient $client,
@@ -1467,7 +1467,7 @@ class MailchimpTransport extends AbstractTransport
     }
 
     /**
-     * Get the string representation of the transport.
+     * 트랜스포트의 문자열 표현 반환
      */
     public function __toString(): string
     {
@@ -1476,14 +1476,14 @@ class MailchimpTransport extends AbstractTransport
 }
 ```
 
-이제 커스텀 트랜스포트를 정의했다면, `Mail` 파사드의 `extend` 메서드를 통해 트랜스포트를 등록할 수 있습니다. 주로 애플리케이션의 `AppServiceProvider` 서비스 프로바이더의 `boot` 메서드에서 이 작업을 수행합니다. `extend` 메서드에 전달하는 클로저에는 `$config` 인자가 전달되며, 이 값은 애플리케이션의 `config/mail.php` 설정 파일에 정의한 설정 배열입니다.
+커스텀 트랜스포트를 정의했다면, 애플리케이션의 `AppServiceProvider` 등 서비스 제공자의 `boot` 메서드에서 `Mail` 파사드의 `extend` 메서드를 사용하여 등록할 수 있습니다. `extend` 메서드에 전달하는 클로저에는 `$config` 인자가 전달되는데, 이 인자에는 `config/mail.php` 파일에 정의된 해당 메일러에 대한 설정 배열이 담겨 있습니다.
 
 ```php
 use App\Mail\MailchimpTransport;
 use Illuminate\Support\Facades\Mail;
 
 /**
- * Bootstrap any application services.
+ * 애플리케이션 서비스 초기화
  */
 public function boot(): void
 {
@@ -1493,7 +1493,7 @@ public function boot(): void
 }
 ```
 
-이렇게 커스텀 트랜스포트를 정의·등록한 후에는, `config/mail.php` 설정 파일에 해당 트랜스포트를 사용하는 메일러 정의를 추가할 수 있습니다.
+트랜스포트 등록이 끝나면, 애플리케이션의 `config/mail.php` 설정 파일에서 새 트랜스포트를 사용하는 메일러를 다음과 같이 정의할 수 있습니다.
 
 ```php
 'mailchimp' => [
@@ -1503,15 +1503,15 @@ public function boot(): void
 ```
 
 <a name="additional-symfony-transports"></a>
-### 추가 Symfony 트랜스포트
+### 추가적인 Symfony 트랜스포트
 
-라라벨은 Mailgun, Postmark 등 Symfony에서 공식적으로 유지 관리하는 여러 메일 트랜스포트를 기본 지원합니다. 더 많은 Symfony 트랜스포트를 라라벨에서 활용하고 싶다면, Composer로 해당 Symfony 메일러 패키지를 설치하고, 라라벨에 직접 트랜스포트를 등록할 수 있습니다. 예를 들어 "Brevo"(이전 명칭: Sendinblue)용 Symfony 메일러를 설치하고 등록하는 방법은 아래와 같습니다.
+라라벨은 기본적으로 Mailgun, Postmark와 같이 Symfony에서 공식적으로 관리하는 일부 메일 트랜스포트를 지원합니다. 그러나 더 많은 Symfony 트랜스포트에 대한 지원이 필요하다면 Composer로 해당 패키지를 설치한 후, 트랜스포트를 등록할 수 있습니다. 예를 들어, "Brevo" (이전 명칭: "Sendinblue") Symfony 메일러를 설치하고 등록하는 방법은 다음과 같습니다.
 
 ```shell
 composer require symfony/brevo-mailer symfony/http-client
 ```
 
-Brevo 메일러 패키지를 설치한 뒤에는, 애플리케이션의 `services` 설정 파일에 Brevo API 자격증명을 추가합니다.
+Brevo 메일러가 설치되었다면, 애플리케이션의 `services` 설정 파일에 Brevo API 인증 정보를 추가합니다.
 
 ```php
 'brevo' => [
@@ -1519,7 +1519,7 @@ Brevo 메일러 패키지를 설치한 뒤에는, 애플리케이션의 `service
 ],
 ```
 
-그리고 `Mail` 파사드의 `extend` 메서드로 해당 트랜스포트를 라라벨에 등록합니다. 보통 서비스 프로바이더의 `boot` 메서드에서 이 작업을 수행합니다.
+그 다음, 서비스 제공자 중 하나의 `boot` 메서드에서 `Mail` 파사드의 `extend` 메서드를 사용해 트랜스포트를 등록합니다.
 
 ```php
 use Illuminate\Support\Facades\Mail;
@@ -1527,7 +1527,7 @@ use Symfony\Component\Mailer\Bridge\Brevo\Transport\BrevoTransportFactory;
 use Symfony\Component\Mailer\Transport\Dsn;
 
 /**
- * Bootstrap any application services.
+ * 애플리케이션 서비스 초기화
  */
 public function boot(): void
 {
@@ -1543,7 +1543,7 @@ public function boot(): void
 }
 ```
 
-트랜스포트를 등록한 후에는, 애플리케이션의 `config/mail.php` 설정 파일에 해당 트랜스포트를 사용하는 메일러를 정의하면 됩니다.
+트랜스포트가 등록되면, 애플리케이션의 `config/mail.php` 설정 파일에서 다음과 같이 새로운 트랜스포트를 사용하는 메일러를 정의하면 됩니다.
 
 ```php
 'brevo' => [

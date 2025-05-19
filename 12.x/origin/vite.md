@@ -93,7 +93,7 @@ Vite is configured via a `vite.config.js` file in the root of your project. You 
 The Laravel Vite plugin requires you to specify the entry points for your application. These may be JavaScript or CSS files, and include preprocessed languages such as TypeScript, JSX, TSX, and Sass.
 
 ```js
-import { defineConfig } from 'vite';
+import {defineConfig} from '12.x/origin/vite';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({

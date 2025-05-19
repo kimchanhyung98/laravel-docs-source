@@ -7,20 +7,20 @@
 - [컨텍스트 조회하기](#retrieving-context)
     - [항목 존재 여부 확인](#determining-item-existence)
 - [컨텍스트 제거하기](#removing-context)
-- [숨김 컨텍스트](#hidden-context)
+- [숨겨진 컨텍스트](#hidden-context)
 - [이벤트](#events)
-    - [디하이드레이트(Dehydrating)](#dehydrating)
-    - [하이드레이팅(Hydrated)](#hydrated)
+    - [디하이드레이팅(Dehydrating)](#dehydrating)
+    - [하이드레이티드(Hydrated)](#hydrated)
 
 <a name="introduction"></a>
 ## 소개
 
-Laravel의 "컨텍스트(Context)" 기능을 사용하면 애플리케이션 내에서 실행되는 요청, 작업(잡), 명령어 전체에 걸쳐 정보를 수집하고 조회하며 공유할 수 있습니다. 이렇게 캡처된 정보는 애플리케이션이 작성하는 로그에도 자동으로 포함되어, 로그가 기록되기 전에 어떤 코드 실행 이력이 있었는지 더 깊이 있게 파악할 수 있으며, 분산 시스템에서도 실행 흐름을 효과적으로 추적할 수 있습니다.
+라라벨의 "컨텍스트" 기능을 사용하면 애플리케이션 내부에서 실행되는 요청, 작업(job), 명령어 전반에 걸쳐 정보를 캡처(저장), 조회, 공유할 수 있습니다. 이렇게 저장된 정보는 애플리케이션에서 기록하는 로그에도 메타데이터로 포함되어, 로그가 작성되기 전 실행된 코드의 히스토리를 더 깊이 이해하고, 분산 시스템 전체의 실행 흐름을 추적할 수 있도록 도와줍니다.
 
 <a name="how-it-works"></a>
 ### 작동 방식
 
-Laravel의 컨텍스트 기능을 이해하는 가장 좋은 방법은 내장 로깅 기능과 함께 사용하는 모습을 살펴보는 것입니다. 먼저, [`Context` 파사드](#capturing-context)를 이용해 컨텍스트에 정보를 추가할 수 있습니다. 이 예시에서는 [미들웨어](/docs/12.x/middleware)를 사용해, 들어오는 모든 요청마다 요청 URL과 고유한 트레이스 ID를 컨텍스트에 추가해보겠습니다.
+라라벨의 컨텍스트 기능을 가장 잘 이해하는 방법은 내장된 로깅 기능과 함께 직접 사용해 보는 것입니다. 먼저, `Context` 파사드(facade)를 사용해 [컨텍스트에 정보를 추가](#capturing-context)할 수 있습니다. 예를 들어, 모든 요청마다 요청 URL과 고유한 트레이스 ID(trace ID)를 컨텍스트에 저장하는 [미들웨어](/docs/12.x/middleware)를 구현해 보겠습니다.
 
 ```php
 <?php
@@ -48,19 +48,19 @@ class AddContext
 }
 ```
 
-컨텍스트에 추가된 정보는 해당 요청 동안 작성되는 모든 [로그 항목](/docs/12.x/logging)에 메타데이터 형태로 자동으로 덧붙여집니다. 이때, 컨텍스트에 저장된 정보와 각각의 로그 항목에 직접 전달한 정보는 분리되어 구분할 수 있습니다. 예를 들어, 다음과 같이 로그를 작성해보겠습니다.
+컨텍스트에 추가된 정보는 요청 처리 도중 작성되는 [로그 기록](/docs/12.x/logging)에 자동으로 메타데이터로 첨부됩니다. 컨텍스트의 정보는 개별 로그 항목에 전달된 데이터와 구분되어 저장되므로, 각 로깅에서 전달한 정보와 별도로, `Context`를 통해 공유된 정보도 함께 확인할 수 있습니다. 예를 들어, 다음과 같이 로그를 기록했다면:
 
 ```php
 Log::info('User authenticated.', ['auth_id' => Auth::id()]);
 ```
 
-실제로 기록되는 로그에는 로그 항목에 전달한 `auth_id` 뿐 아니라, 컨텍스트의 `url`과 `trace_id`도 메타데이터로 함께 저장됩니다.
+이때 작성되는 로그에는 로그 항목별로 전달한 `auth_id`와 함께, 컨텍스트의 `url`, `trace_id`가 메타데이터로 포함됩니다.
 
 ```text
 User authenticated. {"auth_id":27} {"url":"https://example.com/login","trace_id":"e04e1a11-e75c-4db3-b5b5-cfef4ef56697"}
 ```
 
-컨텍스트에 추가한 정보는 큐(queue)로 디스패치되는 잡(job)에도 함께 전달됩니다. 예를 들어, 컨텍스트에 값을 추가한 후 `ProcessPodcast` 잡을 큐로 디스패치한다고 가정해 봅니다.
+컨텍스트에 추가한 정보는 큐로 디스패치(dispatch)되는 작업(job)에도 자동으로 전달됩니다. 예를 들어, 일부 정보를 컨텍스트에 추가한 뒤 `ProcessPodcast` 작업을 큐에 올리면:
 
 ```php
 // 미들웨어에서...
@@ -71,7 +71,7 @@ Context::add('trace_id', Str::uuid()->toString());
 ProcessPodcast::dispatch($podcast);
 ```
 
-잡이 디스패치되는 시점에 컨텍스트에 저장된 모든 정보가 함께 캡처되어 잡에 전달됩니다. 그리고 잡이 실행될 때 해당 정보가 다시 현재 컨텍스트에 "하이드레이션"되어 복원됩니다. 따라서, 잡의 handle 메서드에서 로그를 남긴다면:
+작업이 큐에 디스패치될 때, 컨텍스트에 저장되어 있던 모든 정보가 함께 캡처되어 작업에 전달됩니다. 작업이 실행되는 동안 이 정보는 다시 현재 컨텍스트에 하이드레이션(hydration) 됩니다. 예를 들어 작업 클래스의 handle 메서드에서 로그를 남기면:
 
 ```php
 class ProcessPodcast implements ShouldQueue
@@ -94,18 +94,18 @@ class ProcessPodcast implements ShouldQueue
 }
 ```
 
-이때 남겨진 로그 항목에도 최초 요청 시 컨텍스트에 추가한 정보가 함께 기록됩니다.
+이때 작성되는 로그에는 작업이 디스패치될 당시 컨텍스트에 추가되어 있던 정보가 함께 포함됩니다.
 
 ```text
 Processing podcast. {"podcast_id":95} {"url":"https://example.com/login","trace_id":"e04e1a11-e75c-4db3-b5b5-cfef4ef56697"}
 ```
 
-지금까지는 컨텍스트의 내장 로깅 관련 기능에 집중해서 설명했지만, 아래 페이지에서는 컨텍스트를 활용해 HTTP 요청과 큐 작업 사이에 정보를 안전하게 공유하는 방법, 그리고 [로그에는 기록되지 않는 숨겨진 컨텍스트](#hidden-context) 데이터까지 추가하는 방법도 안내합니다.
+여기서는 주로 라라벨 기본 제공 로깅 기능과 관련된 컨텍스트의 특성에 집중했지만, 이 문서에서는 HTTP 요청과 큐 작업 간에 정보를 어떻게 안전하게 공유할 수 있는지, 그리고 [로그에 첨부되지 않는 숨겨진 컨텍스트 데이터](#hidden-context)까지 활용하는 방법도 함께 설명합니다.
 
 <a name="capturing-context"></a>
 ## 컨텍스트 캡처하기
 
-현재 컨텍스트에 정보를 저장하려면 `Context` 파사드의 `add` 메서드를 사용합니다.
+현재 컨텍스트에 정보를 저장하려면 `Context` 파사드의 `add` 메서드를 사용하면 됩니다.
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -113,7 +113,7 @@ use Illuminate\Support\Facades\Context;
 Context::add('key', 'value');
 ```
 
-한 번에 여러 항목을 추가하려면, `add` 메서드에 연관 배열을 전달하면 됩니다.
+여러 항목을 한 번에 추가하고 싶다면, 연관 배열(associative array)을 `add` 메서드에 넘길 수 있습니다.
 
 ```php
 Context::add([
@@ -122,7 +122,7 @@ Context::add([
 ]);
 ```
 
-`add` 메서드는 동일한 키에 기존 값이 있으면 덮어씁니다. 만약 해당 키에 값이 없을 때만 정보를 추가하고 싶다면 `addIf` 메서드를 사용할 수 있습니다.
+만약 동일한 키가 이미 존재한다면 `add` 메서드는 해당 값을 덮어씁니다. 만약 해당 키가 존재하지 않을 때만 값을 추가하고 싶다면, `addIf` 메서드를 사용하면 됩니다.
 
 ```php
 Context::add('key', 'first');
@@ -136,7 +136,7 @@ Context::get('key');
 // "first"
 ```
 
-컨텍스트에는 지정한 키의 값을 증가(increment)하거나 감소(decrement)시키는 편리한 메서드도 있습니다. 각각 적어도 하나의 인수(추적할 키)를 받고, 두 번째 인수로 증가 또는 감소시킬 값도 지정할 수 있습니다.
+컨텍스트에는 특정 키의 값을 쉽고 빠르게 증가(increment) 또는 감소(decrement)시키는 메서드도 제공됩니다. 이때 첫 번째 인수로는 값을 추적할 키를, 두 번째 인수로는 값을 얼마만큼 변경할지 지정할 수 있습니다(두 번째 인수는 옵션).
 
 ```php
 Context::increment('records_added');
@@ -149,7 +149,7 @@ Context::decrement('records_added', 5);
 <a name="conditional-context"></a>
 #### 조건부 컨텍스트
 
-`when` 메서드를 사용하면 특정 조건에 따라 컨텍스트에 데이터를 추가할 수 있습니다. 첫 번째로 받은 클로저는 조건이 `true`일 때 호출되고, 두 번째 클로저는 조건이 `false`일 때 호출됩니다.
+`when` 메서드를 이용하면 특정 조건에 따라 컨텍스트에 데이터를 추가할 수 있습니다. 첫 번째로 넘기는 클로저는 주어진 조건이 `true`일 때 실행되고, 두 번째 클로저는 조건이 `false`일 때 실행됩니다.
 
 ```php
 use Illuminate\Support\Facades\Auth;
@@ -165,7 +165,7 @@ Context::when(
 <a name="scoped-context"></a>
 #### 스코프 컨텍스트
 
-`scope` 메서드를 사용하면, 특정 콜백이 실행되는 동안만 컨텍스트를 임시로 변경하고 실행이 끝나면 원래 상태로 되돌릴 수 있습니다. 또한, 콜백 실행 동안 컨텍스트에 병합할 추가 데이터(두 번째 인수, 세 번째 인수)를 전달할 수도 있습니다.
+`scope` 메서드는 주어진 콜백이 실행되는 동안에만 일시적으로 컨텍스트 값을 변경하고, 콜백이 끝나면 원래 상태로 복원합니다. 또한, 클로저가 실행되는 동안 추가적으로 컨텍스트 데이터를 합쳐 사용할 수도 있습니다(두 번째, 세 번째 인수).
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -199,12 +199,12 @@ Context::allHidden();
 ```
 
 > [!WARNING]
-> 스코프 클로저 내부에서 컨텍스트의 객체를 수정하면, 그 변경 사항이 스코프 바깥에도 그대로 반영됩니다.
+> 스코프 클로저 내부에서 컨텍스트에 들어 있는 객체를 수정하면, 이 변경사항은 스코프 바깥(원래 컨텍스트)에서도 그대로 반영됩니다.
 
 <a name="stacks"></a>
 ### 스택
 
-컨텍스트는 "스택(stack)"도 지원합니다. 스택은 데이터를 추가한 순서대로 쌓는 리스트입니다. `push` 메서드를 이용해 스택에 정보를 추가할 수 있습니다.
+컨텍스트에서는 "스택"이라는 데이터를 사용할 수 있는데, 이는 데이터를 추가한 순서대로 차곡차곡 쌓는 리스트 구조입니다. 스택에 값을 추가하려면 `push` 메서드를 사용합니다.
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -221,7 +221,7 @@ Context::get('breadcrumbs');
 // ]
 ```
 
-스택은 요청 처리 과정에서 발생하는 이벤트 등, 연속적으로 일어나는 히스토리 정보를 기록할 때 유용합니다. 예를 들어, 쿼리가 실행될 때마다 이벤트 리스너를 만들어 스택에 쿼리 SQL과 실행 시간을 튜플로 기록할 수 있습니다.
+스택은 한 요청에 대해 발생한 각종 이벤트나 작업의 히스토리를 저장하는 데 유용합니다. 예를 들어, 쿼리가 실행될 때마다 해당 쿼리의 SQL문과 실행 시간을 스택에 저장하는 리스너(event listener)를 구현할 수도 있습니다.
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -232,7 +232,7 @@ DB::listen(function ($event) {
 });
 ```
 
-스택에 특정 값이 포함되어 있는지 확인할 때는 `stackContains` 및 `hiddenStackContains` 메서드를 사용할 수 있습니다.
+스택에 특정 값이 포함되어 있는지 확인하려면 `stackContains` 또는 `hiddenStackContains` 메서드를 사용할 수 있습니다.
 
 ```php
 if (Context::stackContains('breadcrumbs', 'first_value')) {
@@ -244,7 +244,7 @@ if (Context::hiddenStackContains('secrets', 'first_value')) {
 }
 ```
 
-`stackContains` 및 `hiddenStackContains`는 두 번째 인수로 클로저를 받아, 값 비교 방법을 직접 정의할 수도 있습니다.
+`stackContains`나 `hiddenStackContains`에는 두 번째 인수로 클로저를 전달할 수도 있어서, 값 비교 방식에 더 많은 유연성을 가질 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -266,7 +266,7 @@ use Illuminate\Support\Facades\Context;
 $value = Context::get('key');
 ```
 
-컨텍스트에서 원하는 일부 키만 조회하거나, 특정 키를 제외하고 조회하려면 `only`와 `except` 메서드를 활용할 수 있습니다.
+컨텍스트에서 일부 정보만 추출하고 싶다면, `only` 및 `except` 메서드를 사용할 수 있습니다.
 
 ```php
 $data = Context::only(['first_key', 'second_key']);
@@ -274,13 +274,13 @@ $data = Context::only(['first_key', 'second_key']);
 $data = Context::except(['first_key']);
 ```
 
-컨텍스트에서 값을 읽으면서 동시에 삭제하고 싶을 때는 `pull` 메서드를 사용합니다.
+`pull` 메서드를 사용하면 컨텍스트의 값을 불러오면서 동시에 해당 값을 컨텍스트에서 제거할 수 있습니다.
 
 ```php
 $value = Context::pull('key');
 ```
 
-컨텍스트 데이터가 [스택](#stacks)으로 저장되어 있다면, `pop` 메서드를 사용해 스택에서 항목을 꺼낼 수 있습니다.
+컨텍스트 데이터가 [스택](#stacks)에 저장되어 있다면 `pop` 메서드를 사용해 스택에서 값을 꺼낼 수 있습니다.
 
 ```php
 Context::push('breadcrumbs', 'first_value', 'second_value');
@@ -292,7 +292,7 @@ Context::get('breadcrumbs');
 // ['first_value']
 ```
 
-컨텍스트에 저장된 모든 데이터를 한 번에 조회하려면 `all` 메서드를 호출하세요.
+컨텍스트에 저장된 모든 정보를 한 번에 조회하고 싶다면 `all` 메서드를 호출하면 됩니다.
 
 ```php
 $data = Context::all();
@@ -301,7 +301,7 @@ $data = Context::all();
 <a name="determining-item-existence"></a>
 ### 항목 존재 여부 확인
 
-특정 키에 값이 저장되어 있는지 확인하려면 `has` 또는 `missing` 메서드를 사용할 수 있습니다.
+지정한 키에 해당하는 값이 컨텍스트에 저장되어 있는지 확인하려면 `has`와 `missing` 메서드를 사용할 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -315,7 +315,7 @@ if (Context::missing('key')) {
 }
 ```
 
-`has` 메서드는 해당 키에 저장된 값이 무엇이든(심지어 `null`일지라도) `true`를 반환합니다.
+`has` 메서드는 실제 저장된 값에 상관없이 해당 키가 존재한다면 항상 `true`를 반환합니다. 예를 들어, 값이 `null`이어도 키가 있으면 `true`가 반환됩니다.
 
 ```php
 Context::add('key', null);
@@ -327,7 +327,7 @@ Context::has('key');
 <a name="removing-context"></a>
 ## 컨텍스트 제거하기
 
-현재 컨텍스트에서 특정 키와 그 값을 삭제하려면 `forget` 메서드를 사용할 수 있습니다.
+현재 컨텍스트에서 특정 키와 값을 제거하려면 `forget` 메서드를 사용합니다.
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -341,16 +341,16 @@ Context::all();
 // ['second_key' => 2]
 ```
 
-삭제할 키가 여러 개인 경우 배열로 전달하면 됩니다.
+여러 개의 키를 한 번에 제거하고 싶다면 배열로 전달하면 됩니다.
 
 ```php
 Context::forget(['first_key', 'second_key']);
 ```
 
 <a name="hidden-context"></a>
-## 숨김 컨텍스트
+## 숨겨진 컨텍스트
 
-컨텍스트는 "숨김(hidden)" 데이터를 저장하는 기능도 제공합니다. 이런 숨김 정보는 로그에 기록되지 않으며, 위에서 설명한 일반 데이터 조회 메서드로도 접근할 수 없습니다. 숨김 컨텍스트와 상호작용하려면 전용 메서드를 사용해야 합니다.
+컨텍스트는 "숨겨진" 데이터도 저장할 수 있습니다. 숨겨진 컨텍스트는 로그에 첨부되지 않으며, 앞서 설명한 조회 메서드로도 접근할 수 없습니다. 숨겨진 데이터에 접근하기 위한 별도의 메서드들이 제공됩니다.
 
 ```php
 use Illuminate\Support\Facades\Context;
@@ -364,7 +364,7 @@ Context::get('key');
 // null
 ```
 
-"숨김" 메서드는 위에서 설명한 일반 메서드와 동일한 기능을 제공합니다.
+숨겨진 컨텍스트 관련 메서드는 기본 컨텍스트 메서드와 거의 동일한 형태로 제공합니다.
 
 ```php
 Context::addHidden(/* ... */);
@@ -383,16 +383,16 @@ Context::forgetHidden(/* ... */);
 <a name="events"></a>
 ## 이벤트
 
-컨텍스트는 하이드레이션(hydration), 디하이드레이션(dehydration) 과정에서 후킹할 수 있는 두 개의 이벤트를 제공합니다.
+컨텍스트는 하이드레이션(hydration), 디하이드레이션(dehydration) 처리 과정에 훅(hook)을 걸 수 있도록 두 개의 이벤트를 발생시킵니다.
 
-예를 들어, 애플리케이션의 미들웨어에서 HTTP 요청의 `Accept-Language` 헤더를 분석해 `app.locale` 설정 값을 지정한다고 가정해 보겠습니다. 컨텍스트 이벤트를 활용하면 요청 도중 이 값을 캡처해서 큐 작업 실행 시에 다시 복원할 수 있으므로, 큐를 통해 발송되는 알림 역시 올바른 `app.locale` 값을 갖게 됩니다. 아래 예제에서는 컨텍스트 이벤트와 [숨김 데이터](#hidden-context)를 함께 활용하는 방법을 설명합니다.
+예를 들어, 미들웨어에서 들어오는 HTTP 요청의 `Accept-Language` 헤더를 읽어 `app.locale` 설정값을 지정한다고 가정해봅시다. 컨텍스트의 이벤트를 활용하면 요청 시점의 로케일 값을 캡처해서 큐에서 작업이 실행될 때 원래의 `app.locale` 값을 복원할 수 있습니다. 이 문서에서는 컨텍스트 이벤트와 [숨겨진](#hidden-context) 데이터를 함께 사용해 이 과정을 구현하는 방법을 소개합니다.
 
 <a name="dehydrating"></a>
-### 디하이드레이트(Dehydrating)
+### 디하이드레이팅(Dehydrating)
 
-잡이 큐에 디스패치될 때, 컨텍스트 내의 데이터는 "디하이드레이션"되어 잡의 페이로드와 함께 저장됩니다. `Context::dehydrating` 메서드는, 디하이드레이션 과정 중에 실행될 클로저를 등록할 수 있도록 해줍니다. 이 클로저에서 큐 작업에 전달될 데이터를 변경할 수 있습니다.
+작업이 큐로 디스패치될 때, 컨텍스트의 데이터가 "디하이드레이션"되어(직렬화되어) 작업 페이로드와 함께 저장됩니다. `Context::dehydrating` 메서드를 사용하면 디하이드레이션 과정에서 호출될 클로저를 등록할 수 있습니다. 이 클로저 내부에서 큐 작업에 함께 전달할 데이터를 변경할 수 있습니다.
 
-일반적으로 `AppServiceProvider` 클래스의 `boot` 메서드 안에서 `dehydrating` 콜백을 등록합니다.
+일반적으로, `dehydrating` 콜백은 애플리케이션의 `AppServiceProvider` 클래스의 `boot` 메서드에서 등록합니다.
 
 ```php
 use Illuminate\Log\Context\Repository;
@@ -411,14 +411,14 @@ public function boot(): void
 ```
 
 > [!NOTE]
-> `dehydrating` 콜백 내부에서는 `Context` 파사드를 사용하지 않아야 합니다. 현재 프로세스의 컨텍스트가 변경될 수 있으므로, 콜백에 전달된 repository 객체만 사용해 주세요.
+> `dehydrating` 콜백 내부에서는 `Context` 파사드를 사용하지 마세요. 현재 프로세스의 컨텍스트가 바뀔 수 있으므로, 콜백으로 전달되는 `$context` 저장소만 변경해야 합니다.
 
 <a name="hydrated"></a>
-### 하이드레이팅(Hydrated)
+### 하이드레이티드(Hydrated)
 
-큐에 들어간 작업이 실행될 때, 잡에 전달된 컨텍스트가 현재 컨텍스트에 "하이드레이션"되어 복구됩니다. `Context::hydrated` 메서드를 사용하면, 하이드레이션 과정에서 실행할 클로저를 등록할 수 있습니다.
+큐 작업이 실제로 실행(큐에서 꺼내 실행)되면, 작업에 함께 전달된 컨텍스트가 현재 컨텍스트에 "하이드레이션"되어 복원됩니다. `Context::hydrated` 메서드를 이용하면 하이드레이션 과정에서 실행될 클로저를 등록할 수 있습니다.
 
-이 콜백 역시 `AppServiceProvider` 클래스의 `boot` 메서드 안에서 등록하는 것이 일반적입니다.
+일반적으로, `hydrated` 콜백도 애플리케이션의 `AppServiceProvider` 클래스의 `boot` 메서드에서 등록합니다.
 
 ```php
 use Illuminate\Log\Context\Repository;
@@ -439,4 +439,4 @@ public function boot(): void
 ```
 
 > [!NOTE]
-> `hydrated` 콜백 내부에서도 `Context` 파사드를 사용하지 말고, 콜백에 전달된 repository 객체만을 사용해 작업해야 합니다.
+> `hydrated` 콜백에서도 `Context` 파사드는 사용하지 말고, 반드시 전달받은 저장소 인스턴스만 수정해야 합니다.
