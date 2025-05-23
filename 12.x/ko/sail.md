@@ -442,7 +442,7 @@ sail up
 <a name="sail-node-versions"></a>
 ## Node 버전
 
-Sail은 기본적으로 Node 20을 설치합니다. Node 버전을 변경하려면, `docker-compose.yml` 파일의 `laravel.test` 서비스 내 `build.args` 항목을 원하는 버전으로 수정하세요.
+Sail은 기본적으로 Node 22를 설치합니다. Node 버전을 변경하려면, `docker-compose.yml` 파일의 `laravel.test` 서비스 내 `build.args` 항목을 원하는 버전으로 수정하세요.
 
 ```yaml
 build:
