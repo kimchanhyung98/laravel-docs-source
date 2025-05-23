@@ -26,7 +26,7 @@ jobs:
 
       - name: Run update script
         run: python main.py
-        timeout-minutes: 30
+        timeout-minutes: 60
         env:
           TRANSLATION_PROVIDER: ${{ secrets.TRANSLATION_PROVIDER }}
           TRANSLATION_MODEL: ${{ secrets.TRANSLATION_MODEL }}
