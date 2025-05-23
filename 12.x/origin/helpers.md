@@ -502,9 +502,9 @@ use Illuminate\Support\Arr;
 
 Arr::from((object) ['foo' => 'bar']); // ['foo' => 'bar']
 
-class TestJsonableObject implements Jsonable 
+class TestJsonableObject implements Jsonable
 {
-    public function toJson($options = 0) 
+    public function toJson($options = 0)
     {
         return json_encode(['foo' => 'bar']);
     }
@@ -3067,9 +3067,6 @@ For a thorough discussion of Carbon and its features, please consult the [offici
 <a name="deferred-functions"></a>
 ### Deferred Functions
 
-> [!WARNING]
-> Deferred functions are currently in beta while we gather community feedback.
-
 While Laravel's [queued jobs](/docs/{{version}}/queues) allow you to queue tasks for background processing, sometimes you may have simple tasks you would like to defer without configuring or maintaining a long-running queue worker.
 
 Deferred functions allow you to defer the execution of a closure until after the HTTP response has been sent to the user, keeping your application feeling fast and responsive. To defer the execution of a closure, simply pass the closure to the `Illuminate\Support\defer` function:
@@ -3104,19 +3101,6 @@ If you need to cancel a deferred function before it is executed, you can use the
 defer(fn () => Metrics::report(), 'reportMetrics');
 
 defer()->forget('reportMetrics');
-```
-
-<a name="deferred-function-compatibility"></a>
-#### Deferred Function Compatibility
-
-If you upgraded to Laravel 11.x from a Laravel 10.x application and your application's skeleton still contains an `app/Http/Kernel.php` file, you should add the `InvokeDeferredCallbacks` middleware to the beginning of the kernel's `$middleware` property:
-
-```php
-protected $middleware = [
-    \Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks::class, // [tl! add]
-    \App\Http\Middleware\TrustProxies::class,
-    // ...
-];
 ```
 
 <a name="disabling-deferred-functions-in-tests"></a>

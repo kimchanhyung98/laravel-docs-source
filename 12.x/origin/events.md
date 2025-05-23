@@ -160,7 +160,7 @@ public function boot(): void
 <a name="queuable-anonymous-event-listeners"></a>
 #### Queueable Anonymous Event Listeners
 
-When registering closure based event listeners, you may wrap the listener closure within the `Illuminate\Events\queueable` function to instruct Laravel to execute the listener using the [queue](/docs/{{version}}/queues):
+When registering closure-based event listeners, you may wrap the listener closure within the `Illuminate\Events\queueable` function to instruct Laravel to execute the listener using the [queue](/docs/{{version}}/queues):
 
 ```php
 use App\Events\PodcastProcessed;
@@ -535,6 +535,8 @@ public function retryUntil(): DateTime
 }
 ```
 
+If both `retryUntil` and `tries` are defined, Laravel gives precedence to the `retryUntil` method.
+
 <a name="specifying-queued-listener-backoff"></a>
 #### Specifying Queued Listener Backoff
 
@@ -866,7 +868,9 @@ test('orders can be processed', function () {
     Event::assertDispatched(OrderCreated::class);
 
     // Other events are dispatched as normal...
-    $order->update([...]);
+    $order->update([
+        // ...
+    ]);
 });
 ```
 
@@ -885,7 +889,9 @@ public function test_orders_can_be_processed(): void
     Event::assertDispatched(OrderCreated::class);
 
     // Other events are dispatched as normal...
-    $order->update([...]);
+    $order->update([
+        // ...
+    ]);
 }
 ```
 
@@ -918,8 +924,10 @@ test('orders can be processed', function () {
         return $order;
     });
 
-    // Events are dispatched as normal and observers will run ...
-    $order->update([...]);
+    // Events are dispatched as normal and observers will run...
+    $order->update([
+        // ...
+    ]);
 });
 ```
 
@@ -948,8 +956,10 @@ class ExampleTest extends TestCase
             return $order;
         });
 
-        // Events are dispatched as normal and observers will run ...
-        $order->update([...]);
+        // Events are dispatched as normal and observers will run...
+        $order->update([
+            // ...
+        ]);
     }
 }
 ```
