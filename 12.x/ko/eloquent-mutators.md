@@ -1,7 +1,7 @@
-# Eloquent: 변경자(Mutators) & 캐스팅(Casting) (Eloquent: Mutators & Casting)
+# Eloquent: 접근자, 변경자 & 캐스팅 (Eloquent: Mutators & Casting)
 
 - [소개](#introduction)
-- [접근자(Accessors)와 변경자(Mutators)](#accessors-and-mutators)
+- [접근자와 변경자](#accessors-and-mutators)
     - [접근자 정의하기](#defining-an-accessor)
     - [변경자 정의하기](#defining-a-mutator)
 - [속성 캐스팅](#attribute-casting)
@@ -9,28 +9,28 @@
     - [날짜 캐스팅](#date-casting)
     - [Enum 캐스팅](#enum-casting)
     - [암호화 캐스팅](#encrypted-casting)
-    - [쿼리 타임 캐스팅](#query-time-casting)
+    - [쿼리 시점 캐스팅](#query-time-casting)
 - [커스텀 캐스트](#custom-casts)
     - [값 객체 캐스팅](#value-object-casting)
     - [배열 / JSON 직렬화](#array-json-serialization)
     - [입력값 캐스팅](#inbound-casting)
-    - [캐스트 파라미터](#cast-parameters)
-    - [캐스터블(Castables)](#castables)
+    - [캐스트 매개변수](#cast-parameters)
+    - [캐스터블](#castables)
 
 <a name="introduction"></a>
 ## 소개
 
-접근자(accessor), 변경자(mutator), 그리고 속성 캐스팅 기능을 활용하면, Eloquent 모델 인스턴스에서 속성 값을 가져오거나 설정할 때 값을 원하는 형태로 변환할 수 있습니다. 예를 들면, [라라벨 암호화기](/docs/12.x/encryption)를 이용해서 특정 값을 데이터베이스에 저장할 때 암호화하고, Eloquent 모델에서 해당 속성에 접근할 때 자동으로 복호화하도록 만들 수 있습니다. 또는, 데이터베이스에 저장되어 있는 JSON 문자열을 Eloquent 모델에서는 배열로 변환해서 사용할 수도 있습니다.
+접근자(accessor), 변경자(mutator), 그리고 속성 캐스팅(attribute casting)을 사용하면 Eloquent 모델 인스턴스에서 속성 값을 조회하거나 설정할 때 그 값을 원하는 형태로 변환할 수 있습니다. 예를 들어, [라라벨 암호화기](/docs/12.x/encryption)를 사용하여 데이터베이스에 저장할 때 값을 암호화하고, Eloquent 모델에서 해당 속성에 접근할 때 자동으로 복호화하도록 할 수 있습니다. 또는 데이터베이스에 저장된 JSON 문자열을 Eloquent 모델을 통해 접근할 때 자동으로 PHP 배열로 변환되도록 할 수도 있습니다.
 
 <a name="accessors-and-mutators"></a>
-## 접근자(Accessors)와 변경자(Mutators)
+## 접근자와 변경자
 
 <a name="defining-an-accessor"></a>
 ### 접근자 정의하기
 
-접근자(accessor)는 Eloquent 모델 속성에 접근할 때 해당 값을 변환해주는 역할을 합니다. 접근자를 정의하려면, 모델에서 접근 가능한 속성을 나타내는 `protected` 메서드를 생성해야 합니다. 이 메서드명은 실제 모델 속성명(또는 데이터베이스 컬럼명)을 "카멜 케이스(camel case)"로 변환한 형태여야 합니다.
+접근자는 Eloquent 속성 값에 접근할 때 그 값을 변환합니다. 접근자를 정의하려면, 모델에 접근 가능한 속성 이름에 해당하는 protected 메서드를 생성하면 됩니다. 이 메서드 이름은 기본적으로 실제 모델 속성/데이터베이스 컬럼 이름을 "카멜 케이스(camel case)"로 변환한 형식을 따릅니다.
 
-아래 예시에서는 `first_name` 속성에 대한 접근자를 정의합니다. 이 접근자는 Eloquent에서 `first_name` 속성 값을 가져올 때마다 자동으로 호출됩니다. 모든 속성 접근자/변경자 메서드는 `Illuminate\Database\Eloquent\Casts\Attribute` 타입을 반환해야 합니다.
+예시로, `first_name` 속성에 대한 접근자를 정의해보겠습니다. 이 접근자는 Eloquent에서 `first_name` 속성을 조회할 때 자동으로 호출됩니다. 모든 속성 접근자/변경자 메서드는 반드시 반환 타입으로 `Illuminate\Database\Eloquent\Casts\Attribute`를 명시해야 합니다.
 
 ```php
 <?php
@@ -43,7 +43,7 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
     /**
-     * 사용자의 이름을 가져옵니다.
+     * Get the user's first name.
      */
     protected function firstName(): Attribute
     {
@@ -54,9 +54,9 @@ class User extends Model
 }
 ```
 
-접근자 메서드는 모두 `Attribute` 인스턴스를 반환하며, 이 객체 안에 해당 속성을 어떻게 접근(조회)할지와, 선택적으로 어떻게 변경(저장)할지를 정의합니다. 위의 예시에서는 속성에 접근할 때만 동작하는 접근 방식을 정의하고 있습니다. 이를 위해 `Attribute` 클래스 생성자에 `get` 인자를 제공합니다.
+접근자 메서드는 모두 속성을 어떻게 접근(조회)하고, 필요하다면 어떻게 변경(설정)할지를 정의하는 `Attribute` 인스턴스를 반환합니다. 위 예시에서는 속성을 어떻게 조회할지(`get`)만 정의하였습니다. 이렇게 하려면, `Attribute` 클래스 생성자에 `get` 인수를 전달하면 됩니다.
 
-보시다시피, 컬럼의 원래 값이 접근자로 전달되어 원하는 대로 가공 후 반환할 수 있습니다. 접근자 값을 가져오려면, 모델 인스턴스에서 해당 속성을 바로 접근하면 됩니다.
+보시는 것처럼, 컬럼의 원래 값이 접근자로 전달되어 값을 조작하거나 가공한 뒤 반환할 수 있습니다. 접근자 값을 사용하려면 모델 인스턴스에서 해당 속성을 직접 조회하면 됩니다.
 
 ```php
 use App\Models\User;
@@ -67,19 +67,19 @@ $firstName = $user->first_name;
 ```
 
 > [!NOTE]
-> 만약 이런 계산된 값들을 모델의 배열 또는 JSON 표현에 포함하고 싶다면, [별도로 속성을 추가(Append)해주어야 합니다](/docs/12.x/eloquent-serialization#appending-values-to-json).
+> 이렇게 접근자를 통해 계산된 속성 값을 모델의 배열/JSON 표현에 포함시키고 싶다면, [속성 값을 JSON에 추가하는 방법](/docs/12.x/eloquent-serialization#appending-values-to-json)을 참고해 추가로 설정해야 합니다.
 
 <a name="building-value-objects-from-multiple-attributes"></a>
 #### 여러 속성으로 값 객체 만들기
 
-때로는 한 개의 접근자에서 여러 모델 속성을 조합해서 하나의 "값 객체(value object)"로 반환해야 할 경우도 있습니다. 이럴 때는 `get` 클로저의 두 번째 인자로 `$attributes`를 받을 수 있습니다. 이 값은 해당 모델 인스턴스의 모든 속성을 배열 형태로 제공합니다.
+때로는 접근자에서 여러 모델 속성을 하나의 "값 객체(value object)"로 변환해야 할 수도 있습니다. 이럴 때는 `get` 클로저에 두 번째 인수 `$attributes`를 받을 수 있으며, 여기에는 해당 모델의 모든 현재 속성들이 배열로 전달됩니다.
 
 ```php
 use App\Support\Address;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
- * 사용자의 주소와 상호작용합니다.
+ * Interact with the user's address.
  */
 protected function address(): Attribute
 {
@@ -95,7 +95,7 @@ protected function address(): Attribute
 <a name="accessor-caching"></a>
 #### 접근자 캐싱
 
-접근자에서 값 객체를 반환할 때, 해당 객체에 변경이 발생하면 모델을 저장하기 전에 자동으로 동기화됩니다. 이는 Eloquent가 접근자로 반환된 인스턴스를 내부적으로 계속 유지하기 때문에 가능하며, 접근자를 호출할 때마다 동일한 인스턴스를 반환합니다.
+접근자에서 값 객체를 반환할 경우, 이 객체가 변경되면 모델이 저장되기 전에 자동으로 모델에 동기화됩니다. 이는 Eloquent가 접근자에서 반환된 인스턴스를 내부적으로 보관하면서, 매번 같은 인스턴스를 반환하기 때문입니다.
 
 ```php
 use App\Models\User;
@@ -108,7 +108,7 @@ $user->address->lineTwo = 'Updated Address Line 2 Value';
 $user->save();
 ```
 
-하지만, 문자열이나 불린처럼 단순한 값인 경우에도, 계산 비용이 비싼 작업이라면 캐싱을 활성화하고 싶을 때가 있습니다. 이럴 때는 접근자를 정의할 때 `shouldCache` 메서드를 호출하면 됩니다.
+반면, 문자열이나 불리언처럼 단순한 값도 계산 비용이 크다면 캐싱을 활성화하고 싶을 수 있습니다. 이럴 때는 접근자 정의 시 `shouldCache` 메서드를 호출할 수 있습니다.
 
 ```php
 protected function hash(): Attribute
@@ -119,11 +119,11 @@ protected function hash(): Attribute
 }
 ```
 
-반대로, 속성의 객체 캐싱 기능을 비활성화하고 싶다면, `withoutObjectCaching` 메서드를 호출해주면 됩니다.
+반대로, 객체 캐싱 동작을 비활성화하고 싶다면 `withoutObjectCaching` 메서드를 호출하면 됩니다.
 
 ```php
 /**
- * 사용자의 주소와 상호작용합니다.
+ * Interact with the user's address.
  */
 protected function address(): Attribute
 {
@@ -139,7 +139,7 @@ protected function address(): Attribute
 <a name="defining-a-mutator"></a>
 ### 변경자 정의하기
 
-변경자(mutator)는 Eloquent 모델의 속성 값을 저장하거나 설정할 때 값을 변환해줍니다. 변경자를 정의하려면 속성 정의 시 `set` 인자를 사용하면 됩니다. 여기서는 `first_name` 속성에 대한 변경자를 정의해보겠습니다. 이 변경자는 모델의 `first_name` 속성 값을 설정하려 할 때 자동으로 호출됩니다.
+변경자는 Eloquent 속성 값이 할당될 때 그 값을 변환합니다. 변경자를 정의하려면, 속성 정의 시 `set` 인수를 전달합니다. 아래는 `first_name` 속성에 대한 변경자를 정의한 예시입니다. 이 변경자는 모델의 `first_name` 속성에 값을 할당할 때 자동으로 호출됩니다.
 
 ```php
 <?php
@@ -152,7 +152,7 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
     /**
-     * 사용자의 이름과 상호작용합니다.
+     * Interact with the user's first name.
      */
     protected function firstName(): Attribute
     {
@@ -164,7 +164,7 @@ class User extends Model
 }
 ```
 
-변경자 클로저에는 속성에 설정하려는 값이 전달되며, 이를 가공해 반환할 수 있습니다. 변경자를 사용하려면 Eloquent 모델에서 해당 속성을 설정만 해주면 됩니다.
+변경자 클로저는 속성에 할당될 값이 인수로 전달되기 때문에, 이 값을 원하는 방식으로 가공한 후 결과 값을 반환하면 됩니다. 변경자를 사용하려면 Eloquent 모델에 `first_name` 속성을 할당하기만 하면 됩니다.
 
 ```php
 use App\Models\User;
@@ -174,19 +174,19 @@ $user = User::find(1);
 $user->first_name = 'Sally';
 ```
 
-이 예시에서는 `set` 콜백에 `Sally` 값이 전달되고, 변경자는 `strtolower` 함수를 적용해 변환된 값을 모델의 내부 `$attributes` 배열에 저장하게 됩니다.
+이 예시에서 `set` 콜백은 `Sally` 값을 인수로 받아, `strtolower` 함수를 적용한 후 그 결과를 모델의 내부 `$attributes` 배열에 저장합니다.
 
 <a name="mutating-multiple-attributes"></a>
-#### 여러 속성 값 동시 변경하기
+#### 여러 속성 변경하기
 
-변경자에서 한 번에 여러 모델 속성 값을 설정하고 싶을 때는, `set` 클로저에서 배열을 반환하면 됩니다. 배열의 각 키는 실제 모델 속성명(또는 데이터베이스 컬럼명)과 일치해야 합니다.
+변경자에서 기본 모델의 여러 속성을 한 번에 설정해야 할 때도 있습니다. 이럴 때는 `set` 클로저에서 배열을 반환하면 됩니다. 반환하는 배열의 각 키는 실제 모델 속성/DB 컬럼명을 의미합니다.
 
 ```php
 use App\Support\Address;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
- * 사용자의 주소와 상호작용합니다.
+ * Interact with the user's address.
  */
 protected function address(): Attribute
 {
@@ -206,15 +206,15 @@ protected function address(): Attribute
 <a name="attribute-casting"></a>
 ## 속성 캐스팅
 
-속성 캐스팅(Attribute casting)은 접근자/변경자와 비슷하게, 모델에 별도 메서드를 정의할 필요 없이 속성 값을 원하는 타입으로 쉽게 변환해주는 기능입니다. 모델의 `casts` 메서드를 통해 여러 속성 값을 다양한 타입으로 자동 변환할 수 있습니다.
+속성 캐스팅(attribute casting)은 접근자/변경자와 유사하지만, 별도의 메서드를 정의하지 않고 모델의 `casts` 메서드만으로 속성 값을 일반 데이터 타입으로 쉽게 변환할 수 있도록 해줍니다.
 
-`casts` 메서드는 배열 형태로, 배열의 키는 캐스팅할 속성명이 되고, 값에는 변환할 타입을 지정합니다. 지원되는 캐스트 타입은 다음과 같습니다.
+`casts` 메서드는 반환값으로 속성명을 키로, 캐스트할 타입명을 값으로 가지는 배열을 반환해야 합니다. 지원되는 캐스트 타입은 아래와 같습니다.
 
 <div class="content-list" markdown="1">
 
 - `array`
-- `AsUri::class`
 - `AsStringable::class`
+- `AsUri::class`
 - `boolean`
 - `collection`
 - `date`
@@ -237,7 +237,7 @@ protected function address(): Attribute
 
 </div>
 
-속성 캐스팅의 동작 방식을 이해하기 위해, 데이터베이스에서 정수(`0` 또는 `1`)로 저장된 `is_admin` 속성을 불린 타입으로 캐스팅하는 예시를 살펴보겠습니다.
+속성 캐스팅의 사용 예시로, 데이터베이스에 정수형(`0` 또는 `1`)으로 저장된 `is_admin` 속성을 불리언 값으로 캐스팅해 보겠습니다.
 
 ```php
 <?php
@@ -249,7 +249,7 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
     /**
-     * 캐스팅할 속성 목록을 반환합니다.
+     * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -262,7 +262,7 @@ class User extends Model
 }
 ```
 
-이와 같이 캐스트를 정의하면, 데이터베이스에는 값이 정수로 저장되어 있어도, 모델에서 `is_admin` 속성에 접근할 때는 항상 불린 타입으로 변환됩니다.
+이렇게 캐스트를 정의하면, 데이터베이스에 정수로 저장되어 있더라도 모델에서 `is_admin` 속성에 접근하면 항상 불리언 값으로 변환됩니다.
 
 ```php
 $user = App\Models\User::find(1);
@@ -272,7 +272,7 @@ if ($user->is_admin) {
 }
 ```
 
-런타임에 임시로 새로운 캐스트를 추가하고 싶다면 `mergeCasts` 메서드를 사용할 수 있습니다. 이렇게 추가한 캐스트 설정은 기존에 정의된 캐스트에 합쳐집니다.
+런타임에 일시적으로 새로운 캐스트를 추가하고 싶다면, `mergeCasts` 메서드를 사용할 수 있습니다. 이 캐스트 정의는 이미 모델에 정의된 캐스트에 덧붙여집니다.
 
 ```php
 $user->mergeCasts([
@@ -282,12 +282,12 @@ $user->mergeCasts([
 ```
 
 > [!WARNING]
-> 속성 값이 `null`일 경우에는 캐스팅이 적용되지 않습니다. 그리고, 관계 이름과 동일한 이름의 캐스트(또는 속성)를 정의하거나, 모델의 기본키에 캐스트를 지정하는 것은 절대 해서는 안 됩니다.
+> `null`인 속성에는 캐스팅이 적용되지 않습니다. 또한, 관계(relationship) 이름 또는 모델의 기본 키와 이름이 같은 속성에 캐스트를 지정하지 않아야 하며, 관계 속성에 캐스트를 정의해서도 안 됩니다.
 
 <a name="stringable-casting"></a>
 #### Stringable 캐스팅
 
-`Illuminate\Database\Eloquent\Casts\AsStringable` 캐스트 클래스를 사용하면 모델 속성을 [유연한 Illuminate\Support\Stringable 객체](/docs/12.x/strings#fluent-strings-method-list)로 캐스팅할 수 있습니다.
+모델 속성을 [플루언트한 Illuminate\Support\Stringable 객체](/docs/12.x/strings#fluent-strings-method-list)로 캐스팅하고 싶다면 `Illuminate\Database\Eloquent\Casts\AsStringable` 캐스트 클래스를 사용할 수 있습니다.
 
 ```php
 <?php
@@ -300,7 +300,7 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
     /**
-     * 캐스팅할 속성 목록을 반환합니다.
+     * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -316,7 +316,7 @@ class User extends Model
 <a name="array-and-json-casting"></a>
 ### 배열 및 JSON 캐스팅
 
-`array` 캐스트는, 데이터베이스 컬럼이 직렬화된 JSON 형태로 저장되는 경우에 매우 유용합니다. 예를 들어, 데이터베이스에 `JSON` 또는 `TEXT` 타입 칼럼이 있고, 그 안에 직렬화된 JSON 데이터가 있을 때 `array` 캐스트를 주면 이를 Eloquent 모델에서 자동으로 PHP 배열로 역직렬화해서 사용할 수 있습니다.
+`array` 캐스팅은 직렬화된 JSON이 저장된 컬럼을 다룰 때 특히 유용합니다. 예를 들어, 데이터베이스에 `JSON` 또는 `TEXT` 타입의 필드에 직렬화된 JSON이 저장되어 있다면, 해당 속성에 `array` 캐스팅을 지정하면 Eloquent 모델에서 접근할 때 자동으로 PHP 배열로 역직렬화됩니다.
 
 ```php
 <?php
@@ -328,7 +328,7 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
     /**
-     * 캐스팅할 속성 목록을 반환합니다.
+     * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -341,7 +341,7 @@ class User extends Model
 }
 ```
 
-이렇게 캐스트를 정의하면, `options` 속성에 접근할 때마다 자동으로 JSON이 PHP 배열로 변환되어 제공됩니다. 그리고 `options` 속성 값을 배열로 설정하면, 자동으로 JSON 문자열로 직렬화되어 저장됩니다.
+캐스트를 정의하면, 이제 `options` 속성에 접근할 때마다 자동으로 JSON이 PHP 배열로 변환됩니다. 또한, `options` 속성에 값을 할당할 때는 지정한 배열이 자동으로 JSON으로 직렬화되어 저장됩니다.
 
 ```php
 use App\Models\User;
@@ -357,7 +357,7 @@ $user->options = $options;
 $user->save();
 ```
 
-JSON 속성의 특정 필드만 간단히 업데이트하고 싶을 때는 [속성 일괄 대입(mass assignment)](/docs/12.x/eloquent#mass-assignment-json-columns)를 사용할 수 있으며, `update` 메서드에서 `->` 연산자를 활용하면 됩니다.
+JSON 속성의 단일 필드만 간결하게 업데이트하고 싶을 경우, [속성을 일괄 할당 가능하도록](/docs/12.x/eloquent#mass-assignment-json-columns) 설정한 후 `->` 연산자를 활용해 `update` 메서드를 사용할 수 있습니다.
 
 ```php
 $user = User::find(1);
@@ -366,13 +366,13 @@ $user->update(['options->key' => 'value']);
 ```
 
 <a name="json-and-unicode"></a>
-#### JSON과 유니코드(Unicode)
+#### JSON과 Unicode
 
-배열 속성을 JSON으로 저장할 때, 유니코드(한글/일본어 등) 문자가 이스케이핑되지 않은 상태로 저장하고 싶다면, `json:unicode` 캐스트를 사용할 수 있습니다.
+배열 속성을 이스케이프되지 않은(unescaped) 유니코드 문자 형태의 JSON으로 저장하고 싶다면, `json:unicode` 캐스팅을 사용할 수 있습니다.
 
 ```php
 /**
- * 캐스팅할 속성 목록을 반환합니다.
+ * Get the attributes that should be cast.
  *
  * @return array<string, string>
  */
@@ -385,9 +385,9 @@ protected function casts(): array
 ```
 
 <a name="array-object-and-collection-casting"></a>
-#### ArrayObject 및 컬렉션 캐스팅
+#### ArrayObject 및 Collection 캐스팅
 
-일반적으로 `array` 캐스트만으로도 충분하지만, 이 방식에는 단점이 있습니다. `array` 캐스트는 원시 배열 타입을 반환하기 때문에, 배열의 일부 값을 직접 변경하려고 하면 PHP 에러가 발생할 수 있습니다. 예를 들어, 다음 코드는 PHP 에러를 유발합니다.
+일반적인 `array` 캐스팅으로도 충분한 경우가 많지만, 몇 가지 단점도 있습니다. 예를 들어, `array` 캐스팅은 원시 타입을 반환하기 때문에 배열의 오프셋을 직접 변경하면 PHP 오류가 발생할 수 있습니다.
 
 ```php
 $user = User::find(1);
@@ -395,13 +395,13 @@ $user = User::find(1);
 $user->options['key'] = $value;
 ```
 
-이런 문제를 해결하기 위해, 라라벨은 JSON 속성 값을 [ArrayObject](https://www.php.net/manual/en/class.arrayobject.php) 클래스로 캐스팅하는 `AsArrayObject` 캐스트를 제공합니다. 이는 라라벨의 [커스텀 캐스트](#custom-casts) 기능을 사용하여 구현되며, 라라벨이 변형된 객체를 지능적으로 캐싱/변환해 개별 부분(offset)을 직접 수정해도 PHP 에러가 발생하지 않습니다. 사용 방법은 다음과 같습니다.
+이 문제 해결을 위해 라라벨은 JSON 속성을 [ArrayObject](https://www.php.net/manual/en/class.arrayobject.php) 클래스로 변환해주는 `AsArrayObject` 캐스팅을 제공합니다. 이는 라라벨의 [커스텀 캐스트](#custom-casts) 기능을 사용해 구현되며, 내부적으로 객체의 변형을 캐싱 및 관리해 배열 오프셋 변경도 오류 없이 처리할 수 있습니다. 사용하려면 속성에 해당 캐스트를 지정하면 됩니다.
 
 ```php
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 
 /**
- * 캐스팅할 속성 목록을 반환합니다.
+ * Get the attributes that should be cast.
  *
  * @return array<string, string>
  */
@@ -413,13 +413,13 @@ protected function casts(): array
 }
 ```
 
-마찬가지로, JSON 속성 값을 라라벨 [컬렉션](/docs/12.x/collections) 인스턴스로 변환하는 `AsCollection` 캐스트도 제공합니다.
+마찬가지로, 라라벨에서는 JSON 속성을 라라벨 [컬렉션](/docs/12.x/collections) 인스턴스로 변환해주는 `AsCollection` 캐스팅도 지원합니다.
 
 ```php
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 
 /**
- * 캐스팅할 속성 목록을 반환합니다.
+ * Get the attributes that should be cast.
  *
  * @return array<string, string>
  */
@@ -431,14 +431,14 @@ protected function casts(): array
 }
 ```
 
-`AsCollection` 캐스트를 쓸 때, 라라벨의 기본 컬렉션 클래스 대신 원하는 커스텀 컬렉션 클래스를 인스턴스화하려면, 캐스트 인자로 컬렉션 클래스명을 전달하면 됩니다.
+`AsCollection` 캐스트로 변환할 때 라라벨의 기본 컬렉션 클래스 대신 사용자가 정의한 커스텀 컬렉션 클래스를 사용하고 싶다면, 캐스트 인수로 컬렉션 클래스명을 전달할 수 있습니다.
 
 ```php
 use App\Collections\OptionCollection;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 
 /**
- * 캐스팅할 속성 목록을 반환합니다.
+ * Get the attributes that should be cast.
  *
  * @return array<string, string>
  */
@@ -450,14 +450,14 @@ protected function casts(): array
 }
 ```
 
-`of` 메서드를 사용하면 컬렉션의 각 아이템을 [mapInto 메서드](/docs/12.x/collections#method-mapinto)를 통해 특정 클래스에 매핑할 수 있습니다.
+`of` 메서드를 사용하면 컬렉션 내부 아이템을 [mapInto 메서드](/docs/12.x/collections#method-mapinto)를 사용해 특정 클래스 인스턴스로 변환할 수도 있습니다.
 
 ```php
 use App\ValueObjects\Option;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 
 /**
- * 캐스팅할 속성 목록을 반환합니다.
+ * Get the attributes that should be cast.
  *
  * @return array<string, string>
  */
@@ -469,7 +469,7 @@ protected function casts(): array
 }
 ```
 
-컬렉션을 객체로 매핑할 때, 해당 객체는 `Illuminate\Contracts\Support\Arrayable` 및 `JsonSerializable` 인터페이스를 반드시 구현해야 하며, 이를 통해 인스턴스를 데이터베이스에 JSON으로 직렬화하는 방법을 정의할 수 있습니다.
+컬렉션을 객체로 매핑할 경우, 객체는 데이터베이스에 JSON으로 직렬화될 때 그 형식을 정의하기 위해 `Illuminate\Contracts\Support\Arrayable`과 `JsonSerializable` 인터페이스를 반드시 구현해야 합니다.
 
 ```php
 <?php
@@ -486,7 +486,7 @@ class Option implements Arrayable, JsonSerializable
     public bool $isLocked;
 
     /**
-     * Option 인스턴스를 생성합니다.
+     * Create a new Option instance.
      */
     public function __construct(array $data)
     {
@@ -496,7 +496,7 @@ class Option implements Arrayable, JsonSerializable
     }
 
     /**
-     * 인스턴스를 배열로 반환합니다.
+     * Get the instance as an array.
      *
      * @return array{name: string, data: string, is_locked: bool}
      */
@@ -510,7 +510,7 @@ class Option implements Arrayable, JsonSerializable
     }
 
     /**
-     * JSON 직렬화를 위한 데이터 지정.
+     * Specify the data which should be serialized to JSON.
      *
      * @return array{name: string, data: string, is_locked: bool}
      */
@@ -524,13 +524,13 @@ class Option implements Arrayable, JsonSerializable
 <a name="date-casting"></a>
 ### 날짜 캐스팅
 
-Eloquent는 기본적으로 `created_at`과 `updated_at` 컬럼을 [Carbon](https://github.com/briannesbitt/Carbon) 객체로 변환해줍니다. Carbon은 PHP의 `DateTime` 클래스를 확장한 것이며, 다양한 편리한 메서드를 제공합니다. 추가적인 날짜 속성도, 모델의 `casts` 메서드에 캐스트 타입을 지정해주면 동일하게 다룰 수 있습니다. 일반적으로 날짜는 `datetime`이나 `immutable_datetime` 캐스트 타입으로 변환하는 것이 권장됩니다.
+Eloquent는 기본적으로 `created_at`과 `updated_at` 컬럼을 [Carbon](https://github.com/briannesbitt/Carbon) 인스턴스로 자동으로 변환해줍니다. Carbon은 PHP의 `DateTime` 클래스를 상속하며 다양한 유틸리티 메서드를 제공합니다. 추가적인 날짜 속성도 모델의 `casts` 메서드에 날짜 캐스트를 더해 캐스팅할 수 있으며, 일반적으로는 `datetime` 또는 `immutable_datetime` 캐스트 타입을 사용합니다.
 
-날짜/날짜시간 캐스트를 정의할 때, 원하는 날짜 포맷도 같이 지정할 수 있습니다. 이 포맷은 [모델을 배열 또는 JSON으로 직렬화할 때](/docs/12.x/eloquent-serialization) 사용됩니다.
+`date`나 `datetime` 캐스트를 정의할 때 날짜 포맷도 지정할 수 있습니다. 이 포맷은 [모델이 배열 또는 JSON으로 직렬화](/docs/12.x/eloquent-serialization)될 때 사용됩니다.
 
 ```php
 /**
- * 캐스팅할 속성 목록을 반환합니다.
+ * Get the attributes that should be cast.
  *
  * @return array<string, string>
  */
@@ -542,13 +542,13 @@ protected function casts(): array
 }
 ```
 
-날짜로 캐스팅된 컬럼은, 모델 속성 값에 유닉스 타임스탬프, 날짜 문자열(`Y-m-d`), 날짜-시간 문자열, 혹은 `DateTime` 또는 `Carbon` 인스턴스를 설정할 수 있습니다. 이 값들은 데이터베이스에 저장될 때 자동으로 적절한 형식으로 변환됩니다.
+날짜로 캐스팅된 컬럼에는 UNIX 타임스탬프, 날짜 문자열(`Y-m-d`), 날짜-시간 문자열, 혹은 `DateTime`/`Carbon` 인스턴스를 할당할 수 있으며, 값은 자동으로 적합한 형태로 데이터베이스에 저장됩니다.
 
-모든 날짜 속성의 직렬화 기본 포맷을 변경하고 싶다면, 모델에 `serializeDate` 메서드를 정의할 수 있습니다. 이 메서드는 데이터베이스에 실제로 저장되는 날짜의 형식에는 영향을 주지 않습니다.
+모델의 모든 날짜가 기본적으로 어떻게 직렬화되는지 전역적으로 지정하고 싶다면, 모델에 `serializeDate` 메서드를 정의할 수 있습니다. 이 메서드는 데이터베이스 저장 방식에는 영향을 주지 않습니다.
 
 ```php
 /**
- * 배열/JSON 직렬화를 위한 날짜 포맷 지정
+ * Prepare a date for array / JSON serialization.
  */
 protected function serializeDate(DateTimeInterface $date): string
 {
@@ -556,11 +556,11 @@ protected function serializeDate(DateTimeInterface $date): string
 }
 ```
 
-반대로, 실제로 데이터베이스에 저장할 날짜 형식을 지정하고 싶다면, 모델에 `$dateFormat` 속성을 선언하면 됩니다.
+모델의 날짜를 실제 데이터베이스에 저장할 때 사용할 포맷을 지정하려면, 모델에 `$dateFormat` 속성을 정의하면 됩니다.
 
 ```php
 /**
- * 모델의 날짜 컬럼 저장 형식
+ * The storage format of the model's date columns.
  *
  * @var string
  */
@@ -571,20 +571,20 @@ protected $dateFormat = 'U';
 
 #### 날짜 캐스팅, 직렬화, 그리고 타임존
 
-기본적으로 `date`와 `datetime` 캐스팅은 애플리케이션의 `timezone` 설정 옵션에 상관없이 날짜를 UTC ISO-8601 형식(`YYYY-MM-DDTHH:MM:SS.uuuuuuZ`)으로 직렬화합니다. 항상 이 포맷으로 직렬화하고, 애플리케이션의 날짜도 UTC 타임존으로 저장하는 것을 강력하게 권장합니다. 그러려면 애플리케이션의 `timezone` 설정 값을 기본값인 `UTC`에서 변경하지 않아야 합니다. 애플리케이션 전체에서 UTC 타임존을 일관되게 사용할 경우, PHP와 JavaScript로 작성된 각종 날짜 처리 라이브러리들과의 상호 운용성이 극대화됩니다.
+기본적으로 `date`와 `datetime` 캐스트는, 애플리케이션의 `timezone` 설정값에 관계없이, 날짜를 UTC의 ISO-8601 날짜 문자열(`YYYY-MM-DDTHH:MM:SS.uuuuuuZ`)로 직렬화합니다. 이러한 직렬화 포맷을 항상 사용하고, 애플리케이션의 날짜 역시 기본값인 `UTC` 타임존에 두는 것을 강력히 권장합니다. 애플리케이션 전체에서 UTC 타임존을 일관되게 활용하면, PHP와 JavaScript 등 다른 날짜 처리 라이브러리와의 호환성이 극대화됩니다.
 
-만약 `date`나 `datetime` 캐스팅에 사용자 정의 포맷(예: `datetime:Y-m-d H:i:s`)을 적용하면, 날짜 직렬화 시 Carbon 인스턴스의 내부 타임존이 적용됩니다. 일반적으로 이 값은 애플리케이션의 `timezone` 설정 옵션에 지정된 타임존입니다. 하지만 `created_at`, `updated_at`과 같은 `timestamp` 컬럼은 이러한 동작의 예외이며, 애플리케이션의 타임존 설정과 무관하게 항상 UTC로 포맷됩니다.
+만약 `datetime:Y-m-d H:i:s`와 같이 `date`나 `datetime` 캐스트에 커스텀 포맷을 지정하는 경우, 날짜 직렬화에는 Carbon 인스턴스의 내부 타임존이 사용됩니다. 일반적으로 이는 애플리케이션의 `timezone` 설정값이 됩니다. 단, `created_at`이나 `updated_at`과 같은 `timestamp` 타입의 컬럼은 이 규칙의 예외이며, 애플리케이션 타임존 설정과 무관하게 UTC로 항상 포맷됩니다.
 
 <a name="enum-casting"></a>
 ### Enum 캐스팅
 
-Eloquent는 속성 값을 PHP [Enum](https://www.php.net/manual/en/language.enumerations.backed.php)으로도 캐스팅할 수 있습니다. 이를 위해 모델의 `casts` 메서드에서 해당 속성과 사용할 enum을 지정하면 됩니다.
+Eloquent에서는 속성 값을 PHP [Enum(열거형)](https://www.php.net/manual/en/language.enumerations.backed.php)으로도 캐스팅할 수 있습니다. 이를 위해 모델의 `casts` 메서드에서, 캐스트할 속성과 Enum을 지정하면 됩니다.
 
 ```php
 use App\Enums\ServerStatus;
 
 /**
- * Get the attributes that should be cast.
+ * 캐스팅할 속성 리스트를 반환합니다.
  *
  * @return array<string, string>
  */
@@ -596,7 +596,7 @@ protected function casts(): array
 }
 ```
 
-이렇게 캐스트를 지정하면, 해당 속성을 읽고 쓸 때 자동으로 enum 타입으로 변환됩니다.
+캐스트를 지정하면, 해당 속성은 접근하거나 저장할 때 자동으로 Enum 인스턴스로 변환됩니다.
 
 ```php
 if ($server->status == ServerStatus::Provisioned) {
@@ -609,14 +609,14 @@ if ($server->status == ServerStatus::Provisioned) {
 <a name="casting-arrays-of-enums"></a>
 #### Enum 배열 캐스팅
 
-경우에 따라 하나의 컬럼에 enum 값들의 배열을 저장해야 할 수도 있습니다. 이럴 때는 라라벨에서 제공하는 `AsEnumArrayObject` 또는 `AsEnumCollection` 캐스팅을 활용할 수 있습니다.
+때로는 하나의 컬럼에 Enum 값의 배열을 저장해야 할 수 있습니다. 이럴 때는 라라벨에서 제공하는 `AsEnumArrayObject`나 `AsEnumCollection` 캐스트를 활용할 수 있습니다.
 
 ```php
 use App\Enums\ServerStatus;
 use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 
 /**
- * Get the attributes that should be cast.
+ * 캐스팅할 속성 리스트를 반환합니다.
  *
  * @return array<string, string>
  */
@@ -629,21 +629,21 @@ protected function casts(): array
 ```
 
 <a name="encrypted-casting"></a>
-### 암호화된 캐스팅
+### 암호화 캐스팅
 
-`encrypted` 캐스팅은 라라벨의 내장 [암호화](/docs/12.x/encryption) 기능을 이용하여 모델의 속성 값을 암호화합니다. 또한 `encrypted:array`, `encrypted:collection`, `encrypted:object`, `AsEncryptedArrayObject`, `AsEncryptedCollection` 캐스팅 타입도 보통(암호화되지 않은) 타입들과 사용법은 같지만, 해당 값이 DB에 저장될 때 암호화된다는 점만 다릅니다.
+`encrypted` 캐스트는 라라벨의 내장 [암호화](/docs/12.x/encryption) 기능을 이용해 모델 속성 값을 암호화합니다. 또한, `encrypted:array`, `encrypted:collection`, `encrypted:object`, `AsEncryptedArrayObject`, `AsEncryptedCollection` 캐스트는 각각의 비암호화 캐스트처럼 동작하지만, 데이터베이스에 저장될 때는 값이 암호화된다는 차이가 있습니다.
 
-암호화된 문자열은 평문일 때보다 더 길고, 최종 길이도 예측할 수 없으므로 관련 데이터베이스 컬럼은 반드시 `TEXT` 타입이나 그보다 넓은 타입이어야 합니다. 게다가 값이 DB에 암호화되어 저장되므로, 암호화된 속성 값을 기준으로 쿼리하거나 검색하는 것은 불가능합니다.
+암호화된 텍스트는 평문보다 길이가 길고 예측할 수 없으므로, 관련 컬럼은 반드시 `TEXT` 타입(또는 그 이상)이어야 합니다. 또한 값이 암호화되어 저장되므로, 암호화된 속성 값에 대해 쿼리나 검색을 할 수 없습니다.
 
 <a name="key-rotation"></a>
 #### 키 교체(Key Rotation)
 
-라라벨은 애플리케이션의 `app` 설정 파일의 `key` 설정값, 일반적으로는 `APP_KEY` 환경 변수를 사용해 문자열을 암호화합니다. 만약 암호화 키를 교체(로테이션)해야 한다면, 새 키를 적용한 뒤 기존의 암호화된 속성 값을 직접 새 키로 다시 암호화해주어야 합니다.
+라라벨은 애플리케이션 설정 파일의 `key` 값(일반적으로는 `APP_KEY` 환경 변수)을 이용해 문자열을 암호화합니다. 만약 애플리케이션의 암호화 키를 변경해야 한다면, 새 키로 암호화할 수 있도록 암호화된 속성들을 직접 재암호화해야 합니다.
 
 <a name="query-time-casting"></a>
-### 쿼리 타임 캐스팅
+### 쿼리 시점 캐스팅(Query Time Casting)
 
-간혹 쿼리를 실행할 때, 예를 들어 테이블에서 raw 값을 조회할 때 캐스팅을 적용하고 싶을 때도 있습니다. 예를 들어, 아래와 같은 쿼리를 살펴보겠습니다.
+쿼리를 실행하면서 임의로 캐스팅을 적용해야 할 때가 있습니다. 예를 들어, 테이블에서 원시 값을 조회하는 경우입니다. 아래 예제를 확인해 보겠습니다.
 
 ```php
 use App\Models\Post;
@@ -656,7 +656,7 @@ $users = User::select([
 ])->get();
 ```
 
-이 쿼리의 결과로 얻는 `last_posted_at` 속성은 단순 문자열이 됩니다. 이 값에 `datetime` 캐스팅을 쿼리 시점에 적용할 수 있다면 더 편리할 것입니다. 다행히, `withCasts` 메서드를 사용하면 이 기능을 구현할 수 있습니다.
+이 쿼리 결과의 `last_posted_at` 속성은 단순한 문자열이 됩니다. 만약 쿼리 실행 시점에 `datetime` 캐스트를 적용하고 싶다면, `withCasts` 메서드를 사용할 수 있습니다.
 
 ```php
 $users = User::select([
@@ -669,15 +669,15 @@ $users = User::select([
 ```
 
 <a name="custom-casts"></a>
-## 커스텀 캐스팅(Custom Casts)
+## 커스텀 캐스트(Custom Casts)
 
-라라벨에는 쓸모 있는 다양한 내장 캐스트 타입이 있지만, 때로는 여러분만의 커스텀 캐스트 타입을 필요로 할 수 있습니다. 이를 만들려면 `make:cast` 아티즌 명령어를 실행하세요. 새로 생성된 캐스트 클래스는 `app/Casts` 디렉터리에 위치하게 됩니다.
+라라벨에는 다양한 기본 내장 캐스트 타입이 있지만, 상황에 따라 직접 커스텀 캐스트 타입을 정의해야 할 때가 있습니다. 커스텀 캐스트를 생성하려면 `make:cast` 아티즌 명령어를 실행합니다. 새 캐스트 클래스는 `app/Casts` 디렉토리에 생성됩니다.
 
 ```shell
 php artisan make:cast AsJson
 ```
 
-모든 커스텀 캐스트 클래스는 `CastsAttributes` 인터페이스를 구현해야 합니다. 이 인터페이스를 구현한 클래스는 `get`과 `set` 메서드를 반드시 정의해야 합니다. `get` 메서드는 DB에서 읽은 원본 값을 변환해서 반환하고, `set` 메서드는 캐스트된 값을 DB에 저장 가능한 원시 값으로 변환해줍니다. 예시로 내장 `json` 캐스트를 커스텀 캐스트로 다시 구현해보겠습니다.
+모든 커스텀 캐스트 클래스는 `CastsAttributes` 인터페이스를 구현해야 합니다. 이 인터페이스를 구현하는 클래스는 반드시 `get`과 `set` 메서드를 정의해야 합니다. `get` 메서드는 데이터베이스에서 조회한 원시 값을 캐스트 값으로 변환하고, `set` 메서드는 캐스트 값을 데이터베이스에 저장할 수 있는 원시 값으로 변환합니다. 예를 들어, 기본 내장 `json` 캐스트를 커스텀 캐스트로 다시 구현할 수 있습니다.
 
 ```php
 <?php
@@ -690,7 +690,7 @@ use Illuminate\Database\Eloquent\Model;
 class AsJson implements CastsAttributes
 {
     /**
-     * Cast the given value.
+     * 주어진 값을 캐스팅합니다.
      *
      * @param  array<string, mixed>  $attributes
      * @return array<string, mixed>
@@ -705,7 +705,7 @@ class AsJson implements CastsAttributes
     }
 
     /**
-     * Prepare the given value for storage.
+     * 저장용 값을 준비합니다.
      *
      * @param  array<string, mixed>  $attributes
      */
@@ -720,7 +720,7 @@ class AsJson implements CastsAttributes
 }
 ```
 
-커스텀 캐스트 타입을 정의했다면, 이제 클래스명을 속성에 할당해서 사용할 수 있습니다.
+커스텀 캐스트 타입을 정의한 후에는, 클래스명을 이용해 모델 속성에 캐스트를 지정하면 됩니다.
 
 ```php
 <?php
@@ -733,7 +733,7 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
     /**
-     * Get the attributes that should be cast.
+     * 캐스팅할 속성 리스트를 반환합니다.
      *
      * @return array<string, string>
      */
@@ -749,9 +749,9 @@ class User extends Model
 <a name="value-object-casting"></a>
 ### 값 객체(Value Object) 캐스팅
 
-기본 타입(숫자, 문자열 등)뿐 아니라, 객체로도 값을 캐스팅할 수 있습니다. 값 객체로의 커스텀 캐스트 구현 방법은 기본 타입에 대한 캐스팅과 거의 같지만, 만약 값 객체가 DB의 여러 컬럼에 걸쳐 있다면, `set` 메서드는 각각의 컬럼에 저장할 키/값 쌍 배열을 반환해야 합니다. 하나의 컬럼만 사용하는 경우라면, 단일 값을 반환하면 됩니다.
+Eloquent의 캐스팅은 원시 타입뿐만 아니라, 객체로의 변환도 지원합니다. 여러 컬럼의 값을 하나의 값 객체(value object)로 변환하는 커스텀 캐스트도 정의할 수 있습니다.커스텀 객체가 여러 컬럼 값을 관리한다면, `set` 메서드는 키-값 쌍의 배열을 반환하여 각 컬럼에 값을 저장하고, 하나의 컬럼만 관리한다면 저장 가능한 값만 반환하면 됩니다.
 
-예를 들어, 여러 모델 값을 하나의 `Address` 값 객체로 캐스팅하는 커스텀 캐스트 클래스를 만들어보겠습니다. 여기서 `Address` 값 객체는 `lineOne`, `lineTwo` 두 public 속성을 가진다고 가정합니다.
+예를 들어, 두 개의 컬럼 값을 하나의 `Address` 값 객체로 캐스팅하는 커스텀 캐스트 클래스를 정의할 수 있습니다. 아래에서는 `Address` 값 객체가 `lineOne`, `lineTwo`라는 속성을 가진다고 가정합니다.
 
 ```php
 <?php
@@ -766,7 +766,7 @@ use InvalidArgumentException;
 class AsAddress implements CastsAttributes
 {
     /**
-     * Cast the given value.
+     * 주어진 값을 캐스팅합니다.
      *
      * @param  array<string, mixed>  $attributes
      */
@@ -783,7 +783,7 @@ class AsAddress implements CastsAttributes
     }
 
     /**
-     * Prepare the given value for storage.
+     * 저장용 값을 준비합니다.
      *
      * @param  array<string, mixed>  $attributes
      * @return array<string, string>
@@ -806,7 +806,7 @@ class AsAddress implements CastsAttributes
 }
 ```
 
-값 객체로 캐스팅할 때, 값 객체에 적용한 변경 내용은 모델이 저장되기 전에 자동으로 다시 동기화됩니다.
+값 객체로 캐스팅할 경우, 값 객체의 속성을 변경하면 모델에 자동으로 반영되어 저장됩니다.
 
 ```php
 use App\Models\User;
@@ -819,14 +819,14 @@ $user->save();
 ```
 
 > [!NOTE]
-> 값 객체를 포함한 Eloquent 모델을 JSON이나 배열로 직렬화할 계획이라면, 값 객체에 `Illuminate\Contracts\Support\Arrayable`, `JsonSerializable` 인터페이스를 구현하는 것이 좋습니다.
+> 값 객체를 포함하는 Eloquent 모델을 JSON이나 배열로 직렬화할 계획이라면, 해당 값 객체가 `Illuminate\Contracts\Support\Arrayable`, `JsonSerializable` 인터페이스를 구현하고 있는지 확인하세요.
 
 <a name="value-object-caching"></a>
 #### 값 객체 캐싱
 
-값 객체로 캐스팅된 속성이 해석될 때, Eloquent가 해당 객체를 캐싱합니다. 따라서 한 번 접근한 뒤 다시 접근해도 같은 객체 인스턴스가 반환됩니다.
+값 객체로 캐스팅된 속성은 Eloquent가 내부적으로 캐싱합니다. 따라서 해당 속성을 다시 접근할 경우 항상 동일한 객체 인스턴스가 반환됩니다.
 
-만약 커스텀 캐스트 클래스의 이런 객체 캐싱을 비활성화하고 싶다면, 커스텀 캐스트 클래스에 public `withoutObjectCaching` 프로퍼티를 선언하면 됩니다.
+커스텀 캐스트 클래스의 이런 객체 캐싱 동작을 비활성화 하고 싶다면, 캐스트 클래스에 `withoutObjectCaching`라는 public 속성을 선언하고 `true`로 지정하면 됩니다.
 
 ```php
 class AsAddress implements CastsAttributes
@@ -840,13 +840,13 @@ class AsAddress implements CastsAttributes
 <a name="array-json-serialization"></a>
 ### 배열 / JSON 직렬화
 
-Eloquent 모델을 `toArray` 또는 `toJson` 메서드로 배열이나 JSON으로 변환하면, 커스텀 캐스트 값 객체도 일반적으로 직렬화됩니다. (단, 값 객체가 `Illuminate\Contracts\Support\Arrayable`, `JsonSerializable` 인터페이스를 구현하는 경우.) 하지만 외부 라이브러리가 제공하는 값 객체는 이 인터페이스를 추가할 수 없는 경우도 있습니다.
+Eloquent 모델을 `toArray` 또는 `toJson` 메서드로 배열이나 JSON으로 변환할 때, 커스텀 캐스트의 값 객체도 일반적으로 직렬화됩니다(값 객체가 `Illuminate\Contracts\Support\Arrayable`, `JsonSerializable` 인터페이스를 구현한 경우). 하지만, 외부 라이브러리에서 제공하는 값 객체를 사용하면 직접 이 인터페이스를 추가할 수 없기도 합니다.
 
-이럴 때는 커스텀 캐스트 클래스가 직접 값을 직렬화하도록 지정할 수 있습니다. 그 방법은 커스텀 캐스트 클래스에서 `Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes` 인터페이스를 구현하는 것입니다. 이 인터페이스는 `serialize` 메서드가 존재해야 하며, 값 객체의 직렬화된 표현을 반환해야 합니다.
+이럴 때는 커스텀 캐스트 클래스에서 값 객체를 직렬화하도록 지정할 수 있습니다. 그러려면, 커스텀 캐스트 클래스에 `Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes` 인터페이스를 구현하고, `serialize` 메서드를 정의하면 됩니다. 이 메서드는 값 객체의 직렬화 형태를 반환해야 합니다.
 
 ```php
 /**
- * Get the serialized representation of the value.
+ * 값의 직렬화된 표현을 반환합니다.
  *
  * @param  array<string, mixed>  $attributes
  */
@@ -863,15 +863,15 @@ public function serialize(
 <a name="inbound-casting"></a>
 ### 인바운드 캐스팅(Inbound Casting)
 
-드물게, 모델에 값을 할당할 때만 값 변환이 필요하고 값을 읽을 때는 변환이 필요하지 않은 상황이 있습니다.
+가끔은 모델 속성에 값을 저장(set)할 때만 변환하고, 조회(get)할 때는 별도의 변환이 필요 없는 커스텀 캐스트가 필요할 때가 있습니다.
 
-이런 인바운드 전용 커스텀 캐스트는 `CastsInboundAttributes` 인터페이스를 구현해야 하며, 이 인터페이스는 `set` 메서드만 정의하면 됩니다. 또, `make:cast` 아티즌 명령에 `--inbound` 옵션을 주면 인바운드 전용 캐스트 클래스를 생성할 수 있습니다.
+이런 인바운드 전용 커스텀 캐스트는 `CastsInboundAttributes` 인터페이스를 구현해야 하며, `set` 메서드만 정의하면 됩니다. 인바운드 전용 캐스트를 생성하려면, `make:cast` 아티즌 명령에 `--inbound` 옵션을 추가합니다.
 
 ```shell
 php artisan make:cast AsHash --inbound
 ```
 
-인바운드 전용 캐스트의 대표적인 예는 '해싱' 캐스트입니다. 예를 들어, 인바운드 값을 지정한 알고리즘으로 해싱하는 캐스트를 다음과 같이 정의할 수 있습니다.
+대표적인 인바운드 캐스트 예시는 "해시" 캐스트입니다. 예를 들어, 특정 알고리즘으로 값에 대해 해시를 적용하는 캐스트를 아래처럼 정의할 수 있습니다.
 
 ```php
 <?php
@@ -884,14 +884,14 @@ use Illuminate\Database\Eloquent\Model;
 class AsHash implements CastsInboundAttributes
 {
     /**
-     * Create a new cast class instance.
+     * 새로운 캐스트 클래스 인스턴스를 생성합니다.
      */
     public function __construct(
         protected string|null $algorithm = null,
     ) {}
 
     /**
-     * Prepare the given value for storage.
+     * 저장용 값을 준비합니다.
      *
      * @param  array<string, mixed>  $attributes
      */
@@ -909,13 +909,13 @@ class AsHash implements CastsInboundAttributes
 ```
 
 <a name="cast-parameters"></a>
-### 캐스팅 파라미터
+### 캐스트 파라미터
 
-모델에 커스텀 캐스트를 지정할 때, 클래스명 뒤에 `:`로 구분해서 파라미터도 지정할 수 있습니다. 여러 파라미터가 필요한 경우 콤마로 구분합니다. 지정된 파라미터는 캐스트 클래스의 생성자로 전달됩니다.
+커스텀 캐스트를 모델에 적용할 때, 클래스명 뒤에 `:`로 구분하여 파라미터를 지정할 수 있습니다. 쉼표로 파라미터를 여러 개 전달할 수도 있습니다. 이 파라미터들은 캐스트 클래스의 생성자에 전달됩니다.
 
 ```php
 /**
- * Get the attributes that should be cast.
+ * 캐스팅할 속성 리스트를 반환합니다.
  *
  * @return array<string, string>
  */
@@ -928,9 +928,9 @@ protected function casts(): array
 ```
 
 <a name="castables"></a>
-### 캐스터블(Castables)
+### Castable(캐스터 제공 값 객체)
 
-애플리케이션의 값 객체가 자신만의 커스텀 캐스트 클래스를 정의하게 하고 싶을 수 있습니다. 커스텀 캐스트 클래스를 모델에 직접 지정하는 대신, `Illuminate\Contracts\Database\Eloquent\Castable` 인터페이스를 구현하는 값 객체 클래스를 지정할 수 있습니다.
+애플리케이션의 값 객체 자체가 커스텀 캐스트 클래스를 직접 지정할 수 있게 만들 수도 있습니다. 커스텀 캐스트 클래스를 모델이 아닌 값 객체 단에서 지정하려면, 그 값 객체 클래스가 `Illuminate\Contracts\Database\Eloquent\Castable` 인터페이스를 구현하도록 합니다.
 
 ```php
 use App\ValueObjects\Address;
@@ -943,7 +943,7 @@ protected function casts(): array
 }
 ```
 
-`Castable` 인터페이스를 구현하는 객체는 반드시 `castUsing` 메서드를 정의해야 하며, 이 메서드는 해당 값 객체의 캐스팅/복원을 담당하는 커스텀 캐스터 클래스명을 반환해야 합니다.
+`Castable` 인터페이스를 구현한 객체는, 실제로 캐스팅을 담당할 커스텀 캐스터 클래스명을 반환하는 `castUsing` 메서드를 정의해야 합니다.
 
 ```php
 <?php
@@ -956,7 +956,7 @@ use App\Casts\AsAddress;
 class Address implements Castable
 {
     /**
-     * Get the name of the caster class to use when casting from / to this cast target.
+     * 이 캐스팅 대상에 사용할 캐스터 클래스명을 반환합니다.
      *
      * @param  array<string, mixed>  $arguments
      */
@@ -967,7 +967,7 @@ class Address implements Castable
 }
 ```
 
-`Castable` 클래스를 사용할 때도 `casts` 메서드 정의에서 인자를 함께 넘길 수 있습니다. 이 파라미터들은 `castUsing` 메서드를 통해 전달됩니다.
+`Castable` 클래스를 사용할 때도, `casts` 메서드 정의에서 파라미터를 전달할 수 있습니다. 이 인자들은 `castUsing` 메서드로 전달됩니다.
 
 ```php
 use App\ValueObjects\Address;
@@ -981,9 +981,9 @@ protected function casts(): array
 ```
 
 <a name="anonymous-cast-classes"></a>
-#### 캐스터블 & 익명 캐스트 클래스
+#### Castable & 익명 캐스트 클래스(Anonymous Cast Classes)
 
-"캐스터블(Castable)"을 PHP의 [익명 클래스](https://www.php.net/manual/en/language.oop5.anonymous.php)와 함께 쓰면, 값 객체와 그 값을 변환하는 로직을 하나의 캐스터블 객체로 정의할 수 있습니다. 이 방법은 값 객체의 `castUsing` 메서드에서 익명 클래스를 반환하는 방식으로 구현할 수 있습니다. 익명 클래스는 `CastsAttributes` 인터페이스를 구현해야 합니다.
+"Castable"과 PHP의 [익명 클래스](https://www.php.net/manual/en/language.oop5.anonymous.php)를 결합하면, 값 객체와 캐스팅 로직을 하나의 객체 내부에 정의할 수 있습니다. 이를 위해, 값 객체의 `castUsing` 메서드에서 익명 클래스를 반환하고, 그 익명 클래스가 `CastsAttributes` 인터페이스를 구현하도록 하면 됩니다.
 
 ```php
 <?php
@@ -998,7 +998,7 @@ class Address implements Castable
     // ...
 
     /**
-     * Get the caster class to use when casting from / to this cast target.
+     * 이 캐스팅 대상에 사용할 캐스터 클래스를 반환합니다.
      *
      * @param  array<string, mixed>  $arguments
      */
