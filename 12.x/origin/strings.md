@@ -152,6 +152,7 @@ Laravel includes a variety of functions for manipulating string values. Many of 
 [excerpt](#method-fluent-str-excerpt)
 [explode](#method-fluent-str-explode)
 [finish](#method-fluent-str-finish)
+[hash](#method-fluent-str-hash)
 [headline](#method-fluent-str-headline)
 [inlineMarkdown](#method-fluent-str-inline-markdown)
 [is](#method-fluent-str-is)
@@ -1228,7 +1229,14 @@ $replaced = Str::replace('11.x', '12.x', $string);
 The `replace` method also accepts a `caseSensitive` argument. By default, the `replace` method is case sensitive:
 
 ```php
-Str::replace('Framework', 'Laravel', caseSensitive: false);
+$replaced = Str::replace(
+    'php',
+    'Laravel',
+    'PHP Framework for Web Artisans',
+    caseSensitive: false
+);
+
+// Laravel Framework for Web Artisans
 ```
 
 <a name="method-str-replace-array"></a>
@@ -2276,6 +2284,19 @@ $adjusted = Str::of('this/string')->finish('/');
 $adjusted = Str::of('this/string/')->finish('/');
 
 // this/string/
+```
+
+<a name="method-fluent-str-hash"></a>
+#### `hash` {.collection-method}
+
+The `hash` method hashes the string using the given [algorithm](https://www.php.net/manual/en/function.hash-algos.php):
+
+```php
+use Illuminate\Support\Str;
+
+$hashed = Str::of('secret')->hash(algorithm: 'sha256');
+
+// '2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b'
 ```
 
 <a name="method-fluent-str-headline"></a>
