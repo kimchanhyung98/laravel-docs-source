@@ -7,26 +7,26 @@
     - [인증](#authentication)
     - [타임아웃](#timeout)
     - [재시도](#retries)
-    - [에러 핸들링](#error-handling)
+    - [에러 처리](#error-handling)
     - [Guzzle 미들웨어](#guzzle-middleware)
     - [Guzzle 옵션](#guzzle-options)
 - [동시 요청](#concurrent-requests)
 - [매크로](#macros)
 - [테스트](#testing)
-    - [응답 가짜 데이터 설정](#faking-responses)
-    - [요청 검사](#inspecting-requests)
-    - [불필요한 요청 방지](#preventing-stray-requests)
+    - [응답 모의하기](#faking-responses)
+    - [요청 검사하기](#inspecting-requests)
+    - [불필요한 요청 차단](#preventing-stray-requests)
 - [이벤트](#events)
 
 <a name="introduction"></a>
 ## 소개
 
-라라벨은 [Guzzle HTTP 클라이언트](http://docs.guzzlephp.org/en/stable/)를 감싸는 간결하고 직관적인 API를 제공합니다. 이를 통해 다른 웹 애플리케이션과 통신하기 위한 외부 HTTP 요청을 아주 빠르게 만들 수 있습니다. 라라벨의 Guzzle 감싸기(wrapper)는 가장 많이 쓰이는 사용 사례와 개발자의 편의성을 중심으로 설계되어 있습니다.
+라라벨은 [Guzzle HTTP 클라이언트](http://docs.guzzlephp.org/en/stable/)를 기반으로, 표현력 있고 최소한의 API를 제공합니다. 이를 통해 다른 웹 애플리케이션과 통신하기 위한 외부 HTTP 요청을 빠르고 쉽게 만들 수 있습니다. 라라벨의 Guzzle 래퍼는 가장 일반적인 사용 사례와, 개발자가 사용하기 쉬운 경험에 중점을 두고 설계되었습니다.
 
 <a name="making-requests"></a>
 ## 요청 보내기
 
-요청을 보내기 위해서는 `Http` 파사드에서 제공하는 `head`, `get`, `post`, `put`, `patch`, `delete` 메서드를 사용할 수 있습니다. 먼저, 다른 URL로 기본적인 `GET` 요청을 보내는 방법을 살펴보겠습니다.
+요청을 보내려면, `Http` 파사드에서 제공하는 `head`, `get`, `post`, `put`, `patch`, `delete` 메서드를 사용할 수 있습니다. 우선, 다른 URL로 `GET` 요청을 보내는 기본 예제를 살펴보겠습니다.
 
 ```php
 use Illuminate\Support\Facades\Http;
@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Http;
 $response = Http::get('http://example.com');
 ```
 
-`get` 메서드는 `Illuminate\Http\Client\Response` 인스턴스를 반환하며, 이를 통해 응답을 다양한 방식으로 확인할 수 있는 여러 메서드를 사용할 수 있습니다.
+`get` 메서드는 `Illuminate\Http\Client\Response` 인스턴스를 반환하며, 이 인스턴스는 응답을 다양한 방식으로 조회할 수 있는 여러 메서드를 제공합니다.
 
 ```php
 $response->body() : string;
@@ -51,13 +51,13 @@ $response->header($header) : string;
 $response->headers() : array;
 ```
 
-`Illuminate\Http\Client\Response` 객체는 PHP의 `ArrayAccess` 인터페이스도 구현하고 있기 때문에, 응답 데이터가 JSON일 경우 배열처럼 바로 접근할 수 있습니다.
+`Illuminate\Http\Client\Response` 객체는 PHP의 `ArrayAccess` 인터페이스도 구현하고 있기 때문에, 응답이 JSON 데이터인 경우 배열처럼 직접 값을 접근할 수 있습니다.
 
 ```php
 return Http::get('http://example.com/users/1')['name'];
 ```
 
-위에 소개한 응답 관련 메서드 외에도, 다음의 메서드를 사용하여 응답이 특정 상태 코드를 가지고 있는지 쉽게 확인할 수 있습니다.
+위에 소개한 응답 메서드 외에도, 다음과 같은 메서드로 특정 상태 코드 여부를 간편하게 확인할 수 있습니다.
 
 ```php
 $response->ok() : bool;                  // 200 OK
@@ -81,7 +81,7 @@ $response->serverError() : bool;         // 500 Internal Server Error
 <a name="uri-templates"></a>
 #### URI 템플릿
 
-HTTP 클라이언트는 [URI 템플릿 명세](https://www.rfc-editor.org/rfc/rfc6570)를 사용하여 요청 URL을 동적으로 구성할 수 있도록 지원합니다. `withUrlParameters` 메서드를 사용해서 URI 템플릿에서 확장할 수 있는 URL 파라미터를 정의할 수 있습니다.
+HTTP 클라이언트는 [URI 템플릿 명세](https://www.rfc-editor.org/rfc/rfc6570)를 지원하여, 요청 URL을 동적으로 만들 수 있도록 합니다. URI 템플릿에서 확장될 수 있는 URL 파라미터를 정의하려면, `withUrlParameters` 메서드를 사용할 수 있습니다.
 
 ```php
 Http::withUrlParameters([
@@ -93,9 +93,9 @@ Http::withUrlParameters([
 ```
 
 <a name="dumping-requests"></a>
-#### 요청 디버깅(Dumping Requests)
+#### 요청 덤프(Dump)하기
 
-요청이 실제로 전송되기 전에 요청 인스턴스를 화면에 출력하고 스크립트 실행을 중단하고 싶다면, 요청 정의의 시작 부분에 `dd` 메서드를 추가할 수 있습니다.
+전송 이전에 아웃고잉 요청 인스턴스를 덤프하고, 스크립트 실행을 즉시 중단하고 싶다면 `dd` 메서드를 요청 정의의 맨 앞에 붙여 사용할 수 있습니다.
 
 ```php
 return Http::dd()->get('http://example.com');
@@ -104,7 +104,7 @@ return Http::dd()->get('http://example.com');
 <a name="request-data"></a>
 ### 요청 데이터
 
-일반적으로 `POST`, `PUT`, `PATCH` 요청을 보낼 때는 요청 데이터도 함께 전송해야 합니다. 이들 메서드는 두 번째 인수로 데이터 배열을 받을 수 있습니다. 기본적으로 요청 데이터는 `application/json` 컨텐츠 타입으로 전송됩니다.
+`POST`, `PUT`, `PATCH`와 같은 요청 방식에서는 요청과 함께 추가 데이터를 전송하는 경우가 많습니다. 이 메서드들은 두 번째 인자로 데이터 배열을 받을 수 있습니다. 기본적으로 데이터는 `application/json` 콘텐츠 타입으로 전송됩니다.
 
 ```php
 use Illuminate\Support\Facades\Http;
@@ -118,7 +118,7 @@ $response = Http::post('http://example.com/users', [
 <a name="get-request-query-parameters"></a>
 #### GET 요청 쿼리 파라미터
 
-`GET` 요청을 할 때는 URL에 쿼리 문자열을 직접 붙여 사용할 수도 있고, `get` 메서드의 두 번째 인수로 key/value 쌍의 배열을 전달할 수도 있습니다.
+`GET` 요청을 보낼 때, 쿼리 문자열을 직접 URL에 붙이거나, `get` 메서드의 두 번째 인자로 키-값 쌍 배열을 전달할 수 있습니다.
 
 ```php
 $response = Http::get('http://example.com/users', [
@@ -137,9 +137,9 @@ Http::retry(3, 100)->withQueryParameters([
 ```
 
 <a name="sending-form-url-encoded-requests"></a>
-#### Form URL Encoded 요청 보내기
+#### Form URL Encoded 요청 전송
 
-`application/x-www-form-urlencoded` 타입으로 데이터를 전송하고 싶다면, 요청을 보내기 전에 `asForm` 메서드를 호출하면 됩니다.
+`application/x-www-form-urlencoded` 타입으로 데이터를 전송하고 싶다면, 요청을 보내기 전에 `asForm` 메서드를 호출해야 합니다.
 
 ```php
 $response = Http::asForm()->post('http://example.com/users', [
@@ -151,7 +151,7 @@ $response = Http::asForm()->post('http://example.com/users', [
 <a name="sending-a-raw-request-body"></a>
 #### Raw 요청 바디 전송
 
-요청을 보낼 때 raw(가공하지 않은) 형태의 요청 본문을 전송하고 싶다면, `withBody` 메서드를 사용할 수 있습니다. 이때 컨텐츠 타입은 두 번째 인수로 명시해야 합니다.
+요청 시, Raw 데이터로 바디를 직접 지정하고 싶다면 `withBody` 메서드를 사용할 수 있습니다. 콘텐츠 타입은 두 번째 인자로 지정합니다.
 
 ```php
 $response = Http::withBody(
@@ -160,9 +160,9 @@ $response = Http::withBody(
 ```
 
 <a name="multi-part-requests"></a>
-#### 멀티파트(Multi-Part) 요청
+#### 멀티파트 요청
 
-파일을 첨부하여 멀티파트 요청을 보내려면, 요청 전에 `attach` 메서드를 사용해야 합니다. 이 메서드는 첫 번째 인자로 파일 이름, 두 번째 인자로 파일 내용을 받으며, 필요하다면 세 번째 인수로 파일의 실제 파일명, 네 번째 인수로 파일과 관련된 헤더를 지정할 수 있습니다.
+파일을 멀티파트 요청(multi-part request)으로 전송하려면, 요청 전에 `attach` 메서드를 사용해야 합니다. 이 메서드는 파일명을 비롯하여, 파일의 내용, 필요하다면 세 번째 인자로 파일 이름, 네 번째 인자로 관련 헤더 배열을 받을 수 있습니다.
 
 ```php
 $response = Http::attach(
@@ -170,7 +170,7 @@ $response = Http::attach(
 )->post('http://example.com/attachments');
 ```
 
-파일의 실제 내용이 아닌 스트림 리소스를 전달할 수도 있습니다.
+파일의 Raw 데이터를 직접 전달하는 대신 스트림 리소스를 전달할 수도 있습니다.
 
 ```php
 $photo = fopen('photo.jpg', 'r');
@@ -183,7 +183,7 @@ $response = Http::attach(
 <a name="headers"></a>
 ### 헤더
 
-요청에 헤더를 추가하려면 `withHeaders` 메서드를 사용할 수 있습니다. 이 메서드는 key/value 쌍의 배열을 인수로 받습니다.
+요청에 헤더를 추가하려면 `withHeaders` 메서드를 사용할 수 있습니다. 이 메서드는 키-값 쌍 배열을 인자로 받습니다.
 
 ```php
 $response = Http::withHeaders([
@@ -194,19 +194,19 @@ $response = Http::withHeaders([
 ]);
 ```
 
-`accept` 메서드를 사용하면, 요청에 대해 애플리케이션이 어떤 컨텐츠 타입을 기대하는지 지정할 수 있습니다.
+응답에서 애플리케이션이 기대하는 콘텐츠 타입을 지정하고 싶다면 `accept` 메서드를 사용할 수 있습니다.
 
 ```php
 $response = Http::accept('application/json')->get('http://example.com/users');
 ```
 
-더욱 간편하게, `acceptJson` 메서드를 사용해 `application/json` 타입을 바로 지정할 수도 있습니다.
+보다 간편하게, `acceptJson` 메서드를 사용하면 응답에서 `application/json` 타입을 기대함을 빠르게 지정할 수 있습니다.
 
 ```php
 $response = Http::acceptJson()->get('http://example.com/users');
 ```
 
-`withHeaders` 메서드는 기존 요청 헤더에 새로운 헤더를 병합합니다. 만약 기존 헤더를 전부 다른 헤더로 교체하고 싶다면 `replaceHeaders` 메서드를 사용하면 됩니다.
+`withHeaders` 메서드를 사용하면 새로운 헤더가 기존 요청 헤더에 병합됩니다. 필요에 따라, `replaceHeaders` 메서드로 모든 헤더를 완전히 교체할 수도 있습니다.
 
 ```php
 $response = Http::withHeaders([
@@ -221,20 +221,20 @@ $response = Http::withHeaders([
 <a name="authentication"></a>
 ### 인증
 
-기본 인증(Basic Authentication)과 다이제스트 인증(Digest Authentication) 정보를 각각 `withBasicAuth`와 `withDigestAuth` 메서드로 지정할 수 있습니다.
+Basic 인증과 Digest 인증 정보를 각각 `withBasicAuth`와 `withDigestAuth` 메서드를 통해 지정할 수 있습니다.
 
 ```php
-// Basic authentication...
+// Basic 인증...
 $response = Http::withBasicAuth('taylor@laravel.com', 'secret')->post(/* ... */);
 
-// Digest authentication...
+// Digest 인증...
 $response = Http::withDigestAuth('taylor@laravel.com', 'secret')->post(/* ... */);
 ```
 
 <a name="bearer-tokens"></a>
 #### Bearer 토큰
 
-요청의 `Authorization` 헤더에 Bearer 토큰을 손쉽게 추가하려면, `withToken` 메서드를 사용하면 됩니다.
+요청의 `Authorization` 헤더에 Bearer 토큰을 빠르게 추가하고 싶다면, `withToken` 메서드를 사용할 수 있습니다.
 
 ```php
 $response = Http::withToken('token')->post(/* ... */);
@@ -243,15 +243,15 @@ $response = Http::withToken('token')->post(/* ... */);
 <a name="timeout"></a>
 ### 타임아웃
 
-`timeout` 메서드는 응답을 기다리는 최대 초(second)를 지정할 수 있습니다. 기본적으로 HTTP 클라이언트는 30초 후에 시간 초과 처리합니다.
+`timeout` 메서드를 사용하여, 응답을 기다릴 최대 초(second) 단위를 지정할 수 있습니다. 별도의 지정이 없다면 HTTP 클라이언트는 기본적으로 30초 뒤에 타임아웃됩니다.
 
 ```php
 $response = Http::timeout(3)->get(/* ... */);
 ```
 
-지정한 시간 초과를 넘기면 `Illuminate\Http\Client\ConnectionException` 인스턴스가 발생합니다.
+지정된 타임아웃을 초과하면, `Illuminate\Http\Client\ConnectionException` 인스턴스가 예외로 발생합니다.
 
-서버에 연결 시도할 때 대기할 최대 초(second)를 지정하고 싶다면 `connectTimeout` 메서드를 사용할 수 있습니다. 기본값은 10초입니다.
+서버에 연결을 시도할 때 기다릴 최대 초를 명시하고 싶다면, `connectTimeout` 메서드를 사용하세요. 기본값은 10초입니다.
 
 ```php
 $response = Http::connectTimeout(3)->get(/* ... */);
@@ -260,13 +260,13 @@ $response = Http::connectTimeout(3)->get(/* ... */);
 <a name="retries"></a>
 ### 재시도
 
-클라이언트 또는 서버 오류가 발생할 경우 HTTP 클라이언트가 요청을 자동으로 재시도하도록 하려면 `retry` 메서드를 사용할 수 있습니다. 이 메서드는 요청을 시도할 최대 횟수와 각 시도 사이에 라라벨이 대기할 밀리초(ms) 시간을 인수로 받습니다.
+클라이언트 또는 서버 오류가 발생할 때 요청을 자동으로 재시도하도록 하려면, `retry` 메서드를 사용할 수 있습니다. 이 메서드는 시도할 최대 횟수와, 각 시도 사이에 라라벨이 대기할 밀리초(ms) 단위를 인자로 받습니다.
 
 ```php
 $response = Http::retry(3, 100)->post(/* ... */);
 ```
 
-재시도 간 대기할 밀리초를 직접 계산하려면, 두 번째 인수로 클로저(closure)를 전달할 수 있습니다.
+각 시도 사이에 대기할 시간을 직접 계산하고 싶다면, 두 번째 인자로 클로저를 전달하면 됩니다.
 
 ```php
 use Exception;
@@ -276,13 +276,13 @@ $response = Http::retry(3, function (int $attempt, Exception $exception) {
 })->post(/* ... */);
 ```
 
-편의를 위해, 첫 번째 인수로 배열을 전달할 수도 있습니다. 이 배열은 각 시도마다 얼마나 대기할지 밀리초 단위로 지정합니다.
+또는, 첫 번째 인자로 배열을 전달할 수도 있습니다. 이 배열은 각 시도마다 대기할 밀리초를 순차적으로 지정합니다.
 
 ```php
 $response = Http::retry([100, 200])->post(/* ... */);
 ```
 
-필요하다면 세 번째 인수로 콜러블(callable)을 전달하여 실제로 재시도를 시도할지 결정할 수 있습니다. 예를 들어, 요청이 `ConnectionException` 오류를 만났을 때만 재시도를 원한다면 다음처럼 작성할 수 있습니다.
+필요하다면, 세 번째 인자로 실제로 재시도가 이루어질지 판단하는 콜러블을 전달할 수 있습니다. 예를 들어, 최초 요청에서 `ConnectionException`이 발생했을 때만 재시도하도록 할 수 있습니다.
 
 ```php
 use Exception;
@@ -293,7 +293,7 @@ $response = Http::retry(3, 100, function (Exception $exception, PendingRequest $
 })->post(/* ... */);
 ```
 
-요청 시도가 실패한 경우, 새로운 시도를 하기 전에 요청을 변경하고 싶을 수도 있습니다. 이런 경우, `retry` 메서드에 전달한 콜러블에서 전달받는 request 인수를 활용하여 요청을 수정할 수 있습니다. 예를 들어, 첫 번째 요청에서 인증 오류가 발생하면 새로운 인증 토큰으로 다시 요청하도록 할 수도 있습니다.
+시도 중 요청이 실패했다면, 재시도 전에 요청을 변경하고 싶을 수 있습니다. 이 경우, `retry`에 전달한 콜러블의 두 번째 인자인 요청 인스턴스를 수정하여 처리할 수 있습니다. 예를 들어, 첫 번째 시도에서 인증 오류가 발생했을 때 새로운 인증 토큰으로 재시도하고자 할 경우 아래와 같이 구현할 수 있습니다.
 
 ```php
 use Exception;
@@ -311,19 +311,19 @@ $response = Http::withToken($this->getToken())->retry(2, 0, function (Exception 
 })->post(/* ... */);
 ```
 
-설정한 횟수만큼 시도를 모두 실패하면, `Illuminate\Http\Client\RequestException` 인스턴스가 던져집니다. 이 동작을 비활성화하고 싶다면 `throw` 인수를 `false`로 지정하면 됩니다. 비활성화하면 모든 재시도 후 마지막으로 받은 응답을 반환합니다.
+모든 요청이 실패하면 `Illuminate\Http\Client\RequestException` 예외가 발생합니다. 이 동작을 비활성화하려면, `throw` 인자를 `false`로 전달할 수 있습니다. 비활성화 시, 모든 재시도 후 마지막으로 수신한 응답이 반환됩니다.
 
 ```php
 $response = Http::retry(3, 100, throw: false)->post(/* ... */);
 ```
 
 > [!WARNING]
-> 모든 요청이 연결 문제로 실패한 경우, `throw` 인수를 `false`로 설정했다 해도 `Illuminate\Http\Client\ConnectionException` 예외는 여전히 전달됩니다.
+> 모든 요청이 연결 문제로 실패한 경우에는 `throw` 인자가 `false`여도 `Illuminate\Http\Client\ConnectionException` 예외가 계속 발생합니다.
 
 <a name="error-handling"></a>
-### 에러 핸들링
+### 에러 처리
 
-Guzzle의 기본 동작과 다르게, 라라벨의 HTTP 클라이언트 래퍼는 클라이언트/서버 오류(서버에서 400번대, 500번대 응답)가 발생할 때 예외를 던지지 않습니다. 이러한 오류가 발생했는지는 `successful`, `clientError`, `serverError` 메서드를 사용해 확인할 수 있습니다.
+Guzzle의 기본 동작과 달리, 라라벨의 HTTP 클라이언트 래퍼는 클라이언트 오류(`400`) 또는 서버 오류(`500`)가 발생해도 예외를 발생시키지 않습니다. 이러한 오류가 반환되었는지는 `successful`, `clientError`, `serverError` 메서드로 확인할 수 있습니다.
 
 ```php
 // 상태 코드가 200 이상 300 미만인지 확인...
@@ -332,59 +332,59 @@ $response->successful();
 // 상태 코드가 400 이상인지 확인...
 $response->failed();
 
-// 응답이 400번대 상태 코드인지 확인...
+// 상태 코드가 400대인지 확인...
 $response->clientError();
 
-// 응답이 500번대 상태 코드인지 확인...
+// 상태 코드가 500대인지 확인...
 $response->serverError();
 
-// 클라이언트나 서버 에러가 있을 때 지정한 콜백을 즉시 실행...
+// 클라이언트 또는 서버 오류 발생 시 콜백 즉시 실행...
 $response->onError(callable $callback);
 ```
 
 <a name="throwing-exceptions"></a>
-#### 예외 던지기
+#### 예외 발생시키기
 
-응답 인스턴스가 있고, 응답 상태 코드가 클라이언트 또는 서버 오류임을 나타낼 경우 `Illuminate\Http\Client\RequestException` 예외를 던지려면, `throw` 또는 `throwIf` 메서드를 사용할 수 있습니다.
+응답 인스턴스를 가지고 있고, 응답 상태 코드가 클라이언트 혹은 서버 오류라면 `Illuminate\Http\Client\RequestException` 예외를 발생시키려면 `throw` 또는 `throwIf` 메서드를 사용할 수 있습니다.
 
 ```php
 use Illuminate\Http\Client\Response;
 
 $response = Http::post(/* ... */);
 
-// 클라이언트 혹은 서버 오류가 발생하면 예외를 던집니다.
+// 클라이언트나 서버 오류가 발생했을 때 예외를 던짐...
 $response->throw();
 
-// 오류가 발생했고, 주어진 조건이 true일 때 예외를 던집니다.
+// 오류가 발생했고 주어진 조건이 true이면 예외를 던짐...
 $response->throwIf($condition);
 
-// 오류가 발생했고, 주어진 클로저가 true를 반환하면 예외를 던집니다.
+// 오류가 발생했고 주어진 클로저가 true로 평가되면 예외를 던짐...
 $response->throwIf(fn (Response $response) => true);
 
-// 오류가 발생했고, 주어진 조건이 false일 때 예외를 던집니다.
+// 오류가 발생했고 주어진 조건이 false이면 예외를 던짐...
 $response->throwUnless($condition);
 
-// 오류가 발생했고, 주어진 클로저가 false를 반환하면 예외를 던집니다.
+// 오류가 발생했고 주어진 클로저가 false로 평가되면 예외를 던짐...
 $response->throwUnless(fn (Response $response) => false);
 
-// 응답이 특정 상태 코드일 때 예외를 던집니다.
+// 특정 상태 코드를 응답받았을 때 예외를 던짐...
 $response->throwIfStatus(403);
 
-// 응답이 특정 상태 코드가 아닐 때 예외를 던집니다.
+// 특정 상태 코드가 아닌 경우 예외를 던짐...
 $response->throwUnlessStatus(200);
 
 return $response['user']['id'];
 ```
 
-`Illuminate\Http\Client\RequestException` 인스턴스에는 반환된 응답을 확인할 수 있는 public `$response` 속성이 있습니다.
+`Illuminate\Http\Client\RequestException` 인스턴스는 public `$response` 속성을 가지고 있어, 반환된 응답을 확인할 수 있습니다.
 
-`throw` 메서드는 오류가 없는 경우에는 response 인스턴스를 그대로 반환하므로, `throw` 메서드 이후에 다른 작업을 체이닝해서 사용할 수 있습니다.
+`throw` 메서드는 에러가 없을 경우 응답 인스턴스를 반환하므로, `throw` 이후에 다른 메서드를 체이닝할 수 있습니다.
 
 ```php
 return Http::post(/* ... */)->throw()->json();
 ```
 
-예외가 던져지기 전에 추가적으로 처리할 작업이 있다면, `throw` 메서드에 클로저를 전달할 수도 있습니다. 클로저 실행 후에는 예외가 자동으로 던져지므로, 클로저에서 직접 예외를 다시 던질 필요는 없습니다.
+예외 발생 전 추가 로직을 수행하고 싶다면, `throw` 메서드에 클로저를 전달할 수 있습니다. 클로저 실행 이후 예외가 자동으로 던져지므로, 클로저 내에서 예외를 다시 던질 필요는 없습니다.
 
 ```php
 use Illuminate\Http\Client\Response;
@@ -395,24 +395,30 @@ return Http::post(/* ... */)->throw(function (Response $response, RequestExcepti
 })->json();
 ```
 
-기본적으로, `RequestException` 메시지는 로그나 리포트 시 120자까지 잘립니다. 이 동작을 변경 또는 비활성화하려면, 애플리케이션의 `bootstrap/app.php` 파일에서 `truncateRequestExceptionsAt` 및 `dontTruncateRequestExceptions` 메서드를 사용할 수 있습니다.
+기본적으로, `RequestException` 메시지는 로그 또는 리포트 시 120자까지만 잘려서 기록됩니다. 이 동작을 커스터마이즈 하거나 비활성화하려면, 애플리케이션의 `bootstrap/app.php` 파일에서 `truncateRequestExceptionsAt` 및 `dontTruncateRequestExceptions` 메서드를 사용할 수 있습니다.
 
 ```php
 use Illuminate\Foundation\Configuration\Exceptions;
 
 ->withExceptions(function (Exceptions $exceptions) {
-    // 요청 예외 메시지를 240자로 잘라서 저장하도록 설정...
+    // 예외 메시지를 240자까지 잘라서 기록...
     $exceptions->truncateRequestExceptionsAt(240);
 
-    // 요청 예외 메시지 자르기 비활성화...
+    // 예외 메시지 자르기를 비활성화...
     $exceptions->dontTruncateRequestExceptions();
 })
+```
+
+또한, 한 요청에서만 예외 메시지 자르기 동작을 커스터마이즈 하려면 `truncateExceptionsAt` 메서드를 사용할 수 있습니다.
+
+```php
+return Http::truncateExceptionsAt(240)->post(/* ... */);
 ```
 
 <a name="guzzle-middleware"></a>
 ### Guzzle 미들웨어
 
-라라벨의 HTTP 클라이언트는 내부적으로 Guzzle을 사용하므로, [Guzzle 미들웨어](https://docs.guzzlephp.org/en/stable/handlers-and-middleware.html)를 활용하여 나가는 요청을 가공하거나 들어오는 응답을 검사할 수 있습니다. 나가는 요청을 가공하려면 `withRequestMiddleware` 메서드로 미들웨어를 등록합니다.
+라라벨의 HTTP 클라이언트는 Guzzle을 기반으로 동작하기 때문에, [Guzzle 미들웨어](https://docs.guzzlephp.org/en/stable/handlers-and-middleware.html)를 활용해 아웃고잉 요청을 수정하거나, 인커밍 응답을 검사할 수 있습니다. 아웃고잉 요청을 조작하려면, `withRequestMiddleware` 메서드로 Guzzle 미들웨어를 등록하세요.
 
 ```php
 use Illuminate\Support\Facades\Http;
@@ -425,7 +431,7 @@ $response = Http::withRequestMiddleware(
 )->get('http://example.com');
 ```
 
-들어오는 HTTP 응답을 검사하고 싶을 때는 `withResponseMiddleware` 메서드를 이용하여 미들웨어를 등록할 수 있습니다.
+마찬가지로, `withResponseMiddleware` 메서드로 미들웨어를 등록해 들어오는 HTTP 응답을 검사할 수도 있습니다.
 
 ```php
 use Illuminate\Support\Facades\Http;
@@ -445,7 +451,7 @@ $response = Http::withResponseMiddleware(
 <a name="global-middleware"></a>
 #### 전역 미들웨어
 
-모든 나가는 요청 및 들어오는 응답에 항상 적용되는 미들웨어를 등록하고 싶을 때도 있습니다. 이럴 때는 `globalRequestMiddleware`와 `globalResponseMiddleware` 메서드를 사용할 수 있습니다. 보통 이 메서드들은 애플리케이션의 `AppServiceProvider`의 `boot` 메서드에서 호출하는 것이 좋습니다.
+모든 아웃고잉 요청과 인커밍 응답에 일괄 적용되는 미들웨어를 등록하고 싶을 때가 있습니다. 이럴 때는 `globalRequestMiddleware`와 `globalResponseMiddleware` 메서드를 사용할 수 있습니다. 보통 이러한 설정은 애플리케이션의 `AppServiceProvider`의 `boot` 메서드에서 수행합니다.
 
 ```php
 use Illuminate\Support\Facades\Http;
@@ -462,7 +468,7 @@ Http::globalResponseMiddleware(fn ($response) => $response->withHeader(
 <a name="guzzle-options"></a>
 ### Guzzle 옵션
 
-나가는 요청에 추가적인 [Guzzle 요청 옵션](http://docs.guzzlephp.org/en/stable/request-options.html)이 필요하다면, `withOptions` 메서드를 사용하면 됩니다. 이 메서드는 key/value 쌍의 배열을 인수로 받습니다.
+아웃고잉 요청에 추가적인 [Guzzle 요청 옵션](http://docs.guzzlephp.org/en/stable/request-options.html)을 명시하려면, `withOptions` 메서드를 사용할 수 있습니다. 이 메서드는 키-값 쌍 배열을 받습니다.
 
 ```php
 $response = Http::withOptions([
@@ -473,7 +479,7 @@ $response = Http::withOptions([
 <a name="global-options"></a>
 #### 전역 옵션
 
-모든 나가는 요청에 기본 옵션을 지정하려면, `globalOptions` 메서드를 활용할 수 있습니다. 이는 마찬가지로 애플리케이션의 `AppServiceProvider`의 `boot` 메서드에서 호출하는 것이 일반적입니다.
+모든 아웃고잉 요청의 기본 옵션을 지정하려면, `globalOptions` 메서드를 활용할 수 있습니다. 이 메서드는 주로 애플리케이션의 `AppServiceProvider`의 `boot` 메서드에서 호출합니다.
 
 ```php
 use Illuminate\Support\Facades\Http;
@@ -492,9 +498,9 @@ public function boot(): void
 <a name="concurrent-requests"></a>
 ## 동시 요청
 
-여러 HTTP 요청을 동시에 보내고 싶을 때가 종종 있습니다. 즉, 여러 요청을 차례로 보내는 대신 한 번에 동시에 여러 요청을 발송하고 싶을 때 입니다. 이렇게 하면 느린 HTTP API와 상호작용할 때 성능이 크게 향상될 수 있습니다.
+여러 개의 HTTP 요청을 동시에 보내고 싶을 때가 있습니다. 즉, 요청을 순차적으로 보내는 대신, 여러 요청을 한 번에 동시에 보낼 때 사용할 수 있습니다. 느린 HTTP API와 상호 작용할 때, 이런 방식은 성능 개선에 큰 도움이 됩니다.
 
-이럴 때는 `pool` 메서드를 사용하면 됩니다. `pool` 메서드는 클로저를 인수로 받아, 클로저 안에서 `Illuminate\Http\Client\Pool` 인스턴스를 통해 쉽게 여러 요청을 pool에 추가할 수 있습니다.
+라라벨에서는 `pool` 메서드를 사용해 이 기능을 구현할 수 있습니다. `pool` 메서드는 `Illuminate\Http\Client\Pool` 인스턴스를 받는 클로저를 인자로 받아, 이 인스턴스에 요청을 쉽게 추가할 수 있도록 해줍니다.
 
 ```php
 use Illuminate\Http\Client\Pool;
@@ -511,7 +517,7 @@ return $responses[0]->ok() &&
        $responses[2]->ok();
 ```
 
-위 예시처럼, 각각의 응답 인스턴스는 요청이 pool에 추가된 순서대로 배열 인덱스로 접근할 수 있습니다. 원한다면 `as` 메서드로 요청에 이름을 붙여, 응답도 해당 이름으로 바로 접근할 수 있습니다.
+보시다시피, 각 응답 인스턴스는 풀에 추가된 순서대로 배열 인덱스로 접근할 수 있습니다. 원한다면 요청에 이름을 붙일 수도 있는데, `as` 메서드를 사용하면 됩니다. 이렇게 하면 이름으로 응답을 조회할 수 있습니다.
 
 ```php
 use Illuminate\Http\Client\Pool;
@@ -529,7 +535,7 @@ return $responses['first']->ok();
 <a name="customizing-concurrent-requests"></a>
 #### 동시 요청 커스터마이징
 
-`pool` 메서드는 `withHeaders`나 `middleware` 같은 다른 HTTP 클라이언트 메서드와 체이닝해서 사용할 수 없습니다. pool에 추가하는 각 요청에서 직접 옵션을 설정해야 합니다.
+`pool` 메서드는 `withHeaders`나 `middleware`와 같은 HTTP 클라이언트 메서드와 체이닝할 수 없습니다. 풀에 담긴 각 요청마다 커스텀 헤더나 미들웨어를 적용하려면, 각 요청에 직접 옵션을 설정해야 합니다.
 
 ```php
 use Illuminate\Http\Client\Pool;
@@ -549,7 +555,7 @@ $responses = Http::pool(fn (Pool $pool) => [
 <a name="macros"></a>
 ## 매크로
 
-라라벨 HTTP 클라이언트는 "매크로"를 정의할 수 있습니다. 매크로는 서비스와 상호작용할 때 자주 사용하는 요청 경로나 헤더 설정을 손쉽게 구성할 수 있는 유연하고 직관적인 방법을 제공합니다. 먼저, 애플리케이션의 `App\Providers\AppServiceProvider` 클래스의 `boot` 메서드 안에서 매크로를 정의할 수 있습니다.
+라라벨 HTTP 클라이언트는 "매크로" 기능을 지원합니다. 매크로를 통해 서비스별로 자주 사용하는 요청 경로나 헤더 설정을 한 번에 구성하는 등, 보다 선언적이고 유연하게 재사용할 수 있습니다. 매크로는 애플리케이션의 `App\Providers\AppServiceProvider` 클래스의 `boot` 메서드에서 정의하면 됩니다.
 
 ```php
 use Illuminate\Support\Facades\Http;
@@ -567,7 +573,7 @@ public function boot(): void
 }
 ```
 
-이제 매크로가 설정되었으므로, 애플리케이션 어디서든 해당 매크로를 호출해 지정한 설정으로 요청을 만들 수 있습니다.
+매크로가 설정되면, 애플리케이션 어디에서나 지정한 구성을 가진 대기 중인 요청을 생성할 수 있습니다.
 
 ```php
 $response = Http::github()->get('/');
@@ -575,14 +581,14 @@ $response = Http::github()->get('/');
 
 <a name="testing"></a>
 
-## 테스트 (Testing)
+## 테스트
 
-많은 라라벨 서비스에서는 테스트를 쉽고 명확하게 작성할 수 있도록 다양한 기능을 제공합니다. 라라벨의 HTTP 클라이언트 역시 예외는 아닙니다. `Http` 파사드의 `fake` 메서드를 사용하면, 실제 요청 대신 임의의(더미) 응답을 반환하도록 HTTP 클라이언트의 동작을 변경할 수 있습니다.
+많은 라라벨 서비스들은 테스트를 쉽고 명확하게 작성할 수 있도록 다양한 기능을 제공합니다. 라라벨의 HTTP 클라이언트 역시 예외가 아닙니다. `Http` 파사드의 `fake` 메서드를 사용하면, 요청이 발생할 때 HTTP 클라이언트가 미리 준비해둔 더미(stub) 응답을 반환하게 만들 수 있습니다.
 
 <a name="faking-responses"></a>
-### 응답을 가짜로 만들기
+### 응답 가짜 처리
 
-예를 들어, 모든 요청에 대해 내용이 비어 있고, 상태 코드가 `200`인 응답을 반환하도록 하려면 `fake` 메서드를 별도의 인수 없이 호출하면 됩니다.
+예를 들어, HTTP 클라이언트가 모든 요청에 대해 비어 있는 `200` 상태 코드의 응답을 반환하도록 하려면, `fake` 메서드를 인자 없이 호출할 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\Http;
@@ -593,33 +599,33 @@ $response = Http::post(/* ... */);
 ```
 
 <a name="faking-specific-urls"></a>
-#### 특정 URL에 대해 가짜 응답 만들기
+#### 특정 URL 가짜 처리
 
-또는, `fake` 메서드에 배열을 전달할 수도 있습니다. 배열의 키에는 가짜 응답을 지정할 URL 패턴을, 값에는 반환할 응답을 지정하세요. `*` 문자는 와일드카드로 사용될 수 있습니다. 지정하지 않은(미가짜화) URL로의 요청은 실제로 실행됩니다. 각 엔드포인트에 대해 `Http` 파사드의 `response` 메서드를 활용해 가짜 응답을 만들 수 있습니다.
+또는 `fake` 메서드에 배열을 전달할 수도 있습니다. 이 배열의 키는 가짜 처리를 원하는 URL 패턴을, 값은 해당 URL에 대한 응답을 나타냅니다. `*` 문자를 와일드카드로 사용할 수 있습니다. 가짜 처리가 지정되지 않은 URL로의 요청은 실제로 실행됩니다. `Http` 파사드의 `response` 메서드를 사용하여 이러한 엔드포인트에 대한 더미/가짜 응답을 만들 수 있습니다.
 
 ```php
 Http::fake([
-    // GitHub 엔드포인트를 위한 JSON 응답 더미...
+    // GitHub 엔드포인트에 대한 JSON 응답 가짜 처리...
     'github.com/*' => Http::response(['foo' => 'bar'], 200, $headers),
 
-    // Google 엔드포인트를 위한 문자열 응답 더미...
+    // Google 엔드포인트에 대한 문자열 응답 가짜 처리...
     'google.com/*' => Http::response('Hello World', 200, $headers),
 ]);
 ```
 
-미가짜화된 모든 URL에도 가짜 응답을 적용하는 기본값 패턴을 지정하고 싶다면, `*`만 전달하면 됩니다.
+모든 일치하지 않는 URL에 대해 응답을 가짜 처리하는 기본 URL 패턴을 지정하려면, 단일 `*` 문자를 사용할 수 있습니다.
 
 ```php
 Http::fake([
-    // GitHub 엔드포인트를 위한 JSON 응답 더미...
+    // GitHub 엔드포인트에 대한 JSON 응답 가짜 처리...
     'github.com/*' => Http::response(['foo' => 'bar'], 200, ['Headers']),
 
-    // 다른 모든 엔드포인트에 대한 문자열 응답 더미...
+    // 그 외 모든 엔드포인트에 대한 문자열 응답 가짜 처리...
     '*' => Http::response('Hello World', 200, ['Headers']),
 ]);
 ```
 
-간편하게 문자열, JSON, 빈 응답을 만들 때에는 응답값에 문자열, 배열, 정수(상태 코드)만 전달해도 됩니다.
+간단하게 문자열, JSON, 빈 응답을 생성하고 싶을 때는 응답값으로 문자열, 배열, 또는 정수를 전달하면 됩니다.
 
 ```php
 Http::fake([
@@ -630,9 +636,9 @@ Http::fake([
 ```
 
 <a name="faking-connection-exceptions"></a>
-#### 예외를 가짜로 만들기
+#### 예외 가짜 처리
 
-HTTP 클라이언트가 요청을 시도하다가 `Illuminate\Http\Client\ConnectionException`을 만났을 때 애플리케이션의 동작을 테스트하고 싶을 때가 있습니다. 이런 경우, `failedConnection` 메서드를 사용하면 HTTP 클라이언트가 연결 예외를 던지도록 할 수 있습니다.
+때로는 HTTP 클라이언트가 요청을 시도할 때 `Illuminate\Http\Client\ConnectionException`이 발생할 경우 애플리케이션이 어떻게 동작하는지 테스트해야 할 경우가 있습니다. 이럴 때는 `failedConnection` 메서드를 사용하여 HTTP 클라이언트가 연결 예외를 발생시키도록 할 수 있습니다.
 
 ```php
 Http::fake([
@@ -640,7 +646,7 @@ Http::fake([
 ]);
 ```
 
-만약 `Illuminate\Http\Client\RequestException`이 발생하는 상황을 테스트하고 싶다면 `failedRequest` 메서드를 사용하면 됩니다.
+`Illuminate\Http\Client\RequestException`이 발생할 경우를 테스트하고 싶다면 `failedRequest` 메서드를 사용할 수 있습니다.
 
 ```php
 Http::fake([
@@ -649,13 +655,13 @@ Http::fake([
 ```
 
 <a name="faking-response-sequences"></a>
-#### 연속된 응답을 순서대로 가짜로 만들기
+#### 응답 시퀀스 가짜 처리
 
-때로는 하나의 URL에 대해 여러 개의 가짜 응답을 순서대로 반환하도록 지정해야 할 수 있습니다. 이 경우 `Http::sequence` 메서드를 사용해 응답 시퀀스를 만들 수 있습니다.
+특정 URL에 대해 연속된 여러 개의 가짜 응답을 차례대로 반환해야 할 때가 있습니다. `Http::sequence` 메서드를 사용하여 응답의 시퀀스를 만들 수 있습니다.
 
 ```php
 Http::fake([
-    // GitHub 엔드포인트에 대한 연속된 가짜 응답들...
+    // GitHub 엔드포인트에 대한 일련의 응답을 가짜 처리...
     'github.com/*' => Http::sequence()
         ->push('Hello World', 200)
         ->push(['foo' => 'bar'], 200)
@@ -663,11 +669,11 @@ Http::fake([
 ]);
 ```
 
-시퀀스에 포함된 모든 응답이 소진되면, 이후 요청은 예외를 발생시킵니다. 시퀀스가 비었을 때 반환할 기본 응답을 지정하고 싶다면 `whenEmpty` 메서드를 사용할 수 있습니다.
+시퀀스에 포함된 응답이 모두 소진되면, 이후 요청이 발생할 경우 예외가 발생합니다. 시퀀스가 비었을 때 반환할 기본 응답을 지정하고 싶다면 `whenEmpty` 메서드를 사용할 수 있습니다.
 
 ```php
 Http::fake([
-    // GitHub 엔드포인트에 대한 연속된 가짜 응답들...
+    // GitHub 엔드포인트에 대한 일련의 응답을 가짜 처리...
     'github.com/*' => Http::sequence()
         ->push('Hello World', 200)
         ->push(['foo' => 'bar'], 200)
@@ -675,7 +681,7 @@ Http::fake([
 ]);
 ```
 
-특정 URL 패턴에 관계없이 간단히 연속된 가짜 응답 시퀀스를 지정하고 싶다면 `Http::fakeSequence`를 사용할 수 있습니다.
+특정 URL 패턴을 지정하지 않고 응답 시퀀스를 가짜 처리하고 싶다면 `Http::fakeSequence` 메서드를 사용할 수 있습니다.
 
 ```php
 Http::fakeSequence()
@@ -686,7 +692,7 @@ Http::fakeSequence()
 <a name="fake-callback"></a>
 #### 가짜 콜백
 
-특정 엔드포인트마다 반환할 응답을 더 복잡한 로직으로 동적으로 판단해야 한다면, `fake` 메서드에 클로저를 전달하세요. 이 클로저는 `Illuminate\Http\Client\Request` 인스턴스를 받아서 응답 인스턴스를 반환해야 합니다. 클로저 내에서 어떤 응답을 반환할지 자유롭게 로직을 작성할 수 있습니다.
+특정 엔드포인트에 대해 어떤 응답을 반환할지 결정하는 더 복잡한 로직이 필요하다면, `fake` 메서드에 클로저를 전달할 수 있습니다. 이 클로저는 `Illuminate\Http\Client\Request` 인스턴스를 매개변수로 받아, 원하는 응답 인스턴스를 반환해야 합니다. 클로저 내부에서 필요한 모든 로직을 구현할 수 있습니다.
 
 ```php
 use Illuminate\Http\Client\Request;
@@ -697,9 +703,9 @@ Http::fake(function (Request $request) {
 ```
 
 <a name="preventing-stray-requests"></a>
-### 예기치 않은 실제 요청 방지하기
+### 의도치 않은 실제 요청 방지
 
-테스트 코드 전체 또는 개별 테스트 내에서 HTTP 클라이언트로 보내는 모든 요청이 반드시 가짜 응답을 사용했는지 보장하려면 `preventStrayRequests` 메서드를 사용할 수 있습니다. 이 메서드가 호출된 이후로, 가짜 응답이 지정되지 않은 요청은 실제로 전송되지 않고 예외를 발생시킵니다.
+HTTP 클라이언트를 통한 모든 요청이 테스트 중에 반드시 가짜 처리되었는지 보장하고 싶다면, `preventStrayRequests` 메서드를 호출할 수 있습니다. 이 메서드를 호출하면, 가짜 응답이 지정되지 않은 요청이 실제로 실행되는 대신 예외가 발생하게 됩니다.
 
 ```php
 use Illuminate\Support\Facades\Http;
@@ -718,11 +724,11 @@ Http::get('https://laravel.com');
 ```
 
 <a name="inspecting-requests"></a>
-### 요청 검사하기
+### 요청 확인
 
-가짜 응답을 사용하는 동안에도, 애플리케이션이 정상적으로 데이터나 헤더를 보내고 있는지 확인하고 싶을 수 있습니다. 이때 `Http::fake` 이후 `Http::assertSent`를 호출하여 요청을 검사할 수 있습니다.
+가짜 응답을 사용할 때, 클라이언트가 받는 요청을 확인해서 애플리케이션이 올바른 데이터나 헤더를 전송하는지 검증하고 싶을 수 있습니다. 이럴 때는 `Http::fake`를 호출한 후 `Http::assertSent` 메서드를 사용할 수 있습니다.
 
-`assertSent` 메서드는 클로저를 인수로 받으며, 이 클로저에는 `Illuminate\Http\Client\Request` 인스턴스가 전달됩니다. 클로저에서는 요청이 기대와 일치하는지 판단하는 코드를 작성해 true 또는 false를 반환하면 됩니다. 하나 이상의 요청이라도 이 조건에 부합하면 테스트는 통과하게 됩니다.
+`assertSent` 메서드는 클로저를 인자로 받으며, 이 클로저에는 `Illuminate\Http\Client\Request` 인스턴스가 전달됩니다. 클로저는 요청이 기대한 조건과 일치할 경우 `true`를 반환해야 합니다. 최소한 하나 이상의 요청이 조건을 만족해야 테스트가 통과하게 됩니다.
 
 ```php
 use Illuminate\Http\Client\Request;
@@ -745,7 +751,7 @@ Http::assertSent(function (Request $request) {
 });
 ```
 
-특정 요청이 전송되지 않았는지 검증하고 싶다면, `assertNotSent` 메서드를 사용할 수 있습니다.
+필요하다면, 특정 요청이 전송되지 않았는지 검증하는 `assertNotSent` 메서드도 사용할 수 있습니다.
 
 ```php
 use Illuminate\Http\Client\Request;
@@ -763,7 +769,7 @@ Http::assertNotSent(function (Request $request) {
 });
 ```
 
-테스트 동안 "전송"된 요청의 개수를 검증할 때는 `assertSentCount` 메서드를 사용할 수 있습니다.
+테스트 중 "전송된" 요청의 개수를 검증하려면 `assertSentCount` 메서드를 사용할 수 있습니다.
 
 ```php
 Http::fake();
@@ -771,7 +777,7 @@ Http::fake();
 Http::assertSentCount(5);
 ```
 
-또한, 테스트 중에 아무 요청도 전송되지 않았는지 검증하려면 `assertNothingSent`를 사용할 수 있습니다.
+또는, 테스트 중 어떤 요청도 전송되지 않았음을 검증하고 싶다면 `assertNothingSent` 메서드를 사용할 수 있습니다.
 
 ```php
 Http::fake();
@@ -780,9 +786,9 @@ Http::assertNothingSent();
 ```
 
 <a name="recording-requests-and-responses"></a>
-#### 요청 / 응답 기록하기
+#### 요청/응답 기록
 
-`recorded` 메서드를 활용하면 모든 요청과 해당하는 응답을 한 번에 모아 확인할 수 있습니다. 이 메서드는 `Illuminate\Http\Client\Request` 및 `Illuminate\Http\Client\Response` 인스턴스가 들어 있는 배열들의 컬렉션을 반환합니다.
+`recorded` 메서드를 사용하면 모든 요청과 해당 응답을 수집할 수 있습니다. `recorded` 메서드는 `Illuminate\Http\Client\Request`와 `Illuminate\Http\Client\Response` 인스턴스가 포함된 배열(들)로 이루어진 컬렉션을 반환합니다.
 
 ```php
 Http::fake([
@@ -798,7 +804,7 @@ $recorded = Http::recorded();
 [$request, $response] = $recorded[0];
 ```
 
-또한, `recorded` 메서드에 클로저를 전달하여 요청/응답 쌍 중에서 원하는 조건에 맞는 것만 필터링할 수도 있습니다. 이 클로저는 각각 `Illuminate\Http\Client\Request`와 `Illuminate\Http\Client\Response` 인스턴스를 전달받습니다.
+또한, `recorded` 메서드는 클로저를 인자로 받아, 이 안에서 특정 요청/응답 페어만 필터링할 수 있습니다.
 
 ```php
 use Illuminate\Http\Client\Request;
@@ -819,11 +825,11 @@ $recorded = Http::recorded(function (Request $request, Response $response) {
 ```
 
 <a name="events"></a>
-## 이벤트 (Events)
+## 이벤트
 
-라라벨은 HTTP 요청을 전송하는 과정에서 세 가지 이벤트를 발생시킵니다. 요청을 실제로 보내기 전에 `RequestSending` 이벤트가 발생하며, 요청에 대한 응답을 받은 뒤에는 `ResponseReceived` 이벤트가 발생합니다. 만약 요청에 대해 응답을 받지 못했다면 `ConnectionFailed` 이벤트가 발생합니다.
+라라벨은 HTTP 요청을 보내는 과정에서 총 세 가지 이벤트를 발생시킵니다. 요청이 전송되기 전에 `RequestSending` 이벤트가, 특정 요청에 대한 응답을 받은 후에는 `ResponseReceived` 이벤트가 발생합니다. 요청에 대해 응답을 받지 못하면 `ConnectionFailed` 이벤트가 발생합니다.
 
-`RequestSending` 및 `ConnectionFailed` 이벤트에는 모두 `Illuminate\Http\Client\Request` 인스턴스를 담고 있는 public `$request` 속성이 포함되어 있습니다. 마찬가지로, `ResponseReceived` 이벤트에는 `$request` 속성뿐만 아니라 `Illuminate\Http\Client\Response` 인스턴스를 담고 있는 `$response` 속성도 있습니다. 이러한 이벤트들에 대해 [이벤트 리스너](/docs/12.x/events)를 애플리케이션 내에서 만들 수 있습니다.
+`RequestSending` 및 `ConnectionFailed` 이벤트에는 모두 `public $request` 속성이 포함되어 있어, `Illuminate\Http\Client\Request` 인스턴스를 확인할 수 있습니다. `ResponseReceived` 이벤트에는 `request` 속성과 함께, `Illuminate\Http\Client\Response` 인스턴스를 확인할 수 있는 `response` 속성도 포함되어 있습니다. 이러한 이벤트에 대한 [이벤트 리스너](/docs/12.x/events)를 애플리케이션 내에서 만들 수 있습니다.
 
 ```php
 use Illuminate\Http\Client\Events\RequestSending;

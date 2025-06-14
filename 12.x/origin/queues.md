@@ -458,7 +458,7 @@ class RateLimited
 
 As you can see, like [route middleware](/docs/{{version}}/middleware), job middleware receive the job being processed and a callback that should be invoked to continue processing the job.
 
-After creating job middleware, they may be attached to a job by returning them from the job's `middleware` method. This method does not exist on jobs scaffolded by the `make:job` Artisan command, so you will need to manually add it to your job class:
+You can generate a new job middleware class using the `make:job-middleware` Artisan command. After creating job middleware, they may be attached to a job by returning them from the job's `middleware` method. This method does not exist on jobs scaffolded by the `make:job` Artisan command, so you will need to manually add it to your job class:
 
 ```php
 use App\Jobs\Middleware\RateLimited;
@@ -475,7 +475,7 @@ public function middleware(): array
 ```
 
 > [!NOTE]
-> Job middleware can also be assigned to queueable event listeners, mailables, and notifications.
+> Job middleware can also be assigned to [queueable event listeners](/docs/{{version}}/events#queued-event-listeners), [mailables](/docs/{{version}}/mail#queueing-mail), and [notifications](/docs/{{version}}/notifications#queueing-notifications).
 
 <a name="rate-limiting"></a>
 ### Rate Limiting
