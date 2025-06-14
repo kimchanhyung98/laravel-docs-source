@@ -24,7 +24,10 @@ def get_git_changes():
             if not line.strip():
                 continue
 
-            file_path = line[3:].strip()
+            if len(line) >= 3:
+                file_path = line[2:].lstrip()
+            else:
+                continue
 
             if file_path.endswith('.md'):
                 # 파일 경로에서 브랜치 추출 - 정규화된 경로 사용
