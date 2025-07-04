@@ -313,7 +313,7 @@ $value = Arr::boolean($array, 'name');
 <a name="method-array-collapse"></a>
 #### `Arr::collapse()` {.collection-method}
 
-The `Arr::collapse` method collapses an array of arrays into a single array:
+The `Arr::collapse` method collapses an array of arrays or collections into a single array:
 
 ```php
 use Illuminate\Support\Arr;
@@ -2281,7 +2281,7 @@ blank(false);
 // false
 ```
 
-For the inverse of `blank`, see the [filled](#method-filled) method.
+For the inverse of `blank`, see the [filled](#method-filled) function.
 
 <a name="method-broadcast"></a>
 #### `broadcast()` {.collection-method}
@@ -2425,6 +2425,8 @@ The `decrypt` function [decrypts](/docs/{{version}}/encryption) the given value.
 $password = decrypt($value);
 ```
 
+For the inverse of `decrypt`, see the [encrypt](#method-encrypt) function.
+
 <a name="method-dd"></a>
 #### `dd()` {.collection-method}
 
@@ -2477,6 +2479,8 @@ The `encrypt` function [encrypts](/docs/{{version}}/encryption) the given value.
 ```php
 $secret = encrypt('my-secret-value');
 ```
+
+For the inverse of `encrypt`, see the [decrypt](#method-decrypt) function.
 
 <a name="method-env"></a>
 #### `env()` {.collection-method}
@@ -2544,7 +2548,7 @@ filled(collect());
 // false
 ```
 
-For the inverse of `filled`, see the [blank](#method-blank) method.
+For the inverse of `filled`, see the [blank](#method-blank) function.
 
 <a name="method-info"></a>
 #### `info()` {.collection-method}
@@ -3293,7 +3297,7 @@ $user = Pipeline::send($user)
 
 As you can see, each invokable class or closure in the pipeline is provided the input and a `$next` closure. Invoking the `$next` closure will invoke the next callable in the pipeline. As you may have noticed, this is very similar to [middleware](/docs/{{version}}/middleware).
 
-When the last callable in the pipeline invokes the `$next` closure, the callable provided to the `then` method will be invoked. Typically, this callable will simply return the given input.
+When the last callable in the pipeline invokes the `$next` closure, the callable provided to the `then` method will be invoked. Typically, this callable will simply return the given input. For convenience, if you simply want to return the input after it has been processed, you may use the `thenReturn` method.
 
 Of course, as discussed previously, you are not limited to providing closures to your pipeline. You may also provide invokable classes. If a class name is provided, the class will be instantiated via Laravel's [service container](/docs/{{version}}/container), allowing dependencies to be injected into the invokable class:
 
@@ -3304,7 +3308,7 @@ $user = Pipeline::send($user)
         ActivateSubscription::class,
         SendWelcomeEmail::class,
     ])
-    ->then(fn (User $user) => $user);
+    ->thenReturn();
 ```
 
 <a name="sleep"></a>
