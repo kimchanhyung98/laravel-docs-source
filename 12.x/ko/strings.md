@@ -6,7 +6,7 @@
 <a name="introduction"></a>
 ## 소개
 
-라라벨에는 문자열 값을 다루기 위한 다양한 함수들이 포함되어 있습니다. 이 함수들 중 다수는 프레임워크 내부적으로도 사용되고 있지만, 여러분의 애플리케이션에서 편리하게 활용할 수도 있습니다.
+라라벨은 문자열 값을 다루기 위한 다양한 함수들을 제공합니다. 이 함수들 중 다수는 프레임워크 내부에서 사용되지만, 필요하다면 여러분의 애플리케이션에서도 자유롭게 활용할 수 있습니다.
 
 <a name="available-methods"></a>
 ## 사용 가능한 메서드
@@ -14,7 +14,7 @@
 
 
 <a name="strings-method-list"></a>
-### 문자열 관련 함수
+### 문자열 관련 함수 목록
 
 <div class="collection-method-list" markdown="1">
 
@@ -116,7 +116,7 @@
 </div>
 
 <a name="fluent-strings-method-list"></a>
-### 플루언트 문자열(Fluent Strings)
+### Fluent 문자열 메서드
 
 <div class="collection-method-list" markdown="1">
 
@@ -238,12 +238,12 @@
 </div>
 
 <a name="strings"></a>
-## 문자열
+## 문자열 함수
 
 <a name="method-__"></a>
 #### `__()`
 
-`__` 함수는 지정한 번역 문자열 또는 번역 키를 [언어 파일](/docs/12.x/localization)을 이용해 변환합니다.
+`__` 함수는 주어진 번역 문자열 또는 번역 키를 [언어 파일](/docs/12.x/localization)을 사용하여 번역합니다.
 
 ```php
 echo __('Welcome to our application');
@@ -251,12 +251,12 @@ echo __('Welcome to our application');
 echo __('messages.welcome');
 ```
 
-지정한 번역 문자열이나 키가 존재하지 않을 경우, `__` 함수는 전달한 값 자체를 반환합니다. 위 예시에서 해당 번역 키가 없다면 `__` 함수는 `messages.welcome`을 그대로 반환합니다.
+지정한 번역 문자열 또는 키가 존재하지 않을 경우, `__` 함수는 전달된 값을 그대로 반환합니다. 예시에서 만약 해당 번역 키가 존재하지 않는다면 `__` 함수는 `messages.welcome`을 반환하게 됩니다.
 
 <a name="method-class-basename"></a>
 #### `class_basename()`
 
-`class_basename` 함수는 전달받은 클래스의 전체 네임스페이스를 제거하고 클래스 이름만 반환합니다.
+`class_basename` 함수는 주어진 클래스에서 네임스페이스를 제외한 클래스명만 반환합니다.
 
 ```php
 $class = class_basename('Foo\Bar\Baz');
@@ -267,7 +267,7 @@ $class = class_basename('Foo\Bar\Baz');
 <a name="method-e"></a>
 #### `e()`
 
-`e` 함수는 PHP의 `htmlspecialchars` 함수를 사용하며, 기본적으로 `double_encode` 옵션을 `true`로 설정합니다.
+`e` 함수는 PHP의 `htmlspecialchars` 함수를 실행하는데, 기본적으로 `double_encode` 옵션이 `true`로 설정되어 있습니다.
 
 ```php
 echo e('<html>foo</html>');
@@ -278,7 +278,7 @@ echo e('<html>foo</html>');
 <a name="method-preg-replace-array"></a>
 #### `preg_replace_array()`
 
-`preg_replace_array` 함수는 주어진 패턴에 맞는 부분을 배열의 값으로 순차적으로 치환합니다.
+`preg_replace_array` 함수는 문자열 내의 지정한 패턴을 배열의 값을 차례대로 넣어서 치환합니다.
 
 ```php
 $string = 'The event will take place between :start and :end';
@@ -291,7 +291,7 @@ $replaced = preg_replace_array('/:[a-z_]+/', ['8:30', '9:00'], $string);
 <a name="method-str-after"></a>
 #### `Str::after()`
 
-`Str::after` 메서드는 지정한 값 뒤에 오는 모든 문자열을 반환합니다. 만약 해당 값이 문자열 내에 없다면 전체 문자열이 반환됩니다.
+`Str::after` 메서드는 문자열에서 지정한 값 다음의 모든 부분을 반환합니다. 만약 해당 값이 문자열 내에 없다면, 전체 문자열을 그대로 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -304,7 +304,7 @@ $slice = Str::after('This is my name', 'This is');
 <a name="method-str-after-last"></a>
 #### `Str::afterLast()`
 
-`Str::afterLast` 메서드는 문자열 내에서 주어진 값이 마지막으로 나타난 이후의 모든 문자열을 반환합니다. 만약 해당 값이 없을 경우 전체 문자열이 반환됩니다.
+`Str::afterLast` 메서드는 문자열에서 지정한 값이 마지막으로 등장한 이후의 모든 부분을 반환합니다. 만약 해당 값이 문자열 내에 없다면, 전체 문자열을 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -317,7 +317,7 @@ $slice = Str::afterLast('App\Http\Controllers\Controller', '\\');
 <a name="method-str-apa"></a>
 #### `Str::apa()`
 
-`Str::apa` 메서드는 [APA 가이드라인](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case)에 따라 주어진 문자열을 타이틀 케이스로 변환합니다.
+`Str::apa` 메서드는 주어진 문자열을 [APA 가이드라인](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case)에 따라 타이틀 케이스로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -330,7 +330,7 @@ $title = Str::apa('Creating A Project');
 <a name="method-str-ascii"></a>
 #### `Str::ascii()`
 
-`Str::ascii` 메서드는 문자열을 가능한 한 ASCII 값으로 변환(음절 치환)하려고 시도합니다.
+`Str::ascii` 메서드는 문자열을 ASCII 값으로 변환(음역)하려고 시도합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -343,7 +343,7 @@ $slice = Str::ascii('û');
 <a name="method-str-before"></a>
 #### `Str::before()`
 
-`Str::before` 메서드는 주어진 값 앞에 있는 모든 문자열을 반환합니다.
+`Str::before` 메서드는 문자열에서 지정한 값 앞에 있는 모든 부분을 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -356,7 +356,7 @@ $slice = Str::before('This is my name', 'my name');
 <a name="method-str-before-last"></a>
 #### `Str::beforeLast()`
 
-`Str::beforeLast` 메서드는 주어진 값이 마지막으로 나타나기 전까지의 모든 문자열을 반환합니다.
+`Str::beforeLast` 메서드는 문자열에서 지정한 값이 마지막으로 등장하기 전까지의 모든 부분을 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -369,7 +369,7 @@ $slice = Str::beforeLast('This is my name', 'is');
 <a name="method-str-between"></a>
 #### `Str::between()`
 
-`Str::between` 메서드는 두 값 사이에 있는 문자열 부분만 반환합니다.
+`Str::between` 메서드는 문자열에서 두 값 사이에 위치한 부분만 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -382,7 +382,7 @@ $slice = Str::between('This is my name', 'This', 'name');
 <a name="method-str-between-first"></a>
 #### `Str::betweenFirst()`
 
-`Str::betweenFirst` 메서드는 두 값 사이에서 가장 짧게 포함되는 문자열 부분(가장 처음 만나는 경우)을 반환합니다.
+`Str::betweenFirst` 메서드는 문자열에서 두 값 사이에 위치한 가장 작은 부분(가장 먼저 만나는 부분)을 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -395,7 +395,7 @@ $slice = Str::betweenFirst('[a] bc [d]', '[', ']');
 <a name="method-camel-case"></a>
 #### `Str::camel()`
 
-`Str::camel` 메서드는 주어진 문자열을 `camelCase` (카멜 케이스) 형식으로 변환합니다.
+`Str::camel` 메서드는 주어진 문자열을 `camelCase` 형식으로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -408,7 +408,7 @@ $converted = Str::camel('foo_bar');
 <a name="method-char-at"></a>
 #### `Str::charAt()`
 
-`Str::charAt` 메서드는 지정한 인덱스 위치의 문자를 반환합니다. 만약 지정한 인덱스가 범위를 벗어나면 `false`를 반환합니다.
+`Str::charAt` 메서드는 특정 인덱스에 위치한 문자를 반환합니다. 만약 인덱스가 범위를 벗어나면 `false`를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -421,7 +421,7 @@ $character = Str::charAt('This is my name.', 6);
 <a name="method-str-chop-start"></a>
 #### `Str::chopStart()`
 
-`Str::chopStart` 메서드는 문자열이 특정 값으로 시작하는 경우, 그 값의 첫 번째 등장만 제거합니다.
+`Str::chopStart` 메서드는 주어진 값이 문자열의 시작에 있을 때에만, 해당 값을 한 번만 제거합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -431,7 +431,7 @@ $url = Str::chopStart('https://laravel.com', 'https://');
 // 'laravel.com'
 ```
 
-두 번째 인자로 배열을 전달할 수도 있습니다. 이 경우 문자열이 배열 내의 값들 중 하나로 시작한다면 해당 값을 제거합니다.
+두 번째 인자로 배열을 전달할 수도 있습니다. 이 경우 문자열이 배열 내의 어떤 값으로 시작하면, 그 값을 문자열에서 앞부분에서 제거합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -444,7 +444,7 @@ $url = Str::chopStart('http://laravel.com', ['https://', 'http://']);
 <a name="method-str-chop-end"></a>
 #### `Str::chopEnd()`
 
-`Str::chopEnd` 메서드는 문자열이 특정 값으로 끝나는 경우, 그 값의 마지막 등장만 제거합니다.
+`Str::chopEnd` 메서드는 주어진 값이 문자열의 끝에 있을 때에만, 해당 값을 한 번만 제거합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -454,7 +454,7 @@ $url = Str::chopEnd('app/Models/Photograph.php', '.php');
 // 'app/Models/Photograph'
 ```
 
-두 번째 인자로 배열을 전달할 수도 있습니다. 이 경우 문자열이 배열 내 값 중 하나로 끝난다면 그 값을 제거합니다.
+두 번째 인자로 배열을 사용할 수도 있습니다. 만약 문자열이 배열 내 어떤 값으로 끝난다면, 그 값을 문자열 끝에서 제거합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -467,7 +467,7 @@ $url = Str::chopEnd('laravel.com/index.php', ['/index.html', '/index.php']);
 <a name="method-str-contains"></a>
 #### `Str::contains()`
 
-`Str::contains` 메서드는 주어진 문자열에 특정 값이 포함되어 있는지 확인합니다. 기본적으로 이 메서드는 대소문자를 구분합니다.
+`Str::contains` 메서드는 주어진 문자열이 특정 값을 포함하는지 확인합니다. 기본적으로 대소문자를 구분합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -477,7 +477,7 @@ $contains = Str::contains('This is my name', 'my');
 // true
 ```
 
-특정 값 목록(배열)을 전달하여, 문자열이 배열 내 값들 중 하나라도 포함하는지 확인할 수도 있습니다.
+여러 값이 포함되어 있는지 확인하고 싶을 때는 배열을 전달할 수 있습니다. 이 경우, 배열 중 하나라도 포함되면 `true`를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -487,7 +487,7 @@ $contains = Str::contains('This is my name', ['my', 'foo']);
 // true
 ```
 
-`ignoreCase` 인자를 `true`로 지정하면 대소문자 구분 없이 비교할 수 있습니다.
+대소문자 구분을 해제하고 싶다면 `ignoreCase` 인수를 `true`로 설정하면 됩니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -500,7 +500,7 @@ $contains = Str::contains('This is my name', 'MY', ignoreCase: true);
 <a name="method-str-contains-all"></a>
 #### `Str::containsAll()`
 
-`Str::containsAll` 메서드는 주어진 문자열이 배열에 있는 모든 값들을 포함하고 있는지 확인합니다.
+`Str::containsAll` 메서드는 주어진 문자열이 배열에 있는 모든 값을 포함하고 있는지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -510,7 +510,7 @@ $containsAll = Str::containsAll('This is my name', ['my', 'name']);
 // true
 ```
 
-`ignoreCase` 인자를 `true`로 지정하면 대소문자 구분 없이 비교할 수 있습니다.
+대소문자 구분 없이 확인하려면 `ignoreCase` 인수를 `true`로 지정하세요.
 
 ```php
 use Illuminate\Support\Str;
@@ -523,7 +523,7 @@ $containsAll = Str::containsAll('This is my name', ['MY', 'NAME'], ignoreCase: t
 <a name="method-str-doesnt-contain"></a>
 #### `Str::doesntContain()`
 
-`Str::doesntContain` 메서드는 주어진 문자열이 특정 값을 포함하지 않는지 확인합니다. 기본적으로 이 메서드는 대소문자를 구분합니다.
+`Str::doesntContain` 메서드는 주어진 문자열이 특정 값을 포함하지 않는지 확인합니다. 기본적으로 대소문자를 구분합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -533,7 +533,7 @@ $doesntContain = Str::doesntContain('This is name', 'my');
 // true
 ```
 
-특정 값 목록(배열)을 전달하여, 문자열이 배열 내 어떤 값도 포함하지 않는지 확인할 수도 있습니다.
+여러 값을 배열로 전달할 수도 있습니다. 이 경우, 배열 내 어느 값도 문자열에 없다면 `true`를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -543,7 +543,7 @@ $doesntContain = Str::doesntContain('This is name', ['my', 'foo']);
 // true
 ```
 
-`ignoreCase` 인자를 `true`로 지정하면 대소문자 구분 없이 비교할 수 있습니다.
+대소문자 구분을 하지 않으려면 `ignoreCase` 인수를 `true`로 전달하세요.
 
 ```php
 use Illuminate\Support\Str;
@@ -556,7 +556,7 @@ $doesntContain = Str::doesntContain('This is name', 'MY', ignoreCase: true);
 <a name="method-deduplicate"></a>
 #### `Str::deduplicate()`
 
-`Str::deduplicate` 메서드는 연달아 반복되는 특정 문자를 하나로 합쳐 제공합니다. 기본적으로는 연속된 공백 문자를 하나의 공백으로 만듭니다.
+`Str::deduplicate` 메서드는 문자열 내에서 연속된 문자를 하나만 남기고 모두 제거합니다. 기본적으로 공백 문자를 deduplicate(중복 제거)합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -566,7 +566,7 @@ $result = Str::deduplicate('The   Laravel   Framework');
 // The Laravel Framework
 ```
 
-두 번째 인자로 중복 제거할 문자를 지정할 수도 있습니다.
+두 번째 인자로 중복 제거할 문자를 직접 지정할 수도 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -576,11 +576,11 @@ $result = Str::deduplicate('The---Laravel---Framework', '-');
 // The-Laravel-Framework
 ```
 
-<a name="method-doesnt-end-with"></a>
+<a name="method-str-doesnt-end-with"></a>
 
 #### `Str::doesntEndWith()`
 
-`Str::doesntEndWith` 메서드는 주어진 문자열이 특정 값으로 끝나지 않는지를 판별합니다.
+`Str::doesntEndWith` 메서드는 지정한 문자열이 주어진 값으로 끝나지 않는지를 판단합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -590,7 +590,7 @@ $result = Str::doesntEndWith('This is my name', 'dog');
 // true
 ```
 
-배열을 전달하면, 주어진 문자열이 배열 내 모든 값으로 끝나지 않을 때 `true`를 반환합니다.
+배열 형태로 여러 값을 전달하여, 문자열이 해당 배열 내 어떤 값으로도 끝나지 않는지를 확인할 수도 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -604,7 +604,7 @@ $result = Str::doesntEndWith('This is my name', ['name', 'foo']);
 // false
 ```
 
-<a name="method-doesnt-start-with"></a>
+<a name="method-str-doesnt-start-with"></a>
 #### `Str::doesntStartWith()`
 
 `Str::doesntStartWith` 메서드는 주어진 문자열이 특정 값으로 시작하지 않는지를 판단합니다.
@@ -617,7 +617,7 @@ $result = Str::doesntStartWith('This is my name', 'That');
 // true
 ```
 
-값의 배열을 전달하면, 문자열이 배열 안의 모든 값으로 시작하지 않을 때 `true`를 반환합니다.
+값들의 배열을 전달하면, 문자열이 해당 배열의 어떤 값으로도 시작하지 않으면 `true`를 반환합니다.
 
 ```php
 $result = Str::doesntStartWith('This is my name', ['This', 'That', 'There']);
@@ -628,7 +628,7 @@ $result = Str::doesntStartWith('This is my name', ['This', 'That', 'There']);
 <a name="method-ends-with"></a>
 #### `Str::endsWith()`
 
-`Str::endsWith` 메서드는 주어진 문자열이 특정 값으로 끝나는지 확인합니다.
+`Str::endsWith` 메서드는 주어진 문자열이 특정 값으로 끝나는지를 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -638,7 +638,7 @@ $result = Str::endsWith('This is my name', 'name');
 // true
 ```
 
-배열을 전달하면, 해당 문자열이 배열 내의 값 중 하나로 끝나면 `true`를 반환합니다.
+여러 값이 담긴 배열을 전달하여, 문자열이 그 중 하나라도 값으로 끝나는지 확인할 수도 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -655,7 +655,7 @@ $result = Str::endsWith('This is my name', ['this', 'foo']);
 <a name="method-excerpt"></a>
 #### `Str::excerpt()`
 
-`Str::excerpt` 메서드는 주어진 문자열에서 특정 구문과 처음으로 일치하는 부분을 중심으로 발췌한 결과를 반환합니다.
+`Str::excerpt` 메서드는 주어진 문자열에서 특정 키워드가 처음 나타나는 부분을 중심으로 발췌(요약)한 문자열을 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -667,9 +667,9 @@ $excerpt = Str::excerpt('This is my name', 'my', [
 // '...is my na...'
 ```
 
-옵션 중 `radius`(기본값 100)를 설정하면, 발췌된 문자열의 양쪽에 몇 글자를 포함할지 지정할 수 있습니다.
+`radius` 옵션은 기본값이 100이며, 발췌 문자열의 양쪽에 표시할 문자 개수를 지정합니다.
 
-추가로, `omission` 옵션을 통해 발췌된 문자열 앞뒤에 붙는 텍스트를 정의할 수 있습니다.
+또한, `omission` 옵션을 사용하면 생략 부분 앞뒤에 붙일 문자열을 지정할 수 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -685,7 +685,7 @@ $excerpt = Str::excerpt('This is my name', 'name', [
 <a name="method-str-finish"></a>
 #### `Str::finish()`
 
-`Str::finish` 메서드는 주어진 문자열이 특정 값으로 끝나지 않으면, 해당 값을 한 번만 덧붙여 반환합니다.
+`Str::finish` 메서드는 지정한 값으로 문자열이 끝나지 않으면, 해당 값을 문자열 끝에 한 번만 추가합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -715,7 +715,7 @@ $decoded = Str::fromBase64('TGFyYXZlbA==');
 <a name="method-str-headline"></a>
 #### `Str::headline()`
 
-`Str::headline` 메서드는 대소문자 표기법, 하이픈(-), 언더스코어(_)로 구분된 문자열을 공백으로 구분된 각 단어의 첫 글자를 대문자로 변환합니다.
+`Str::headline` 메서드는 대소문자, 하이픈(-), 언더스코어(_) 등으로 구분된 문자열을 각 단어의 첫 글자가 대문자인 공백 구분 문자열로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -732,7 +732,7 @@ $headline = Str::headline('EmailNotificationSent');
 <a name="method-str-inline-markdown"></a>
 #### `Str::inlineMarkdown()`
 
-`Str::inlineMarkdown` 메서드는 [CommonMark](https://commonmark.thephpleague.com/)를 사용하여 GitHub 스타일의 마크다운을 인라인 HTML로 변환합니다. 단, `markdown` 메서드와 달리 모든 HTML을 블록 레벨 요소로 감싸지 않습니다.
+`Str::inlineMarkdown` 메서드는 GitHub 스타일의 마크다운(Markdown)을 [CommonMark](https://commonmark.thephpleague.com/)를 이용해 인라인 HTML로 변환합니다. 단, `markdown` 메서드와는 달리, 변환되는 모든 HTML이 블록 레벨 요소로 감싸지지 않습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -744,7 +744,7 @@ $html = Str::inlineMarkdown('**Laravel**');
 
 #### 마크다운 보안
 
-기본적으로 마크다운은 Raw HTML을 지원하므로, 원본 사용자 입력을 사용할 경우 교차 사이트 스크립팅(XSS)에 취약해질 수 있습니다. [CommonMark 보안 문서](https://commonmark.thephpleague.com/security/)에 따라, `html_input` 옵션을 통해 HTML을 이스케이프하거나 제거할 수 있고, `allow_unsafe_links` 옵션으로 위험한 링크 허용 여부를 지정할 수 있습니다. 일부 Raw HTML만 허용해야 하는 경우, 변환 후 HTML Purifier를 거치는 것이 좋습니다.
+기본적으로 마크다운은 원시 HTML을 지원하므로, 사용자의 입력값을 그대로 사용할 경우 XSS(교차 사이트 스크립팅) 취약점이 노출될 수 있습니다. [CommonMark 보안 문서](https://commonmark.thephpleague.com/security/)에 따르면, `html_input` 옵션을 이용해 원시 HTML을 escape(이스케이프) 하거나 strip(제거)할 수 있고, `allow_unsafe_links` 옵션을 사용해 안전하지 않은 링크 허용 여부도 지정할 수 있습니다. 일부 원시 HTML을 허용해야 하는 경우, 변환된 마크다운 결과를 반드시 HTML Purifier와 같은 도구로 추가 정제하시기 바랍니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -760,7 +760,7 @@ Str::inlineMarkdown('Inject: <script>alert("Hello XSS!");</script>', [
 <a name="method-str-is"></a>
 #### `Str::is()`
 
-`Str::is` 메서드는 지정된 문자열이 주어진 패턴과 일치하는지 판별합니다. 와일드카드로 별표(*)를 사용할 수 있습니다.
+`Str::is` 메서드는 주어진 문자열이 지정한 패턴과 일치하는지를 판단합니다. 이때 패턴에는 별표(*)를 와일드카드로 사용할 수 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -774,7 +774,7 @@ $matches = Str::is('baz*', 'foobar');
 // false
 ```
 
-`ignoreCase` 인수를 `true`로 설정하면 대소문자를 구분하지 않고 비교할 수 있습니다.
+대소문자 구분을 비활성화하려면 `ignoreCase` 인수를 `true`로 지정하면 됩니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -787,7 +787,7 @@ $matches = Str::is('*.jpg', 'photo.JPG', ignoreCase: true);
 <a name="method-str-is-ascii"></a>
 #### `Str::isAscii()`
 
-`Str::isAscii` 메서드는 주어진 문자열이 7비트 ASCII 문자열인지 여부를 판별합니다.
+`Str::isAscii` 메서드는 주어진 문자열이 7비트 ASCII 문자로만 구성되어 있는지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -804,7 +804,7 @@ $isAscii = Str::isAscii('ü');
 <a name="method-str-is-json"></a>
 #### `Str::isJson()`
 
-`Str::isJson` 메서드는 주어진 문자열이 유효한 JSON 포맷인지 판별합니다.
+`Str::isJson` 메서드는 주어진 문자열이 올바른 JSON 형식인지를 판별합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -825,7 +825,7 @@ $result = Str::isJson('{first: "John", last: "Doe"}');
 <a name="method-str-is-url"></a>
 #### `Str::isUrl()`
 
-`Str::isUrl` 메서드는 주어진 문자열이 올바른 URL 형식인지 판별합니다.
+`Str::isUrl` 메서드는 주어진 문자열이 유효한 URL인지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -839,7 +839,7 @@ $isUrl = Str::isUrl('laravel');
 // false
 ```
 
-`isUrl` 메서드는 다양한 프로토콜을 유효한 것으로 간주합니다. 특정 프로토콜만 허용하려면, `isUrl` 메서드에 허용할 프로토콜 목록을 전달할 수 있습니다.
+`isUrl` 메서드는 다양한 종류의 프로토콜을 유효한 것으로 판단합니다. 하지만, 특정 프로토콜만 허용하려면 원하는 프로토콜 목록을 `isUrl` 메서드에 인수로 넘기면 됩니다.
 
 ```php
 $isUrl = Str::isUrl('http://example.com', ['http', 'https']);
@@ -848,7 +848,7 @@ $isUrl = Str::isUrl('http://example.com', ['http', 'https']);
 <a name="method-str-is-ulid"></a>
 #### `Str::isUlid()`
 
-`Str::isUlid` 메서드는 주어진 문자열이 올바른 ULID 형식인지 확인합니다.
+`Str::isUlid` 메서드는 주어진 문자열이 올바른 ULID 형식인지 판별합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -865,7 +865,7 @@ $isUlid = Str::isUlid('laravel');
 <a name="method-str-is-uuid"></a>
 #### `Str::isUuid()`
 
-`Str::isUuid` 메서드는 주어진 문자열이 올바른 UUID 형식인지 확인합니다.
+`Str::isUuid` 메서드는 주어진 문자열이 유효한 UUID인지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -882,7 +882,7 @@ $isUuid = Str::isUuid('laravel');
 <a name="method-kebab-case"></a>
 #### `Str::kebab()`
 
-`Str::kebab` 메서드는 주어진 문자열을 `kebab-case`(케밥 케이스)로 변환합니다.
+`Str::kebab` 메서드는 주어진 문자열을 `kebab-case` 형식으로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -895,7 +895,7 @@ $converted = Str::kebab('fooBar');
 <a name="method-str-lcfirst"></a>
 #### `Str::lcfirst()`
 
-`Str::lcfirst` 메서드는 주어진 문자열의 첫 글자를 소문자로 변환해 반환합니다.
+`Str::lcfirst` 메서드는 주어진 문자열의 첫 글자를 소문자로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -908,7 +908,7 @@ $string = Str::lcfirst('Foo Bar');
 <a name="method-str-length"></a>
 #### `Str::length()`
 
-`Str::length` 메서드는 주어진 문자열의 길이를 반환합니다.
+`Str::length` 메서드는 주어진 문자열의 길이(문자 개수)를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -921,7 +921,7 @@ $length = Str::length('Laravel');
 <a name="method-str-limit"></a>
 #### `Str::limit()`
 
-`Str::limit` 메서드는 주어진 문자열을 지정한 길이만큼만 잘라 반환합니다.
+`Str::limit` 메서드는 주어진 문자열을 지정한 길이만큼 잘라서 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -931,7 +931,7 @@ $truncated = Str::limit('The quick brown fox jumps over the lazy dog', 20);
 // The quick brown fox...
 ```
 
-세 번째 인자를 전달하여, 잘린 문자열 뒤에 붙는 텍스트를 변경할 수 있습니다.
+생략 부호로 사용할 문자열을 세 번째 인수로 전달할 수도 있습니다.
 
 ```php
 $truncated = Str::limit('The quick brown fox jumps over the lazy dog', 20, ' (...)');
@@ -939,7 +939,7 @@ $truncated = Str::limit('The quick brown fox jumps over the lazy dog', 20, ' (..
 // The quick brown fox (...)
 ```
 
-문자열을 자를 때 단어 단위로 잘라내길 원한다면 `preserveWords` 인자를 `true`로 지정하세요. 이때는 가장 가까운 단어 경계에서 끊어서 반환합니다.
+잘린 문자열이 단어의 중간에서 끊기는 것을 방지하고 싶다면 `preserveWords` 인수를 활용하세요. 이 값을 `true`로 지정하면, 가장 가까운 단어 경계에서 문자열이 잘립니다.
 
 ```php
 $truncated = Str::limit('The quick brown fox', 12, preserveWords: true);
@@ -963,7 +963,7 @@ $converted = Str::lower('LARAVEL');
 <a name="method-str-markdown"></a>
 #### `Str::markdown()`
 
-`Str::markdown` 메서드는 [CommonMark](https://commonmark.thephpleague.com/)를 사용하여 GitHub 스타일의 마크다운을 HTML로 변환합니다.
+`Str::markdown` 메서드는 GitHub 스타일의 마크다운(Markdown)을 [CommonMark](https://commonmark.thephpleague.com/)를 사용해 HTML로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -981,7 +981,7 @@ $html = Str::markdown('# Taylor <b>Otwell</b>', [
 
 #### 마크다운 보안
 
-기본적으로 마크다운은 Raw HTML을 지원하므로, 원본 사용자 입력을 사용할 경우 교차 사이트 스크립팅(XSS)에 취약해질 수 있습니다. [CommonMark 보안 문서](https://commonmark.thephpleague.com/security/)에 따라, `html_input` 옵션을 통해 HTML을 이스케이프하거나 제거할 수 있고, `allow_unsafe_links` 옵션으로 위험한 링크 허용 여부를 지정할 수 있습니다. 일부 Raw HTML만 허용해야 하는 경우, 변환 후 HTML Purifier를 거치는 것이 좋습니다.
+기본적으로 마크다운은 원시 HTML을 지원하므로, 사용자의 입력값을 그대로 사용할 경우 XSS(교차 사이트 스크립팅) 취약점이 노출될 수 있습니다. [CommonMark 보안 문서](https://commonmark.thephpleague.com/security/)에 따르면, `html_input` 옵션을 이용해 원시 HTML을 escape(이스케이프) 하거나 strip(제거)할 수 있고, `allow_unsafe_links` 옵션을 사용해 안전하지 않은 링크 허용 여부도 지정할 수 있습니다. 일부 원시 HTML을 허용해야 하는 경우, 변환된 마크다운 결과를 반드시 HTML Purifier와 같은 도구로 추가 정제하시기 바랍니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -997,7 +997,7 @@ Str::markdown('Inject: <script>alert("Hello XSS!");</script>', [
 <a name="method-str-mask"></a>
 #### `Str::mask()`
 
-`Str::mask` 메서드는 문자열의 일부를 지정한 문자로 반복 마스킹하여 이메일 주소, 전화번호 등 일부 정보를 가릴 때 사용할 수 있습니다.
+`Str::mask` 메서드는 문자열의 일부분을 지정한 문자로 반복 마스킹하여, 이메일, 전화번호 등 민감한 정보의 일부를 숨기는 데 활용할 수 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1007,7 +1007,7 @@ $string = Str::mask('taylor@example.com', '*', 3);
 // tay***************
 ```
 
-원한다면, 세 번째 인자에 음수 값을 지정하여 문자열 끝에서부터 마스킹을 시작하도록 할 수 있습니다.
+세 번째 인수(마스킹 시작 위치)에 음수를 전달하면, 문자열 끝에서부터 특정 위치에서 마스킹을 시작할 수 있습니다.
 
 ```php
 $string = Str::mask('taylor@example.com', '*', -15, 3);
@@ -1018,7 +1018,7 @@ $string = Str::mask('taylor@example.com', '*', -15, 3);
 <a name="method-str-match"></a>
 #### `Str::match()`
 
-`Str::match` 메서드는 주어진 정규식 패턴에 매칭되는 문자열의 일부를 반환합니다.
+`Str::match` 메서드는 주어진 정규 표현식 패턴에 일치하는 문자열의 일부를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1035,7 +1035,7 @@ $result = Str::match('/foo (.*)/', 'foo bar');
 <a name="method-str-match-all"></a>
 #### `Str::matchAll()`
 
-`Str::matchAll` 메서드는 주어진 정규식 패턴과 일치하는 문자열의 모든 부분을 컬렉션 형태로 반환합니다.
+`Str::matchAll` 메서드는 주어진 정규 표현식 패턴에 일치하는 모든 부분 문자열을 컬렉션 형태로 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1045,7 +1045,7 @@ $result = Str::matchAll('/bar/', 'bar foo bar');
 // collect(['bar', 'bar'])
 ```
 
-정규식에서 매칭 그룹을 지정하면, 첫 번째 그룹에 해당하는 모든 결과를 컬렉션으로 반환합니다.
+정규식에 그룹이 있다면, 일치하는 그룹의 첫 번째 값들로 구성된 컬렉션을 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1055,12 +1055,12 @@ $result = Str::matchAll('/f(\w*)/', 'bar fun bar fly');
 // collect(['un', 'ly']);
 ```
 
-일치하는 결과가 없으면, 빈 컬렉션이 반환됩니다.
+일치 항목이 없으면 빈 컬렉션이 반환됩니다.
 
 <a name="method-str-ordered-uuid"></a>
 #### `Str::orderedUuid()`
 
-`Str::orderedUuid` 메서드는 "타임스탬프 우선" UUID를 생성합니다. 이 값은 인덱싱된 데이터베이스 컬럼에 효율적으로 저장할 수 있습니다. 이 메서드를 통해 생성된 각각의 UUID는 이전에 생성된 UUID들보다 정렬상 뒤에 오게 됩니다.
+`Str::orderedUuid` 메서드는 "타임스탬프가 앞에 오는" UUID를 생성합니다. 이 UUID는 인덱싱된 데이터베이스 컬럼에 효율적으로 저장할 수 있습니다. 이 메서드로 생성된 UUID는 이전에 생성된 UUID보다 항상 뒤에 위치하게(정렬되게) 됩니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1071,7 +1071,7 @@ return (string) Str::orderedUuid();
 <a name="method-str-padboth"></a>
 #### `Str::padBoth()`
 
-`Str::padBoth` 메서드는 PHP의 `str_pad` 함수를 감싸며, 문자열의 양쪽을 지정한 문자열로 채워 지정한 최종 길이에 맞춥니다.
+`Str::padBoth` 메서드는 PHP의 `str_pad` 함수와 동일하게 동작하며, 원하는 길이가 될 때까지 문자열 양쪽을 특정 문자열로 패딩 채웁니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1088,7 +1088,7 @@ $padded = Str::padBoth('James', 10);
 <a name="method-str-padleft"></a>
 #### `Str::padLeft()`
 
-`Str::padLeft` 메서드는 PHP의 `str_pad` 함수를 감싸며, 왼쪽에 지정한 문자열을 붙여 원하는 최종 길이가 될 때까지 채웁니다.
+`Str::padLeft` 메서드는 PHP의 `str_pad` 함수와 동일하게, 문자열의 왼쪽을 원하는 길이만큼 특정 문자열로 패딩 채웁니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1105,7 +1105,7 @@ $padded = Str::padLeft('James', 10);
 <a name="method-str-padright"></a>
 #### `Str::padRight()`
 
-`Str::padRight` 메서드는 PHP의 `str_pad` 함수를 감싸며, 오른쪽에 지정한 문자열을 붙여 원하는 최종 길이가 될 때까지 채웁니다.
+`Str::padRight` 메서드는 PHP의 `str_pad` 함수와 동일하게, 문자열의 오른쪽을 원하는 길이만큼 특정 문자열로 패딩 채웁니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1122,7 +1122,7 @@ $padded = Str::padRight('James', 10);
 <a name="method-str-password"></a>
 #### `Str::password()`
 
-`Str::password` 메서드는 지정한 길이의 안전한 랜덤 비밀번호를 생성합니다. 비밀번호는 영문자, 숫자, 기호, 공백이 혼합되어 생성됩니다. 기본 비밀번호 길이는 32자입니다.
+`Str::password` 메서드는 주어진 길이로 보안성이 강한 임의의 비밀번호를 생성합니다. 이 비밀번호는 영문자, 숫자, 기호, 공백 등을 다양하게 조합해 만들어집니다. 기본 생성 길이는 32자입니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1139,7 +1139,7 @@ $password = Str::password(12);
 <a name="method-str-plural"></a>
 #### `Str::plural()`
 
-`Str::plural` 메서드는 주어진 단어의 단수형을 복수형으로 변환합니다. 이 함수는 [라라벨의 복수형 엔진이 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)를 지원합니다.
+`Str::plural` 메서드는 단수 단어를 복수형으로 변환합니다. 이 함수는 [라라벨의 복수화 지원 언어](/docs/12.x/localization#pluralization-language) 모두를 지원합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1153,7 +1153,7 @@ $plural = Str::plural('child');
 // children
 ```
 
-정수형 두 번째 인자를 추가로 전달하면, 값에 따라 단수 또는 복수형으로 반환합니다.
+두 번째 인수로 정수를 전달하면, 해당 숫자에 맞는 단수/복수 형태의 문자열을 얻을 수 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1171,7 +1171,7 @@ $singular = Str::plural('child', 1);
 
 #### `Str::pluralStudly()`
 
-`Str::pluralStudly` 메서드는 스터들리 케이스(studly caps case)로 작성된 단수 단어 문자열을 복수 형태로 변환합니다. 이 함수는 [라라벨 복수화 기능이 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)를 지원합니다.
+`Str::pluralStudly` 메서드는 StudlyCaps(대문자 낙타표기법)로 구성된 단수 단어 문자열을 복수형으로 변환합니다. 이 함수는 [라라벨의 복수화 도구가 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)를 지원합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1185,7 +1185,7 @@ $plural = Str::pluralStudly('UserFeedback');
 // UserFeedback
 ```
 
-함수의 두 번째 인수로 정수를 전달하면, 해당 문자열의 단수 또는 복수형을 반환할 수 있습니다.
+두 번째 인수로 정수를 전달하면 문자열의 단수 또는 복수형을 얻을 수 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1202,7 +1202,7 @@ $singular = Str::pluralStudly('VerifiedHuman', 1);
 <a name="method-str-position"></a>
 #### `Str::position()`
 
-`Str::position` 메서드는 문자열 내에서 지정한 부분 문자열이 처음 나타나는 위치(인덱스)를 반환합니다. 만약 지정한 부분 문자열이 존재하지 않으면 `false`를 반환합니다.
+`Str::position` 메서드는 주어진 문자열에서 특정 부분 문자열이 처음 등장하는 위치(인덱스)를 반환합니다. 만약 지정한 부분 문자열이 존재하지 않으면, `false`를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1219,7 +1219,7 @@ $position = Str::position('Hello, World!', 'W');
 <a name="method-str-random"></a>
 #### `Str::random()`
 
-`Str::random` 메서드는 지정한 길이만큼의 임의의 문자열을 생성합니다. 이 함수는 PHP의 `random_bytes` 함수를 사용합니다.
+`Str::random` 메서드는 지정한 길이의 무작위 문자열을 생성합니다. 이 함수는 PHP의 `random_bytes` 함수를 사용합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1227,7 +1227,7 @@ use Illuminate\Support\Str;
 $random = Str::random(40);
 ```
 
-테스트 시에는 `Str::random` 메서드가 반환하는 값을 "가짜" 값으로 고정하고 싶을 때가 있습니다. 이를 위해 `createRandomStringsUsing` 메서드를 사용할 수 있습니다.
+테스트 환경에서는 `Str::random` 메서드가 반환하는 값을 "가짜"로 지정하고 싶을 때가 있습니다. 이럴 때는 `createRandomStringsUsing` 메서드를 사용할 수 있습니다.
 
 ```php
 Str::createRandomStringsUsing(function () {
@@ -1235,7 +1235,7 @@ Str::createRandomStringsUsing(function () {
 });
 ```
 
-다시 원래대로 임의의 문자열을 생성하도록 하려면 `createRandomStringsNormally` 메서드를 호출하면 됩니다.
+다시 무작위 문자열을 정상적으로 생성하도록 하려면, `createRandomStringsNormally` 메서드를 호출합니다.
 
 ```php
 Str::createRandomStringsNormally();
@@ -1244,7 +1244,7 @@ Str::createRandomStringsNormally();
 <a name="method-str-remove"></a>
 #### `Str::remove()`
 
-`Str::remove` 메서드는 문자열에서 지정한 값 또는 값들의 배열을 모두 제거합니다.
+`Str::remove` 메서드는 문자열에서 지정된 값이나 값들의 배열을 삭제합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1256,12 +1256,12 @@ $removed = Str::remove('e', $string);
 // Ptr Pipr pickd a pck of pickld ppprs.
 ```
 
-문자열을 제거할 때 대소문자를 구분하지 않으려면, 세 번째 인수로 `false`를 전달할 수 있습니다.
+세 번째 인수로 `false`를 전달하면 대소문자를 구분하지 않고 문자열을 제거할 수 있습니다.
 
 <a name="method-str-repeat"></a>
 #### `Str::repeat()`
 
-`Str::repeat` 메서드는 주어진 문자열을 반복해서 연결한 결과를 반환합니다.
+`Str::repeat` 메서드는 주어진 문자열을 반복하여 이어 붙입니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1276,7 +1276,7 @@ $repeat = Str::repeat($string, 5);
 <a name="method-str-replace"></a>
 #### `Str::replace()`
 
-`Str::replace` 메서드는 문자열 내에서 특정 문자열을 새로운 문자열로 대체합니다.
+`Str::replace` 메서드는 문자열 내에서 특정 값을 지정한 값으로 교체합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1288,7 +1288,7 @@ $replaced = Str::replace('11.x', '12.x', $string);
 // Laravel 12.x
 ```
 
-`replace` 메서드는 `caseSensitive` 인수도 지원합니다. 기본적으로 `replace`는 대소문자를 구분하여 동작합니다.
+`replace` 메서드는 추가로 `caseSensitive`(대소문자 구분 여부) 인수를 받을 수 있습니다. 기본적으로 `replace` 메서드는 대소문자를 구분합니다.
 
 ```php
 $replaced = Str::replace(
@@ -1304,7 +1304,7 @@ $replaced = Str::replace(
 <a name="method-str-replace-array"></a>
 #### `Str::replaceArray()`
 
-`Str::replaceArray` 메서드는 주어진 문자열에서 특정 값을 배열의 값들로 차례차례 대체합니다.
+`Str::replaceArray` 메서드는 문자열 내의 지정된 값을 배열에 담긴 값들로 순차적으로 교체합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1319,7 +1319,7 @@ $replaced = Str::replaceArray('?', ['8:30', '9:00'], $string);
 <a name="method-str-replace-first"></a>
 #### `Str::replaceFirst()`
 
-`Str::replaceFirst` 메서드는 문자열에서 지정한 값이 처음 나타나는 위치의 값만 새로운 값으로 교체합니다.
+`Str::replaceFirst` 메서드는 문자열 내에서 지정된 값이 처음 등장하는 부분만 교체합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1332,7 +1332,7 @@ $replaced = Str::replaceFirst('the', 'a', 'the quick brown fox jumps over the la
 <a name="method-str-replace-last"></a>
 #### `Str::replaceLast()`
 
-`Str::replaceLast` 메서드는 문자열에서 지정한 값이 마지막으로 나타나는 위치의 값만 새로운 값으로 교체합니다.
+`Str::replaceLast` 메서드는 문자열 내에서 지정된 값이 마지막으로 등장하는 부분만 교체합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1345,7 +1345,7 @@ $replaced = Str::replaceLast('the', 'a', 'the quick brown fox jumps over the laz
 <a name="method-str-replace-matches"></a>
 #### `Str::replaceMatches()`
 
-`Str::replaceMatches` 메서드는 정규식 패턴에 일치하는 문자열 부분 전체를 지정한 문자열로 대체합니다.
+`Str::replaceMatches` 메서드는 패턴과 일치하는 문자열의 모든 부분을 주어진 값으로 교체합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1359,7 +1359,7 @@ $replaced = Str::replaceMatches(
 // '15015551000'
 ```
 
-`replaceMatches` 메서드는 클로저(익명 함수)도 받을 수 있습니다. 패턴에 일치하는 각 부분에 대해 해당 함수가 호출되며, 그 반환값으로 대체됩니다.
+이 메서드는 클로저(익명 함수)를 전달받아, 패턴과 일치하는 각 부분에 대해 이 클로저를 호출하여 교체할 수 있습니다. 클로저에서 반환하는 값으로 실제로 교체가 이루어집니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1374,7 +1374,7 @@ $replaced = Str::replaceMatches('/\d/', function (array $matches) {
 <a name="method-str-replace-start"></a>
 #### `Str::replaceStart()`
 
-`Str::replaceStart` 메서드는 문자열이 지정한 값으로 시작할 때만 첫 번째 등장하는 값만 새로운 값으로 교체합니다.
+`Str::replaceStart` 메서드는 지정한 값이 문자열의 시작에 위치한 경우에만, 그 부분을 교체합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1391,7 +1391,7 @@ $replaced = Str::replaceStart('World', 'Laravel', 'Hello World');
 <a name="method-str-replace-end"></a>
 #### `Str::replaceEnd()`
 
-`Str::replaceEnd` 메서드는 문자열이 지정한 값으로 끝나는 경우에만 마지막에 등장하는 값만 새로운 값으로 교체합니다.
+`Str::replaceEnd` 메서드는 지정한 값이 문자열의 끝에 위치한 경우에만, 그 부분을 교체합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1408,7 +1408,7 @@ $replaced = Str::replaceEnd('Hello', 'Laravel', 'Hello World');
 <a name="method-str-reverse"></a>
 #### `Str::reverse()`
 
-`Str::reverse` 메서드는 주어진 문자열을 뒤집어서 반환합니다.
+`Str::reverse` 메서드는 주어진 문자열의 문자를 역순으로 뒤집어 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1421,7 +1421,7 @@ $reversed = Str::reverse('Hello World');
 <a name="method-str-singular"></a>
 #### `Str::singular()`
 
-`Str::singular` 메서드는 문자열을 단수형으로 변환합니다. 이 함수는 [라라벨 복수화 기능이 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)를 지원합니다.
+`Str::singular` 메서드는 문자열을 단수형으로 변환합니다. 이 함수는 [라라벨의 복수화 도구가 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)를 지원합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1438,7 +1438,7 @@ $singular = Str::singular('children');
 <a name="method-str-slug"></a>
 #### `Str::slug()`
 
-`Str::slug` 메서드는 주어진 문자열을 URL에 적합한 "슬러그(slug)"로 변환합니다.
+`Str::slug` 메서드는 주어진 문자열을 URL에 사용할 수 있는 "슬러그(slug)"로 변환해 줍니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1451,7 +1451,7 @@ $slug = Str::slug('Laravel 5 Framework', '-');
 <a name="method-snake-case"></a>
 #### `Str::snake()`
 
-`Str::snake` 메서드는 주어진 문자열을 `snake_case`로 변환합니다.
+`Str::snake` 메서드는 문자열을 `snake_case` 형식으로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1468,7 +1468,7 @@ $converted = Str::snake('fooBar', '-');
 <a name="method-str-squish"></a>
 #### `Str::squish()`
 
-`Str::squish` 메서드는 문자열 내의 불필요한 공백을 모두 제거합니다. 단어와 단어 사이에 여러 개가 있던 공백도 하나로 줄여줍니다.
+`Str::squish` 메서드는 문자열의 앞뒤와 단어 사이의 불필요한 공백까지 모두 제거하여 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1481,7 +1481,7 @@ $string = Str::squish('    laravel    framework    ');
 <a name="method-str-start"></a>
 #### `Str::start()`
 
-`Str::start` 메서드는 문자열이 지정한 값으로 시작하지 않을 경우, 해당 값 하나만 문자열의 앞에 붙여줍니다.
+`Str::start` 메서드는 만약 문자열이 해당 값으로 시작하지 않는 경우, 앞에 한 번만 해당 값을 붙입니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1498,7 +1498,7 @@ $adjusted = Str::start('/this/string', '/');
 <a name="method-starts-with"></a>
 #### `Str::startsWith()`
 
-`Str::startsWith` 메서드는 문자열이 지정된 값으로 시작하는지 확인합니다.
+`Str::startsWith` 메서드는 주어진 문자열이 특정 값으로 시작하는지 여부를 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1508,7 +1508,7 @@ $result = Str::startsWith('This is my name', 'This');
 // true
 ```
 
-값의 배열을 전달하면, 전달된 값들 중 하나라도 문자열의 시작과 일치하면 `true`를 반환합니다.
+여러 값이 담긴 배열을 전달하면, 그 중 어느 값으로 시작해도 `true`를 반환합니다.
 
 ```php
 $result = Str::startsWith('This is my name', ['This', 'That', 'There']);
@@ -1519,7 +1519,7 @@ $result = Str::startsWith('This is my name', ['This', 'That', 'There']);
 <a name="method-studly-case"></a>
 #### `Str::studly()`
 
-`Str::studly` 메서드는 주어진 문자열을 `StudlyCase` 형태로 변환합니다.
+`Str::studly` 메서드는 주어진 문자열을 `StudlyCase`(각 단어의 첫 글자가 대문자인 방식)로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1532,7 +1532,7 @@ $converted = Str::studly('foo_bar');
 <a name="method-str-substr"></a>
 #### `Str::substr()`
 
-`Str::substr` 메서드는 문자열에서 시작 위치와 길이(옵션)에 따라 일부만 잘라서 반환합니다.
+`Str::substr` 메서드는 시작 위치 및 길이 값을 기준으로 문자열의 일부분을 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1545,7 +1545,7 @@ $converted = Str::substr('The Laravel Framework', 4, 7);
 <a name="method-str-substrcount"></a>
 #### `Str::substrCount()`
 
-`Str::substrCount` 메서드는 주어진 문자열 내에서 지정한 값이 몇 번 등장하는지 횟수를 반환합니다.
+`Str::substrCount` 메서드는 주어진 문자열 내에 부분 문자열이 몇 번 등장하는지를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1558,7 +1558,7 @@ $count = Str::substrCount('If you like ice cream, you will like snow cones.', 'l
 <a name="method-str-substrreplace"></a>
 #### `Str::substrReplace()`
 
-`Str::substrReplace` 메서드는 지정한 시작 위치부터 네 번째 인수만큼 기존 문자열을 대체하거나, 네 번째 인수에 `0`을 전달하면 기존 문자를 지우지 않고 해당 위치에 새로운 문자열을 삽입합니다.
+`Str::substrReplace` 메서드는 문자열의 특정 부분(시작 위치와 길이로 지목한 부분)에 새 텍스트를 넣어 교체합니다. 네 번째 인수로 `0`을 전달하면, 기존 문자열을 아무 것도 지우지 않고 해당 위치에 문자열을 삽입할 수 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1573,7 +1573,7 @@ $result = Str::substrReplace('1300', ':', 2, 0);
 <a name="method-str-swap"></a>
 #### `Str::swap()`
 
-`Str::swap` 메서드는 PHP의 `strtr` 함수를 이용하여 여러 값을 한 번에 다른 값으로 바꿉니다.
+`Str::swap` 메서드는 PHP의 `strtr` 함수를 활용하여, 여러 값을 한 번에 치환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1589,7 +1589,7 @@ $string = Str::swap([
 <a name="method-take"></a>
 #### `Str::take()`
 
-`Str::take` 메서드는 문자열의 맨 처음부터 지정한 개수만큼의 문자를 반환합니다.
+`Str::take` 메서드는 문자열의 시작 부분에서 지정한 글자수만큼 잘라서 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1602,7 +1602,7 @@ $taken = Str::take('Build something amazing!', 5);
 <a name="method-title-case"></a>
 #### `Str::title()`
 
-`Str::title` 메서드는 주어진 문자열을 각 단어의 첫 글자가 대문자인 Title Case 형태로 변환합니다.
+`Str::title` 메서드는 주어진 문자열을 제목형(`Title Case`), 즉 각 단어의 첫 글자만 대문자인 형태로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1615,7 +1615,7 @@ $converted = Str::title('a nice title uses the correct case');
 <a name="method-str-to-base64"></a>
 #### `Str::toBase64()`
 
-`Str::toBase64` 메서드는 주어진 문자열을 Base64로 인코딩합니다.
+`Str::toBase64` 메서드는 주어진 문자열을 Base64 형식으로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1628,7 +1628,7 @@ $base64 = Str::toBase64('Laravel');
 <a name="method-str-transliterate"></a>
 #### `Str::transliterate()`
 
-`Str::transliterate` 메서드는 주어진 문자열을 가능한 한 가까운 ASCII 문자열로 변환하려고 시도합니다.
+`Str::transliterate` 메서드는 주어진 문자열을 가장 가까운 ASCII 표현(영문, 숫자 등)으로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1641,7 +1641,7 @@ $email = Str::transliterate('ⓣⓔⓢⓣ@ⓛⓐⓡⓐⓥⓔⓛ.ⓒⓞⓜ');
 <a name="method-str-trim"></a>
 #### `Str::trim()`
 
-`Str::trim` 메서드는 문자열 앞뒤의 공백(또는 지정한 문자들)을 제거합니다. PHP의 기본 `trim` 함수와 달리, `Str::trim`은 유니코드 공백 문자도 함께 제거합니다.
+`Str::trim` 메서드는 주어진 문자열의 앞뒤에서 공백(또는 지정된 문자)을 제거합니다. PHP 기본 `trim` 함수와 달리, 이 메서드는 유니코드 공백 문자도 함께 제거해줍니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1654,7 +1654,7 @@ $string = Str::trim(' foo bar ');
 <a name="method-str-ltrim"></a>
 #### `Str::ltrim()`
 
-`Str::ltrim` 메서드는 문자열 앞부분의 공백(또는 지정한 문자들)을 제거합니다. PHP의 기본 `ltrim` 함수와 달리, `Str::ltrim`은 유니코드 공백 문자도 함께 제거합니다.
+`Str::ltrim` 메서드는 문자열의 앞쪽(왼쪽)에서 공백(또는 지정된 문자)을 제거합니다. PHP 기본 `ltrim`과 달리, 유니코드 공백도 제거합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1667,7 +1667,7 @@ $string = Str::ltrim('  foo bar  ');
 <a name="method-str-rtrim"></a>
 #### `Str::rtrim()`
 
-`Str::rtrim` 메서드는 문자열 끝부분의 공백(또는 지정한 문자들)을 제거합니다. PHP의 기본 `rtrim` 함수와 달리, `Str::rtrim`은 유니코드 공백 문자도 함께 제거합니다.
+`Str::rtrim` 메서드는 문자열의 끝(오른쪽)에서 공백(또는 지정된 문자)을 제거합니다. PHP 기본 `rtrim`과 다르게, 유니코드 공백도 같이 제거합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1680,7 +1680,7 @@ $string = Str::rtrim('  foo bar  ');
 <a name="method-str-ucfirst"></a>
 #### `Str::ucfirst()`
 
-`Str::ucfirst` 메서드는 문자열의 첫 글자를 대문자로 변환하여 반환합니다.
+`Str::ucfirst` 메서드는 주어진 문자열의 첫 글자를 대문자로 변환하여 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1693,7 +1693,7 @@ $string = Str::ucfirst('foo bar');
 <a name="method-str-ucsplit"></a>
 #### `Str::ucsplit()`
 
-`Str::ucsplit` 메서드는 대문자를 기준으로 주어진 문자열을 배열로 분할합니다.
+`Str::ucsplit` 메서드는 대문자를 기준으로 문자열을 분할하여 배열로 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1706,7 +1706,7 @@ $segments = Str::ucsplit('FooBar');
 <a name="method-str-upper"></a>
 #### `Str::upper()`
 
-`Str::upper` 메서드는 문자열 전체를 대문자로 변환합니다.
+`Str::upper` 메서드는 주어진 문자열을 모두 대문자로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1719,7 +1719,7 @@ $string = Str::upper('laravel');
 <a name="method-str-ulid"></a>
 #### `Str::ulid()`
 
-`Str::ulid` 메서드는 ULID(Compact, 시간순 정렬이 가능한 고유 식별자)를 생성합니다.
+`Str::ulid` 메서드는 ULID(unique, lexicographically-sortable 식별자)를 생성합니다. ULID는 시간 기반 정렬이 가능한 고유 식별자입니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -1729,7 +1729,7 @@ return (string) Str::ulid();
 // 01gd6r360bp37zj17nxb55yv40
 ```
 
-지정한 ULID가 생성된 날짜와 시간을 나타내는 `Illuminate\Support\Carbon` 날짜 인스턴스를 얻고 싶다면, 라라벨의 Carbon 통합에서 제공하는 `createFromId` 메서드를 사용할 수 있습니다.
+특정 ULID가 생성된 날짜와 시간을 표현하는 `Illuminate\Support\Carbon` 날짜 인스턴스를 얻으려면, 라라벨 Carbon 통합에서 제공하는 `createFromId` 메서드를 사용할 수 있습니다.
 
 ```php
 use Illuminate\Support\Carbon;
@@ -1738,7 +1738,7 @@ use Illuminate\Support\Str;
 $date = Carbon::createFromId((string) Str::ulid());
 ```
 
-테스트 시에는 `Str::ulid` 메서드가 반환하는 값을 "가짜"로 고정하고 싶을 때가 있습니다. 이를 위해 `createUlidsUsing` 메서드를 사용할 수 있습니다.
+테스트 환경에서 `Str::ulid` 메서드의 반환값을 임의로 지정하려면, `createUlidsUsing` 메서드를 사용할 수 있습니다.
 
 ```php
 use Symfony\Component\Uid\Ulid;
@@ -1748,7 +1748,7 @@ Str::createUlidsUsing(function () {
 });
 ```
 
-다시 ULID가 정상적으로 생성되도록 하려면 `createUlidsNormally` 메서드를 호출하면 됩니다.
+다시 ULID를 정상적으로 생성하게 하려면 `createUlidsNormally` 메서드를 호출하면 됩니다.
 
 ```php
 Str::createUlidsNormally();
@@ -1758,7 +1758,7 @@ Str::createUlidsNormally();
 
 #### `Str::unwrap()`
 
-`Str::unwrap` 메서드는 지정한 문자열이 주어진 문자열의 시작과 끝에 있으면 해당 문자열을 제거합니다.
+`Str::unwrap` 메서드는 지정한 문자열이 주어진 문자열의 앞과 뒤에 있을 경우, 이를 제거합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1775,7 +1775,7 @@ Str::unwrap('{framework: "Laravel"}', '{', '}');
 <a name="method-str-uuid"></a>
 #### `Str::uuid()`
 
-`Str::uuid` 메서드는 UUID(버전 4)를 생성합니다.
+`Str::uuid` 메서드는 UUID(버전 4)를 생성합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1783,7 +1783,7 @@ use Illuminate\Support\Str;
 return (string) Str::uuid();
 ```
 
-테스트 시, `Str::uuid` 메서드가 반환하는 값을 임의로 지정해서 사용할 수도 있습니다. 이를 위해 `createUuidsUsing` 메서드를 사용할 수 있습니다.
+테스트 중에는 `Str::uuid` 메서드가 반환하는 값을 임의로 지정할 수 있으면 편리합니다. 이를 위해 `createUuidsUsing` 메서드를 사용할 수 있습니다:
 
 ```php
 use Ramsey\Uuid\Uuid;
@@ -1793,7 +1793,7 @@ Str::createUuidsUsing(function () {
 });
 ```
 
-다시 원래처럼 UUID를 자동으로 생성하도록 복원하려면 `createUuidsNormally` 메서드를 호출하면 됩니다.
+UUID 생성을 다시 기본 방식으로 돌리고 싶다면 `createUuidsNormally` 메서드를 호출하면 됩니다:
 
 ```php
 Str::createUuidsNormally();
@@ -1802,7 +1802,7 @@ Str::createUuidsNormally();
 <a name="method-str-uuid7"></a>
 #### `Str::uuid7()`
 
-`Str::uuid7` 메서드는 UUID(버전 7)를 생성합니다.
+`Str::uuid7` 메서드는 UUID(버전 7)를 생성합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1810,7 +1810,7 @@ use Illuminate\Support\Str;
 return (string) Str::uuid7();
 ```
 
-생성 시, `DateTimeInterface` 객체를 선택적으로 전달하여 정렬된(ordered) UUID를 만들 수 있습니다.
+정렬된(ordered) UUID를 생성할 때, 선택적으로 `DateTimeInterface` 인스턴스를 인자로 전달할 수 있습니다:
 
 ```php
 return (string) Str::uuid7(time: now());
@@ -1819,7 +1819,7 @@ return (string) Str::uuid7(time: now());
 <a name="method-str-word-count"></a>
 #### `Str::wordCount()`
 
-`Str::wordCount` 메서드는 문자열에 포함된 단어의 개수를 반환합니다.
+`Str::wordCount` 메서드는 문자열에 포함된 단어의 개수를 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1830,7 +1830,7 @@ Str::wordCount('Hello, world!'); // 2
 <a name="method-str-word-wrap"></a>
 #### `Str::wordWrap()`
 
-`Str::wordWrap` 메서드는 지정한 글자 수 단위로 문자열을 줄바꿈 처리합니다.
+`Str::wordWrap` 메서드는 문자열을 지정한 글자 수마다 줄바꿈해 줍니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1849,7 +1849,7 @@ dog.
 <a name="method-str-words"></a>
 #### `Str::words()`
 
-`Str::words` 메서드는 문자열의 단어 개수를 제한합니다. 이때, 세 번째 인자로 문자열을 전달하면 잘린 문자열 뒤에 해당 문자열을 덧붙입니다.
+`Str::words` 메서드는 문자열의 단어 개수를 제한합니다. 이때 세 번째 인자에 추가 문자열을 전달해 잘린 부분 뒤에 붙이도록 할 수 있습니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1862,7 +1862,7 @@ return Str::words('Perfectly balanced, as all things should be.', 3, ' >>>');
 <a name="method-str-wrap"></a>
 #### `Str::wrap()`
 
-`Str::wrap` 메서드는 지정한 문자열(또는 문자열 쌍)로 주어진 문자열을 감쌉니다.
+`Str::wrap` 메서드는 주어진 문자열을 지정한 문자열 또는 문자열 쌍으로 감쌉니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1879,7 +1879,7 @@ Str::wrap('is', before: 'This ', after: ' Laravel!');
 <a name="method-str"></a>
 #### `str()`
 
-`str` 함수는 주어진 문자열을 담은 새로운 `Illuminate\Support\Stringable` 인스턴스를 반환합니다. 이 함수는 `Str::of` 메서드와 동일합니다.
+`str` 함수는 주어진 문자열로 새로운 `Illuminate\Support\Stringable` 인스턴스를 반환합니다. 이 함수는 `Str::of` 메서드와 동일하게 동작합니다:
 
 ```php
 $string = str('Taylor')->append(' Otwell');
@@ -1887,7 +1887,7 @@ $string = str('Taylor')->append(' Otwell');
 // 'Taylor Otwell'
 ```
 
-만약 인자를 전달하지 않으면, `str` 함수는 `Illuminate\Support\Str`의 인스턴스를 반환합니다.
+만약 `str` 함수에 인수를 전달하지 않으면, `Illuminate\Support\Str` 인스턴스를 반환합니다:
 
 ```php
 $snake = str()->snake('FooBar');
@@ -1898,34 +1898,34 @@ $snake = str()->snake('FooBar');
 <a name="method-trans"></a>
 #### `trans()`
 
-`trans` 함수는 주어진 번역 키를 [언어 파일](/docs/12.x/localization)을 사용해 번역합니다.
+`trans` 함수는 [언어 파일](/docs/12.x/localization)을 사용하여 주어진 번역 키를 번역합니다:
 
 ```php
 echo trans('messages.welcome');
 ```
 
-지정한 번역 키가 존재하지 않을 경우, `trans` 함수는 전달된 키 자체를 반환합니다. 예를 들어, 위에서 `messages.welcome`이라는 키가 존재하지 않으면 해당 문자열이 그대로 반환됩니다.
+만약 지정한 번역 키가 존재하지 않으면, `trans` 함수는 인자로 전달된 키를 그대로 반환합니다. 예시에서, 해당 키가 없다면 `messages.welcome`이 반환됩니다.
 
 <a name="method-trans-choice"></a>
 #### `trans_choice()`
 
-`trans_choice` 함수는 단수/복수형과 같은 상황에 맞게 번역 키를 변환합니다.
+`trans_choice` 함수는 주어진 번역 키를 단수/복수형에 맞게 번역합니다:
 
 ```php
 echo trans_choice('messages.notifications', $unreadCount);
 ```
 
-지정한 번역 키가 존재하지 않을 경우, `trans_choice` 함수도 전달된 키 자체를 반환합니다. 즉, 위에서 `messages.notifications` 키가 없으면 그 문자열을 그대로 반환합니다.
+지정한 번역 키가 존재하지 않을 경우, `trans_choice` 함수는 전달된 키를 그대로 반환합니다. 위 예시에서 만약 해당 키가 없다면 `messages.notifications`가 그대로 반환됩니다.
 
 <a name="fluent-strings"></a>
-## 플루언트 문자열(Fluent Strings)
+## Fluent 문자열(Fluent Strings)
 
-플루언트 문자열은 문자열 값을 다루기 위한 더 읽기 쉽고, 객체 지향적인 인터페이스를 제공합니다. 이를 활용하면 여러 문자열 조작 작업을 메서드 체이닝 방식으로 한 번에 처리할 수 있습니다.
+Fluent 문자열 기능을 이용하면 일반적인 문자열 작업보다 더 읽기 쉽고 체이닝(메서드 연속 호출)이 가능한 객체지향 스타일의 문자열 조작을 할 수 있습니다. 여러 문자열 연산을 순차적으로 연결해 처리할 수 있으므로 가독성이 향상됩니다.
 
 <a name="method-fluent-str-after"></a>
 #### `after`
 
-`after` 메서드는 문자열에서 지정한 값 뒤에 오는 모든 내용을 반환합니다. 만약 그 값이 문자열에 없으면 전체 문자열이 반환됩니다.
+`after` 메서드는 문자열 내부에서 지정한 값 이후의 모든 부분을 반환합니다. 만약 해당 값이 문자열 내에 없다면 전체 문자열을 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1938,7 +1938,7 @@ $slice = Str::of('This is my name')->after('This is');
 <a name="method-fluent-str-after-last"></a>
 #### `afterLast`
 
-`afterLast` 메서드는 문자열에서 마지막으로 등장하는 지정 값 뒤의 모든 내용을 반환합니다. 만약 해당 값이 문자열에 없으면 전체 문자열이 반환됩니다.
+`afterLast` 메서드는 문자열 내에서 지정한 값이 마지막으로 등장한 위치 이후의 모든 부분을 반환합니다. 해당 값이 존재하지 않으면 전체 문자열을 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1951,7 +1951,7 @@ $slice = Str::of('App\Http\Controllers\Controller')->afterLast('\\');
 <a name="method-fluent-str-apa"></a>
 #### `apa`
 
-`apa` 메서드는 주어진 문자열을 [APA 가이드라인](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case)에 따라 제목 표기법(Title Case)으로 변환합니다.
+`apa` 메서드는 전달된 문자열을 [APA 가이드라인](https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case)에 따라 제목형(title case)으로 변환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1964,7 +1964,7 @@ $converted = Str::of('a nice title uses the correct case')->apa();
 <a name="method-fluent-str-append"></a>
 #### `append`
 
-`append` 메서드는 지정한 값을 문자열 뒤에 이어 붙입니다.
+`append` 메서드는 지정한 값을 현재 문자열 뒤에 이어붙입니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1977,7 +1977,7 @@ $string = Str::of('Taylor')->append(' Otwell');
 <a name="method-fluent-str-ascii"></a>
 #### `ascii`
 
-`ascii` 메서드는 문자열을 ASCII 문자로 변환하려고 시도합니다.
+`ascii` 메서드는 주어진 문자열을 가능한 한 ASCII 문자로 음역(transliterate)합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -1990,7 +1990,7 @@ $string = Str::of('ü')->ascii();
 <a name="method-fluent-str-basename"></a>
 #### `basename`
 
-`basename` 메서드는 주어진 문자열의 마지막 컴포넌트(이름 부분)를 반환합니다.
+`basename` 메서드는 문자열의 마지막 이름 부분만 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2000,7 +2000,7 @@ $string = Str::of('/foo/bar/baz')->basename();
 // 'baz'
 ```
 
-필요하다면, 마지막 부분에서 제거할 "확장자"를 전달할 수 있습니다.
+필요하다면 마지막 부분에서 특정 "확장자"를 제거하도록 인자를 전달할 수 있습니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2013,7 +2013,7 @@ $string = Str::of('/foo/bar/baz.jpg')->basename('.jpg');
 <a name="method-fluent-str-before"></a>
 #### `before`
 
-`before` 메서드는 문자열에서 지정한 값 이전에 있는 모든 내용을 반환합니다.
+`before` 메서드는 지정한 값 이전의 모든 문자열을 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2026,7 +2026,7 @@ $slice = Str::of('This is my name')->before('my name');
 <a name="method-fluent-str-before-last"></a>
 #### `beforeLast`
 
-`beforeLast` 메서드는 문자열에서 마지막으로 등장하는 지정 값 이전의 모든 내용을 반환합니다.
+`beforeLast` 메서드는 주어진 값이 문자열에서 마지막으로 등장하기 전까지의 부분을 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2039,7 +2039,7 @@ $slice = Str::of('This is my name')->beforeLast('is');
 <a name="method-fluent-str-between"></a>
 #### `between`
 
-`between` 메서드는 두 값 사이에 있는 문자열 값을 반환합니다.
+`between` 메서드는 문자열에서 두 값 사이에 위치한 부분을 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2052,7 +2052,7 @@ $converted = Str::of('This is my name')->between('This', 'name');
 <a name="method-fluent-str-between-first"></a>
 #### `betweenFirst`
 
-`betweenFirst` 메서드는 두 값 사이에 있는 가장 작은(최초의) 문자열 구간을 반환합니다.
+`betweenFirst` 메서드는 문자열에서 두 값 사이의 가장 작은(최초의) 부분만을 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2065,7 +2065,7 @@ $converted = Str::of('[a] bc [d]')->betweenFirst('[', ']');
 <a name="method-fluent-str-camel"></a>
 #### `camel`
 
-`camel` 메서드는 주어진 문자열을 `camelCase` 형식으로 변환합니다.
+`camel` 메서드는 문자열을 `camelCase`로 변환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2078,7 +2078,7 @@ $converted = Str::of('foo_bar')->camel();
 <a name="method-fluent-str-char-at"></a>
 #### `charAt`
 
-`charAt` 메서드는 지정한 위치(index)의 문자를 반환합니다. 만약 인덱스가 범위를 벗어나면 `false`를 반환합니다.
+`charAt` 메서드는 지정한 인덱스(위치)에 있는 문자를 반환합니다. 만약 인덱스가 범위를 벗어나면 `false`를 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2091,7 +2091,7 @@ $character = Str::of('This is my name.')->charAt(6);
 <a name="method-fluent-str-class-basename"></a>
 #### `classBasename`
 
-`classBasename` 메서드는 지정한 클래스명 문자열에서 네임스페이스를 제거하고, 클래스명만 반환합니다.
+`classBasename` 메서드는 지정한 클래스 이름에서 네임스페이스를 제거하고 클래스 이름만 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2104,7 +2104,7 @@ $class = Str::of('Foo\Bar\Baz')->classBasename();
 <a name="method-fluent-str-chop-start"></a>
 #### `chopStart`
 
-`chopStart` 메서드는 문자열이 처음에 지정된 값으로 시작할 때만, 그 첫 번째 값을 제거합니다.
+`chopStart` 메서드는 지정한 값이 문자열 맨 앞에 위치해 있을 때 한 번만 제거합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2114,7 +2114,7 @@ $url = Str::of('https://laravel.com')->chopStart('https://');
 // 'laravel.com'
 ```
 
-배열도 전달할 수 있습니다. 문자열이 배열의 값들 중 하나로 시작하면 그 값을 제거합니다.
+배열을 인자로 전달할 수도 있습니다. 이 경우 배열에 들어있는 값 중 하나라도 앞에 있으면 해당 값을 제거합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2127,7 +2127,7 @@ $url = Str::of('http://laravel.com')->chopStart(['https://', 'http://']);
 <a name="method-fluent-str-chop-end"></a>
 #### `chopEnd`
 
-`chopEnd` 메서드는 문자열의 마지막 부분이 지정된 값으로 끝날 때만, 그 마지막 값을 제거합니다.
+`chopEnd` 메서드는 지정한 값이 문자열 맨 뒤에 위치해 있을 때 한 번만 제거합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2137,7 +2137,7 @@ $url = Str::of('https://laravel.com')->chopEnd('.com');
 // 'https://laravel'
 ```
 
-배열도 전달할 수 있습니다. 문자열이 배열의 값들 중 하나로 끝나면 그 값을 제거합니다.
+배열을 인자로 전달할 수도 있습니다. 이 경우 배열에 들어있는 값 중 하나라도 뒤에 있으면 해당 값을 제거합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2150,7 +2150,7 @@ $url = Str::of('http://laravel.com')->chopEnd(['.com', '.io']);
 <a name="method-fluent-str-contains"></a>
 #### `contains`
 
-`contains` 메서드는 주어진 문자열에 지정한 값이 포함되어 있는지 확인합니다. 기본적으로 대소문자를 구분(case sensitive)합니다.
+`contains` 메서드는 주어진 문자열이 지정한 값을 포함하는지 확인합니다. 기본적으로 대소문자를 구분(case sensitive)합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2160,7 +2160,7 @@ $contains = Str::of('This is my name')->contains('my');
 // true
 ```
 
-또한, 여러 값을 배열로 전달하여 그 중 하나라도 포함되어 있는지 확인할 수도 있습니다.
+확인하려는 값 여러 개를 배열로 전달할 수도 있습니다. 하나라도 포함되어 있으면 `true`를 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2170,7 +2170,7 @@ $contains = Str::of('This is my name')->contains(['my', 'foo']);
 // true
 ```
 
-`ignoreCase` 인자를 `true`로 설정하면 대소문자 구분을 하지 않습니다.
+`ignoreCase` 인자를 `true`로 지정하면 대소문자를 구분하지 않습니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2183,7 +2183,7 @@ $contains = Str::of('This is my name')->contains('MY', ignoreCase: true);
 <a name="method-fluent-str-contains-all"></a>
 #### `containsAll`
 
-`containsAll` 메서드는 주어진 문자열이 지정한 값들의 배열에 속한 모든 값을 모두 포함하는지 확인합니다.
+`containsAll` 메서드는 주어진 문자열이 배열에 있는 모든 값을 포함하고 있는지 확인합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2193,7 +2193,7 @@ $containsAll = Str::of('This is my name')->containsAll(['my', 'name']);
 // true
 ```
 
-`ignoreCase` 인자를 `true`로 설정하면 대소문자 구분을 하지 않습니다.
+대소문자를 구분하지 않으려면 `ignoreCase` 인자를 `true`로 지정할 수 있습니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2206,7 +2206,7 @@ $containsAll = Str::of('This is my name')->containsAll(['MY', 'NAME'], ignoreCas
 <a name="method-fluent-str-decrypt"></a>
 #### `decrypt`
 
-`decrypt` 메서드는 암호화된 문자열을 [복호화](/docs/12.x/encryption)합니다.
+`decrypt` 메서드는 암호화된 문자열을 [복호화](/docs/12.x/encryption)합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2216,12 +2216,12 @@ $decrypted = $encrypted->decrypt();
 // 'secret'
 ```
 
-`decrypt`의 반대 동작은 [encrypt](#method-fluent-str-encrypt) 메서드를 참고하세요.
+`decrypt`와 반대 역할을 하는 메서드는 [encrypt](#method-fluent-str-encrypt)에서 확인할 수 있습니다.
 
 <a name="method-fluent-str-deduplicate"></a>
 #### `deduplicate`
 
-`deduplicate` 메서드는 문자열에서 특정 문자가 연속해서 여러 번 등장할 때, 한 번만 남기고 모두 제거합니다. 기본적으로는 공백(스페이스) 문자를 deduplicate 처리합니다.
+`deduplicate` 메서드는 문자열에서 연속된 특정 문자가 있을 때, 하나만 남기고 모두 제거합니다. 기본적으로 연속된 공백을 한 칸으로 정리합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2231,7 +2231,7 @@ $result = Str::of('The   Laravel   Framework')->deduplicate();
 // The Laravel Framework
 ```
 
-두 번째 인자로 다른 문자를 지정해서 해당 문자에 대해 중복 제거 처리를 할 수도 있습니다.
+다른 문자를 정리하고 싶다면 두 번째 인자로 해당 문자를 지정할 수 있습니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2244,7 +2244,7 @@ $result = Str::of('The---Laravel---Framework')->deduplicate('-');
 <a name="method-fluent-str-dirname"></a>
 #### `dirname`
 
-`dirname` 메서드는 주어진 문자열의 상위 디렉토리 부분을 반환합니다.
+`dirname` 메서드는 지정한 문자열의 상위 디렉터리 부분만 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2254,7 +2254,7 @@ $string = Str::of('/foo/bar/baz')->dirname();
 // '/foo/bar'
 ```
 
-필요하다면, 반환할 디렉토리 단계(상위 몇 단계까지)를 지정할 수도 있습니다.
+필요하다면 몇 단계까지 디렉터리 이름을 잘라낼지 인자로 지정할 수 있습니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2267,7 +2267,7 @@ $string = Str::of('/foo/bar/baz')->dirname(2);
 <a name="method-fluent-str-doesnt-end-with"></a>
 #### `doesntEndWith`
 
-`doesntEndWith` 메서드는 주어진 문자열이 지정한 값으로 끝나지 않는지 확인합니다.
+`doesntEndWith` 메서드는 주어진 문자열이 지정한 값으로 끝나지 않는지 확인합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2277,7 +2277,7 @@ $result = Str::of('This is my name')->doesntEndWith('dog');
 // true
 ```
 
-배열로 여러 값을 전달하여, 해당 값들 중 어느 것도 마지막에 없으면 `true`를 반환합니다.
+여러 값을 배열로 전달해, 한 개라도 해당 값으로 끝나지 않으면 `true`를 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2294,7 +2294,7 @@ $result = Str::of('This is my name')->doesntEndWith(['name', 'foo']);
 <a name="method-fluent-str-doesnt-start-with"></a>
 #### `doesntStartWith`
 
-`doesntStartWith` 메서드는 주어진 문자열이 지정한 값으로 시작하지 않는지 확인합니다.
+`doesntStartWith` 메서드는 주어진 문자열이 지정한 값으로 시작하지 않는지 확인합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2304,7 +2304,7 @@ $result = Str::of('This is my name')->doesntStartWith('That');
 // true
 ```
 
-배열로 여러 값을 전달하여, 해당 값들 중 어느 것도 맨 처음에 없으면 `true`를 반환합니다.
+여러 값을 배열로 전달해, 한 개라도 해당 값으로 시작하지 않으면 `true`를 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2317,7 +2317,7 @@ $result = Str::of('This is my name')->doesntStartWith(['This', 'That', 'There'])
 <a name="method-fluent-str-encrypt"></a>
 #### `encrypt`
 
-`encrypt` 메서드는 문자열을 [암호화](/docs/12.x/encryption)합니다.
+`encrypt` 메서드는 문자열을 [암호화](/docs/12.x/encryption)합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2325,13 +2325,13 @@ use Illuminate\Support\Str;
 $encrypted = Str::of('secret')->encrypt();
 ```
 
-`encrypt`의 반대 동작은 [decrypt](#method-fluent-str-decrypt) 메서드를 참고하세요.
+암호화의 반대 동작(복호화)에 대해서는 [decrypt](#method-fluent-str-decrypt) 메서드를 참고하세요.
 
 <a name="method-fluent-str-ends-with"></a>
 
 #### `endsWith`
 
-`endsWith` 메서드는 주어진 문자열이 특정 값으로 끝나는지 확인합니다.
+`endsWith` 메서드는 주어진 문자열이 특정 값으로 끝나는지를 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2341,7 +2341,7 @@ $result = Str::of('This is my name')->endsWith('name');
 // true
 ```
 
-또한 배열을 전달하여, 해당 문자열이 배열에 포함된 값 중 하나로 끝나는지도 판별할 수 있습니다.
+배열 형태로 여러 값을 전달하면, 해당 문자열이 배열 안의 값 중 하나로 끝나는지 여부를 확인할 수 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2371,7 +2371,7 @@ $result = Str::of('Laravel')->exactly('Laravel');
 <a name="method-fluent-str-excerpt"></a>
 #### `excerpt`
 
-`excerpt` 메서드는 문자열에서 특정 구문이 처음 등장하는 부분을 중심으로 발췌(excerpt)한 부분 문자열을 추출합니다.
+`excerpt` 메서드는 문자열 내에서 특정 구문(문구)가 처음 등장하는 부분을 중심으로 발췌된 부분 문자열을 추출합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2383,9 +2383,9 @@ $excerpt = Str::of('This is my name')->excerpt('my', [
 // '...is my na...'
 ```
 
-`radius` 옵션(기본값: `100`)을 통해, 추출된 문자열에서 양쪽에 포함될 문자 수를 지정할 수 있습니다.
+`radius` 옵션(기본값은 `100`)을 통해, 추출된 문자열 양 끝에 각각 몇 개의 문자를 포함할지 지정할 수 있습니다.
 
-또한, `omission` 옵션을 사용하면 잘린 문자열 앞뒤에 붙는 문자열을 변경할 수 있습니다.
+또한 `omission` 옵션을 사용하면, 잘린 문자열 앞과 뒤에 덧붙일 문자를 변경할 수 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2401,7 +2401,7 @@ $excerpt = Str::of('This is my name')->excerpt('name', [
 <a name="method-fluent-str-explode"></a>
 #### `explode`
 
-`explode` 메서드는 주어진 구분자(delimiter)로 문자열을 나누고, 각 조각을 포함하는 컬렉션을 반환합니다.
+`explode` 메서드는 주어진 구분자(delimiter)를 기준으로 문자열을 분할하고, 각 조각을 컬렉션에 담아 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2414,7 +2414,7 @@ $collection = Str::of('foo bar baz')->explode(' ');
 <a name="method-fluent-str-finish"></a>
 #### `finish`
 
-`finish` 메서드는 주어진 값으로 문자열이 끝나지 않을 경우, 해당 값을 한 번만 덧붙여 반환합니다.
+`finish` 메서드는 지정한 값으로 문자열이 끝나지 않는 경우, 해당 값을 한 번만 덧붙여 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2444,7 +2444,7 @@ $decoded = Str::of('TGFyYXZlbA==')->fromBase64();
 <a name="method-fluent-str-hash"></a>
 #### `hash`
 
-`hash` 메서드는 주어진 [알고리즘](https://www.php.net/manual/en/function.hash-algos.php)으로 문자열을 해싱(hashing)합니다.
+`hash` 메서드는 주어진 [알고리즘](https://www.php.net/manual/en/function.hash-algos.php)을 사용하여 문자열을 해시합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2457,7 +2457,7 @@ $hashed = Str::of('secret')->hash(algorithm: 'sha256');
 <a name="method-fluent-str-headline"></a>
 #### `headline`
 
-`headline` 메서드는 케이스, 하이픈(-), 언더스코어(_)로 구분된 문자열을 각 단어의 첫 글자가 대문자인 공백 구분 문자열로 변환합니다.
+`headline` 메서드는 대소문자, 하이픈(-), 언더스코어(_)로 구분된 문자열을 각 단어의 첫 글자만 대문자로 변환하고, 단어 사이는 띄어쓰기로 연결된 형태로 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2474,7 +2474,7 @@ $headline = Str::of('EmailNotificationSent')->headline();
 <a name="method-fluent-str-inline-markdown"></a>
 #### `inlineMarkdown`
 
-`inlineMarkdown` 메서드는 GitHub 스타일의 Markdown 형식을 [CommonMark](https://commonmark.thephpleague.com/)를 사용해 인라인 HTML로 변환합니다. 단, `markdown` 메서드와 달리, 모든 HTML이 블록 요소로 감싸지지 않습니다.
+`inlineMarkdown` 메서드는 GitHub 스타일의 Markdown을 [CommonMark](https://commonmark.thephpleague.com/)를 사용하여 인라인 HTML로 변환합니다. 단, `markdown` 메서드와 달리 모든 HTML 코드를 블록 요소로 감싸지 않습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2486,7 +2486,7 @@ $html = Str::of('**Laravel**')->inlineMarkdown();
 
 #### 마크다운 보안
 
-기본적으로 마크다운(Markdown)은 원시 HTML을 지원하므로, 사용자 입력에 대해 그대로 사용할 경우 XSS(Cross-Site Scripting) 취약점이 발생할 수 있습니다. [CommonMark Security documentation](https://commonmark.thephpleague.com/security/)에 따라, `html_input` 옵션을 통해 원시 HTML을 escape하거나 제거(strip)할 수 있고, `allow_unsafe_links` 옵션을 통해 안전하지 않은 링크 허용 여부를 설정할 수 있습니다. 만약 일부 원시 HTML만 허용할 필요가 있다면, 컴파일된 마크다운을 HTML Purifier로 한번 더 필터링하는 것이 좋습니다.
+기본적으로, 마크다운에서는 순수 HTML을 허용하기 때문에 사용자 입력값에 적용할 경우 XSS(크로스 사이트 스크립팅) 취약점이 발생할 수 있습니다. [CommonMark 보안 문서](https://commonmark.thephpleague.com/security/)에 따르면, `html_input` 옵션을 통해 순수 HTML을 이스케이프하거나 제거(strip)할 수 있으며, `allow_unsafe_links` 옵션을 통해 안전하지 않은 링크의 허용 여부도 지정할 수 있습니다. 만약 일부 HTML만 허용하고 싶다면, 변환된 마크다운 HTML을 HTML Purifier 등으로 후처리해야 합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2502,7 +2502,7 @@ Str::of('Inject: <script>alert("Hello XSS!");</script>')->inlineMarkdown([
 <a name="method-fluent-str-is"></a>
 #### `is`
 
-`is` 메서드는 주어진 문자열이 특정 패턴과 일치하는지 확인합니다. 별표(*)는 와일드카드로 사용할 수 있습니다.
+`is` 메서드는 특정 문자열이 주어진 패턴과 일치하는지 확인합니다. 패턴에는 `*`(별표)를 와일드카드로 사용할 수 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2519,7 +2519,7 @@ $matches = Str::of('foobar')->is('baz*');
 <a name="method-fluent-str-is-ascii"></a>
 #### `isAscii`
 
-`isAscii` 메서드는 주어진 문자열이 ASCII 문자열인지 판별합니다.
+`isAscii` 메서드는 주어진 문자열이 아스키(ASCII) 문자열인지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2536,7 +2536,7 @@ $result = Str::of('ü')->isAscii();
 <a name="method-fluent-str-is-empty"></a>
 #### `isEmpty`
 
-`isEmpty` 메서드는 주어진 문자열이 비어있는지 여부를 확인합니다.
+`isEmpty` 메서드는 해당 문자열이 비어있는지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2553,7 +2553,7 @@ $result = Str::of('Laravel')->trim()->isEmpty();
 <a name="method-fluent-str-is-not-empty"></a>
 #### `isNotEmpty`
 
-`isNotEmpty` 메서드는 주어진 문자열이 비어있지 않은지 확인합니다.
+`isNotEmpty` 메서드는 해당 문자열이 비어있지 않은지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2570,7 +2570,7 @@ $result = Str::of('Laravel')->trim()->isNotEmpty();
 <a name="method-fluent-str-is-json"></a>
 #### `isJson`
 
-`isJson` 메서드는 주어진 문자열이 올바른 JSON 형식인지 여부를 확인합니다.
+`isJson` 메서드는 주어진 문자열이 올바른 JSON 형식인지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2591,7 +2591,7 @@ $result = Str::of('{first: "John", last: "Doe"}')->isJson();
 <a name="method-fluent-str-is-ulid"></a>
 #### `isUlid`
 
-`isUlid` 메서드는 주어진 문자열이 ULID(Universally Unique Lexicographically Sortable Identifier) 형식인지 판별합니다.
+`isUlid` 메서드는 주어진 문자열이 ULID인지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2608,7 +2608,7 @@ $result = Str::of('Taylor')->isUlid();
 <a name="method-fluent-str-is-url"></a>
 #### `isUrl`
 
-`isUrl` 메서드는 주어진 문자열이 URL 형식인지 판별합니다.
+`isUrl` 메서드는 주어진 문자열이 URL인지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2622,7 +2622,7 @@ $result = Str::of('Taylor')->isUrl();
 // false
 ```
 
-`isUrl` 메서드는 다양한 프로토콜의 URL을 유효한 것으로 인식합니다. 하지만 원하는 프로토콜만을 유효하다고 지정하고 싶다면, 메서드에 해당 프로토콜 목록을 추가로 전달할 수 있습니다.
+`isUrl` 메서드는 다양한 프로토콜을 유효하게 간주합니다. 특정 프로토콜만 허용하려면, 프로토콜 목록을 인수로 전달할 수 있습니다.
 
 ```php
 $result = Str::of('http://example.com')->isUrl(['http', 'https']);
@@ -2631,7 +2631,7 @@ $result = Str::of('http://example.com')->isUrl(['http', 'https']);
 <a name="method-fluent-str-is-uuid"></a>
 #### `isUuid`
 
-`isUuid` 메서드는 주어진 문자열이 UUID 형식인지 판별합니다.
+`isUuid` 메서드는 주어진 문자열이 UUID(범용 고유 식별자)인지 확인합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2648,7 +2648,7 @@ $result = Str::of('Taylor')->isUuid();
 <a name="method-fluent-str-kebab"></a>
 #### `kebab`
 
-`kebab` 메서드는 주어진 문자열을 `kebab-case`(단어를 소문자로 변환하고 하이픈(-)으로 연결)로 변환합니다.
+`kebab` 메서드는 주어진 문자열을 `kebab-case`로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2661,7 +2661,7 @@ $converted = Str::of('fooBar')->kebab();
 <a name="method-fluent-str-lcfirst"></a>
 #### `lcfirst`
 
-`lcfirst` 메서드는 첫 글자를 소문자로 변환하여 반환합니다.
+`lcfirst` 메서드는 주어진 문자열의 첫 글자를 소문자로 변환하여 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2687,7 +2687,7 @@ $length = Str::of('Laravel')->length();
 <a name="method-fluent-str-limit"></a>
 #### `limit`
 
-`limit` 메서드는 주어진 문자열을 지정한 길이로 잘라냅니다.
+`limit` 메서드는 주어진 문자열을 지정한 길이만큼 잘라 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2697,7 +2697,7 @@ $truncated = Str::of('The quick brown fox jumps over the lazy dog')->limit(20);
 // The quick brown fox...
 ```
 
-또한 두 번째 인수로, 잘린 문자열 끝에 붙을 텍스트를 지정할 수도 있습니다.
+잘린 문자열 끝에 붙는 문자를 변경하고 싶다면 두 번째 인수로 원하는 문자열을 전달할 수 있습니다.
 
 ```php
 $truncated = Str::of('The quick brown fox jumps over the lazy dog')->limit(20, ' (...)');
@@ -2705,7 +2705,7 @@ $truncated = Str::of('The quick brown fox jumps over the lazy dog')->limit(20, '
 // The quick brown fox (...)
 ```
 
-문자열을 자르면서 단어가 중간에 끊기지 않도록 하려면, `preserveWords` 인자를 `true`로 전달하면 가장 가까운 단어 경계까지 잘려 반환됩니다.
+문자열을 자를 때 단어가 중간에 잘리지 않도록 하려면 `preserveWords` 인수를 사용할 수 있습니다. 이 값을 `true`로 지정하면 가장 가까운 단어 경계까지 잘라냅니다.
 
 ```php
 $truncated = Str::of('The quick brown fox')->limit(12, preserveWords: true);
@@ -2747,7 +2747,7 @@ $html = Str::of('# Taylor <b>Otwell</b>')->markdown([
 
 #### 마크다운 보안
 
-기본적으로 마크다운(Markdown)은 원시 HTML을 지원하므로, 사용자 입력에 대해 그대로 사용할 경우 XSS(Cross-Site Scripting) 취약점이 발생할 수 있습니다. [CommonMark Security documentation](https://commonmark.thephpleague.com/security/)에 따라, `html_input` 옵션을 통해 원시 HTML을 escape하거나 제거(strip)할 수 있고, `allow_unsafe_links` 옵션을 통해 안전하지 않은 링크 허용 여부를 설정할 수 있습니다. 일부 원시 HTML을 허용하려면, 컴파일된 마크다운을 HTML Purifier로 한번 더 필터링하는 것이 좋습니다.
+기본적으로, 마크다운에서는 순수 HTML을 허용하기 때문에 사용자 입력값에 적용할 경우 XSS(크로스 사이트 스크립팅) 취약점이 발생할 수 있습니다. [CommonMark 보안 문서](https://commonmark.thephpleague.com/security/)에 따르면, `html_input` 옵션을 통해 순수 HTML을 이스케이프하거나 제거(strip)할 수 있으며, `allow_unsafe_links` 옵션을 통해 안전하지 않은 링크의 허용 여부도 지정할 수 있습니다. 만약 일부 HTML만 허용하고 싶다면, 변환된 마크다운 HTML을 HTML Purifier 등으로 후처리해야 합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2763,7 +2763,7 @@ Str::of('Inject: <script>alert("Hello XSS!");</script>')->markdown([
 <a name="method-fluent-str-mask"></a>
 #### `mask`
 
-`mask` 메서드는 문자열의 일부 구간을 반복되는 문자로 가려서(mask) 반환할 수 있습니다. 이메일 주소, 전화번호 등 민감한 문자열 일부를 숨길 때 사용할 수 있습니다.
+`mask` 메서드는 문자열의 일부를 반복되는 문자로 가려주는 기능을 하며, 이메일 또는 전화번호의 일부를 숨기고자 할 때 유용합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2773,7 +2773,7 @@ $string = Str::of('taylor@example.com')->mask('*', 3);
 // tay***************
 ```
 
-필요하다면, 세 번째나 네 번째 인수에 음수를 전달하면 문자열 끝에서부터 특정 위치를 기준으로 masking을 시작하거나 범위를 지정할 수 있습니다.
+필요하다면 세 번째 또는 네 번째 인수에 음수 값을 전달하여, 문자열의 끝에서부터 거리를 기준으로 마스킹을 시작할 수 있습니다.
 
 ```php
 $string = Str::of('taylor@example.com')->mask('*', -15, 3);
@@ -2788,7 +2788,7 @@ $string = Str::of('taylor@example.com')->mask('*', 4, -4);
 <a name="method-fluent-str-match"></a>
 #### `match`
 
-`match` 메서드는 주어진 정규표현식 패턴과 일치하는 문자열의 일부분을 반환합니다.
+`match` 메서드는 주어진 정규표현식 패턴에 일치하는 문자열 일부를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2805,7 +2805,7 @@ $result = Str::of('foo bar')->match('/foo (.*)/');
 <a name="method-fluent-str-match-all"></a>
 #### `matchAll`
 
-`matchAll` 메서드는 주어진 정규표현식 패턴과 일치하는 모든 부분 문자열을 컬렉션으로 반환합니다.
+`matchAll` 메서드는 주어진 정규표현식 패턴에 일치하는 모든 부분 문자열을 컬렉션으로 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2815,7 +2815,7 @@ $result = Str::of('bar foo bar')->matchAll('/bar/');
 // collect(['bar', 'bar'])
 ```
 
-정규식에 그룹(match group)을 지정하면, 첫 번째 그룹에 일치하는 값들의 컬렉션을 반환합니다.
+정규표현식에 매칭 그룹이 지정된 경우, 라라벨은 첫 번째 매칭 그룹에 해당하는 값만을 추출해 컬렉션으로 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2825,12 +2825,12 @@ $result = Str::of('bar fun bar fly')->matchAll('/f(\w*)/');
 // collect(['un', 'ly']);
 ```
 
-일치하는 값이 없다면 빈 컬렉션이 반환됩니다.
+일치하는 값이 하나도 없으면 빈 컬렉션이 반환됩니다.
 
 <a name="method-fluent-str-is-match"></a>
 #### `isMatch`
 
-`isMatch` 메서드는 주어진 정규표현식과 문자열이 일치하면 `true`를 반환합니다.
+`isMatch` 메서드는 해당 문자열이 정규표현식과 일치하면 `true`를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2847,7 +2847,7 @@ $result = Str::of('laravel')->isMatch('/foo (.*)/');
 <a name="method-fluent-str-new-line"></a>
 #### `newLine`
 
-`newLine` 메서드는 문자열의 끝에 "줄바꿈(end of line)" 문자를 추가합니다.
+`newLine` 메서드는 문자열 끝에 "줄 바꿈" 문자를 추가합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2861,7 +2861,7 @@ $padded = Str::of('Laravel')->newLine()->append('Framework');
 <a name="method-fluent-str-padboth"></a>
 #### `padBoth`
 
-`padBoth` 메서드는 PHP의 `str_pad` 함수를 이용해, 원하는 최종 길이가 될 때까지 지정된 문자로 문자열의 양쪽을 감싸서 반환합니다.
+`padBoth` 메서드는 PHP의 `str_pad` 함수를 감싸는 메서드로, 두 쪽(양방향)에서 지정한 문자로 문자열을 채워서 원하는 길이만큼 늘립니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2878,7 +2878,7 @@ $padded = Str::of('James')->padBoth(10);
 <a name="method-fluent-str-padleft"></a>
 #### `padLeft`
 
-`padLeft` 메서드는 PHP의 `str_pad` 함수를 이용해, 원하는 최종 길이가 될 때까지 지정된 문자로 문자열의 왼쪽을 채워 반환합니다.
+`padLeft` 메서드는 PHP의 `str_pad` 함수를 감싸는 메서드로, 문자열의 왼쪽에 지정한 문자를 덧붙여 원하는 최종 길이가 될 때까지 채워줍니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2896,7 +2896,7 @@ $padded = Str::of('James')->padLeft(10);
 
 #### `padRight`
 
-`padRight` 메서드는 PHP의 `str_pad` 함수를 감싸며, 지정한 문자열의 오른쪽에 다른 문자열을 덧붙여 최종 문자열의 길이가 원하는 길이에 도달할 때까지 패딩(채우기)합니다.
+`padRight` 메서드는 PHP의 `str_pad` 함수의 기능을 감싸서, 문자열의 오른쪽을 다른 문자열로 채워 최종 문자열이 지정한 길이에 도달할 때까지 패딩합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2913,7 +2913,7 @@ $padded = Str::of('James')->padRight(10);
 <a name="method-fluent-str-pipe"></a>
 #### `pipe`
 
-`pipe` 메서드는 현재 문자열 값을 지정한 콜러블(callable)로 전달하여, 문자열을 변환할 수 있도록 해줍니다.
+`pipe` 메서드는 현재 문자열 값을 지정한 callable(콜러블)로 전달하여 문자열을 변환할 수 있도록 합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2933,7 +2933,7 @@ $closure = Str::of('foo')->pipe(function (Stringable $str) {
 <a name="method-fluent-str-plural"></a>
 #### `plural`
 
-`plural` 메서드는 단수형 단어 문자열을 복수형으로 변환합니다. 이 함수는 [라라벨의 복수화 도구가 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)에서 동작합니다.
+`plural` 메서드는 단수형 단어를 복수형으로 변환합니다. 이 함수는 [라라벨의 복수화 도우미가 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)를 지원합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -2947,7 +2947,7 @@ $plural = Str::of('child')->plural();
 // children
 ```
 
-함수의 두 번째 인수로 정수를 전달하면, 해당 수에 맞는 단수 또는 복수형 문자열을 반환할 수 있습니다.
+두 번째 인수로 정수를 전달하면, 해당 숫자에 맞게 문자열의 단수 혹은 복수형을 반환할 수 있습니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2964,7 +2964,7 @@ $plural = Str::of('child')->plural(1);
 <a name="method-fluent-str-position"></a>
 #### `position`
 
-`position` 메서드는 문자열에서 특정 하위 문자열이 처음 등장하는 위치(인덱스)를 반환합니다. 하위 문자열이 존재하지 않으면 `false`를 반환합니다.
+`position` 메서드는 문자열 내에서 특정 부분 문자열이 처음으로 등장하는 위치를 반환합니다. 만약 부분 문자열이 존재하지 않으면 `false`가 반환됩니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2981,7 +2981,7 @@ $position = Str::of('Hello, World!')->position('W');
 <a name="method-fluent-str-prepend"></a>
 #### `prepend`
 
-`prepend` 메서드는 지정한 값을 문자열 앞쪽에 추가합니다.
+`prepend` 메서드는 지정한 값을 문자열의 앞부분에 추가합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -2994,7 +2994,7 @@ $string = Str::of('Framework')->prepend('Laravel ');
 <a name="method-fluent-str-remove"></a>
 #### `remove`
 
-`remove` 메서드는 문자열에서 지정한 값 또는 값들의 배열을 제거합니다.
+`remove` 메서드는 지정한 값 또는 값의 배열을 문자열에서 제거합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3004,12 +3004,12 @@ $string = Str::of('Arkansas is quite beautiful!')->remove('quite');
 // Arkansas is beautiful!
 ```
 
-두 번째 인수로 `false`를 전달하면, 문자열 제거 시 대소문자를 구분하지 않습니다.
+문자열 제거 시 대소문자를 구분하지 않으려면 두 번째 인수로 `false`를 전달할 수 있습니다.
 
 <a name="method-fluent-str-repeat"></a>
 #### `repeat`
 
-`repeat` 메서드는 지정한 문자열을 반복하여 붙입니다.
+`repeat` 메서드는 지정한 문자열을 여러 번 반복하여 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3022,7 +3022,7 @@ $repeated = Str::of('a')->repeat(5);
 <a name="method-fluent-str-replace"></a>
 #### `replace`
 
-`replace` 메서드는 지정한 문자열을 다른 문자열로 교체합니다.
+`replace` 메서드는 문자열 내에서 특정 값을 다른 값으로 교체합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3032,7 +3032,7 @@ $replaced = Str::of('Laravel 6.x')->replace('6.x', '7.x');
 // Laravel 7.x
 ```
 
-`replace` 메서드는 `caseSensitive`(대소문자 구분) 인수도 받을 수 있습니다. 기본적으로 `replace`는 대소문자를 구분해서 동작합니다.
+`replace` 메서드는 `caseSensitive` 인수를 받을 수 있습니다. 기본적으로 `replace` 메서드는 대소문자를 구분합니다:
 
 ```php
 $replaced = Str::of('macOS 13.x')->replace(
@@ -3043,7 +3043,7 @@ $replaced = Str::of('macOS 13.x')->replace(
 <a name="method-fluent-str-replace-array"></a>
 #### `replaceArray`
 
-`replaceArray` 메서드는 문자열 내에서 지정한 값을 배열의 값들로 순차적으로 교체합니다.
+`replaceArray` 메서드는 문자열에서 지정한 값을 배열의 각 요소로 순차적으로 교체합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3058,7 +3058,7 @@ $replaced = Str::of($string)->replaceArray('?', ['8:30', '9:00']);
 <a name="method-fluent-str-replace-first"></a>
 #### `replaceFirst`
 
-`replaceFirst` 메서드는 문자열에서 지정한 값이 처음 등장하는 부분만 교체합니다.
+`replaceFirst` 메서드는 지정한 값이 처음 등장하는 부분만 다른 값으로 교체합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3071,7 +3071,7 @@ $replaced = Str::of('the quick brown fox jumps over the lazy dog')->replaceFirst
 <a name="method-fluent-str-replace-last"></a>
 #### `replaceLast`
 
-`replaceLast` 메서드는 문자열에서 지정한 값이 마지막으로 등장하는 부분만 교체합니다.
+`replaceLast` 메서드는 지정한 값이 마지막으로 등장하는 부분만 다른 값으로 교체합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3084,7 +3084,7 @@ $replaced = Str::of('the quick brown fox jumps over the lazy dog')->replaceLast(
 <a name="method-fluent-str-replace-matches"></a>
 #### `replaceMatches`
 
-`replaceMatches` 메서드는 정규 표현식 패턴에 일치하는 문자열 부분을 지정한 문자열로 모두 교체합니다.
+`replaceMatches` 메서드는 지정한 패턴과 일치하는 문자열의 모든 부분을 주어진 문자열로 교체합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3094,7 +3094,7 @@ $replaced = Str::of('(+1) 501-555-1000')->replaceMatches('/[^A-Za-z0-9]++/', '')
 // '15015551000'
 ```
 
-또한, `replaceMatches` 메서드는 클로저를 지원하며, 패턴에 일치하는 각 부분을 클로저에 전달하여 원하는 방식대로 교체 문자열을 돌려줄 수 있습니다.
+또한, `replaceMatches` 메서드는 클로저(익명 함수)를 전달받을 수 있으며, 이는 패턴에 부합하는 각 부분과 함께 호출되어, 해당 부분에 원하는 교체 로직을 수행하고 교체값을 반환할 수 있습니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3109,7 +3109,7 @@ $replaced = Str::of('123')->replaceMatches('/\d/', function (array $matches) {
 <a name="method-fluent-str-replace-start"></a>
 #### `replaceStart`
 
-`replaceStart` 메서드는 문자열이 해당 값으로 시작하는 경우에만, 그 값을 첫 등장 부분에서 교체합니다.
+`replaceStart` 메서드는 지정한 값이 문자열의 처음에 있는 경우에만, 그 부분을 다른 값으로 교체합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3126,7 +3126,7 @@ $replaced = Str::of('Hello World')->replaceStart('World', 'Laravel');
 <a name="method-fluent-str-replace-end"></a>
 #### `replaceEnd`
 
-`replaceEnd` 메서드는 문자열이 해당 값으로 끝나는 경우에만, 그 값을 마지막 등장 부분에서 교체합니다.
+`replaceEnd` 메서드는 지정한 값이 문자열의 끝에 있는 경우에만, 그 부분을 다른 값으로 교체합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3143,7 +3143,7 @@ $replaced = Str::of('Hello World')->replaceEnd('Hello', 'Laravel');
 <a name="method-fluent-str-scan"></a>
 #### `scan`
 
-`scan` 메서드는 [`sscanf` PHP 함수](https://www.php.net/manual/en/function.sscanf.php)에서 지원하는 형식에 맞춰, 문자열에서 입력을 파싱하여 컬렉션으로 반환합니다.
+`scan` 메서드는 [`sscanf` PHP 함수](https://www.php.net/manual/en/function.sscanf.php)에서 지원하는 형식에 따라 문자열에서 값을 파싱하여 컬렉션으로 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3156,7 +3156,7 @@ $collection = Str::of('filename.jpg')->scan('%[^.].%s');
 <a name="method-fluent-str-singular"></a>
 #### `singular`
 
-`singular` 메서드는 문자열을 단수형으로 변환합니다. 이 함수는 [라라벨의 복수화 도구가 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)에서 사용할 수 있습니다.
+`singular` 메서드는 문자열을 단수형으로 변환합니다. 이 함수는 [라라벨의 복수화 도우미가 지원하는 모든 언어](/docs/12.x/localization#pluralization-language)를 지원합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3173,7 +3173,7 @@ $singular = Str::of('children')->singular();
 <a name="method-fluent-str-slug"></a>
 #### `slug`
 
-`slug` 메서드는 주어진 문자열을 URL 친화적인 "슬러그(slug)"로 변환합니다.
+`slug` 메서드는 지정한 문자열로부터 URL에 친화적인 "슬러그(slug)"를 생성합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3186,7 +3186,7 @@ $slug = Str::of('Laravel Framework')->slug('-');
 <a name="method-fluent-str-snake"></a>
 #### `snake`
 
-`snake` 메서드는 주어진 문자열을 `snake_case`로 변환합니다.
+`snake` 메서드는 지정한 문자열을 `snake_case`로 변환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3199,7 +3199,7 @@ $converted = Str::of('fooBar')->snake();
 <a name="method-fluent-str-split"></a>
 #### `split`
 
-`split` 메서드는 정규 표현식을 사용하여 문자열을 분할한 후, 컬렉션으로 반환합니다.
+`split` 메서드는 정규 표현식을 사용하여 문자열을 여러 조각으로 분할한 후, 컬렉션으로 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3212,7 +3212,7 @@ $segments = Str::of('one, two, three')->split('/[\s,]+/');
 <a name="method-fluent-str-squish"></a>
 #### `squish`
 
-`squish` 메서드는 문자열 내의 불필요한 공백을 모두 제거합니다. 단어 사이의 과도한 공백도 깔끔하게 정리됩니다.
+`squish` 메서드는 불필요한 모든 공백(단어 사이 포함)을 제거하여, 문자열 사이에 공백이 한 번만 남도록 만듭니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3225,7 +3225,7 @@ $string = Str::of('    laravel    framework    ')->squish();
 <a name="method-fluent-str-start"></a>
 #### `start`
 
-`start` 메서드는 문자열이 해당 값으로 시작하지 않는 경우, 그 값을 한 번만 문자열 앞에 붙여줍니다.
+`start` 메서드는 문자열이 지정한 값으로 시작하지 않을 경우, 값을 한번만 맨 앞에 추가합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3242,7 +3242,7 @@ $adjusted = Str::of('/this/string')->start('/');
 <a name="method-fluent-str-starts-with"></a>
 #### `startsWith`
 
-`startsWith` 메서드는 지정한 문자열이 해당 값으로 시작하는지 여부를 확인합니다.
+`startsWith` 메서드는 지정한 값으로 문자열이 시작하는지 여부를 판단합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3255,7 +3255,7 @@ $result = Str::of('This is my name')->startsWith('This');
 <a name="method-fluent-str-strip-tags"></a>
 #### `stripTags`
 
-`stripTags` 메서드는 문자열에서 모든 HTML 및 PHP 태그를 제거합니다.
+`stripTags` 메서드는 문자열에서 모든 HTML과 PHP 태그를 제거합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3272,7 +3272,7 @@ $result = Str::of('<a href="https://laravel.com">Taylor <b>Otwell</b></a>')->str
 <a name="method-fluent-str-studly"></a>
 #### `studly`
 
-`studly` 메서드는 주어진 문자열을 `StudlyCase`(첫 글자 대문자, 이어지는 각 단어의 첫 글자도 대문자)로 변환합니다.
+`studly` 메서드는 지정한 문자열을 `StudlyCase`로 변환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3285,7 +3285,7 @@ $converted = Str::of('foo_bar')->studly();
 <a name="method-fluent-str-substr"></a>
 #### `substr`
 
-`substr` 메서드는 지정한 시작점과 길이만큼, 문자열의 일부를 반환합니다.
+`substr` 메서드는 지정한 시작 위치와 길이에 해당하는 문자열 일부를 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3302,7 +3302,7 @@ $string = Str::of('Laravel Framework')->substr(8, 5);
 <a name="method-fluent-str-substrreplace"></a>
 #### `substrReplace`
 
-`substrReplace` 메서드는 두 번째 인수로 전달된 위치부터 세 번째 인수로 지정한 개수만큼의 문자를 지정한 텍스트로 교체합니다. 세 번째 인수에 `0`을 전달하면, 해당 위치에 새로운 문자열을 삽입하되 기존 내용은 그대로 유지됩니다.
+`substrReplace` 메서드는 두 번째 인수로 전달한 위치부터 세 번째 인수로 전달한 길이만큼의 부분을 지정한 문자열로 교체합니다. 세 번째 인수에 `0`을 전달하면 기존 문자를 대체하지 않고 해당 위치에 새로운 문자열을 삽입합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3319,7 +3319,7 @@ $string = Str::of('The Framework')->substrReplace(' Laravel', 3, 0);
 <a name="method-fluent-str-swap"></a>
 #### `swap`
 
-`swap` 메서드는 PHP의 `strtr` 함수를 이용해, 여러 값을 한 번에 다른 값으로 교체합니다.
+`swap` 메서드는 PHP의 `strtr` 함수를 사용하여 문자열 내 여러 값을 한 번에 교체합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3336,7 +3336,7 @@ $string = Str::of('Tacos are great!')
 <a name="method-fluent-str-take"></a>
 #### `take`
 
-`take` 메서드는 문자열의 앞부분에서 지정한 개수만큼의 문자만 반환합니다.
+`take` 메서드는 문자열의 맨 앞에서 지정한 개수만큼의 문자를 잘라 반환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3349,7 +3349,7 @@ $taken = Str::of('Build something amazing!')->take(5);
 <a name="method-fluent-str-tap"></a>
 #### `tap`
 
-`tap` 메서드는 현재 문자열 값을 클로저에 전달하여 문자열을 조사하거나 필요한 작업을 수행할 수 있게 합니다. 클로저에서 어떤 값을 반환하더라도, `tap` 메서드는 원래 문자열을 그대로 반환합니다.
+`tap` 메서드는 문자열 인스턴스를 지정한 클로저에 전달하여, 문자열의 상태를 확인하거나 조작할 수 있도록 합니다. 단, 클로저에서 어떤 값을 반환하든지 상관없이 원래의 문자열 인스턴스 자체가 반환됩니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3368,7 +3368,7 @@ $string = Str::of('Laravel')
 <a name="method-fluent-str-test"></a>
 #### `test`
 
-`test` 메서드는 문자열이 지정한 정규 표현식 패턴과 일치하는지를 확인합니다.
+`test` 메서드는 문자열이 지정한 정규 표현식 패턴과 일치하는지 확인합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3381,7 +3381,7 @@ $result = Str::of('Laravel Framework')->test('/Laravel/');
 <a name="method-fluent-str-title"></a>
 #### `title`
 
-`title` 메서드는 문자열을 각 단어의 첫 글자가 대문자인 `Title Case`로 변환합니다.
+`title` 메서드는 지정한 문자열을 `Title Case`(각 단어가 대문자로 시작)로 변환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3394,7 +3394,7 @@ $converted = Str::of('a nice title uses the correct case')->title();
 <a name="method-fluent-str-to-base64"></a>
 #### `toBase64`
 
-`toBase64` 메서드는 문자열을 Base64 인코딩 문자열로 변환합니다.
+`toBase64` 메서드는 지정한 문자열을 Base64로 인코딩합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3407,7 +3407,7 @@ $base64 = Str::of('Laravel')->toBase64();
 <a name="method-fluent-str-to-html-string"></a>
 #### `toHtmlString`
 
-`toHtmlString` 메서드는 해당 문자열을 `Illuminate\Support\HtmlString` 인스턴스로 변환합니다. Blade 템플릿에서 렌더링될 때 이 값은 이스케이프 처리되지 않습니다.
+`toHtmlString` 메서드는 지정한 문자열을 `Illuminate\Support\HtmlString` 인스턴스로 변환하며, Blade 템플릿에서 렌더링할 때 이 값은 이스케이프되지 않습니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3418,7 +3418,7 @@ $htmlString = Str::of('Nuno Maduro')->toHtmlString();
 <a name="method-fluent-str-to-uri"></a>
 #### `toUri`
 
-`toUri` 메서드는 해당 문자열을 [Illuminate\Support\Uri](/docs/12.x/helpers#uri) 인스턴스로 변환합니다.
+`toUri` 메서드는 지정한 문자열을 [Illuminate\Support\Uri](/docs/12.x/helpers#uri) 인스턴스로 변환합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3429,7 +3429,7 @@ $uri = Str::of('https://example.com')->toUri();
 <a name="method-fluent-str-transliterate"></a>
 #### `transliterate`
 
-`transliterate` 메서드는 주어진 문자열을 가장 근접한 ASCII 문자열로 변환합니다.
+`transliterate` 메서드는 전달된 문자열을 최대한 비슷한 ASCII 문자로 변환(음차)합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3442,7 +3442,7 @@ $email = Str::of('ⓣⓔⓢⓣ@ⓛⓐⓡⓐⓥⓔⓛ.ⓒⓞⓜ')->transliterate(
 <a name="method-fluent-str-trim"></a>
 #### `trim`
 
-`trim` 메서드는 문자열의 양쪽 끝 공백을 제거합니다. PHP의 내장 `trim` 함수와 달리, 라라벨의 `trim`은 유니코드 공백 문자도 함께 제거합니다.
+`trim` 메서드는 지정한 문자열의 앞뒤를 잘라냅니다. PHP의 기본 `trim` 함수와 달리, 라라벨의 `trim` 메서드는 유니코드 공백 문자도 함께 제거합니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -3460,7 +3460,7 @@ $string = Str::of('/Laravel/')->trim('/');
 
 #### `ltrim`
 
-`ltrim` 메서드는 문자열의 왼쪽(앞쪽) 공백을 제거합니다. PHP의 기본 `ltrim` 함수와 달리, Laravel의 `ltrim` 메서드는 유니코드 공백 문자도 함께 제거합니다.
+`ltrim` 메서드는 문자열의 왼쪽(앞쪽) 공백을 제거합니다. PHP의 기본 `ltrim` 함수와 달리, 라라벨의 `ltrim` 메서드는 유니코드 공백 문자도 함께 제거합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3477,7 +3477,7 @@ $string = Str::of('/Laravel/')->ltrim('/');
 <a name="method-fluent-str-rtrim"></a>
 #### `rtrim`
 
-`rtrim` 메서드는 전달된 문자열의 오른쪽(끝부분) 공백을 제거합니다. PHP의 기본 `rtrim` 함수와 달리, Laravel의 `rtrim` 메서드는 유니코드 공백 문자도 제거합니다.
+`rtrim` 메서드는 주어진 문자열의 오른쪽(뒤쪽) 공백을 제거합니다. PHP의 기본 `rtrim` 함수와 달리, 라라벨의 `rtrim` 메서드는 유니코드 공백 문자도 함께 제거합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3494,7 +3494,7 @@ $string = Str::of('/Laravel/')->rtrim('/');
 <a name="method-fluent-str-ucfirst"></a>
 #### `ucfirst`
 
-`ucfirst` 메서드는 문자열의 첫 글자를 대문자로 변환하여 반환합니다.
+`ucfirst` 메서드는 주어진 문자열의 첫 번째 문자를 대문자로 변환하여 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3507,7 +3507,7 @@ $string = Str::of('foo bar')->ucfirst();
 <a name="method-fluent-str-ucsplit"></a>
 #### `ucsplit`
 
-`ucsplit` 메서드는 대문자 기준으로 문자열을 분리하여 컬렉션으로 만듭니다.
+`ucsplit` 메서드는 대문자를 기준으로 주어진 문자열을 컬렉션으로 분할합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3520,7 +3520,7 @@ $string = Str::of('Foo Bar')->ucsplit();
 <a name="method-fluent-str-unwrap"></a>
 #### `unwrap`
 
-`unwrap` 메서드는 지정한 문자열로 감싸진 부분을 문자열 앞뒤에서 제거합니다.
+`unwrap` 메서드는 주어진 문자열의 시작과 끝에서 지정한 문자열을 제거합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3537,7 +3537,7 @@ Str::of('{framework: "Laravel"}')->unwrap('{', '}');
 <a name="method-fluent-str-upper"></a>
 #### `upper`
 
-`upper` 메서드는 전달된 문자열을 모두 대문자로 변환합니다.
+`upper` 메서드는 주어진 문자열을 모두 대문자로 변환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3550,7 +3550,7 @@ $adjusted = Str::of('laravel')->upper();
 <a name="method-fluent-str-when"></a>
 #### `when`
 
-`when` 메서드는 주어진 조건이 `true`인 경우, 전달한 클로저를 실행합니다. 이 클로저는 유연한 문자열 인스턴스를 매개변수로 받습니다.
+`when` 메서드는 주어진 조건이 `true`인 경우에만 지정된 클로저를 실행합니다. 이 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3564,12 +3564,12 @@ $string = Str::of('Taylor')
 // 'Taylor Otwell'
 ```
 
-필요하다면 세 번째 파라미터로 또 다른 클로저를 전달할 수 있습니다. 이 클로저는 조건이 `false`일 때 실행됩니다.
+필요하다면, 세 번째 인자로 또 다른 클로저를 전달할 수 있습니다. 이 클로저는 조건이 `false`로 평가될 때 실행됩니다.
 
 <a name="method-fluent-str-when-contains"></a>
 #### `whenContains`
 
-`whenContains` 메서드는 문자열이 특정 값을 포함할 때, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 매개변수로 받게 됩니다.
+`whenContains` 메서드는 문자열이 지정한 값을 포함할 경우, 주어진 클로저를 실행합니다. 해당 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3583,9 +3583,9 @@ $string = Str::of('tony stark')
 // 'Tony Stark'
 ```
 
-필요하다면 세 번째 인자로 클로저를 넘길 수 있으며, 문자열이 해당 값을 포함하지 않을 때 이 클로저가 실행됩니다.
+필요에 따라 `when` 메서드의 세 번째 인자로 추가 클로저를 전달할 수 있습니다. 이 클로저는 문자열에 지정한 값이 포함되지 않을 때 실행됩니다.
 
-또한, 값들의 배열을 전달하면 문자열이 그 배열 중 하나라도 포함하는지 판단하여 클로저를 실행할 수 있습니다.
+또한, 값의 배열을 전달하여 문자열이 배열 내의 값 중 하나라도 포함하는지 검사할 수도 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3602,7 +3602,7 @@ $string = Str::of('tony stark')
 <a name="method-fluent-str-when-contains-all"></a>
 #### `whenContainsAll`
 
-`whenContainsAll` 메서드는 문자열이 주어진 모든 하위 문자열을 포함하고 있을 때, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenContainsAll` 메서드는 문자열에 지정한 모든 하위 문자열이 포함되어 있을 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3616,12 +3616,12 @@ $string = Str::of('tony stark')
 // 'Tony Stark'
 ```
 
-필요하다면 세 번째 파라미터에 클로저를 전달할 수 있으며, 조건이 `false`로 평가될 때 이 클로저가 실행됩니다.
+필요하다면 세 번째 인자로 또 다른 클로저를 전달할 수 있습니다. 이 클로저는 조건이 `false`라고 판단될 때 실행됩니다.
 
 <a name="method-fluent-str-when-doesnt-end-with"></a>
 #### `whenDoesntEndWith`
 
-`whenDoesntEndWith` 메서드는 문자열이 주어진 하위 문자열로 끝나지 않을 때, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenDoesntEndWith` 메서드는 문자열이 지정한 하위 문자열로 끝나지 않을 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3637,7 +3637,7 @@ $string = Str::of('disney world')->whenDoesntEndWith('land', function (Stringabl
 <a name="method-fluent-str-when-doesnt-start-with"></a>
 #### `whenDoesntStartWith`
 
-`whenDoesntStartWith` 메서드는 문자열이 주어진 하위 문자열로 시작하지 않을 때, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenDoesntStartWith` 메서드는 문자열이 지정한 하위 문자열로 시작하지 않을 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3653,7 +3653,7 @@ $string = Str::of('disney world')->whenDoesntStartWith('sea', function (Stringab
 <a name="method-fluent-str-when-empty"></a>
 #### `whenEmpty`
 
-`whenEmpty` 메서드는 문자열이 비어 있을 때, 전달한 클로저를 실행합니다. 만약 클로저가 값을 반환하면, 이 값이 `whenEmpty`의 반환값이 됩니다. 클로저가 값을 반환하지 않으면, 유연한 문자열 인스턴스가 그대로 반환됩니다.
+`whenEmpty` 메서드는 문자열이 비어 있을 경우, 주어진 클로저를 실행합니다. 이 클로저가 값을 반환한다면, 그 값이 `whenEmpty` 메서드의 반환값이 됩니다. 만약 클로저가 값을 반환하지 않으면 플루언트 문자열 인스턴스가 그대로 반환됩니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3669,7 +3669,7 @@ $string = Str::of('  ')->trim()->whenEmpty(function (Stringable $string) {
 <a name="method-fluent-str-when-not-empty"></a>
 #### `whenNotEmpty`
 
-`whenNotEmpty` 메서드는 문자열이 비어 있지 않을 때, 전달한 클로저를 실행합니다. 만약 클로저가 값을 반환하면, 이 값이 `whenNotEmpty`의 반환값이 됩니다. 클로저가 값을 반환하지 않으면, 유연한 문자열 인스턴스가 그대로 반환됩니다.
+`whenNotEmpty` 메서드는 문자열이 비어 있지 않을 경우, 주어진 클로저를 실행합니다. 이 때 클로저가 반환한 값이 있으면 그 값이 반환되고, 반환하지 않으면 플루언트 문자열 인스턴스를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3685,7 +3685,7 @@ $string = Str::of('Framework')->whenNotEmpty(function (Stringable $string) {
 <a name="method-fluent-str-when-starts-with"></a>
 #### `whenStartsWith`
 
-`whenStartsWith` 메서드는 문자열이 주어진 하위 문자열로 시작할 때, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenStartsWith` 메서드는 문자열이 지정한 하위 문자열로 시작하는 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3701,7 +3701,7 @@ $string = Str::of('disney world')->whenStartsWith('disney', function (Stringable
 <a name="method-fluent-str-when-ends-with"></a>
 #### `whenEndsWith`
 
-`whenEndsWith` 메서드는 문자열이 주어진 하위 문자열로 끝날 때, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenEndsWith` 메서드는 문자열이 지정한 하위 문자열로 끝나는 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3717,7 +3717,7 @@ $string = Str::of('disney world')->whenEndsWith('world', function (Stringable $s
 <a name="method-fluent-str-when-exactly"></a>
 #### `whenExactly`
 
-`whenExactly` 메서드는 문자열이 주어진 문자열과 완전히 일치하면, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenExactly` 메서드는 문자열이 지정한 문자열과 정확히 일치하는 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3733,7 +3733,7 @@ $string = Str::of('laravel')->whenExactly('laravel', function (Stringable $strin
 <a name="method-fluent-str-when-not-exactly"></a>
 #### `whenNotExactly`
 
-`whenNotExactly` 메서드는 문자열이 주어진 문자열과 완전히 일치하지 않을 때, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenNotExactly` 메서드는 문자열이 지정한 문자열과 정확히 일치하지 않을 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3749,7 +3749,7 @@ $string = Str::of('framework')->whenNotExactly('laravel', function (Stringable $
 <a name="method-fluent-str-when-is"></a>
 #### `whenIs`
 
-`whenIs` 메서드는 문자열이 주어진 패턴과 일치하면(패턴 내에 *를 사용해 와일드카드 일치가 가능) 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenIs` 메서드는 문자열이 지정한 패턴과 일치하는 경우, 주어진 클로저를 실행합니다. 별표(*)를 와일드카드로 사용할 수 있습니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3765,7 +3765,7 @@ $string = Str::of('foo/bar')->whenIs('foo/*', function (Stringable $string) {
 <a name="method-fluent-str-when-is-ascii"></a>
 #### `whenIsAscii`
 
-`whenIsAscii` 메서드는 문자열이 7비트 ASCII 문자로만 이루어진 경우, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenIsAscii` 메서드는 문자열이 7비트 ASCII 문자로만 이루어져 있는 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3781,7 +3781,7 @@ $string = Str::of('laravel')->whenIsAscii(function (Stringable $string) {
 <a name="method-fluent-str-when-is-ulid"></a>
 #### `whenIsUlid`
 
-`whenIsUlid` 메서드는 문자열이 올바른 ULID인 경우, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenIsUlid` 메서드는 문자열이 올바른 ULID 형식일 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3796,7 +3796,7 @@ $string = Str::of('01gd6r360bp37zj17nxb55yv40')->whenIsUlid(function (Stringable
 <a name="method-fluent-str-when-is-uuid"></a>
 #### `whenIsUuid`
 
-`whenIsUuid` 메서드는 문자열이 올바른 UUID인 경우, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenIsUuid` 메서드는 문자열이 올바른 UUID 형식일 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3812,7 +3812,7 @@ $string = Str::of('a0a2a2d2-0b87-4a18-83f2-2529882be2de')->whenIsUuid(function (
 <a name="method-fluent-str-when-test"></a>
 #### `whenTest`
 
-`whenTest` 메서드는 문자열이 주어진 정규식 패턴과 일치할 경우, 전달한 클로저를 실행합니다. 클로저는 유연한 문자열 인스턴스를 받습니다.
+`whenTest` 메서드는 문자열이 주어진 정규 표현식과 일치하는 경우, 주어진 클로저를 실행합니다. 클로저는 플루언트 문자열 인스턴스를 인자로 받습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3828,7 +3828,7 @@ $string = Str::of('laravel framework')->whenTest('/laravel/', function (Stringab
 <a name="method-fluent-str-word-count"></a>
 #### `wordCount`
 
-`wordCount` 메서드는 문자열에 포함된 단어의 수를 반환합니다.
+`wordCount` 메서드는 문자열에 포함된 단어의 개수를 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3839,7 +3839,7 @@ Str::of('Hello, world!')->wordCount(); // 2
 <a name="method-fluent-str-words"></a>
 #### `words`
 
-`words` 메서드는 문자열의 단어 개수를 제한할 수 있습니다. 필요하다면, 잘린 문자열 뒤에 덧붙일 문자열을 추가로 지정할 수 있습니다.
+`words` 메서드는 문자열의 단어 개수를 제한합니다. 필요하다면, 잘린 문자열 뒤에 붙일 추가 문자열도 지정할 수 있습니다.
 
 ```php
 use Illuminate\Support\Str;
@@ -3852,7 +3852,7 @@ $string = Str::of('Perfectly balanced, as all things should be.')->words(3, ' >>
 <a name="method-fluent-str-wrap"></a>
 #### `wrap`
 
-`wrap` 메서드는 전달한 문자열을 기준으로, 앞뒤에 추가 문자열을 감싸서 반환합니다. 한 개의 문자열 또는 문자열 쌍을 전달할 수 있습니다.
+`wrap` 메서드는 추가 문자열 또는 문자열 쌍으로 감싸서 주어진 문자열을 반환합니다.
 
 ```php
 use Illuminate\Support\Str;
