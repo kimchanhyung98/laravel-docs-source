@@ -359,7 +359,10 @@ However, if your application uses the same "from" address for all of its emails,
 In addition, you may define a global "reply_to" address within your `config/mail.php` configuration file:
 
 ```php
-'reply_to' => ['address' => 'example@example.com', 'name' => 'App Name'],
+'reply_to' => [
+    'address' => 'example@example.com',
+    'name' => 'App Name',
+],
 ```
 
 <a name="configuring-the-view"></a>
@@ -380,7 +383,7 @@ public function content(): Content
 ```
 
 > [!NOTE]
-> You may wish to create a `resources/views/emails` directory to house all of your email templates; however, you are free to place them wherever you wish within your `resources/views` directory.
+> You may wish to create a `resources/views/mail` directory to house all of your email templates; however, you are free to place them wherever you wish within your `resources/views` directory.
 
 <a name="plain-text-emails"></a>
 #### Plain Text Emails
@@ -502,7 +505,7 @@ class OrderShipped extends Mailable
 }
 ```
 
-Once the data has been passed to the `with` method, it will automatically be available in your view, so you may access it like you would access any other data in your Blade templates:
+Once the data has been passed via the `with` parameter, it will automatically be available in your view, so you may access it like you would access any other data in your Blade templates:
 
 ```blade
 <div>
