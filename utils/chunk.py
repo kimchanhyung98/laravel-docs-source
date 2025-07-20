@@ -137,8 +137,8 @@ def orchestrate_chunk_translation(
 
     system_prompt_base = system_prompt_template.format(source_lang=source_lang, target_lang=target_lang)
 
-    # 목표 청크 크기를 800줄로 설정하여 분할
-    chunks = split_markdown_into_chunks(content, target_chunk_size=800)
+    # 목표 청크 크기를 1000줄로 설정하여 분할
+    chunks = split_markdown_into_chunks(content, target_chunk_size=1000)
 
     if not chunks:
         print(f"정보: '{original_filename_for_logging}' - 단일 청크로 처리")
