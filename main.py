@@ -11,7 +11,8 @@ import time
 
 from dotenv import load_dotenv
 
-from utils import get_git_changes, translate_file, add_files_to_git
+from utils.git import get_git_changes, add_files_to_git
+from utils.translation import translate_file
 from utils.docs import clone_laravel_docs, update_branch_docs
 
 

@@ -12,6 +12,7 @@ from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUs
 
 from utils.common import retry, timeout
 from utils.filtering import filter_markdown
+from utils.token_counter import get_token_count
 
 
 def get_translation_client():
@@ -142,8 +143,18 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
 
         print(f"번역 시작: {source_file} -> {target_file} ({line_count}줄)")
 
-        # GPT-4.1의 100만 토큰 컨텍스트를 활용하여 파일 전체를 한번에 번역
+        # 시스템 프롬프트 준비
         system_prompt = system_prompt_template.format(source_lang=source_lang, target_lang=target_lang)
+
+        # 토큰 사용량 확인
+        client, model = get_translation_client()
+        content_tokens = get_token_count(content, model)
+        system_tokens = get_token_count(system_prompt, model)
+        total_tokens = content_tokens + system_tokens
+
+        print(f"토큰 사용량 - {file_name}: {total_tokens:,} 토큰 (내용: {content_tokens:,}, 프롬프트: {system_tokens:,})")
+
+        # GPT-4.1의 100만 토큰 컨텍스트를 활용하여 파일 전체를 한번에 번역
         translated_content = translate_text_with_openai(content, system_prompt)
 
         # 번역 결과 저장
