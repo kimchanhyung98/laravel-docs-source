@@ -20,7 +20,6 @@
 
 - 지원 버전 : `master`, `12.x`, `11.x`, `10.x`, `9.x`, `8.x`
 - 업데이트 주기 : 매일 04시 (KST) [#](.github/workflows/update-docs.yml#L5)
-- 번역 엔진 : OpenAI 및 [번역 프롬프트](translation_prompt.txt)
 
 ### 필터링
 
@@ -57,12 +56,12 @@
     AZURE_OPENAI_ENDPOINT=https://your-endpoint.openai.azure.com/
     ```
 
-전체 번역 및 동기화 스크립트를 로컬 도커 환경에서 간편하게 실행해 볼 수 있습니다.
+## 실행 방법
 
-   ```bash
-   chmod +x run.sh
-   ./run.sh
-   ```
+```bash
+uv sync         # 의존성 설치
+uv run main.py  # 번역 실행
+```
 
 ## 라이선스
 
