@@ -9,7 +9,7 @@ import time
 import openai
 from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
-from utils.chunk import orchestrate_chunk_translation
+
 from utils.common import retry, timeout
 from utils.filtering import filter_markdown
 
@@ -84,10 +84,10 @@ def translate_text_with_openai(text_to_translate, system_prompt):
 
 
 @retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,))
-@timeout(seconds=600)
+@timeout(seconds=1800)  # 30분으로 증가 (대용량 파일 전체 처리를 위해)
 def translate_file(source_file, target_file, source_lang="en", target_lang="ko"):
     """OpenAI API를 사용하여, 마크다운 파일을 번역하고 저장
-    대용량 파일은 청크로 분할하여 번역
+    파일 전체를 한번에 처리 (GPT-4.1의 100만 토큰 컨텍스트 활용)
 
     Args:
         source_file: 원본 파일 경로
@@ -142,20 +142,9 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
 
         print(f"번역 시작: {source_file} -> {target_file} ({line_count}줄)")
 
-        # 대용량 파일 기준 (800줄 이상)
-        if line_count > 800:
-            print(f"대용량 파일 감지: {file_name} - 청크 분할 번역 시작")
-            translated_content = orchestrate_chunk_translation(
-                content=content,
-                source_lang=source_lang,
-                target_lang=target_lang,
-                original_filename_for_logging=file_name,
-                translate_api_call_func=translate_text_with_openai
-            )
-        else:
-
-            system_prompt = system_prompt_template.format(source_lang=source_lang, target_lang=target_lang)
-            translated_content = translate_text_with_openai(content, system_prompt)
+        # GPT-4.1의 100만 토큰 컨텍스트를 활용하여 파일 전체를 한번에 번역
+        system_prompt = system_prompt_template.format(source_lang=source_lang, target_lang=target_lang)
+        translated_content = translate_text_with_openai(content, system_prompt)
 
         # 번역 결과 저장
         with open(target_file, 'w', encoding='utf-8') as f:
