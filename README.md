@@ -23,7 +23,7 @@
 
 ### 필터링
 
-마크다운 번역 문서에 다음과 같은 필터링을 적용합니다.
+번역 시, 다음과 같은 필터링을 적용합니다.
 
 - 코드 블록 변환 : 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환합니다.
 - 스타일 태그 제거 : `<style>` 태그와 그 내용을 제거합니다.
@@ -34,34 +34,32 @@
 
 ## 실행
 
-`.env.example` 파일을 복사하여 `.env` 파일을 만들고 번역 제공자를 설정합니다.
+1. `.env.example` 파일을 복사하여 `.env` 파일을 만들고 번역 제공자를 설정합니다.
 
-1. OpenAI
+   ```dotenv
+   # OpenAI
+   TRANSLATION_PROVIDER=openai
+   TRANSLATION_MODEL=gpt-4.1
 
-    ```dotenv
-    TRANSLATION_PROVIDER=openai
-    TRANSLATION_MODEL=gpt-4.1
+   OPENAI_API_KEY=your_openai_api_key
+   ```
 
-    OPENAI_API_KEY=your_openai_api_key
-    ```
+   ```dotenv
+   # Azure OpenAI
+   TRANSLATION_PROVIDER=azure
+   TRANSLATION_MODEL=gpt-4.1
+   
+   AZURE_OPENAI_API_KEY=your_azure_api_key
+   AZURE_OPENAI_API_VERSION=2025-05-01-preview
+   AZURE_OPENAI_ENDPOINT=https://your-endpoint.openai.azure.com/
+   ```
 
-2. Azure OpenAI
+2. 의존성 설치 및 번역 실행
 
-    ```dotenv
-    TRANSLATION_PROVIDER=azure
-    TRANSLATION_MODEL=gpt-4.1
-
-    AZURE_OPENAI_API_KEY=your_azure_api_key
-    AZURE_OPENAI_API_VERSION=2025-05-01-preview
-    AZURE_OPENAI_ENDPOINT=https://your-endpoint.openai.azure.com/
-    ```
-
-## 실행 방법
-
-```bash
-uv sync         # 의존성 설치
-uv run main.py  # 번역 실행
-```
+   ```bash
+   uv sync         # 의존성 설치
+   uv run main.py  # 번역 실행
+   ```
 
 ## 라이선스
 
