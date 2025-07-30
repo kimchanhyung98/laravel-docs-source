@@ -1,49 +1,49 @@
-# 인가 (Authorization)
+# 권한부여 (Authorization)
 
 - [소개](#introduction)
-- [게이트(Gates)](#gates)
+- [게이트 (Gates)](#gates)
     - [게이트 작성하기](#writing-gates)
-    - [액션 인가하기](#authorizing-actions-via-gates)
-    - [게이트 응답 처리](#gate-responses)
-    - [게이트 검사 가로채기](#intercepting-gate-checks)
-    - [인라인 인가](#inline-authorization)
-- [정책 만들기](#creating-policies)
-    - [정책 생성하기](#generating-policies)
-    - [정책 등록하기](#registering-policies)
+    - [게이트를 통한 작업 권한 부여](#authorizing-actions-via-gates)
+    - [게이트 응답](#gate-responses)
+    - [게이트 체크 인터셉트](#intercepting-gate-checks)
+    - [인라인 권한부여](#inline-authorization)
+- [정책 만들기 (Creating Policies)](#creating-policies)
+    - [정책 생성](#generating-policies)
+    - [정책 등록](#registering-policies)
 - [정책 작성하기](#writing-policies)
     - [정책 메서드](#policy-methods)
-    - [정책 응답 처리](#policy-responses)
-    - [모델이 없는 메서드](#methods-without-models)
+    - [정책 응답](#policy-responses)
+    - [모델이 필요 없는 메서드](#methods-without-models)
     - [게스트 사용자](#guest-users)
     - [정책 필터](#policy-filters)
-- [정책을 통한 액션 인가](#authorizing-actions-using-policies)
-    - [유저 모델로 인가](#via-the-user-model)
-    - [컨트롤러 헬퍼로 인가](#via-controller-helpers)
-    - [미들웨어로 인가](#via-middleware)
-    - [Blade 템플릿에서 인가](#via-blade-templates)
-    - [추가 컨텍스트 전달](#supplying-additional-context)
+- [정책을 사용한 작업 권한 부여](#authorizing-actions-using-policies)
+    - [User 모델을 통한 방법](#via-the-user-model)
+    - [컨트롤러 헬퍼를 통한 방법](#via-controller-helpers)
+    - [미들웨어를 통한 방법](#via-middleware)
+    - [Blade 템플릿을 통한 방법](#via-blade-templates)
+    - [추가 컨텍스트 제공하기](#supplying-additional-context)
 
 <a name="introduction"></a>
 ## 소개
 
-라라벨은 기본적인 [인증](/docs/9.x/authentication) 기능을 제공할 뿐만 아니라, 특정 리소스에 대해 사용자의 액션을 인가(authorization)하는 방법도 간단하게 제공합니다. 예를 들어, 사용자가 인증(authentication)은 되어 있더라도 모든 Eloquent 모델이나 데이터베이스 레코드를 수정 또는 삭제할 권한이 있을 수는 없습니다. 라라벨의 인가 기능은 이러한 인가 확인 과정을 쉽고 체계적으로 관리할 수 있도록 해줍니다.
+Laravel은 내장된 [인증(authentication)](/docs/9.x/authentication) 서비스뿐만 아니라, 특정 리소스에 대해 사용자의 작업 권한을 간단히 검증할 수 있는 방법도 제공합니다. 예를 들어, 사용자가 인증되었더라도 해당 사용자가 애플리케이션에서 관리하는 특정 Eloquent 모델이나 데이터베이스 레코드를 업데이트하거나 삭제할 권한이 없을 수 있습니다. Laravel에서 제공하는 권한부여 기능은 이러한 유형의 권한 검증을 쉽고 체계적으로 관리할 수 있도록 돕습니다.
 
-라라벨은 두 가지 주요 인가 방법을 제공합니다: [게이트](#gates)와 [정책](#creating-policies)입니다. 게이트와 정책을 라우트와 컨트롤러에 비유할 수 있습니다. 게이트는 간단하고 클로저로 작성하는 인가 방식이며, 정책은 컨트롤러처럼 특정 모델이나 리소스를 중심으로 인가 로직을 묶는 방식입니다. 이 문서에서는 먼저 게이트를, 그 다음 정책을 살펴봅니다.
+Laravel은 권한부여를 위한 두 가지 주요 방식을 제공합니다: [게이트 (gates)](#gates)와 [정책 (policies)](#creating-policies). 게이트와 정책을 라우트(routes)와 컨트롤러(controllers)에 비유할 수 있습니다. 게이트는 간단하고 클로저 기반의 권한부여 방식을 제공하고, 정책은 컨트롤러처럼 특정 모델이나 리소스에 관한 권한부여 로직을 그룹화합니다. 이 문서에서는 게이트를 먼저 살펴보고 이후 정책을 다루겠습니다.
 
-애플리케이션을 개발할 때 게이트와 정책 중 하나만 선택하여 사용할 필요는 없습니다. 대부분의 프로젝트에서는 두 방식을 혼용해서 사용하는 것이 일반적이며, 이것은 전혀 문제가 되지 않습니다. 게이트는 주로 모델 또는 리소스와 직접적으로 연결되지 않은 액션(예: 관리자 대시보드 보기 등)에 적합합니다. 반대로, 특정 모델이나 리소스에 대해 인가를 해야 하는 경우에는 정책을 사용하는 것이 좋습니다.
+애플리케이션을 구축할 때는 게이트만 사용하거나 정책만 사용해야 하는 것은 아닙니다. 대부분의 애플리케이션은 게이트와 정책을 혼합하여 사용하는 경우가 많으며, 이는 전혀 문제되지 않습니다! 게이트는 관리자 대시보드 보기처럼 특정 모델이나 리소스와 관련 없는 작업에 적합합니다. 반면에, 특정 모델이나 리소스에 대해 작업 권한을 부여하고자 한다면 정책을 사용하는 것이 좋습니다.
 
 <a name="gates"></a>
-## 게이트(Gates)
+## 게이트 (Gates)
 
 <a name="writing-gates"></a>
 ### 게이트 작성하기
 
 > [!WARNING]
-> 게이트는 라라벨 인가 기능의 기본 개념을 이해하는 데는 좋은 방법이지만, 규모가 커지는 애플리케이션에서는 인가 규칙을 정리정돈하기 위해 [정책(policy)](#creating-policies) 사용을 권장합니다.
+> 게이트는 Laravel 권한부여 기능의 기본을 익히기에 좋습니다. 하지만 견고한 Laravel 애플리케이션 개발 시에는 권한부여 규칙을 체계적으로 정리할 수 있는 [정책](#creating-policies) 사용을 고려하세요.
 
-게이트는 사용자가 특정 액션을 수행할 권한이 있는지 판단하는 클로저(Closure) 함수입니다. 일반적으로 게이트는 `App\Providers\AuthServiceProvider` 클래스의 `boot` 메서드 안에서 `Gate` 파사드를 사용해 정의합니다. 게이트는 첫 번째 인자로 항상 사용자 인스턴스를 받고, 필요하다면 관련된 Eloquent 모델 등 추가 인자를 받을 수도 있습니다.
+게이트는 사용자가 특정 작업을 수행할 권한이 있는지 판단하는 클로저(Closure)입니다. 일반적으로, `App\Providers\AuthServiceProvider` 클래스의 `boot` 메서드 안에서 `Gate` 파사드를 사용해 게이트를 정의합니다. 게이트는 항상 첫 번째 인수로 사용자 인스턴스를 받으며, 필요에 따라 관련 Eloquent 모델과 같은 추가 인수를 받을 수도 있습니다.
 
-아래 예시에서는 사용자가 특정 `App\Models\Post` 모델을 수정할 수 있는지 확인하는 게이트를 정의합니다. 이 게이트는 사용자 `id`와 게시글을 생성한 사용자의 `user_id`를 비교하여 인가를 처리합니다:
+다음 예제에서는, 사용자가 특정 `App\Models\Post` 모델을 업데이트할 수 있는지 판단하는 게이트를 정의합니다. 이 게이트는 사용자의 `id`가 게시글을 작성한 사용자의 `user_id`와 같은지 비교하는 방식으로 권한을 확인합니다:
 
 ```
 use App\Models\Post;
@@ -65,7 +65,7 @@ public function boot()
 }
 ```
 
-컨트롤러와 마찬가지로, 게이트도 클래스 콜백 배열로 정의할 수 있습니다:
+컨트롤러처럼, 게이트는 클래스 콜백 배열을 사용해 정의할 수도 있습니다:
 
 ```
 use App\Policies\PostPolicy;
@@ -85,9 +85,9 @@ public function boot()
 ```
 
 <a name="authorizing-actions-via-gates"></a>
-### 액션 인가하기
+### 게이트를 통한 작업 권한 부여
 
-게이트를 통해 액션을 인가하려면 `Gate` 파사드의 `allows` 또는 `denies` 메서드를 사용합니다. 이때 현재 인증된 사용자를 직접 전달할 필요는 없습니다. 라라벨이 자동으로 게이트 클로저에 해당 사용자를 넘겨줍니다. 일반적으로 컨트롤러 내에서 인가가 필요한 액션 전에 게이트 인가 메서드를 호출합니다:
+게이트를 사용해 작업을 권한부여하려면 `Gate` 파사드의 `allows` 또는 `denies` 메서드를 사용합니다. 현재 인증된 사용자를 해당 메서드에 직접 전달할 필요는 없습니다. Laravel이 게이트 클로저에 사용자를 자동으로 전달합니다. 애플리케이션 컨트롤러 내에서 보통 작업 실행 전 권한 확인을 위해 이 메서드를 호출합니다:
 
 ```
 <?php
@@ -114,50 +114,50 @@ class PostController extends Controller
             abort(403);
         }
 
-        // Update the post...
+        // 게시글 업데이트 로직...
     }
 }
 ```
 
-현재 인증된 사용자 외에 다른 사용자가 인가되었는지 확인하려면 `Gate` 파사드의 `forUser` 메서드를 사용할 수 있습니다:
+현재 인증된 사용자가 아닌 다른 사용자의 권한을 확인하려면 `Gate` 파사드의 `forUser` 메서드를 사용하세요:
 
 ```
 if (Gate::forUser($user)->allows('update-post', $post)) {
-    // The user can update the post...
+    // 사용자가 게시글을 업데이트할 수 있음...
 }
 
 if (Gate::forUser($user)->denies('update-post', $post)) {
-    // The user can't update the post...
+    // 사용자가 게시글을 업데이트할 수 없음...
 }
 ```
 
-여러 액션을 동시에 인가하고 싶다면 `any` 또는 `none` 메서드를 사용할 수 있습니다:
+`any` 또는 `none` 메서드를 사용하면 여러 권한을 한 번에 확인할 수 있습니다:
 
 ```
 if (Gate::any(['update-post', 'delete-post'], $post)) {
-    // The user can update or delete the post...
+    // 사용자가 게시글을 업데이트하거나 삭제할 수 있음...
 }
 
 if (Gate::none(['update-post', 'delete-post'], $post)) {
-    // The user can't update or delete the post...
+    // 사용자가 게시글을 업데이트하거나 삭제할 수 없음...
 }
 ```
 
 <a name="authorizing-or-throwing-exceptions"></a>
-#### 인가하거나 예외 발생시키기
+#### 권한부여 또는 예외 발생
 
-액션의 인가를 시도하고 인가되지 않았을 때 자동으로 `Illuminate\Auth\Access\AuthorizationException` 예외를 던지길 원한다면, `Gate` 파사드의 `authorize` 메서드를 사용할 수 있습니다. `AuthorizationException` 인스턴스는 라라벨 예외 처리기에 의해 자동으로 403 HTTP 응답으로 변환됩니다:
+특정 작업에 대한 권한을 시도하면서, 권한이 없으면 자동으로 `Illuminate\Auth\Access\AuthorizationException` 예외를 발생시키고 싶다면 `Gate` 파사드의 `authorize` 메서드를 사용하세요. `AuthorizationException` 인스턴스는 Laravel 예외 핸들러에 의해 자동으로 403 HTTP 응답으로 변환됩니다:
 
 ```
 Gate::authorize('update-post', $post);
 
-// The action is authorized...
+// 작업 권한 부여됨...
 ```
 
 <a name="gates-supplying-additional-context"></a>
-#### 추가 컨텍스트 전달
+#### 추가 컨텍스트 제공하기
 
-게이트의 인가 메서드들(`allows`, `denies`, `check`, `any`, `none`, `authorize`, `can`, `cannot`)과 [Blade 디렉티브](#via-blade-templates)들(`@can`, `@cannot`, `@canany`)은 두 번째 인자로 배열을 받을 수 있습니다. 이 배열 요소들은 게이트 클로저에 파라미터로 전달되어, 인가 판단 시 더 많은 컨텍스트를 제공하는 데 사용할 수 있습니다:
+권한 부여를 위한 게이트 메서드(`allows`, `denies`, `check`, `any`, `none`, `authorize`, `can`, `cannot`)와 권한 관련 [Blade 디렉티브](#via-blade-templates) (`@can`, `@cannot`, `@canany`)의 두 번째 인수로 배열을 받을 수 있습니다. 이 배열 요소들은 게이트 클로저의 매개변수로 전달되어 권한 부여 판단 시 추가 컨텍스트로 활용할 수 있습니다:
 
 ```
 use App\Models\Category;
@@ -175,14 +175,14 @@ Gate::define('create-post', function (User $user, Category $category, $pinned) {
 });
 
 if (Gate::check('create-post', [$category, $pinned])) {
-    // The user can create the post...
+    // 사용자가 게시글을 생성할 수 있음...
 }
 ```
 
 <a name="gate-responses"></a>
-### 게이트 응답 처리
+### 게이트 응답
 
-지금까지 우리는 게이트가 단순히 불리언 값만을 반환하는 예시만 살펴봤습니다. 하지만 경우에 따라 더 자세한 응답, 예를 들어 에러 메시지가 필요할 수도 있습니다. 이럴 때는 게이트에서 `Illuminate\Auth\Access\Response`를 반환할 수 있습니다:
+지금까지는 단순 boolean 값을 반환하는 게이트를 살펴봤습니다. 하지만 때로는 에러 메시지를 포함한 더 상세한 응답을 반환하고 싶을 수 있습니다. 이럴 때는 게이트에서 `Illuminate\Auth\Access\Response`를 반환할 수 있습니다:
 
 ```
 use App\Models\User;
@@ -192,34 +192,34 @@ use Illuminate\Support\Facades\Gate;
 Gate::define('edit-settings', function (User $user) {
     return $user->isAdmin
                 ? Response::allow()
-                : Response::deny('You must be an administrator.');
+                : Response::deny('관리자만 접근할 수 있습니다.');
 });
 ```
 
-게이트에서 인가 응답(Response)을 반환하더라도, `Gate::allows`는 여전히 단순한 불리언 값을 반환합니다. 그러나 `Gate::inspect` 메서드를 사용하면 게이트에서 반환한 전체 인가 응답을 받아올 수 있습니다:
+권한 응답을 반환하더라도 `Gate::allows` 메서드는 여전히 단순 boolean 값을 반환합니다. 그러나 `Gate::inspect` 메서드를 사용하면 게이트에서 반환된 전체 권한 응답을 받을 수 있습니다:
 
 ```
 $response = Gate::inspect('edit-settings');
 
 if ($response->allowed()) {
-    // The action is authorized...
+    // 작업 권한 부여됨...
 } else {
     echo $response->message();
 }
 ```
 
-`Gate::authorize` 메서드를 사용할 때, 인가되지 않았을 경우 인가 응답에서 제공한 에러 메시지가 HTTP 응답에도 그대로 전달됩니다:
+`Gate::authorize` 메서드를 사용해 작업 권한이 없으면 `AuthorizationException` 예외를 던질 때, 권한 응답의 에러 메시지는 HTTP 응답에 포함되어 전파됩니다:
 
 ```
 Gate::authorize('edit-settings');
 
-// The action is authorized...
+// 작업 권한 부여됨...
 ```
 
 <a name="customising-gate-response-status"></a>
-#### HTTP 응답 상태 커스터마이즈
+#### HTTP 응답 상태 코드 커스터마이징
 
-게이트를 통해 인가가 거부되면 기본적으로 `403` HTTP 응답이 반환됩니다. 그러나 상황에 따라 다른 HTTP 상태 코드를 반환하고 싶을 수 있습니다. 이럴 때는 `Illuminate\Auth\Access\Response` 클래스의 `denyWithStatus` 정적 생성자를 사용하여 실패한 인가 검사에 대한 HTTP 상태 코드를 커스터마이즈할 수 있습니다:
+게이트에서 작업을 거부할 경우 기본으로 403 HTTP 상태 코드가 반환됩니다. 그러나 때때로 다른 HTTP 상태 코드를 응답하는 게 유용할 수 있습니다. 이럴 때 `Illuminate\Auth\Access\Response` 클래스의 `denyWithStatus` 정적 생성자를 사용해 실패 응답 코드를 지정할 수 있습니다:
 
 ```
 use App\Models\User;
@@ -233,7 +233,7 @@ Gate::define('edit-settings', function (User $user) {
 });
 ```
 
-웹 애플리케이션에서 자원을 숨기기 위해 `404` 응답을 사용하는 사례가 많으므로, 이를 위한 편의 메서드인 `denyAsNotFound`도 제공합니다:
+웹 애플리케이션에서 자원을 숨기기 위해 404 응답을 반환하는 것이 흔한 패턴이라 `denyAsNotFound` 메서드도 제공합니다:
 
 ```
 use App\Models\User;
@@ -248,9 +248,9 @@ Gate::define('edit-settings', function (User $user) {
 ```
 
 <a name="intercepting-gate-checks"></a>
-### 게이트 검사 가로채기
+### 게이트 체크 인터셉트
 
-특정 사용자에게 모든 권한을 부여하고 싶을 때가 있습니다. 이럴 때는 모든 인가 검사 전에 실행되는 클로저를 `before` 메서드로 정의할 수 있습니다:
+특정 사용자에게 모든 권한을 부여하고 싶을 때가 있습니다. 이때 `before` 메서드를 활용해 모든 권한부여 체크가 실행되기 전에 실행되는 클로저를 정의할 수 있습니다:
 
 ```
 use Illuminate\Support\Facades\Gate;
@@ -262,9 +262,9 @@ Gate::before(function ($user, $ability) {
 });
 ```
 
-`before` 클로저가 `null`이 아닌 값을 반환하면, 그 값이 인가 검사 결과로 사용됩니다.
+`before` 클로저가 `null`이 아닌 값을 반환하면 그 값이 권한 체크 결과로 간주되어 이후 권한 검사 로직은 실행되지 않습니다.
 
-또한, `after` 메서드를 사용하여 모든 인가 검사 후에 실행되는 클로저를 정의할 수 있습니다:
+마찬가지로 `after` 메서드로 모든 권한 부여 체크 후 실행될 클로저를 정의할 수 있습니다:
 
 ```
 Gate::after(function ($user, $ability, $result, $arguments) {
@@ -274,12 +274,12 @@ Gate::after(function ($user, $ability, $result, $arguments) {
 });
 ```
 
-`after` 클로저도 마찬가지로, `null`이 아닌 값을 반환하면 해당 값이 검사 결과로 사용됩니다.
+`after` 클로저도 `null`이 아닌 값을 반환하면 그 값이 결과로 간주됩니다.
 
 <a name="inline-authorization"></a>
-### 인라인 인가
+### 인라인 권한부여
 
-특정 액션에 대해 별도의 게이트를 정의하지 않고, 현재 인증된 사용자가 해당 액션을 수행할 수 있는지 간단하게 확인하고 싶을 때가 있습니다. 이런 경우 `Gate::allowIf`와 `Gate::denyIf` 메서드를 통해 "인라인" 인가 확인이 가능합니다:
+경우에 따라, 해당 작업에 대한 전용 게이트를 작성하지 않고 현재 인증된 사용자가 권한을 가지고 있는지 바로 확인하고 싶을 수 있습니다. 이럴 때는 `Gate::allowIf` 및 `Gate::denyIf` 메서드를 이용한 "인라인" 권한부여를 사용할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Gate;
@@ -289,34 +289,34 @@ Gate::allowIf(fn ($user) => $user->isAdministrator());
 Gate::denyIf(fn ($user) => $user->banned());
 ```
 
-액션이 인가되지 않았거나 인증된 사용자가 없으면, 라라벨은 자동으로 `Illuminate\Auth\Access\AuthorizationException` 예외를 발생시킵니다. 이 예외는 라라벨의 예외 처리기를 통해 403 HTTP 응답으로 자동 변환됩니다.
+권한이 없거나 현재 인증된 사용자가 없으면 Laravel은 자동으로 `Illuminate\Auth\Access\AuthorizationException` 예외를 발생시킵니다. 이 예외는 Laravel 예외 처리기에 의해 403 HTTP 응답으로 변환됩니다.
 
 <a name="creating-policies"></a>
-## 정책 만들기
+## 정책 만들기 (Creating Policies)
 
 <a name="generating-policies"></a>
-### 정책 생성하기
+### 정책 생성
 
-정책(policy)은 특정 모델 또는 리소스를 중심으로 인가 로직을 정리하는 클래스입니다. 예를 들어, 블로그 애플리케이션을 만든다면 `App\Models\Post` 모델에 대해 사용자의 글 작성, 수정 권한 등 인가를 제어하는 `App\Policies\PostPolicy` 정책 클래스를 만들 수 있습니다.
+정책은 특정 모델이나 리소스 주위에 권한부여 로직을 정리하는 클래스입니다. 예를 들어 블로그 애플리케이션을 만든다면, `App\Models\Post` 모델과 해당 모델 관련 작업(작성, 수정 등)을 권한부여하는 `App\Policies\PostPolicy` 클래스가 있을 수 있습니다.
 
-정책은 `make:policy` 아티즌 명령어로 생성할 수 있으며, 생성된 정책 클래스는 `app/Policies` 디렉터리에 저장됩니다. 이 디렉터리가 존재하지 않으면 라라벨이 자동으로 생성합니다:
+`make:policy` Artisan 명령어로 정책을 생성할 수 있으며, 생성된 정책 파일은 `app/Policies` 디렉터리에 저장됩니다. 만약 해당 디렉터리가 없다면 Laravel이 자동으로 생성합니다:
 
 ```shell
 php artisan make:policy PostPolicy
 ```
 
-`make:policy` 명령은 비어 있는 정책 클래스를 만듭니다. 리소스 보기, 생성, 수정, 삭제와 관련된 예시 메서드를 포함한 클래스를 만들고 싶다면, 명령어 실행 시 `--model` 옵션을 같이 지정하세요:
+`make:policy` 명령어는 기본적으로 비어있는 정책 클래스를 생성합니다. 만약 `--model` 옵션을 지정하면 `view`, `create`, `update`, `delete` 등 리소스와 관련된 예제 정책 메서드가 포함된 클래스를 생성합니다:
 
 ```shell
 php artisan make:policy PostPolicy --model=Post
 ```
 
 <a name="registering-policies"></a>
-### 정책 등록하기
+### 정책 등록
 
-정책 클래스를 만들었다면 이제 등록해야 합니다. 정책을 등록한다는 것은, 특정 모델 타입의 인가를 처리할 때 어떤 정책을 사용할지 라라벨에 알려주는 과정입니다.
+정책 클래스를 만든 후에는 이를 등록해야 합니다. 정책 등록은 Laravel에 특정 Eloquent 모델에 대해 어떤 정책을 사용할지 알려주는 역할을 합니다.
 
-새로운 라라벨 애플리케이션의 `App\Providers\AuthServiceProvider`에는 Eloquent 모델을 해당 정책에 매핑하는 `policies` 프로퍼티가 포함되어 있습니다. 정책 등록을 하면 라라벨이 해당 모델의 인가 처리를 위해 어떤 정책을 사용할지 알 수 있게 됩니다:
+Laravel 새 프로젝트에 포함된 `App\Providers\AuthServiceProvider` 클래스 안에는 `policies` 속성이 있어 Eloquent 모델과 정책 클래스를 매핑합니다. 정책을 등록하면 Laravel에서 해당 모델 권한부여 시 어느 정책을 참조해야 하는지 지정할 수 있습니다:
 
 ```
 <?php
@@ -356,20 +356,20 @@ class AuthServiceProvider extends ServiceProvider
 <a name="policy-auto-discovery"></a>
 #### 정책 자동 탐색
 
-모델 정책을 수동으로 등록하는 대신, 라라벨은 기본 네이밍 컨벤션만 따르면 정책을 자동으로 탐색할 수 있습니다. 구체적으로, 정책 클래스는 모델이 위치한 디렉터리 기준으로 같은 위치 또는 상위 디렉터리의 `Policies` 디렉터리에 있어야 합니다. 예를 들어, 모델은 `app/Models`에, 정책은 `app/Policies`에 둘 수 있습니다. 이 경우 라라벨은 `app/Models/Policies` 다음에 `app/Policies`에서 정책을 탐색합니다. 또한, 정책 클래스 이름은 모델명 + `Policy` 접미사를 가져야 합니다(예: `User` 모델은 `UserPolicy`).
+정책을 수동 등록하는 대신, Laravel은 모델과 정책이 표준 명명 규칙을 따르면 자동으로 정책을 찾아 사용할 수 있습니다. 구체적으로, 정책은 모델보다 상위 디렉터리(또는 같은 위치)의 `Policies` 디렉터리에 있어야 합니다. 예를 들어, 모델 파일은 `app/Models`에 있고 정책은 `app/Policies`에 있다면, Laravel은 먼저 `app/Models/Policies`를, 그다음 `app/Policies`를 확인합니다. 또한 정책 이름은 모델 이름과 같아야 하며 `Policy` 접미사가 붙어야 합니다. 예컨대 `User` 모델이면 `UserPolicy`가 대응 정책입니다.
 
-정책 자동 탐색 로직을 커스터마이즈하고 싶다면, `Gate::guessPolicyNamesUsing` 메서드를 통해 커스텀 콜백을 등록할 수 있습니다. 보통 이 메서드는 애플리케이션의 `AuthServiceProvider`의 `boot` 메서드에서 호출합니다:
+직접 정책 탐색 로직을 정의하려면 `Gate::guessPolicyNamesUsing` 메서드에 커스텀 콜백을 등록할 수 있습니다. 보통 이 메서드는 애플리케이션의 `AuthServiceProvider` 클래스의 `boot` 메서드에서 호출합니다:
 
 ```
 use Illuminate\Support\Facades\Gate;
 
 Gate::guessPolicyNamesUsing(function ($modelClass) {
-    // Return the name of the policy class for the given model...
+    // 주어진 모델에 대응하는 정책 클래스명을 반환...
 });
 ```
 
 > [!WARNING]
-> `AuthServiceProvider`에 명시적으로 매핑된 정책이 있다면, 자동 탐색된 정책보다 우선 적용됩니다.
+> 명시적으로 `AuthServiceProvider`에 등록된 정책은 자동 탐색 정책보다 우선 적용됩니다.
 
 <a name="writing-policies"></a>
 ## 정책 작성하기
@@ -377,9 +377,9 @@ Gate::guessPolicyNamesUsing(function ($modelClass) {
 <a name="policy-methods"></a>
 ### 정책 메서드
 
-정책 클래스를 등록했다면, 해당 정책이 인가할 각 액션별로 메서드를 추가할 수 있습니다. 예를 들어, `App\Models\User`가 주어진 `App\Models\Post` 인스턴스를 수정할 권한이 있는지 판단하는 `update` 메서드를 정의할 수 있습니다.
+정책 클래스가 등록되면 각 작업 권한부여를 위한 메서드를 추가할 수 있습니다. 예를 들어 `PostPolicy`에서 `update` 메서드를 정의해 특정 `App\Models\User`가 특정 `App\Models\Post`를 수정할 권한이 있는지 판단하도록 할 수 있습니다.
 
-`update` 메서드는 `User`와 `Post` 인스턴스를 인자로 받아, 사용자가 해당 글을 수정할 권한이 있는지 `true` 또는 `false`를 반환합니다. 여기서는 사용자의 `id`가 게시글의 `user_id`와 일치하는지 확인합니다:
+`update` 메서드는 `User` 인스턴스와 `Post` 인스턴스를 인수로 받고, 사용자가 해당 게시글을 수정할 권한이 있으면 `true`, 없으면 `false`를 반환해야 합니다. 예로 사용자 `id`와 게시글의 `user_id`가 같은지 확인합니다:
 
 ```
 <?php
@@ -405,17 +405,17 @@ class PostPolicy
 }
 ```
 
-이처럼 정책 메서드를 필요한 만큼 추가하면 됩니다. 예를 들어 `view`, `delete` 같은 메서드를 추가해 다양한 액션을 인가할 수 있지만, 메서드명은 자유롭게 정할 수 있습니다.
+필요에 따라 정책에 다양한 작업 메서드를 계속 추가할 수 있습니다. 예를 들어 `view`, `delete` 메서드를 추가해 여러 게시글 관련 작업 권한을 제어할 수 있습니다. 정책 메서드는 원하는 이름으로 자유롭게 작성할 수 있습니다.
 
-아티즌 콘솔에서 정책을 생성할 때 `--model` 옵션을 사용했다면, 해당 클래스에는 이미 `viewAny`, `view`, `create`, `update`, `delete`, `restore`, `forceDelete` 액션 메서드가 포함되어 있습니다.
+Artisan 콘솔에서 `--model` 옵션을 사용해 정책을 생성했다면, `viewAny`, `view`, `create`, `update`, `delete`, `restore`, `forceDelete` 메서드가 기본으로 포함되어 있습니다.
 
 > [!NOTE]
-> 모든 정책은 라라벨 [서비스 컨테이너](/docs/9.x/container)를 통해 resolve되므로, 생성자에서 필요한 의존성을 타입힌트로 선언하면 자동 주입됩니다.
+> 모든 정책은 Laravel [서비스 컨테이너](/docs/9.x/container)를 통해 해결되므로, 정책 생성자에 필요한 의존성을 타입힌트하면 자동으로 주입됩니다.
 
 <a name="policy-responses"></a>
-### 정책 응답 처리
+### 정책 응답
 
-지금까지는 정책 메서드가 단순히 불리언 값만 반환하는 형태를 봤지만, 경우에 따라 더 상세한 응답(예: 에러 메시지)이 필요할 수 있습니다. 이런 상황에서는 정책 메서드에서 `Illuminate\Auth\Access\Response` 인스턴스를 반환할 수 있습니다:
+지금까지는 단순 boolean을 반환하는 정책 메서드를 봤습니다. 하지만, 에러 메시지 등 더 자세한 응답을 반환하고 싶을 때가 있습니다. 이럴 때는 정책 메서드에서 `Illuminate\Auth\Access\Response` 인스턴스를 반환할 수 있습니다:
 
 ```
 use App\Models\Post;
@@ -433,11 +433,11 @@ public function update(User $user, Post $post)
 {
     return $user->id === $post->user_id
                 ? Response::allow()
-                : Response::deny('You do not own this post.');
+                : Response::deny('이 게시글을 소유하고 있지 않습니다.');
 }
 ```
 
-정책에서 인가 응답을 반환하더라도, `Gate::allows`는 여전히 불리언 값을 반환합니다. `Gate::inspect`를 사용하면 게이트에서 반환된 전체 인가 응답을 받아올 수 있습니다:
+정책에서 권한 응답을 반환하더라도 `Gate::allows` 메서드는 여전히 boolean 값을 반환합니다. 그러나 `Gate::inspect` 메서드를 사용하면 게이트에서 반환된 전체 권한 응답 객체를 조회할 수 있습니다:
 
 ```
 use Illuminate\Support\Facades\Gate;
@@ -445,24 +445,24 @@ use Illuminate\Support\Facades\Gate;
 $response = Gate::inspect('update', $post);
 
 if ($response->allowed()) {
-    // The action is authorized...
+    // 작업 권한 부여됨...
 } else {
     echo $response->message();
 }
 ```
 
-`Gate::authorize`를 사용할 경우, 인가되지 않았을 때 정책에서 전달한 에러 메시지가 HTTP 응답에 그대로 전달됩니다:
+`Gate::authorize` 메서드를 사용 시 권한이 없으면 `AuthorizationException` 예외가 발생하며, 응답 메시지는 HTTP 응답에 포함됩니다:
 
 ```
 Gate::authorize('update', $post);
 
-// The action is authorized...
+// 작업 권한 부여됨...
 ```
 
 <a name="customising-policy-response-status"></a>
-#### HTTP 응답 상태 커스터마이즈
+#### HTTP 응답 상태 코드 커스터마이징
 
-정책 메서드로 인가가 거부되면 기본적으로 `403` HTTP 응답이 반환됩니다. 하지만 상황에 따라 다른 HTTP 상태 코드를 반환하고 싶다면, `Illuminate\Auth\Access\Response` 클래스의 `denyWithStatus` 정적 생성자를 사용할 수 있습니다:
+정책 메서드가 권한을 거부할 때 기본으로 403 HTTP 응답이 반환됩니다. 그러나 다른 HTTP 상태 코드를 반환하고 싶을 수 있습니다. 이때 `Illuminate\Auth\Access\Response` 클래스의 `denyWithStatus` 정적 생성자를 사용해 응답 코드를 지정할 수 있습니다:
 
 ```
 use App\Models\Post;
@@ -484,7 +484,7 @@ public function update(User $user, Post $post)
 }
 ```
 
-웹 애플리케이션에서 자원 숨김 효과를 위해 `404` 응답을 자주 사용하므로, 이럴 때를 위해 `denyAsNotFound` 메서드도 제공합니다:
+웹 애플리케이션에서 자원을 숨길 때 404 응답을 반환하는 경우가 많아, `denyAsNotFound` 메서드도 편의용으로 제공합니다:
 
 ```
 use App\Models\Post;
@@ -507,9 +507,9 @@ public function update(User $user, Post $post)
 ```
 
 <a name="methods-without-models"></a>
-### 모델이 없는 메서드
+### 모델이 필요 없는 메서드
 
-일부 정책 메서드는 현재 인증된 사용자 인스턴스만 받습니다. 이런 상황은 주로 `create` 액션과 같이 새로운 모델을 생성하는 경우에 해당합니다. 예를 들어, 사용자가 글을 작성할 수 있는지 확인하려면 사용자 인스턴스만 받아 검사하면 됩니다:
+일부 정책 메서드는 현재 인증된 사용자 인스턴스만 받습니다. 이는 `create` 작업 권한부여에 가장 흔한 경우입니다. 예를 들어, 앱에서 사용자가 게시글을 아예 생성할 권한이 있는지 판단하려면, 정책 메서드에 사용자 인수만 전달합니다:
 
 ```
 /**
@@ -527,7 +527,7 @@ public function create(User $user)
 <a name="guest-users"></a>
 ### 게스트 사용자
 
-기본적으로 인증되지 않은(게스트) 사용자가 HTTP 요청을 보내면, 모든 게이트와 정책은 자동으로 `false`를 반환합니다. 하지만 사용자 인자 정의에서 "옵셔널" 타입힌트나 디폴트 `null` 값을 지정하면, 이런 인가 검사도 게이트 및 정책 내부로 넘어갈 수 있습니다:
+기본적으로, 게이트와 정책 모두 인증되지 않은 요청에 대해 자동으로 `false`를 반환합니다. 하지만 이 체크를 통과시키고 싶으면 사용자 인수에 "nullable" 타입힌트(`?User`)를 선언하거나 기본값을 `null`로 줄 수 있습니다:
 
 ```
 <?php
@@ -542,7 +542,7 @@ class PostPolicy
     /**
      * Determine if the given post can be updated by the user.
      *
-     * @param  \App\Models\User  $user
+     * @param  \App\Models\User|null  $user
      * @param  \App\Models\Post  $post
      * @return bool
      */
@@ -556,7 +556,7 @@ class PostPolicy
 <a name="policy-filters"></a>
 ### 정책 필터
 
-특정 사용자에게 정책 내 모든 액션을 인가하고 싶을 때가 있습니다. 이럴 땐 정책 클래스에 `before` 메서드를 정의하세요. 이 메서드는 정책의 다른 메서드에 앞서 호출되며, 특정 조건에서 바로 인가할 수 있습니다. 주로 애플리케이션 관리자에게 모든 권한을 부여할 때 사용합니다:
+특정 사용자에게 해당 정책 내 모든 권한을 부여하고 싶을 때가 있습니다. 이를 위해 정책 클래스에 `before` 메서드를 정의할 수 있습니다. 이 메서드는 정책 내 다른 메서드가 호출되기 전에 실행되어 권한 부여를 처리할 수 있습니다. 주로 애플리케이션 관리자에게 모든 권한을 허용할 때 사용합니다:
 
 ```
 use App\Models\User;
@@ -576,18 +576,18 @@ public function before(User $user, $ability)
 }
 ```
 
-특정 유형의 사용자에 대해 모든 인가 검사를 거부하고 싶을 때는 `before` 메서드에서 `false`를 반환하세요. `null`을 반환하면 인가 검사가 일반 정책 메서드로 전달됩니다.
+특정 유형 사용자에 대해 모든 권한을 거부하려면 `before` 메서드에서 `false`를 반환하면 됩니다. `null`을 반환하면 실제 정책 메서드로 넘어갑니다.
 
 > [!WARNING]
-> 정책 클래스의 `before` 메서드는 검사 중인 권한 이름(ability)과 동일한 이름의 메서드가 클래스에 정의되어 있지 않으면 호출되지 않습니다.
+> 권한체크하는 이름과 일치하는 메서드가 정책 클래스에 없으면 `before` 메서드는 호출되지 않습니다.
 
 <a name="authorizing-actions-using-policies"></a>
-## 정책을 통한 액션 인가
+## 정책을 사용한 작업 권한 부여
 
 <a name="via-the-user-model"></a>
-### 유저 모델로 인가
+### User 모델을 통한 방법
 
-라라벨의 기본 `App\Models\User` 모델에는 인가에 유용한 `can`과 `cannot` 메서드가 내장되어 있습니다. 이 메서드는 인가하려는 액션 이름과 관련 모델을 인자로 받습니다. 예를 들어, 사용자가 특정 `App\Models\Post` 모델을 수정할 권한이 있는지 컨트롤러 등에서 아래와 같이 확인할 수 있습니다:
+Laravel 기본 제공 `App\Models\User` 모델에는 작업 권한부여 메서드인 `can`과 `cannot`이 포함되어 있습니다. 이 메서드는 권한을 확인하려는 작업명과 관련 모델을 인수로 받습니다. 예를 들어, 사용자가 특정 `App\Models\Post` 모델을 수정할 권한이 있는지 확인하는 상황입니다. 일반적으로 컨트롤러 메서드 내에서 이 작업을 수행합니다:
 
 ```
 <?php
@@ -613,17 +613,17 @@ class PostController extends Controller
             abort(403);
         }
 
-        // Update the post...
+        // 게시글 업데이트 로직...
     }
 }
 ```
 
-해당 모델에 [정책이 등록되어 있다면](#registering-policies), `can` 메서드는 자동으로 적절한 정책을 호출해 불리언 결과를 반환합니다. 만약 정책이 없다면, 액션 이름에 해당하는 클로저 기반 게이트를 호출합니다.
+해당 모델에 [정책이 등록되어 있다면](#registering-policies), `can` 메서드는 자동으로 적절한 정책 메서드를 호출해 boolean 결과를 반환합니다. 정책이 없다면, 클로저 기반 게이트에서 같은 이름의 작업을 찾으려 시도합니다.
 
 <a name="user-model-actions-that-dont-require-models"></a>
-#### 모델 인스턴스가 필요 없는 액션
+#### 모델이 필요 없는 작업
 
-`create`와 같은 일부 액션은 모델 인스턴스를 필요로 하지 않습니다. 이런 경우에는 클래스명을 `can` 메서드에 전달하면 됩니다. 클래스명은 어떤 정책을 사용할지 찾는 데 활용됩니다:
+앞서 말했듯이, `create` 같은 일부 작업은 모델 인스턴스를 요구하지 않습니다. 이런 경우 `can` 메서드에 클래스 이름을 넘길 수 있습니다. Laravel은 권한부여 시 이 클래스 이름으로 어떤 정책을 참조해야 하는지 판단합니다:
 
 ```
 <?php
@@ -648,17 +648,17 @@ class PostController extends Controller
             abort(403);
         }
 
-        // Create the post...
+        // 게시글 생성 로직...
     }
 }
 ```
 
 <a name="via-controller-helpers"></a>
-### 컨트롤러 헬퍼로 인가
+### 컨트롤러 헬퍼를 통한 방법
 
-`App\Models\User` 모델에서 제공하는 편리한 메서드 외에도, 라라벨은 모든 컨트롤러(즉, `App\Http\Controllers\Controller`를 상속한 경우)에 `authorize`라는 유용한 메서드를 제공합니다.
+`App\Models\User` 모델에 포함된 유용한 메서드 외에도, Laravel은 `App\Http\Controllers\Controller`를 확장하는 모든 컨트롤러에 `authorize` 메서드를 제공합니다.
 
-`can`과 마찬가지로 인가하려는 액션 이름과 관련 모델을 인자로 받으며, 권한이 없으면 `Illuminate\Auth\Access\AuthorizationException` 예외를 발생시킵니다. 이 예외는 403 상태의 HTTP 응답으로 자동 변환됩니다:
+이 메서드는 권한 확인할 작업명과 관련 모델을 받습니다. 권한이 없으면 `Illuminate\Auth\Access\AuthorizationException` 예외를 던지며, Laravel 예외 핸들러가 자동으로 403 HTTP 응답으로 변환합니다:
 
 ```
 <?php
@@ -684,15 +684,15 @@ class PostController extends Controller
     {
         $this->authorize('update', $post);
 
-        // The current user can update the blog post...
+        // 현재 사용자가 해당 블로그 게시글을 수정할 수 있음...
     }
 }
 ```
 
 <a name="controller-actions-that-dont-require-models"></a>
-#### 모델 인스턴스가 필요 없는 액션
+#### 모델이 필요 없는 작업
 
-앞서 설명한 `create` 같은 정책 메서드처럼, 모델 인스턴스가 필요 없는 경우에는 클래스명을 `authorize` 메서드에 넘기면 됩니다:
+앞서 언급했듯, `create` 같은 작업은 모델 인스턴스를 요구하지 않습니다. 이런 경우 `authorize` 메서드에 클래스 이름을 지정할 수 있습니다:
 
 ```
 use App\Models\Post;
@@ -710,16 +710,16 @@ public function create(Request $request)
 {
     $this->authorize('create', Post::class);
 
-    // The current user can create blog posts...
+    // 현재 사용자가 블로그 게시글을 생성할 수 있음...
 }
 ```
 
 <a name="authorizing-resource-controllers"></a>
-#### 리소스 컨트롤러의 인가
+#### 리소스 컨트롤러 권한 부여
 
-[리소스 컨트롤러](/docs/9.x/controllers#resource-controllers)를 사용할 때 컨트롤러의 생성자에서 `authorizeResource` 메서드를 활용할 수 있습니다. 이 메서드는 해당 리소스 컨트롤러의 메서드에 적절한 `can` 미들웨어를 자동으로 연결합니다.
+[리소스 컨트롤러](/docs/9.x/controllers#resource-controllers)를 사용할 때는 컨트롤러 생성자에서 `authorizeResource` 메서드를 활용할 수 있습니다. 이 메서드는 리소스 컨트롤러의 각 메서드에 적절한 `can` 미들웨어를 자동으로 연결합니다.
 
-`authorizeResource`의 첫 번째 인자는 모델 클래스, 두 번째 인자는 라우트/요청 파라미터명(모델의 ID가 전달되는 파라미터명)입니다. 리소스 컨트롤러를 `--model` 옵션과 함께 생성했다면, 필요한 시그니처와 타입힌트가 이미 준비되어 있으므로 곧바로 사용할 수 있습니다:
+`authorizeResource`는 첫 번째 인수로 모델 클래스명, 두 번째 인수로 라우트/요청 파라미터 이름을 받습니다. 리소스 컨트롤러는 `--model` 플래그로 생성해 필요한 메서드 시그니처와 타입힌트를 포함하도록 해야 합니다:
 
 ```
 <?php
@@ -744,7 +744,7 @@ class PostController extends Controller
 }
 ```
 
-아래는 컨트롤러 메서드와 이에 매핑되는 정책 메서드의 관계입니다. 해당 컨트롤러 메서드로 요청이 라우팅되면, 대응하는 정책 메서드가 컨트롤러 메서드 실행 전 자동 호출됩니다:
+컨트롤러 메서드는 다음과 같이 해당 정책 메서드와 자동 매핑됩니다. 해당 컨트롤러 메서드에 라우팅된 요청이 들어오면 정책 메서드의 권한부여가 자동으로 수행됩니다:
 
 | 컨트롤러 메서드 | 정책 메서드 |
 | --- | --- |
@@ -757,116 +757,117 @@ class PostController extends Controller
 | destroy | delete |
 
 > [!NOTE]
-> `make:policy` 명령에 `--model` 옵션을 활용하면, 특정 모델에 대한 정책 클래스를 빠르게 생성할 수 있습니다: `php artisan make:policy PostPolicy --model=Post`
+> `make:policy` 명령어에 `--model` 옵션을 추가하면 지정 모형에 맞춘 정책 클래스를 빠르게 생성할 수 있습니다:  
+> `php artisan make:policy PostPolicy --model=Post`
 
 <a name="via-middleware"></a>
-### 미들웨어로 인가
+### 미들웨어를 통한 방법
 
-라라벨은 라우트나 컨트롤러로 요청이 도달하기 전 인가를 미리 검사하는 미들웨어를 기본 제공합니다. 기본적으로 `Illuminate\Auth\Middleware\Authorize` 미들웨어는 `App\Http\Kernel`의 `can` 키에 할당되어 있습니다. 아래는 `can` 미들웨어를 통해 사용자가 포스트를 업데이트할 권한이 있는지 확인하는 예시입니다:
+Laravel은 요청이 라우트나 컨트롤러에 도달하기 전에 권한을 검증하는 미들웨어를 제공합니다. 기본적으로 `Illuminate\Auth\Middleware\Authorize` 미들웨어가 `App\Http\Kernel`에 `can` 키로 할당되어 있습니다. `can` 미들웨어를 사용하여 사용자가 게시글을 수정할 권한이 있는지 검사하는 예제를 보겠습니다:
 
 ```
 use App\Models\Post;
 
 Route::put('/post/{post}', function (Post $post) {
-    // The current user may update the post...
+    // 현재 사용자가 게시글을 수정할 수 있음...
 })->middleware('can:update,post');
 ```
 
-여기서는 `can` 미들웨어에 두 가지 인자를 전달합니다. 첫 번째는 인가할 액션의 이름, 두 번째는 정책 메서드에 전달할 라우트 파라미터명입니다. [암시적 모델 바인딩](/docs/9.x/routing#implicit-binding)을 사용한다면 `App\Models\Post` 인스턴스가 정책 메서드에 전달됩니다. 인가가 거부되면 미들웨어는 403 상태 코드의 HTTP 응답을 반환합니다.
+위 예에서 미들웨어에 두 개의 인자를 넘깁니다. 첫 번째는 권한 부여할 작업명, 두 번째는 정책 메서드에 전달할 라우트 파라미터 이름입니다. 여기서는 [암묵적 모델 바인딩](/docs/9.x/routing#implicit-binding) 덕분에 `App\Models\Post` 모델 인스턴스가 정책 메서드에 전달됩니다. 사용자가 권한이 없으면 미들웨어가 403 HTTP 응답을 반환합니다.
 
-좀 더 편리하게, `can` 미들웨어는 `can` 메서드를 통해 라우트에 직접 붙일 수도 있습니다:
+편의상, `can` 메서드를 사용해 라우트에 미들웨어를 붙일 수도 있습니다:
 
 ```
 use App\Models\Post;
 
 Route::put('/post/{post}', function (Post $post) {
-    // The current user may update the post...
+    // 현재 사용자가 게시글을 수정할 수 있음...
 })->can('update', 'post');
 ```
 
 <a name="middleware-actions-that-dont-require-models"></a>
-#### 모델 인스턴스가 필요 없는 액션
+#### 모델이 필요 없는 작업
 
-`create` 등 일부 정책 메서드는 모델 인스턴스가 필요하지 않습니다. 이런 상황에서는 클래스명을 미들웨어에 전달하면 됩니다:
+`create` 같은 정책 메서드는 모델 인스턴스가 필요 없습니다. 이런 경우 미들웨어에 클래스 이름을 전달할 수 있습니다. 그 클래스를 바탕으로 어떤 정책을 참조할지 결정합니다:
 
 ```
 Route::post('/post', function () {
-    // The current user may create posts...
+    // 현재 사용자가 게시글을 생성할 수 있음...
 })->middleware('can:create,App\Models\Post');
 ```
 
-문자열로 전체 클래스명을 작성하는 것이 번거로울 수 있으니, `can` 메서드를 활용하여 더욱 간편하게 라우트에 미들웨어를 붙일 수 있습니다:
+미들웨어 정의에 클래스 이름 전체를 문자열로 쓰는 대신, `can` 메서드를 사용해 라우트에 미들웨어를 붙일 수도 있습니다:
 
 ```
 use App\Models\Post;
 
 Route::post('/post', function () {
-    // The current user may create posts...
+    // 현재 사용자가 게시글을 생성할 수 있음...
 })->can('create', Post::class);
 ```
 
 <a name="via-blade-templates"></a>
-### Blade 템플릿에서 인가
+### Blade 템플릿을 통한 방법
 
-Blade 템플릿 작성 시, 사용자가 특정 액션을 수행할 권한이 있는 경우에만 페이지의 일부 내용을 보여주고 싶을 수 있습니다. 예컨대, 사용자가 실제로 포스트를 수정할 수 있는 경우에만 수정 폼을 노출하고 싶을 때 `@can`, `@cannot` 디렉티브를 사용할 수 있습니다:
+Blade 템플릿 작성 시, 사용자가 특정 작업 권한을 가졌을 때만 페이지 일부분을 보여주고 싶을 수 있습니다. 예를 들어, 사용자가 게시글 수정 권한이 있을 때 수정 폼을 보여주는 경우입니다. 이때 `@can`과 `@cannot` 디렉티브를 활용할 수 있습니다:
 
 ```blade
 @can('update', $post)
-    <!-- The current user can update the post... -->
+    <!-- 현재 사용자가 게시글을 수정할 수 있음 -->
 @elsecan('create', App\Models\Post::class)
-    <!-- The current user can create new posts... -->
+    <!-- 현재 사용자가 새 게시글을 생성할 수 있음 -->
 @else
-    <!-- ... -->
+    <!-- 기타 상황 -->
 @endcan
 
 @cannot('update', $post)
-    <!-- The current user cannot update the post... -->
+    <!-- 현재 사용자가 게시글을 수정할 수 없음 -->
 @elsecannot('create', App\Models\Post::class)
-    <!-- The current user cannot create new posts... -->
+    <!-- 현재 사용자가 게시글을 생성할 수 없음 -->
 @endcannot
 ```
 
-이러한 디렉티브는 `@if`, `@unless` 문을 사용하는 대신 더 간단하게 사용할 수 있도록 준비되었습니다. 위의 `@can` 및 `@cannot` 구문은 아래와 같은 코드와 동일합니다:
+이 디렉티브는 `@if`와 `@unless` 문을 간단하게 쓴 문법입니다. 위 `@can`과 `@cannot` 문은 다음과 동등합니다:
 
 ```blade
 @if (Auth::user()->can('update', $post))
-    <!-- The current user can update the post... -->
+    <!-- 현재 사용자가 게시글을 수정할 수 있음 -->
 @endif
 
 @unless (Auth::user()->can('update', $post))
-    <!-- The current user cannot update the post... -->
+    <!-- 현재 사용자가 게시글을 수정할 수 없음 -->
 @endunless
 ```
 
-또한, 사용자에게 여러 액션 중 하나라도 권한이 있는지 확인하려면 `@canany` 디렉티브를 사용하세요:
+여러 작업 중 하나라도 권한이 있는지 확인하려면 `@canany` 디렉티브를 사용할 수 있습니다:
 
 ```blade
 @canany(['update', 'view', 'delete'], $post)
-    <!-- The current user can update, view, or delete the post... -->
+    <!-- 현재 사용자가 게시글을 수정, 조회, 삭제할 수 있음 -->
 @elsecanany(['create'], \App\Models\Post::class)
-    <!-- The current user can create a post... -->
+    <!-- 현재 사용자가 게시글을 생성할 수 있음 -->
 @endcanany
 ```
 
 <a name="blade-actions-that-dont-require-models"></a>
-#### 모델 인스턴스가 필요 없는 액션
+#### 모델이 필요 없는 작업
 
-다른 인가 방법과 마찬가지로, 액션에 모델이 필요 없는 경우 `@can`, `@cannot` 디렉티브에 클래스명을 넘길 수 있습니다:
+대부분 권한부여 메서드와 마찬가지로 작업에 모델 인스턴스가 필요 없을 때 클래스 이름을 `@can`과 `@cannot`에 넘길 수 있습니다:
 
 ```blade
 @can('create', App\Models\Post::class)
-    <!-- The current user can create posts... -->
+    <!-- 현재 사용자가 게시글을 생성할 수 있음 -->
 @endcan
 
 @cannot('create', App\Models\Post::class)
-    <!-- The current user can't create posts... -->
+    <!-- 현재 사용자가 게시글을 생성할 수 없음 -->
 @endcannot
 ```
 
 <a name="supplying-additional-context"></a>
-### 추가 컨텍스트 전달
+### 추가 컨텍스트 제공하기
 
-정책을 사용하여 액션을 인가할 때, 다양한 인가 함수나 헬퍼의 두 번째 인자로 배열을 전달할 수 있습니다. 배열의 첫 번째 요소는 사용할 정책을 결정하는 데 쓰이고, 나머지 요소들은 정책 메서드의 인자로 넘어가 인가 결정 시 추가 컨텍스트로 활용됩니다. 예를 들어, 추가로 `$category` 파라미터를 받는 `PostPolicy`의 예시는 다음과 같습니다:
+정책을 활용해 작업 권한을 확인할 때, 여러 인자를 배열로 전달할 수 있습니다. 배열의 첫 번째 요소는 정책을 결정하는 데 사용하며, 나머지 요소들은 정책 메서드에 추가 인수로 전달되어 권한 판단에 참고할 수 있습니다. 예를 들어 다음은 추가 매개변수 `$category`를 포함하는 `PostPolicy` 메서드입니다:
 
 ```
 /**
@@ -884,7 +885,7 @@ public function update(User $user, Post $post, int $category)
 }
 ```
 
-인증된 사용자가 블로그 포스트를 업데이트할 수 있는지 확인할 때는 아래와 같이 정책 메서드를 호출합니다:
+현재 인증 사용자 권한을 확인할 때 위 정책 메서드를 호출하는 예시는 다음과 같습니다:
 
 ```
 /**
@@ -900,6 +901,6 @@ public function update(Request $request, Post $post)
 {
     $this->authorize('update', [$post, $request->category]);
 
-    // The current user can update the blog post...
+    // 현재 사용자가 블로그 게시글을 수정할 수 있음...
 }
 ```

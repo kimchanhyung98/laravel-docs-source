@@ -1,28 +1,28 @@
-# Eloquent: 팩토리 (Eloquent: Factories)
+# Eloquent: 팩토리 (Factories)
 
 - [소개](#introduction)
 - [모델 팩토리 정의하기](#defining-model-factories)
     - [팩토리 생성하기](#generating-factories)
-    - [팩토리 상태(state) 사용하기](#factory-states)
-    - [팩토리 콜백(callbacks)](#factory-callbacks)
-- [팩토리를 사용한 모델 생성](#creating-models-using-factories)
-    - [모델 인스턴스화하기](#instantiating-models)
-    - [모델 저장하기](#persisting-models)
+    - [팩토리 상태(State)](#factory-states)
+    - [팩토리 콜백(Callbacks)](#factory-callbacks)
+- [팩토리를 사용해 모델 생성하기](#creating-models-using-factories)
+    - [모델 인스턴스 생성하기](#instantiating-models)
+    - [모델 영속화하기](#persisting-models)
     - [시퀀스(Sequences)](#sequences)
-- [팩토리의 연관관계 다루기](#factory-relationships)
-    - [Has Many 연관관계 정의](#has-many-relationships)
-    - [Belongs To 연관관계 정의](#belongs-to-relationships)
-    - [Many to Many 연관관계 정의](#many-to-many-relationships)
-    - [폴리모픽 연관관계(Polymorphic Relationships)](#polymorphic-relationships)
-    - [팩토리에서 연관관계 정의하기](#defining-relationships-within-factories)
-    - [관계에서 기존 모델 재활용하기](#recycling-an-existing-model-for-relationships)
+- [팩토리 관계(Relationships)](#factory-relationships)
+    - [Has Many 관계](#has-many-relationships)
+    - [Belongs To 관계](#belongs-to-relationships)
+    - [Many to Many 관계](#many-to-many-relationships)
+    - [다형성(Polymorphic) 관계](#polymorphic-relationships)
+    - [팩토리 내에서 관계 정의하기](#defining-relationships-within-factories)
+    - [관계에 기존 모델 재활용하기](#recycling-an-existing-model-for-relationships)
 
 <a name="introduction"></a>
 ## 소개
 
-애플리케이션을 테스트하거나 데이터베이스를 시딩할 때, 데이터베이스에 몇 개의 레코드를 삽입해야 할 수 있습니다. 각 컬럼의 값을 일일이 지정하는 대신, 라라벨에서는 각 [Eloquent 모델](/docs/10.x/eloquent)에 대해 모델 팩토리를 정의하여 기본 속성 값을 지정할 수 있습니다.
+애플리케이션을 테스트하거나 데이터베이스에 시드 데이터를 넣을 때, 데이터베이스에 몇 개의 레코드를 삽입할 필요가 있습니다. 각 컬럼 값을 직접 지정하는 대신, 라라벨은 [Eloquent 모델](/docs/10.x/eloquent)마다 기본 속성 집합을 모델 팩토리를 통해 정의할 수 있도록 합니다.
 
-팩토리 작성 예를 보고 싶다면, 애플리케이션의 `database/factories/UserFactory.php` 파일을 확인해 보시기 바랍니다. 이 팩토리는 모든 새로운 라라벨 프로젝트에 포함되어 있으며 아래와 같은 정의를 가지고 있습니다:
+팩토리 작성 예시는 애플리케이션 내 `database/factories/UserFactory.php` 파일을 참고하세요. 이 팩토리는 모든 새 Laravel 애플리케이션에 기본 포함되어 있으며 다음과 같은 정의를 포함합니다:
 
 ```
 namespace Database\Factories;
@@ -50,12 +50,12 @@ class UserFactory extends Factory
 }
 ```
 
-보시다시피, 팩토리는 기본적으로 라라벨의 팩토리 기본 클래스를 상속받아 `definition` 메서드를 정의하는 클래스입니다. `definition` 메서드는 팩토리로 모델을 생성할 때 적용할 기본 속성 값을 반환합니다.
+기본적으로 팩토리는 Laravel의 기본 팩토리 클래스를 상속받는 클래스이며, `definition` 메서드를 통해 모델 생성 시 적용할 기본 속성값 집합을 반환합니다.
 
-팩토리에서는 `fake` 헬퍼를 통해 [Faker](https://github.com/FakerPHP/Faker) PHP 라이브러리를 사용할 수 있습니다. 이를 통해 테스트 및 데이터 시딩을 위해 여러 종류의 임의 데이터를 생성할 수 있습니다.
+또한 `fake` 헬퍼를 통해 [Faker](https://github.com/FakerPHP/Faker) PHP 라이브러리를 사용할 수 있으며, 이를 통해 테스트 및 시드 데이터 생성에 다양한 종류의 임의 데이터를 편리하게 생성할 수 있습니다.
 
-> [!NOTE]
-> 애플리케이션의 Faker 로케일(locale)은 `config/app.php` 설정 파일에 `faker_locale` 옵션을 추가하여 설정할 수 있습니다.
+> [!NOTE]  
+> `config/app.php` 설정 파일에 `faker_locale` 옵션을 추가하여 Faker의 로케일(locale)을 설정할 수 있습니다.
 
 <a name="defining-model-factories"></a>
 ## 모델 팩토리 정의하기
@@ -63,27 +63,27 @@ class UserFactory extends Factory
 <a name="generating-factories"></a>
 ### 팩토리 생성하기
 
-팩토리를 생성하려면, `make:factory` [Artisan 명령어](/docs/10.x/artisan)를 실행합니다:
+팩토리를 생성하려면 `make:factory` Artisan 명령어를 실행하세요:
 
 ```shell
 php artisan make:factory PostFactory
 ```
 
-새로 생성된 팩토리 클래스는 `database/factories` 디렉터리에 생성됩니다.
+생성된 팩토리 클래스는 `database/factories` 디렉토리에 위치합니다.
 
 <a name="factory-and-model-discovery-conventions"></a>
-#### 모델과 팩토리의 관례
+#### 모델 및 팩토리 자동 연결 규칙
 
-팩토리를 정의한 후에는, 모델에 `Illuminate\Database\Eloquent\Factories\HasFactory` 트레이트를 적용하면 제공되는 정적 `factory` 메서드를 사용하여 해당 모델의 팩토리 인스턴스를 생성할 수 있습니다.
+팩토리를 정의한 후에는, 모델에 포함된 `Illuminate\Database\Eloquent\Factories\HasFactory` 트레이트가 제공하는 정적 `factory` 메서드를 통해 해당 모델의 팩토리 인스턴스를 생성할 수 있습니다.
 
-`HasFactory` 트레이트의 `factory` 메서드는 관례를 기반으로, 할당된 모델에 대한 적절한 팩토리를 찾습니다. 구체적으로 이 메서드는 `Database\Factories` 네임스페이스 아래에서 모델명과 동일하면서 `Factory`로 끝나는 클래스를 찾습니다. 만약 이러한 관례가 애플리케이션에 맞지 않으면, 모델에서 `newFactory` 메서드를 직접 오버라이드(재정의)하여 해당 모델에 대한 팩토리 인스턴스를 직접 반환할 수 있습니다:
+`HasFactory` 트레이트의 `factory` 메서드는 규칙에 따라 적절한 팩토리를 탐색합니다. 기본적으로 `Database\Factories` 네임스페이스 내에서 모델명과 같은 이름에 `Factory`가 접미된 클래스를 찾습니다. 만약 이 규칙이 적용되지 않는 경우, 모델에서 `newFactory` 메서드를 재정의하여 직접 팩토리 인스턴스를 반환할 수 있습니다:
 
 ```
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Database\Factories\Administration\FlightFactory;
 
 /**
- * Create a new factory instance for the model.
+ * 모델에 대한 새 팩토리 인스턴스 생성
  */
 protected static function newFactory(): Factory
 {
@@ -91,7 +91,7 @@ protected static function newFactory(): Factory
 }
 ```
 
-그리고, 해당 팩토리에서 `model` 속성을 명시적으로 지정해줍니다:
+그 후, 해당 팩토리 클래스 내에 `model` 속성을 정의하세요:
 
 ```
 use App\Administration\Flight;
@@ -100,7 +100,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class FlightFactory extends Factory
 {
     /**
-     * The name of the factory's corresponding model.
+     * 팩토리가 대응하는 모델 이름
      *
      * @var class-string<\Illuminate\Database\Eloquent\Model>
      */
@@ -109,17 +109,17 @@ class FlightFactory extends Factory
 ```
 
 <a name="factory-states"></a>
-### 팩토리 상태(state) 사용하기
+### 팩토리 상태(State)
 
-상태(state) 조작 메서드를 사용하면 하나의 모델 팩토리에 대해 다양한 변경점을 조합해서 적용할 수 있습니다. 예를 들어, `Database\Factories\UserFactory` 팩토리에 기본 속성 중 하나를 변경하는 `suspended` 상태 메서드를 정의할 수 있습니다.
+상태(State) 조작 메서드는 팩토리에 적용할 수 있는 개별적 변경 사항을 정의할 때 사용합니다. 예를 들어 `Database\Factories\UserFactory`에 `suspended` 상태 메서드를 추가하여 기본 속성 중 하나를 변경할 수 있습니다.
 
-상태 변환 메서드는 일반적으로 라라벨의 팩토리 기본 클래스에서 제공하는 `state` 메서드를 호출합니다. `state` 메서드는 팩토리에 정의된 속성 배열을 입력으로 받는 클로저(익명 함수)를 인자로 받고, 수정할 속성을 포함한 배열을 반환해야 합니다:
+보통 상태 메서드는 Laravel 기본 팩토리 클래스가 제공하는 `state` 메서드를 호출합니다. `state`는 팩토리의 순수 속성 배열을 인자로 받아 변경할 속성 배열을 반환하는 클로저를 전달받습니다:
 
 ```
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Indicate that the user is suspended.
+ * 사용자의 정지(suspended) 상태를 나타냄
  */
 public function suspended(): Factory
 {
@@ -132,9 +132,9 @@ public function suspended(): Factory
 ```
 
 <a name="trashed-state"></a>
-#### "Trashed" 상태
+#### "Soft Deleted(휴지통)" 상태
 
-만약 Eloquent 모델이 [소프트 삭제](/docs/10.x/eloquent#soft-deleting)를 지원한다면, 내장된 `trashed` 상태 메서드를 호출하여 생성된 모델이 소프트 삭제된 상태가 되도록 할 수 있습니다. 별도로 `trashed` 상태를 정의하지 않아도 모든 팩토리에서 자동으로 사용할 수 있습니다:
+만약 모델에서 [소프트 삭제(soft delete)](/docs/10.x/eloquent#soft-deleting)를 지원한다면, 내장된 `trashed` 상태 메서드를 호출해 이미 "소프트 삭제"된 상태로 모델을 생성할 수 있습니다. 이 `trashed` 상태 메서드는 모든 팩토리에 자동 제공되므로 별도 정의가 필요 없습니다:
 
 ```
 use App\Models\User;
@@ -143,9 +143,9 @@ $user = User::factory()->trashed()->create();
 ```
 
 <a name="factory-callbacks"></a>
-### 팩토리 콜백(callbacks)
+### 팩토리 콜백(Callbacks)
 
-팩토리 콜백은 `afterMaking`과 `afterCreating` 메서드를 사용해 등록하며, 모델을 만들거나 생성한 후에 추가적인 작업을 수행할 수 있도록 도와줍니다. 이러한 콜백은 팩토리 클래스에서 `configure` 메서드를 정의하여 등록하며, 팩토리가 인스턴스화될 때 라라벨이 자동으로 호출합니다:
+팩토리 콜백은 `afterMaking` 또는 `afterCreating` 메서드로 등록하며, 모델이 만들어지거나 생성된 후 추가 작업을 수행할 때 사용합니다. 이러한 콜백은 팩토리 클래스 내 `configure` 메서드를 정의해 자동으로 등록하는 방식을 권장합니다. `configure` 메서드는 팩토리 인스턴스 생성 시 Laravel에 의해 호출됩니다:
 
 ```
 namespace Database\Factories;
@@ -156,14 +156,14 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class UserFactory extends Factory
 {
     /**
-     * Configure the model factory.
+     * 팩토리 구성 메서드
      */
     public function configure(): static
     {
         return $this->afterMaking(function (User $user) {
-            // ...
+            // 모델이 만들어진 후 실행할 작업
         })->afterCreating(function (User $user) {
-            // ...
+            // 모델이 데이터베이스에 저장된 후 실행할 작업
         });
     }
 
@@ -171,14 +171,14 @@ class UserFactory extends Factory
 }
 ```
 
-또한, 개별 상태(state) 메서드에서도 팩토리 콜백을 등록할 수 있습니다. 이를 사용하면 특정 상태에서만 필요한 추가 작업을 수행할 수 있습니다:
+상태 메서드 내에서도 콜백을 등록할 수 있습니다. 이는 특정 상태일 때만 실행되는 추가 작업을 정의할 때 유용합니다:
 
 ```
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Indicate that the user is suspended.
+ * 사용자의 정지 상태를 나타냄
  */
 public function suspended(): Factory
 {
@@ -187,20 +187,20 @@ public function suspended(): Factory
             'account_status' => 'suspended',
         ];
     })->afterMaking(function (User $user) {
-        // ...
+        // 상태별 추가 작업(모델 생성 후)
     })->afterCreating(function (User $user) {
-        // ...
+        // 상태별 추가 작업(모델 저장 후)
     });
 }
 ```
 
 <a name="creating-models-using-factories"></a>
-## 팩토리를 사용한 모델 생성
+## 팩토리를 사용해 모델 생성하기
 
 <a name="instantiating-models"></a>
-### 모델 인스턴스화하기
+### 모델 인스턴스 생성하기
 
-팩토리를 정의했다면, `Illuminate\Database\Eloquent\Factories\HasFactory` 트레이트를 추가한 모델의 정적 `factory` 메서드를 사용하여 팩토리 인스턴스를 생성할 수 있습니다. 몇 가지 예시를 살펴보겠습니다. 먼저, `make` 메서드로 데이터베이스에 저장하지 않고 모델 인스턴스만 생성해보겠습니다:
+팩토리를 정의했다면, `Illuminate\Database\Eloquent\Factories\HasFactory` 트레이트가 모델에 제공하는 정적 `factory` 메서드를 사용해 해당 모델 팩토리 인스턴스를 생성할 수 있습니다. 다음 예시는 `make` 메서드를 활용해 데이터베이스에 저장하지 않고 모델 인스턴스를 만드는 방법입니다:
 
 ```
 use App\Models\User;
@@ -208,25 +208,25 @@ use App\Models\User;
 $user = User::factory()->make();
 ```
 
-`count` 메서드를 이용하면 여러 개의 모델 컬렉션을 생성할 수 있습니다:
+`count` 메서드를 사용하면 여러 개의 모델 컬렉션을 생성할 수 있습니다:
 
 ```
 $users = User::factory()->count(3)->make();
 ```
 
 <a name="applying-states"></a>
-#### 상태(state) 적용하기
+#### 상태 적용하기
 
-정의한 [상태](#factory-states)를 모델에 적용할 수도 있습니다. 여러 상태 변환을 동시에 적용하고 싶다면, 원하는 상태 변환 메서드를 연이어 호출하면 됩니다:
+팩토리에서 정의한 [상태(State)](#factory-states)를 모델에 적용할 수도 있습니다. 여러 상태를 한 번에 적용하고 싶다면 상태 변환 메서드를 연달아 호출하면 됩니다:
 
 ```
 $users = User::factory()->count(5)->suspended()->make();
 ```
 
 <a name="overriding-attributes"></a>
-#### 속성 덮어쓰기
+#### 속성 재정의하기
 
-모델의 기본 값을 일부만 직접 지정하고 싶다면, `make` 메서드에 배열로 값을 지정해주면 됩니다. 지정한 속성만 새 값으로 덮어쓰고, 나머지는 팩토리에서 지정한 기본 값이 유지됩니다:
+기본값 중 일부만 변경하고 싶다면 `make` 메서드에 속성 배열을 넘겨 재정의할 수 있습니다. 지정한 속성만 바뀌고, 나머지는 팩토리 기본값이 유지됩니다:
 
 ```
 $user = User::factory()->make([
@@ -234,7 +234,7 @@ $user = User::factory()->make([
 ]);
 ```
 
-또는, 팩토리 인스턴스에서 직접 `state` 메서드를 호출하여 인라인 상태 변환을 수행할 수도 있습니다:
+또는 `state` 메서드를 직접 호출하여 인라인 상태 변환도 가능합니다:
 
 ```
 $user = User::factory()->state([
@@ -242,25 +242,25 @@ $user = User::factory()->state([
 ])->make();
 ```
 
-> [!NOTE]
+> [!NOTE]  
 > 팩토리를 통해 모델을 생성할 때는 [대량 할당 보호](/docs/10.x/eloquent#mass-assignment)가 자동으로 비활성화됩니다.
 
 <a name="persisting-models"></a>
-### 모델 저장하기
+### 모델 영속화하기
 
-`create` 메서드를 사용하면, 모델 인스턴스를 생성하고 Eloquent의 `save` 메서드로 데이터베이스에 저장합니다:
+`create` 메서드는 모델 인스턴스를 생성하고 Eloquent의 `save` 메서드를 사용해 데이터베이스에 저장합니다:
 
 ```
 use App\Models\User;
 
-// 단일 App\Models\User 인스턴스 생성...
+// 단일 User 인스턴스 생성 및 저장
 $user = User::factory()->create();
 
-// 세 개의 App\Models\User 인스턴스 생성...
+// 세 개의 User 인스턴스 생성 및 저장
 $users = User::factory()->count(3)->create();
 ```
 
-`create` 메서드에도 속성 배열을 넘겨주어 팩토리의 기본 속성 값을 덮어쓸 수 있습니다:
+`create` 메서드에도 속성 배열을 전달해 기본값을 재정의할 수 있습니다:
 
 ```
 $user = User::factory()->create([
@@ -271,7 +271,7 @@ $user = User::factory()->create([
 <a name="sequences"></a>
 ### 시퀀스(Sequences)
 
-여러 모델을 생성할 때 특정 속성 값을 반복적으로 교차 변경하고 싶을 때는, 상태 변환을 시퀀스(Sequence)로 정의할 수 있습니다. 예를 들어, 사용자 각각의 `admin` 컬럼 값을 `Y`와 `N`으로 번갈아 설정하고 싶다면 다음과 같이 작성할 수 있습니다:
+모델 생성 시 특정 속성값을 번갈아 사용하고 싶을 때 시퀀스 상태 변환을 활용할 수 있습니다. 예를 들어, `admin` 컬럼을 생성된 사용자마다 `Y`와 `N`으로 번갈아 지정하려면 다음과 같이 작성합니다:
 
 ```
 use App\Models\User;
@@ -286,9 +286,9 @@ $users = User::factory()
                 ->create();
 ```
 
-위 예제에서는 5명의 사용자는 `admin` 값이 `Y`, 나머지 5명은 `N`으로 설정됩니다.
+위 예시에서는 `admin` 값이 `Y`인 사용자가 5명, `N`인 사용자가 5명 생성됩니다.
 
-필요하다면 시퀀스 값으로 클로저(익명 함수)를 사용할 수도 있습니다. 시퀀스를 사용할 때마다 클로저가 실행되어 새로운 값을 반환합니다:
+필요하다면 시퀀스 값으로 클로저를 사용할 수 있습니다. 이 클로저는 시퀀스가 새 값을 필요로 할 때마다 호출됩니다:
 
 ```
 use Illuminate\Database\Eloquent\Factories\Sequence;
@@ -301,7 +301,7 @@ $users = User::factory()
                 ->create();
 ```
 
-시퀀스 클로저 내부에서는 `$sequence` 인스턴스의 `$index` 또는 `$count` 속성에 접근할 수 있습니다. `$index`는 지금까지 시퀀스가 몇 번째 순환인지, `$count`는 시퀀스가 전체 몇 번 실행될 것인지를 나타냅니다:
+시퀀스 클로저 내에서는 주입된 `$sequence` 인스턴스의 `$index` 또는 `$count` 프로퍼티에 접근할 수 있습니다. `$index`는 지금까지 반복한 횟수, `$count`는 시퀀스가 호출될 총 횟수를 뜻합니다:
 
 ```
 $users = User::factory()
@@ -310,7 +310,7 @@ $users = User::factory()
                 ->create();
 ```
 
-편의상 `sequence` 메서드를 사용해도 동일한 효과를 낼 수 있습니다. `sequence` 메서드는 내부적으로 `state`를 호출하며, 클로저 또는 속성 배열들을 인자로 받습니다:
+편의를 위해 `sequence` 메서드는 내부적으로 `state` 메서드를 호출합니다. `sequence`는 클로저 또는 배열로 시퀀스 속성들을 받습니다:
 
 ```
 $users = User::factory()
@@ -323,12 +323,12 @@ $users = User::factory()
 ```
 
 <a name="factory-relationships"></a>
-## 팩토리의 연관관계 다루기
+## 팩토리 관계(Relationships)
 
 <a name="has-many-relationships"></a>
-### Has Many 연관관계 정의
+### Has Many 관계
 
-이제 라라벨의 fluet한 팩토리 메서드를 사용해서 Eloquent 모델 간의 연관관계를 어떻게 구성할 수 있는지 알아보겠습니다. 먼저, `App\Models\User` 모델과 `App\Models\Post` 모델을 간단히 가정하겠습니다. 그리고 `User` 모델이 `Post`와 `hasMany` 연관관계를 가진다고 하면, 아래와 같이 `has` 메서드로 게시글 3개를 가진 사용자를 생성할 수 있습니다. `has` 메서드에는 팩토리 인스턴스를 전달합니다:
+다음으로, Laravel 팩토리의 체인 메서드를 이용해 Eloquent 모델 관계를 어떻게 구성하는지 살펴보겠습니다. 예를 들어, 애플리케이션에 `App\Models\User` 모델과 `App\Models\Post` 모델이 있고, `User`가 `hasMany` 관계로 `Post`를 소유한다고 합시다. `has` 메서드를 이용해 3개의 게시글을 가진 사용자를 생성할 수 있습니다. `has` 메서드는 팩토리 인스턴스를 인자로 받습니다:
 
 ```
 use App\Models\Post;
@@ -339,7 +339,7 @@ $user = User::factory()
             ->create();
 ```
 
-관례상, `has` 메서드에 `Post` 모델을 전달하면 라라벨은 `User` 모델이 `posts` 메서드를 통해 해당 연관관계를 정의한 것으로 간주합니다. 필요하다면 조작할 연관관계 메서드명을 명시적으로 지정할 수도 있습니다:
+관례에 따라 `has` 메서드에 `Post` 모델 팩토리를 전달하면, Laravel은 `User` 모델에 `posts` 메서드가 있어야 한다고 가정해 관계를 맺습니다. 필요하면 두 번째 인자로 관계 메서드명을 명시적으로 지정할 수도 있습니다:
 
 ```
 $user = User::factory()
@@ -347,7 +347,7 @@ $user = User::factory()
             ->create();
 ```
 
-물론, 연관된 모델에도 상태(state) 변환을 적용할 수 있습니다. 또한, 만약 연관된 모델의 상태 변경 시 상위(부모) 모델에 접근해야 한다면, 클로저 기반 상태 변환도 사용할 수 있습니다:
+관련 모델에 상태 변환을 적용할 수도 있고, 부모 모델에 접근하는 클로저형 상태 변환도 가능합니다:
 
 ```
 $user = User::factory()
@@ -364,7 +364,7 @@ $user = User::factory()
 <a name="has-many-relationships-using-magic-methods"></a>
 #### 매직 메서드 사용하기
 
-편의상, 라라벨이 제공하는 연관관계용 매직 팩토리 메서드를 이용해 관계를 생성할 수도 있습니다. 아래와 같은 예시는 `posts` 연관관계 메서드를 관례에 따라 자동으로 사용합니다:
+Laravel은 팩토리 관계용 매직 메서드도 제공합니다. 예를 들어 다음 코드는 `User` 모델의 `posts` 관계를 통해 게시글 모델들을 쉽게 생성합니다:
 
 ```
 $user = User::factory()
@@ -372,7 +372,7 @@ $user = User::factory()
             ->create();
 ```
 
-매직 메서드를 사용할 때, 관련 모델의 속성을 배열로 덮어쓸 수도 있습니다:
+매직 메서드에는 관계 모델들의 속성을 재정의할 배열을 넘길 수도 있습니다:
 
 ```
 $user = User::factory()
@@ -382,7 +382,7 @@ $user = User::factory()
             ->create();
 ```
 
-상태 변환에서 부모 모델에 접근이 필요한 경우, 클로저로 두 번째 인자를 전달할 수도 있습니다:
+부모 모델에 접근해야 하는 상태 변환도 클로저로 줄 수 있습니다:
 
 ```
 $user = User::factory()
@@ -393,9 +393,9 @@ $user = User::factory()
 ```
 
 <a name="belongs-to-relationships"></a>
-### Belongs To 연관관계 정의
+### Belongs To 관계
 
-"has many" 연관관계를 다루는 방법을 살펴봤다면, 이제 그 반대인 "belongs to" 관계도 정의해보겠습니다. `for` 메서드를 사용하면 팩토리로 생성된 모델이 소속될 부모 모델을 지정할 수 있습니다. 예를 들어, 하나의 사용자에게 속한 3개의 `App\Models\Post` 모델 인스턴스를 만들 수 있습니다:
+이번에는 `has many` 관계의 반대 방향인 `belongsTo` 관계에 대해 알아보겠습니다. `for` 메서드는 팩토리 생성 모델이 속한 부모 모델을 정의하는 데 사용됩니다. 예를 들어, 단일 사용자에게 속한 3개의 게시글을 생성할 때 다음과 같이 작성합니다:
 
 ```
 use App\Models\Post;
@@ -409,7 +409,7 @@ $posts = Post::factory()
             ->create();
 ```
 
-이미 부모 모델 인스턴스를 가지고 있다면, 해당 인스턴스를 직접 `for` 메서드에 전달해도 됩니다:
+이미 부모 모델 인스턴스가 있는 경우 `for`에 전달하여 관계를 설정할 수 있습니다:
 
 ```
 $user = User::factory()->create();
@@ -423,7 +423,7 @@ $posts = Post::factory()
 <a name="belongs-to-relationships-using-magic-methods"></a>
 #### 매직 메서드 사용하기
 
-편리하게도 매직 메서드를 사용해서 "belongs to" 관계도 정의할 수 있습니다. 아래 예시에서는 `user` 관계명을 자동으로 적용해 3개의 게시글이 동일한 사용자를 참조하도록 합니다:
+`belongsTo` 관계도 매직 메서드를 사용할 수 있습니다. 다음 코드는 `Post` 모델의 `user` 관계로 세 개의 게시글을 생성합니다:
 
 ```
 $posts = Post::factory()
@@ -435,9 +435,9 @@ $posts = Post::factory()
 ```
 
 <a name="many-to-many-relationships"></a>
-### Many to Many 연관관계 정의
+### Many to Many 관계
 
-[Has many 연관관계](#has-many-relationships)와 마찬가지로, "many to many" 관계도 `has` 메서드를 사용해서 생성할 수 있습니다:
+[Has many 관계](#has-many-relationships)와 비슷하게, "many to many" 관계도 `has` 메서드를 통해 생성할 수 있습니다:
 
 ```
 use App\Models\Role;
@@ -449,9 +449,9 @@ $user = User::factory()
 ```
 
 <a name="pivot-table-attributes"></a>
-#### Pivot 테이블 속성 지정
+#### Pivot 테이블 속성
 
-연결(pivot) 테이블에 값이 기록되어야 한다면, `hasAttached` 메서드를 사용할 수 있습니다. 이 메서드는 두 번째 인자로 피벗(pivot) 테이블에 저장할 속성 배열을 받습니다:
+중간 테이블(pivot table)에 설정할 속성이 필요한 경우 `hasAttached` 메서드를 사용하세요. 이 메서드는 두 번째 인자로 pivot 테이블의 필드 이름과 값을 담은 배열을 받습니다:
 
 ```
 use App\Models\Role;
@@ -465,7 +465,7 @@ $user = User::factory()
             ->create();
 ```
 
-관련 모델에 접근해서 클로저 기반 상태 변환을 적용하고 싶을 때도 사용할 수 있습니다:
+만약 상태 변환에서 관련 모델에 접근해야 할 경우 클로저를 전달해 상태를 정의할 수도 있습니다:
 
 ```
 $user = User::factory()
@@ -480,7 +480,7 @@ $user = User::factory()
             ->create();
 ```
 
-이미 생성된 모델 인스턴스를 연결하고 싶다면, `hasAttached`에 모델 인스턴스를 그대로 넘기면 됩니다. 아래 예시에서는 동일한 3개의 역할(role)이 3명의 사용자 모두와 연결됩니다:
+이미 생성된 여러 모델을 연결하려면 해당 모델 인스턴스 컬렉션을 `hasAttached`에 넘기면 됩니다. 아래 예시에서 세 개의 역할을 세 명의 사용자에게 각각 연결합니다:
 
 ```
 $roles = Role::factory()->count(3)->create();
@@ -494,7 +494,7 @@ $user = User::factory()
 <a name="many-to-many-relationships-using-magic-methods"></a>
 #### 매직 메서드 사용하기
 
-매직 팩토리 메서드를 사용해 many to many 관계도 쉽게 정의할 수 있습니다. 아래 예시에서는 관례상 `roles` 연관관계 메서드를 자동으로 사용합니다:
+다대다 관계도 매직 팩토리 메서드를 사용할 수 있습니다. 다음은 `User` 모델의 `roles` 관계를 통해 역할을 생성하는 예시입니다:
 
 ```
 $user = User::factory()
@@ -505,9 +505,9 @@ $user = User::factory()
 ```
 
 <a name="polymorphic-relationships"></a>
-### 폴리모픽 연관관계(Polymorphic Relationships)
+### 다형성(Polymorphic) 관계
 
-[폴리모픽 연관관계](/docs/10.x/eloquent-relationships#polymorphic-relationships) 역시 팩토리로 손쉽게 생성할 수 있습니다. 폴리모픽 "morph many" 관계는 일반적인 "has many"와 같은 방식으로 구현하면 됩니다. 예를 들어, `App\Models\Post` 모델이 `App\Models\Comment`와 morphMany 관계를 가지면:
+[다형성 관계](/docs/10.x/eloquent-relationships#polymorphic-relationships) 역시 팩토리를 통해 생성할 수 있습니다. 다형성 "morph many" 관계는 일반적인 "has many" 관계 생성과 동일합니다. 예를 들어 `App\Models\Post` 모델이 `App\Models\Comment` 모델과 `morphMany` 관계를 가진다면:
 
 ```
 use App\Models\Post;
@@ -518,7 +518,7 @@ $post = Post::factory()->hasComments(3)->create();
 <a name="morph-to-relationships"></a>
 #### Morph To 관계
 
-매직 메서드는 `morphTo` 연관관계 생성에는 사용할 수 없습니다. 이 경우에는 `for` 메서드를 명시적으로 사용하고, 관계명을 직접 지정해야 합니다. 예를 들어, `Comment` 모델에 `commentable`이라는 morphTo 관계가 있다면, 아래와 같이 3개의 댓글을 하나의 게시글에 연결할 수 있습니다:
+`morphTo` 관계는 매직 메서드를 사용할 수 없고, 대신 `for` 메서드를 직접 명시적으로 호출해야 합니다. 예를 들어, `Comment` 모델에 `commentable`이라는 `morphTo` 관계가 있다면, 다음과 같이 단일 게시글에 속하는 3개의 댓글을 생성합니다:
 
 ```
 $comments = Comment::factory()->count(3)->for(
@@ -527,9 +527,9 @@ $comments = Comment::factory()->count(3)->for(
 ```
 
 <a name="polymorphic-many-to-many-relationships"></a>
-#### 폴리모픽 Many to Many 연관관계
+#### 다형성 다대다 관계
 
-폴리모픽 "many to many"(`morphToMany` / `morphedByMany`) 관계도 일반 many to many와 동일하게 생성할 수 있습니다:
+다형성 "many to many" (`morphToMany` / `morphedByMany`) 관계도 일반적인 many to many 관계와 동일하게 생성할 수 있습니다:
 
 ```
 use App\Models\Tag;
@@ -543,7 +543,7 @@ $videos = Video::factory()
             ->create();
 ```
 
-물론, 매직 `has` 메서드로도 폴리모픽 "many to many" 관계를 생성할 수 있습니다:
+물론 매직 `has` 메서드로도 다형성 many to many 관계를 생성할 수 있습니다:
 
 ```
 $videos = Video::factory()
@@ -552,15 +552,15 @@ $videos = Video::factory()
 ```
 
 <a name="defining-relationships-within-factories"></a>
-### 팩토리 내부에서 연관관계 정의하기
+### 팩토리 내에서 관계 정의하기
 
-모델 팩토리 내에서 연관관계를 정의할 때는 보통 해당 관계의 외래키(foreign key) 필드에 새로운 팩토리 인스턴스를 할당합니다. 이는 `belongsTo`나 `morphTo`와 같은 "역관계(inverse relationship)"에 주로 사용됩니다. 예를 들어, 게시글을 생성할 때 새로운 사용자를 함께 생성하려면 다음과 같이 작성할 수 있습니다:
+모델 팩토리 내에서 관계를 정의할 때 일반적으로 외래 키 컬럼에 새 팩토리 인스턴스를 할당합니다. 보통은 `belongsTo` 또는 `morphTo` 같은 "역방향" 관계에 해당합니다. 예를 들어 게시글 생성 시 새 사용자도 함께 생성하려면 아래처럼 작성합니다:
 
 ```
 use App\Models\User;
 
 /**
- * Define the model's default state.
+ * 모델의 기본 상태 정의
  *
  * @return array<string, mixed>
  */
@@ -574,11 +574,11 @@ public function definition(): array
 }
 ```
 
-관계 컬럼 값이 팩토리에서 평가된 속성 배열에 따라 달라져야 한다면, 해당 속성에 클로저를 할당하면 됩니다. 이 때 클로저는 팩토리에서 평가된 속성 배열을 인자로 받습니다:
+만약 관계 컬럼이 팩토리가 정의하는 속성값에 따라 달라진다면, 클로저를 속성에 할당할 수도 있습니다. 이 클로저에는 팩토리에서 평가한 속성 배열이 전달됩니다:
 
 ```
 /**
- * Define the model's default state.
+ * 모델의 기본 상태 정의
  *
  * @return array<string, mixed>
  */
@@ -596,11 +596,11 @@ public function definition(): array
 ```
 
 <a name="recycling-an-existing-model-for-relationships"></a>
-### 관계에서 기존 모델 재활용하기
+### 관계에 기존 모델 재활용하기
 
-두 개 이상의 모델이 동일한 연관 모델을 공유해야 할 때는 `recycle` 메서드를 사용해, 팩토리가 관계를 생성할 때 항상 동일한 인스턴스를 재사용하도록 할 수 있습니다.
+여러 모델이 공통된 관계 모델을 공유하는 경우, `recycle` 메서드를 사용해 팩토리가 관계 모델 인스턴스를 재활용하도록 할 수 있습니다.
 
-예를 들어, `Airline`, `Flight`, `Ticket` 모델이 있고, 각 티켓과 플라이트가 같은 항공사를 참조해야 하는 경우, 항공사 인스턴스를 `recycle` 메서드에 전달하면 됩니다:
+예를 들어 `Airline`, `Flight`, `Ticket` 모델에서, 티켓은 항공사와 비행기에 속하며, 비행기도 항공사에 속하는 상황이라면, 티켓을 생성할 때 티켓과 비행기 모두 같은 항공사를 공유하도록 `recycle` 메서드에 항공사 인스턴스를 전달할 수 있습니다:
 
 ```
 Ticket::factory()
@@ -608,9 +608,9 @@ Ticket::factory()
     ->create();
 ```
 
-특정 사용자의 모든 모델, 또는 특정 팀의 모델처럼 공통의 관계 인스턴스를 사용하는 경우 특히 유용합니다.
+`recycle`은 동일 사용자나 팀에 속한 모델을 다룰 때 특히 유용합니다.
 
-`recycle` 메서드는 기존 모델의 컬렉션도 받을 수 있습니다. 이 경우 컬렉션에서 무작위로 하나의 모델이 선택되어 팩토리에서 해당 타입의 모델이 필요할 때 사용됩니다:
+`recycle`은 기존 모델 컬렉션도 받을 수 있습니다. 이 경우 컬렉션에서 무작위 모델을 골라 사용합니다:
 
 ```
 Ticket::factory()

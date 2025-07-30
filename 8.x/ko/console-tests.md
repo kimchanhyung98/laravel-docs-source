@@ -1,22 +1,22 @@
 # 콘솔 테스트 (Console Tests)
 
 - [소개](#introduction)
-- [성공 / 실패 예상](#success-failure-expectations)
-- [입력 / 출력 예상](#input-output-expectations)
+- [성공 / 실패 기대치](#success-failure-expectations)
+- [입력 / 출력 기대치](#input-output-expectations)
 
 <a name="introduction"></a>
 ## 소개
 
-HTTP 테스트를 간소화하는 기능 외에도, 라라벨은 애플리케이션의 [사용자 정의 콘솔 명령어](/docs/8.x/artisan)를 테스트할 수 있는 간편한 API도 제공합니다.
+Laravel은 HTTP 테스트를 간소화하는 것 외에도, 애플리케이션의 [커스텀 콘솔 명령어](/docs/{{version}}/artisan)를 테스트하기 위한 간단한 API를 제공합니다.
 
 <a name="success-failure-expectations"></a>
-## 성공 / 실패 예상
+## 성공 / 실패 기대치
 
-먼저, Artisan 명령어의 종료 코드(exit code)에 대해 어떻게 assert(확인)할 수 있는지 살펴보겠습니다. 테스트에서 `artisan` 메서드를 사용하여 Artisan 명령어를 실행하고, `assertExitCode` 메서드를 이용해 명령어가 특정 종료 코드로 종료되었는지 검사할 수 있습니다.
+먼저, Artisan 명령어의 종료 코드에 관한 단언(assertion)을 하는 방법을 살펴보겠습니다. 이를 위해 테스트에서 `artisan` 메서드를 사용하여 Artisan 명령어를 호출합니다. 이어서 `assertExitCode` 메서드를 사용해 명령어가 특정 종료 코드로 완료되었음을 단언합니다:
 
 ```
 /**
- * 콘솔 명령어 테스트.
+ * 콘솔 명령어를 테스트합니다.
  *
  * @return void
  */
@@ -26,13 +26,13 @@ public function test_console_command()
 }
 ```
 
-반대로, 명령어가 특정 종료 코드로 종료되지 않았음을 확인하고 싶다면 `assertNotExitCode` 메서드를 사용할 수 있습니다.
+명령어가 특정 종료 코드로 종료되지 않았음을 확인하려면 `assertNotExitCode` 메서드를 사용할 수 있습니다:
 
 ```
 $this->artisan('inspire')->assertNotExitCode(1);
 ```
 
-일반적으로, 모든 터미널 명령어는 성공하면 종료 코드가 `0`이고, 실패하면 0이 아닌 값을 반환합니다. 이를 좀 더 편리하게 확인할 수 있도록, 라라벨에서는 `assertSuccessful`과 `assertFailed`와 같은 assertion을 제공하여 명령어가 정상적으로 종료되었는지 또는 실패했는지를 간편하게 검사할 수 있습니다.
+물론 모든 터미널 명령어는 일반적으로 성공했을 때 `0` 종료 코드를 반환하고, 실패했을 때는 0이 아닌 값을 반환합니다. 따라서 편의를 위해 `assertSuccessful`과 `assertFailed` 단언 메서드를 사용할 수 있으며, 이를 통해 명령어가 성공적인 종료 코드로 종료되었는지 여부를 검증할 수 있습니다:
 
 ```
 $this->artisan('inspire')->assertSuccessful();
@@ -41,9 +41,9 @@ $this->artisan('inspire')->assertFailed();
 ```
 
 <a name="input-output-expectations"></a>
-## 입력 / 출력 예상
+## 입력 / 출력 기대치
 
-라라벨에서는 콘솔 명령어 테스트 시 `expectsQuestion` 메서드를 사용하여 사용자 입력을 손쉽게 "모킹(mock)"할 수 있습니다. 또한, 콘솔 명령어가 출력할 것으로 기대하는 종료 코드와 텍스트를 각각 `assertExitCode`와 `expectsOutput` 메서드로 설정 및 검증할 수 있습니다. 예시로, 아래와 같은 콘솔 명령어가 있다고 가정해 보겠습니다.
+Laravel은 콘솔 명령어에 대한 사용자 입력을 `expectsQuestion` 메서드를 통해 쉽게 "모킹"할 수 있도록 지원합니다. 게다가, `assertExitCode`와 `expectsOutput` 메서드를 사용해 콘솔 명령어가 출력할 것으로 예상하는 종료 코드와 텍스트를 명시할 수 있습니다. 다음 콘솔 명령어를 예로 들어 보겠습니다:
 
 ```
 Artisan::command('question', function () {
@@ -59,11 +59,11 @@ Artisan::command('question', function () {
 });
 ```
 
-위 콘솔 명령어는 다음과 같은 테스트로 확인할 수 있습니다. 이 테스트에서는 `expectsQuestion`, `expectsOutput`, `doesntExpectOutput`, `assertExitCode` 메서드를 활용합니다.
+다음 테스트 코드는 `expectsQuestion`, `expectsOutput`, `doesntExpectOutput`, `assertExitCode` 메서드를 이용하여 위 명령어를 테스트하는 예시입니다:
 
 ```
 /**
- * 콘솔 명령어 테스트.
+ * 콘솔 명령어를 테스트합니다.
  *
  * @return void
  */
@@ -79,9 +79,9 @@ public function test_console_command()
 ```
 
 <a name="confirmation-expectations"></a>
-#### 확인(Confirmation) 예상
+#### 확인 입력 기대치
 
-만약 명령어가 "예" 또는 "아니오" 형식의 확인(confirmation) 입력을 요구한다면, `expectsConfirmation` 메서드를 사용할 수 있습니다.
+사용자가 "예" 또는 "아니오"로 확인을 입력하는 명령어를 작성할 때는 `expectsConfirmation` 메서드를 사용할 수 있습니다:
 
 ```
 $this->artisan('module:import')
@@ -90,9 +90,9 @@ $this->artisan('module:import')
 ```
 
 <a name="table-expectations"></a>
-#### 테이블 출력 예상
+#### 테이블 기대치
 
-명령어에서 Artisan의 `table` 메서드를 사용해 정보 테이블을 출력할 경우, 전체 테이블 출력 결과에 대한 예상 값을 작성하는 것이 번거로울 수 있습니다. 이럴 때는 `expectsTable` 메서드를 활용하면 됩니다. 이 메서드는 첫 번째 인자로 테이블 헤더, 두 번째 인자로 테이블 데이터를 받습니다.
+만약 명령어가 Artisan의 `table` 메서드를 사용해 정보를 테이블 형식으로 출력한다면, 전체 테이블에 대한 출력 기대치를 작성하는 것이 번거로울 수 있습니다. 이럴 때는 `expectsTable` 메서드를 사용할 수 있으며, 이 메서드는 첫 번째 인수로 테이블 헤더를, 두 번째 인수로 테이블 데이터를 받습니다:
 
 ```
 $this->artisan('users:all')

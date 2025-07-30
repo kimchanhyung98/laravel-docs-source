@@ -1,23 +1,23 @@
 # 속도 제한 (Rate Limiting)
 
 - [소개](#introduction)
-    - [캐시 설정](#cache-configuration)
+    - [캐시 구성](#cache-configuration)
 - [기본 사용법](#basic-usage)
-    - [시도 횟수 수동 증가](#manually-incrementing-attempts)
+    - [수동으로 시도 횟수 증가](#manually-incrementing-attempts)
     - [시도 횟수 초기화](#clearing-attempts)
 
 <a name="introduction"></a>
 ## 소개
 
-라라벨은 간단하게 사용할 수 있는 속도 제한(rate limiting) 추상화를 제공하며, 애플리케이션의 [캐시](cache)와 함께 지정된 시간 동안 특정 작업의 실행을 쉽게 제한할 수 있습니다.
+Laravel은 사용하기 간편한 속도 제한(rate limiting) 추상화를 제공하며, 애플리케이션의 [캐시](cache)와 결합하여 특정 시간 동안 어떤 동작을 제한하는 쉬운 방법을 제공합니다.
 
 > [!NOTE]
-> 외부에서 들어오는 HTTP 요청에 대한 속도 제한이 궁금하다면, [속도 제한 미들웨어 문서](/docs/12.x/routing#rate-limiting)를 참고하시기 바랍니다.
+> 들어오는 HTTP 요청에 대한 속도 제한에 관심이 있다면, [rate limiter middleware documentation](/docs/12.x/routing#rate-limiting)을 참고하시기 바랍니다.
 
 <a name="cache-configuration"></a>
-### 캐시 설정
+### 캐시 구성
 
-일반적으로, 속도 제한 기능은 애플리케이션의 `cache` 설정 파일에 정의된 `default` 키를 통해 기본 캐시 드라이버를 사용합니다. 하지만, 애플리케이션의 `cache` 설정 파일에 `limiter` 키를 추가하여 속도 제한에 사용할 캐시 드라이버를 별도로 지정할 수도 있습니다.
+일반적으로 속도 제한기는 애플리케이션의 `cache` 구성 파일 내의 `default` 키로 정의된 기본 캐시를 사용합니다. 그러나, `cache` 구성 파일에 `limiter` 키를 정의하여 속도 제한기가 사용할 캐시 드라이버를 지정할 수도 있습니다:
 
 ```php
 'default' => env('CACHE_STORE', 'database'),
@@ -28,9 +28,9 @@
 <a name="basic-usage"></a>
 ## 기본 사용법
 
-`Illuminate\Support\Facades\RateLimiter` 파사드를 사용하면 속도 제한 기능과 상호작용할 수 있습니다. 속도 제한에서 제공하는 가장 간단한 메서드는 `attempt` 메서드로, 지정한 초 동안 콜백의 실행 횟수를 제한할 수 있습니다.
+`Illuminate\Support\Facades\RateLimiter` 파사드를 사용하여 속도 제한기와 상호작용할 수 있습니다. 속도 제한기가 제공하는 가장 간단한 메서드는 `attempt` 메서드로, 주어진 콜백을 지정된 시간 동안 제한합니다.
 
-`attempt` 메서드는 더 이상 실행 가능한 시도가 남아 있지 않으면 `false`를 반환하고, 그렇지 않은 경우 콜백의 결과값이나 `true`를 반환합니다. `attempt` 메서드의 첫 번째 인수는 속도 제한할 작업을 대표하는 임의의 문자열 "키"입니다.
+`attempt` 메서드는 콜백에 남은 시도 횟수가 없으면 `false`를 반환하고, 그렇지 않으면 콜백의 결과 또는 `true`를 반환합니다. `attempt` 메서드의 첫 번째 인수는 속도 제한 대상 행동을 나타내는 임의의 문자열인 "키"입니다:
 
 ```php
 use Illuminate\Support\Facades\RateLimiter;
@@ -48,7 +48,7 @@ if (! $executed) {
 }
 ```
 
-필요하다면, 네 번째 인수로 "감쇠 시간(decay rate)"(즉, 제한 횟수가 초기화될 때까지의 초 단위 시간)을 지정할 수 있습니다. 예를 들어, 위 예시를 수정하여 2분마다 5번의 시도가 가능하도록 할 수 있습니다.
+필요하다면, `attempt` 메서드의 네 번째 인수로 "감쇠 시간(decay rate)", 즉 시도 가능 횟수가 초기화되는 시간(초 단위)을 지정할 수 있습니다. 아래 예시는 2분마다 5번 시도를 허용하도록 수정한 경우입니다:
 
 ```php
 $executed = RateLimiter::attempt(
@@ -62,9 +62,9 @@ $executed = RateLimiter::attempt(
 ```
 
 <a name="manually-incrementing-attempts"></a>
-### 시도 횟수 수동 증가
+### 수동으로 시도 횟수 증가
 
-속도 제한 기능을 더 세밀하게 제어하고 싶다면, 다양한 메서드를 수동으로 사용할 수 있습니다. 예를 들어, `tooManyAttempts` 메서드를 호출하여 특정 rate limiter 키가 분당 허용 최대 시도 횟수를 초과했는지 확인할 수 있습니다.
+속도 제한기를 직접 제어하고 싶다면 다양한 메서드가 준비되어 있습니다. 예를 들어 `tooManyAttempts` 메서드를 호출하여 특정 키의 시도 횟수가 분당 최대 허용 횟수를 초과했는지 확인할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\RateLimiter;
@@ -78,7 +78,7 @@ RateLimiter::increment('send-message:'.$user->id);
 // Send message...
 ```
 
-또는, `remaining` 메서드를 사용해서 해당 키에 대해 남아 있는 시도 가능 횟수를 확인할 수 있습니다. 만약 시도 가능 횟수가 남아 있다면, `increment` 메서드를 호출하여 실제 시도 횟수를 증가시킬 수 있습니다.
+또한 `remaining` 메서드를 사용해 특정 키에 남아있는 시도 횟수를 가져올 수 있습니다. 만약 남아있는 시도 횟수가 있다면, `increment` 메서드를 호출해 총 시도 횟수를 증가시킬 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\RateLimiter;
@@ -90,16 +90,16 @@ if (RateLimiter::remaining('send-message:'.$user->id, $perMinute = 5)) {
 }
 ```
 
-특정 rate limiter 키의 값을 한 번에 여러 번 증가시키고 싶다면, `increment` 메서드에 원하는 증가값을 인수로 전달하면 됩니다.
+한 번에 1회 이상 시도 횟수를 늘리고자 한다면, 원하는 증분 값을 `increment` 메서드에 인수로 제공할 수 있습니다:
 
 ```php
 RateLimiter::increment('send-message:'.$user->id, amount: 5);
 ```
 
 <a name="determining-limiter-availability"></a>
-#### 제한 해제까지 남은 시간 확인
+#### 제한기 사용 가능 시간 확인
 
-더 이상 시도할 수 없는 경우, `availableIn` 메서드를 사용하면 추가 시도가 가능해질 때까지 남은 시간을 초 단위로 확인할 수 있습니다.
+키의 시도 횟수가 모두 소진된 경우, `availableIn` 메서드는 다음 시도 가능 시점까지 남은 시간을 초 단위로 반환합니다:
 
 ```php
 use Illuminate\Support\Facades\RateLimiter;
@@ -118,7 +118,7 @@ RateLimiter::increment('send-message:'.$user->id);
 <a name="clearing-attempts"></a>
 ### 시도 횟수 초기화
 
-특정 rate limiter 키에 대해 시도 횟수를 초기화하려면 `clear` 메서드를 사용할 수 있습니다. 예를 들어, 수신자가 메시지를 읽었을 때 시도 횟수를 리셋할 수 있습니다.
+`clear` 메서드를 사용해 특정 속도 제한 키에 대한 시도 횟수를 초기화할 수 있습니다. 예를 들어, 메시지가 수신자에 의해 읽힌 경우 시도 횟수를 초기화하는 코드는 다음과 같습니다:
 
 ```php
 use App\Models\Message;

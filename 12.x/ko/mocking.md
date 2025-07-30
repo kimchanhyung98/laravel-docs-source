@@ -1,22 +1,22 @@
-# 목(mock) 객체 활용 (Mocking)
+# 모킹 (Mocking)
 
 - [소개](#introduction)
-- [오브젝트 목(mock) 만들기](#mocking-objects)
-- [파사드 목(mock) 만들기](#mocking-facades)
+- [객체 모킹](#mocking-objects)
+- [파사드 모킹](#mocking-facades)
     - [파사드 스파이](#facade-spies)
 - [시간 다루기](#interacting-with-time)
 
 <a name="introduction"></a>
 ## 소개
 
-라라벨 애플리케이션을 테스트할 때 실제로 실행되지 않았으면 하는 애플리케이션의 특정 부분을 "목(mock)" 처리하고 싶을 때가 있습니다. 예를 들어, 이벤트를 디스패치하는 컨트롤러를 테스트할 때는 이벤트 리스너가 테스트 중에 실제로 실행되지 않도록 목(mock) 처리하고 싶을 수 있습니다. 이렇게 하면 이벤트 리스너의 동작은 별도의 테스트 케이스에서 검증할 수 있으니, 컨트롤러의 HTTP 응답만 집중해서 테스트할 수 있습니다.
+Laravel 애플리케이션을 테스트할 때, 특정 부분이 실제로 실행되지 않도록 "모킹(Mocking)"하고 싶을 수 있습니다. 예를 들어, 이벤트를 디스패치하는 컨트롤러를 테스트할 때, 이벤트 리스너들이 실제로 실행되지 않도록 모킹하면 테스트 도중 리스너의 실행 걱정 없이 오직 컨트롤러의 HTTP 응답만 테스트할 수 있습니다. 이벤트 리스너들은 별도의 테스트 케이스에서 별도로 검증할 수 있기 때문입니다.
 
-라라벨은 이벤트, 잡(job), 기타 다양한 파사드(facade)를 위한 목(mock) 메서드를 기본적으로 제공합니다. 이 메서드들은 Mockery를 직접 복잡하게 호출하지 않아도 되도록 편리한 래퍼 역할을 하는 것이 특징입니다.
+Laravel은 기본적으로 이벤트, 잡(job), 그리고 다른 파사드(facade)를 모킹하기 위한 편리한 메서드를 제공합니다. 이런 헬퍼들은 복잡한 Mockery 메서드 호출을 직접 하지 않아도 되도록 Mockery 위에 편의성을 제공합니다.
 
 <a name="mocking-objects"></a>
-## 오브젝트 목(mock) 만들기
+## 객체 모킹
 
-라라벨의 [서비스 컨테이너](/docs/12.x/container)를 통해 애플리케이션에 주입되는 객체를 목(mock) 처리하고 싶다면, 해당 객체의 목(mock) 인스턴스를 `instance` 바인딩으로 컨테이너에 등록해야 합니다. 이렇게 하면 컨테이너가 직접 객체를 만들어내는 대신, 여러분이 만든 목(mock) 인스턴스를 사용하게 됩니다:
+Laravel의 [서비스 컨테이너](/docs/12.x/container)를 통해 애플리케이션 내에 주입할 객체를 모킹할 때는, 컨테이너에 모킹된 인스턴스를 `instance` 바인딩으로 등록해야 합니다. 이렇게 하면 컨테이너는 객체를 직접 생성하는 대신 모킹된 인스턴스를 사용하게 됩니다:
 
 ```php tab=Pest
 use App\Service;
@@ -49,7 +49,7 @@ public function test_something_can_be_mocked(): void
 }
 ```
 
-이를 좀 더 편리하게 사용하려면, 라라벨의 기본 테스트 케이스 클래스에서 제공하는 `mock` 메서드를 사용할 수 있습니다. 아래 예제는 위와 동일한 동작을 합니다:
+이 과정을 더욱 편리하게 하기 위해, Laravel의 기본 테스트 케이스 클래스는 `mock` 메서드를 제공합니다. 다음 예제는 위의 예제와 동일한 기능을 합니다:
 
 ```php
 use App\Service;
@@ -60,7 +60,7 @@ $mock = $this->mock(Service::class, function (MockInterface $mock) {
 });
 ```
 
-특정 메서드만 목(mock) 처리하고 나머지 메서드는 실제로 동작하게 하고 싶다면 `partialMock` 메서드를 사용할 수 있습니다. 이렇게 하면 목(mock) 처리하지 않은 메서드는 평소처럼 실행됩니다:
+객체의 일부 메서드만 모킹하고 싶을 때는 `partialMock` 메서드를 사용할 수 있습니다. 모킹하지 않은 메서드는 호출 시 정상적으로 실행됩니다:
 
 ```php
 use App\Service;
@@ -71,7 +71,7 @@ $mock = $this->partialMock(Service::class, function (MockInterface $mock) {
 });
 ```
 
-비슷하게, [spy](http://docs.mockery.io/en/latest/reference/spies.html)를 사용해 객체가 어떤 방식으로 호출되는지 확인하고 싶다면, 라라벨의 기본 테스트 케이스 클래스에서 `spy` 메서드를 쓸 수 있습니다. 스파이는 목(mock)과 유사하지만, 코드 실행 후 스파이 객체와의 상호작용 내역을 기록해두기 때문에 실행 뒤에 검증(어설션)을 할 수 있게 도와줍니다:
+또한 객체를 [스파이(spy)](http://docs.mockery.io/en/latest/reference/spies.html)하고 싶다면, Laravel의 기본 테스트 케이스 클래스는 `spy` 메서드를 제공하며 이는 `Mockery::spy` 메서드의 편리한 래퍼입니다. 스파이는 모킹과 비슷하지만, 스파이와 테스트 중인 코드 간의 상호작용을 기록하여 코드 실행 후에 검증할 수 있습니다:
 
 ```php
 use App\Service;
@@ -84,9 +84,9 @@ $spy->shouldHaveReceived('process');
 ```
 
 <a name="mocking-facades"></a>
-## 파사드 목(mock) 만들기
+## 파사드 모킹
 
-전통적인 정적(static) 메서드와 달리, [파사드](/docs/12.x/facades)([실시간 파사드](/docs/12.x/facades#real-time-facades) 포함)는 목(mock) 처리할 수 있습니다. 이 점은 정적 메서드보다 훨씬 테스트하기 쉽다는 큰 장점이 있습니다. 즉, 의존성 주입 방식과 같은 수준의 테스트 유연성을 누릴 수 있습니다. 컨트롤러 내에서 발생하는 라라벨 파사드의 호출을 테스트할 때, 파사드의 메서드를 목(mock) 처리하는 경우가 많습니다. 예를 들어, 다음과 같은 컨트롤러 액션을 살펴보겠습니다:
+전통적인 정적 메서드 호출과 달리, [파사드](/docs/12.x/facades) (여기에는 [실시간 파사드](/docs/12.x/facades#real-time-facades)도 포함) 역시 모킹할 수 있습니다. 이는 일반적인 정적 클래스보다 훨씬 뛰어난 테스트 가능성을 제공합니다. 테스트 중 컨트롤러 등에서 호출되는 Laravel 파사드를 모킹할 때가 많은데, 예를 들어 다음 컨트롤러 액션을 보십시오:
 
 ```php
 <?php
@@ -98,7 +98,7 @@ use Illuminate\Support\Facades\Cache;
 class UserController extends Controller
 {
     /**
-     * 애플리케이션의 모든 사용자 목록을 조회합니다.
+     * 애플리케이션의 모든 사용자 목록을 가져옵니다.
      */
     public function index(): array
     {
@@ -111,7 +111,7 @@ class UserController extends Controller
 }
 ```
 
-`Cache` 파사드의 호출을 목(mock) 처리하려면, `expects` 메서드를 사용하면 됩니다. 이 메서드는 [Mockery](https://github.com/padraic/mockery) 목(mock)의 인스턴스를 반환합니다. 파사드는 라라벨 [서비스 컨테이너](/docs/12.x/container)를 통해 해결(resolved)되고 관리되기 때문에, 일반적인 정적 클래스보다 테스트하기가 훨씬 쉽습니다. 예를 들어, 아래처럼 `Cache` 파사드의 `get` 메서드 호출을 목(mock) 처리할 수 있습니다:
+`Cache` 파사드의 `get` 메서드 호출을 모킹하려면 `expects` 메서드를 사용할 수 있으며, 이 메서드는 [Mockery](https://github.com/padraic/mockery) 모킹 인스턴스를 반환합니다. 파사드는 실제로 Laravel의 [서비스 컨테이너](/docs/12.x/container)에 의해 해석 및 관리되므로 일반적인 정적 클래스보다 더 뛰어난 테스트 가능성을 갖습니다. 다음은 `Cache::get` 호출 모킹 예제입니다:
 
 ```php tab=Pest
 <?php
@@ -153,12 +153,12 @@ class UserControllerTest extends TestCase
 ```
 
 > [!WARNING]
-> `Request` 파사드는 목(mock) 처리해서는 안 됩니다. 원하는 입력값이 있다면, 테스트 시 [HTTP 테스트 메서드](/docs/12.x/http-tests)에서 `get`, `post`와 같은 메서드에 값을 전달해야 합니다. 마찬가지로, `Config` 파사드를 목(mock) 처리하기보다는, 테스트 내에서 `Config::set` 메서드를 직접 호출하는 방식이 권장됩니다.
+> `Request` 파사드는 모킹하지 마십시오. 대신 테스트 시 `get`, `post`와 같은 [HTTP 테스트 메서드](/docs/12.x/http-tests)에 원하는 입력을 전달하세요. 마찬가지로 `Config` 파사드를 모킹하는 대신 테스트 내에서 `Config::set` 메서드를 호출하는 것이 좋습니다.
 
 <a name="facade-spies"></a>
 ### 파사드 스파이
 
-파사드에 [spy](http://docs.mockery.io/en/latest/reference/spies.html)를 적용하려면, 해당 파사드에서 `spy` 메서드를 호출하면 됩니다. 스파이는 목(mock)과 거의 같지만, 호출 내역을 기록해 두었다가 코드 수행 이후에 어설션을 할 수 있다는 점이 특징입니다:
+파사드를 [스파이](http://docs.mockery.io/en/latest/reference/spies.html)하고 싶을 때는 해당 파사드에서 `spy` 메서드를 호출하면 됩니다. 스파이는 모킹과 비슷하지만, 스파이와 테스트 중인 코드 간의 상호작용을 기록하여 코드 실행 후에 검증할 수 있습니다:
 
 ```php tab=Pest
 <?php
@@ -194,7 +194,7 @@ public function test_values_are_stored_in_cache(): void
 <a name="interacting-with-time"></a>
 ## 시간 다루기
 
-테스트를 할 때, `now` 헬퍼나 `Illuminate\Support\Carbon::now()` 등에서 반환되는 시간을 임의로 변경해야 할 때가 있습니다. 다행히도, 라라벨의 기본 기능 테스트 클래스에는 현재 시간을 쉽게 조작할 수 있는 헬퍼 메서드들이 포함되어 있습니다:
+테스트 시 `now` 헬퍼나 `Illuminate\Support\Carbon::now()` 같은 시간을 반환하는 메서드의 값을 변경해야 할 경우가 있습니다. 다행히도 Laravel의 기본 기능 테스트 클래스에는 현재 시간을 조작할 수 있는 헬퍼가 포함되어 있습니다:
 
 ```php tab=Pest
 test('time can be manipulated', function () {
@@ -241,35 +241,35 @@ public function test_time_can_be_manipulated(): void
 }
 ```
 
-각종 시간 이동 메서드에는 클로저(익명 함수)를 전달할 수도 있습니다. 이 경우, 지정된 시간으로 고정된 채 클로저가 실행되고, 클로저 실행이 끝난 뒤 시간은 원래대로 돌아옵니다:
+각 시간 이동 메서드에 클로저를 전달할 수도 있습니다. 이 때 지정한 시점에서 시간이 멈추고 클로저가 실행된 뒤 시간이 정상적으로 다시 흐르도록 합니다:
 
 ```php
 $this->travel(5)->days(function () {
-    // 5일 후의 시점을 기준으로 테스트...
+    // 5일 후를 기준으로 어떤 테스트를 실행...
 });
 
 $this->travelTo(now()->subDays(10), function () {
-    // 특정 시점에서 테스트 수행...
+    // 특정 시점에 대해 어떤 테스트를 실행...
 });
 ```
 
-`freezeTime` 메서드를 사용하면 현재 시각을 그대로 멈출 수 있습니다. 이와 비슷하게, `freezeSecond` 메서드는 현재 초의 첫 시점으로 시간을 고정합니다:
+`freezeTime` 메서드는 현재 시간을 멈출 때 사용합니다. 비슷하게, `freezeSecond` 메서드는 현재 초 단위 시작 시점에서 시간을 멈춥니다:
 
 ```php
 use Illuminate\Support\Carbon;
 
-// 현재 시각을 멈췄다가, 클로저 실행 후 다시 원래처럼 시간 흐름을 복원...
+// 시간이 멈춘 상태에서 클로저 실행 후 정상 흐름 복귀...
 $this->freezeTime(function (Carbon $time) {
     // ...
 });
 
-// 현재 초의 시작 시점으로 시간을 멈췄다가, 클로저 실행 후 복구...
+// 현재 초 단위 시작 시점에서 시간이 멈춘 상태에서 클로저 실행 후 복귀...
 $this->freezeSecond(function (Carbon $time) {
     // ...
-})
+});
 ```
 
-앞서 살펴본 메서드들은 모두 시간에 민감한 애플리케이션 동작, 예를 들어 토론 게시판의 비활성 글을 일정 시간이 지난 뒤 잠그는 기능을 테스트할 때 유용하게 사용할 수 있습니다:
+이 메서드들은 시간 민감한 애플리케이션 동작을 테스트할 때 주로 유용합니다. 예를 들어 토론 포럼에서 한 주간 활동 없는 게시글이 잠기는 기능을 테스트하는 경우입니다:
 
 ```php tab=Pest
 use App\Models\Thread;

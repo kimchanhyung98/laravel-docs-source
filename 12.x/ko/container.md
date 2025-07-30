@@ -1,31 +1,31 @@
 # 서비스 컨테이너 (Service Container)
 
 - [소개](#introduction)
-    - [제로 구성(Zero Configuration) 해석](#zero-configuration-resolution)
-    - [컨테이너를 언제 사용해야 하는가](#when-to-use-the-container)
-- [바인딩](#binding)
+    - [무설정 해석 (Zero Configuration Resolution)](#zero-configuration-resolution)
+    - [컨테이너를 언제 사용해야 하나?](#when-to-use-the-container)
+- [바인딩 (Binding)](#binding)
     - [바인딩 기본](#binding-basics)
     - [인터페이스를 구현체에 바인딩하기](#binding-interfaces-to-implementations)
     - [컨텍스트 바인딩](#contextual-binding)
-    - [컨텍스트 속성(Contextual Attributes)](#contextual-attributes)
-    - [프리미티브 타입 바인딩](#binding-primitives)
-    - [타입 지정 가변 인자 바인딩](#binding-typed-variadics)
-    - [태깅(Tagging)](#tagging)
-    - [바인딩 확장(Extending Bindings)](#extending-bindings)
-- [해결(Resolving)](#resolving)
+    - [컨텍스트 속성](#contextual-attributes)
+    - [기본 자료형 바인딩](#binding-primitives)
+    - [타입을 지정한 가변 인자 바인딩](#binding-typed-variadics)
+    - [태깅](#tagging)
+    - [바인딩 확장하기](#extending-bindings)
+- [해결 (Resolving)](#resolving)
     - [`make` 메서드](#the-make-method)
-    - [자동 의존성 주입](#automatic-injection)
-- [메서드 호출과 의존성 주입](#method-invocation-and-injection)
+    - [자동 주입](#automatic-injection)
+- [메서드 호출 및 주입](#method-invocation-and-injection)
 - [컨테이너 이벤트](#container-events)
-    - [리바인딩(Rebinding)](#rebinding)
+    - [재바인딩](#rebinding)
 - [PSR-11](#psr-11)
 
 <a name="introduction"></a>
-## 소개
+## 소개 (Introduction)
 
-라라벨의 서비스 컨테이너는 클래스 간의 의존성 관리와 의존성 주입(Dependency Injection)을 담당하는 강력한 도구입니다. 의존성 주입이란, 클래스에서 필요로 하는 객체(의존성)를 생성자나 경우에 따라 "setter" 메서드를 통해 **주입(Inject)** 받는다는 뜻입니다.
+Laravel 서비스 컨테이너는 클래스 의존성을 관리하고 의존성 주입(dependency injection)을 수행하는 강력한 도구입니다. 의존성 주입이라는 용어는 결국 다음을 의미합니다: 클래스가 필요한 의존성을 생성자 또는 경우에 따라 “세터(setter)” 메서드 등을 통해 “주입” 받는다는 뜻입니다.
 
-간단한 예제를 살펴보겠습니다.
+간단한 예제를 살펴보겠습니다:
 
 ```php
 <?php
@@ -38,14 +38,14 @@ use Illuminate\View\View;
 class PodcastController extends Controller
 {
     /**
-     * 새로운 컨트롤러 인스턴스를 생성합니다.
+     * 새로운 컨트롤러 인스턴스 생성.
      */
     public function __construct(
         protected AppleMusic $apple,
     ) {}
 
     /**
-     * 지정한 팟캐스트 정보 출력.
+     * 특정 팟캐스트 정보 조회.
      */
     public function show(string $id): View
     {
@@ -56,14 +56,14 @@ class PodcastController extends Controller
 }
 ```
 
-위 예제에서 `PodcastController`는 Apple Music과 같은 데이터 소스에서 팟캐스트 정보를 가져와야 합니다. 그래서 팟캐스트를 조회할 수 있는 서비스를 **주입** 받습니다. 이렇게 서비스를 주입받으면, 테스트 시에 실제 `AppleMusic` 서비스 대신 모킹(mock)된, 즉 임시로 만든 가짜 구현체를 쉽게 사용해볼 수 있습니다.
+이 예제에서 `PodcastController`는 Apple Music 같은 데이터 소스에서 팟캐스트를 가져와야 합니다. 그래서 팟캐스트를 가져올 수 있는 서비스를 **주입**합니다. 서비스가 주입되므로 애플리케이션 테스트 시 `AppleMusic` 서비스의 가짜(모의, mock) 구현을 쉽게 만들 수 있습니다.
 
-라라벨의 서비스 컨테이너를 깊이 이해하면, 대규모의 강력한 애플리케이션을 구축하거나 라라벨 코어에 기여하려 할 때 큰 도움이 됩니다.
+Laravel 서비스 컨테이너에 대한 깊은 이해는 강력하고 큰 규모의 애플리케이션을 구축하고, Laravel 코어 개발에 기여하는 데 필수적입니다.
 
 <a name="zero-configuration-resolution"></a>
-### 제로 구성(Zero Configuration) 해석
+### 무설정 해석 (Zero Configuration Resolution)
 
-클래스가 의존성이 없거나, 다른 구체 클래스(인터페이스가 아님)만을 의존한다면, 컨테이너는 해당 클래스를 어떻게 해석(생성)해야 하는지 별도의 설정 없이도 알아서 처리할 수 있습니다. 예를 들어, 다음과 같은 코드를 `routes/web.php`에 작성해 보세요.
+클래스가 의존성이 없거나 오직 구체 클래스(인터페이스가 아닌)에만 의존한다면, 컨테이너에 그 클래스를 어떻게 해결할지 명시할 필요가 없습니다. 예를 들어 다음 코드를 `routes/web.php`에 작성할 수 있습니다:
 
 ```php
 <?php
@@ -78,14 +78,14 @@ Route::get('/', function (Service $service) {
 });
 ```
 
-이 예제에서, 애플리케이션의 `/` 라우트에 접속하면 `Service` 클래스가 자동으로 해석(resolved)되고, 해당 인스턴스가 라우트의 핸들러에 주입됩니다. 이는 개발 방식에 있어 매우 혁신적인 부분입니다. 개발자는 복잡한 설정 파일에 신경 쓰지 않고, 의존성 주입의 장점을 바로 사용할 수 있게 됩니다.
+이 예에서, 애플리케이션의 `/` 라우트를 요청하면 자동으로 `Service` 클래스가 해석되어 라우트 핸들러에 주입됩니다. 이 기능은 매우 혁신적입니다. 즉, 뻥튀기된 설정 파일을 걱정하지 않고도 의존성 주입을 활용해 애플리케이션을 개발할 수 있다는 뜻입니다.
 
-라라벨에서 애플리케이션을 만들 때 작성하는 대부분의 클래스(예: [컨트롤러](/docs/12.x/controllers), [이벤트 리스너](/docs/12.x/events), [미들웨어](/docs/12.x/middleware) 등)는 서비스 컨테이너에서 의존성을 알아서 주입받습니다. 또한, [큐 작업](/docs/12.x/queues)의 `handle` 메서드에서도 타입힌트를 통해 의존성을 자동 주입받을 수 있습니다. 이렇게 자동으로, 그리고 별도의 설정 없이 동작하는 의존성 주입의 힘을 경험하면, 더 이상 이전 방식으로 개발하기 어려울 정도입니다.
+운 좋게도, Laravel 애플리케이션을 구축할 때 작성하는 많은 클래스는 [컨트롤러](/docs/12.x/controllers), [이벤트 리스너](/docs/12.x/events), [미들웨어](/docs/12.x/middleware) 등 컨테이너를 통해 의존성을 자동으로 주입받습니다. 또한, [큐 작업](/docs/12.x/queues)의 `handle` 메서드에서도 의존성 주입을 타입힌트할 수 있습니다. 자동 의존성 주입과 무설정 해석이 주는 강력함을 맛보면 없이는 개발하기 어려워집니다.
 
 <a name="when-to-use-the-container"></a>
-### 컨테이너를 언제 사용해야 하는가
+### 컨테이너를 언제 사용해야 하나? (When to Utilize the Container)
 
-제로 구성 해석 덕분에, 여러분은 라우트, 컨트롤러, 이벤트 리스너 등에서 의존성을 타입힌트로 선언하는 것만으로도, 컨테이너와 직접 상호작용하지 않고 편리하게 의존성 주입을 활용할 수 있습니다. 예를 들어, 현재 요청 객체를 받기 위해 `Illuminate\Http\Request`를 라우트 정의에 타입힌트로 나타낼 수 있습니다. 이렇게 직접 컨테이너와 상호작용하지 않아도, 내부적으로 컨테이너가 의존성 주입을 관리하고 있습니다.
+무설정 해석 덕분에 라우트, 컨트롤러, 이벤트 리스너 등에서 의존성을 타입힌트하는 일이 일반적이며 대부분 직접 컨테이너를 다룰 필요가 없습니다. 예를 들어 라우트 정의에 `Illuminate\Http\Request` 객체를 타입힌트해 현재 요청에 쉽게 접근할 수 있습니다. 컨테이너와 직접 상호 작용하지 않아도, 내부적으로는 해당 의존성이 자동으로 주입됩니다:
 
 ```php
 use Illuminate\Http\Request;
@@ -95,12 +95,14 @@ Route::get('/', function (Request $request) {
 });
 ```
 
-이처럼 자동 의존성 주입과 [파사드](/docs/12.x/facades) 덕분에, 라라벨 애플리케이션에서는 **직접** 컨테이너에서 바인딩하거나 해석하는 일이 거의 없을 수 있습니다. **그렇다면 언제 직접 컨테이너와 상호작용해야 할까요?** 주요한 두 가지 상황이 있습니다.
+대부분 경우, 자동 의존성 주입과 [파사드](/docs/12.x/facades) 덕분에 컨테이너에 수동으로 바인딩하거나 인스턴스를 해결하지 않아도 됩니다. 그렇다면 언제 컨테이너를 직접 조작할까요? 두 가지 상황을 살펴보겠습니다.
 
-첫 번째, 하나의 클래스가 인터페이스를 구현하고, 해당 인터페이스를 라우트나 클래스 생성자에 타입힌트로 지정하고 싶을 때, 그 인터페이스를 어떻게 해석할지 컨테이너에 [직접 알려줘야 합니다](#binding-interfaces-to-implementations). 두 번째, [라라벨 패키지](/docs/12.x/packages)를 만들어 다른 개발자들과 공유하려는 경우, 패키지에서 제공하는 서비스를 컨테이너에 바인딩할 필요가 있습니다.
+첫째, 인터페이스를 구현하는 클래스를 작성하고, 해당 인터페이스를 라우트 또는 생성자에 타입힌트할 때는 [컨테이너에 인터페이스를 어떻게 해결할지 알려줘야 합니다](#binding-interfaces-to-implementations). 둘째, 다른 Laravel 개발자와 공유할 Laravel 패키지를 작성 중이라면, 패키지 서비스들을 컨테이너에 바인딩해야 할 수도 있습니다.
+
+---
 
 <a name="binding"></a>
-## 바인딩
+## 바인딩 (Binding)
 
 <a name="binding-basics"></a>
 ### 바인딩 기본
@@ -108,9 +110,9 @@ Route::get('/', function (Request $request) {
 <a name="simple-bindings"></a>
 #### 단순 바인딩
 
-거의 모든 서비스 컨테이너 바인딩은 [서비스 프로바이더](/docs/12.x/providers) 내부에서 등록하게 됩니다. 따라서 예제들 대부분은 해당 상황을 기준으로 설명합니다.
+대부분 서비스 컨테이너 바인딩은 [서비스 프로바이더](/docs/12.x/providers) 내에서 등록하므로, 이 절의 예제 역시 그 환경에서 컨테이너를 사용하는 방식을 보여줍니다.
 
-서비스 프로바이더에서는 항상 `$this->app` 속성을 통해 컨테이너에 접근할 수 있습니다. 컨테이너의 `bind` 메서드에 바인딩할 클래스 또는 인터페이스 이름, 그리고 해당 클래스의 인스턴스를 반환하는 클로저(익명 함수)를 전달하여 바인딩을 등록할 수 있습니다.
+서비스 프로바이더 안에서는 `$this->app` 프로퍼티로 컨테이너에 접근할 수 있습니다. `bind` 메서드를 사용해 바인딩을 등록할 때는, 등록할 클래스 또는 인터페이스 이름과 해당 클래스의 인스턴스를 반환하는 클로저를 인자로 넘겨줍니다:
 
 ```php
 use App\Services\Transistor;
@@ -122,9 +124,9 @@ $this->app->bind(Transistor::class, function (Application $app) {
 });
 ```
 
-이때, 클로저의 인자로 서비스 컨테이너 본인($app)이 전달되며, 이를 사용해 객체가 필요로 하는 하위 의존성도 컨테이너를 통해 쉽게 해석할 수 있습니다.
+위 예에서 클로저는 컨테이너 인스턴스를 인수로 받고, 컨테이너를 이용해 서브 의존성을 재귀적으로 해결할 수 있습니다.
 
-앞서 언급한 것처럼, 주로 서비스 프로바이더 내부에서 컨테이너와 상호작용하지만, 서비스 프로바이더 밖에서 컨테이너를 사용해야 한다면, `App` [파사드](/docs/12.x/facades)를 활용할 수도 있습니다.
+앞서 말했듯 서비스 프로바이더 내부에서 컨테이너를 다루는 게 일반적입니다. 하지만 프로바이더 바깥에서 컨테이너를 다루고 싶으면, `App` [파사드](/docs/12.x/facades)를 사용할 수 있습니다:
 
 ```php
 use App\Services\Transistor;
@@ -136,7 +138,7 @@ App::bind(Transistor::class, function (Application $app) {
 });
 ```
 
-`bindIf` 메서드는 이미 해당 타입의 바인딩이 등록되어 있지 않은 경우에만 새로 바인딩을 등록할 수 있도록 해줍니다.
+`bindIf` 메서드를 사용하면, 주어진 타입에 아직 바인딩이 없을 경우에만 바인딩을 등록할 수 있습니다:
 
 ```php
 $this->app->bindIf(Transistor::class, function (Application $app) {
@@ -144,7 +146,7 @@ $this->app->bindIf(Transistor::class, function (Application $app) {
 });
 ```
 
-편의상, 등록할 클래스 또는 인터페이스 이름을 별도의 인수로 전달하지 않고, `bind` 메서드에 전달하는 클로저의 반환 타입을 통해 라라벨이 바인딩 대상을 추론할 수도 있습니다.
+편리하게도, 바인딩할 클래스 또는 인터페이스 이름을 별도로 넘기지 않고 클로저 반환 타입 선언으로 Laravel이 바인딩 타입을 유추하도록 할 수도 있습니다:
 
 ```php
 App::bind(function (Application $app): Transistor {
@@ -153,12 +155,12 @@ App::bind(function (Application $app): Transistor {
 ```
 
 > [!NOTE]
-> 인터페이스에 의존하지 않는 클래스라면 컨테이너에 따로 바인딩할 필요가 없습니다. 컨테이너는 리플렉션을 활용하여 이러한 객체를 알아서 생성하여 주입할 수 있습니다.
+> 클래스가 인터페이스에 의존하지 않는다면 컨테이너에 바인딩할 필요가 없습니다. 이런 클래스는 리플렉션을 통해 자동으로 해결되기 때문입니다.
 
 <a name="binding-a-singleton"></a>
 #### 싱글톤 바인딩
 
-`singleton` 메서드는 클래스나 인터페이스를 컨테이너에 단 한 번만 해석해서, 이후 여러 번 요청해도 항상 같은 객체 인스턴스를 반환하도록 등록합니다.
+`singleton` 메서드는 클래스나 인터페이스를 컨테이너에 단 한 번만 생성/해결하도록 바인딩합니다. 싱글톤 바인딩의 경우, 첫 해석 이후에는 같은 인스턴스를 반환합니다:
 
 ```php
 use App\Services\Transistor;
@@ -170,7 +172,7 @@ $this->app->singleton(Transistor::class, function (Application $app) {
 });
 ```
 
-`singletonIf` 메서드를 사용하면, 해당 타입의 바인딩이 이미 존재하지 않을 때만 싱글톤으로 바인딩할 수 있습니다.
+`singletonIf` 메서드도 `bindIf`와 유사하게, 아직 등록되지 않은 타입에 한해 싱글톤 바인딩을 등록합니다:
 
 ```php
 $this->app->singletonIf(Transistor::class, function (Application $app) {
@@ -178,7 +180,7 @@ $this->app->singletonIf(Transistor::class, function (Application $app) {
 });
 ```
 
-또한, `#[Singleton]` 속성을 인터페이스나 클래스에 지정하여, 해당 타입이 싱글톤 방식으로 해석되도록 할 수 있습니다.
+또는 `#[Singleton]` 어트리뷰트를 클래스나 인터페이스에 붙여 컨테이너가 단일 인스턴스로 해석하도록 지정할 수도 있습니다:
 
 ```php
 <?php
@@ -195,9 +197,9 @@ class Transistor
 ```
 
 <a name="binding-scoped"></a>
-#### 스코프드(Scoped) 싱글톤 바인딩
+#### 스코프드 싱글톤 바인딩
 
-`scoped` 메서드는 클래스나 인터페이스를 라라벨의 한 요청(request) 또는 잡(job) 라이프사이클 동안에만 해석되도록 바인딩합니다. 이는 `singleton`과 비슷하지만, [`Laravel Octane`](/docs/12.x/octane) 워커가 새로운 요청을 처리하거나 [큐 워커](/docs/12.x/queues)가 새 작업을 처리할 때마다 인스턴스가 초기화됩니다.
+`scoped` 메서드는 싱글톤과 비슷하지만, Laravel 요청 또는 작업(job) 라이프사이클 동안에만 단일 인스턴스를 유지합니다. `scoped`로 등록된 인스턴스는 Laravel 애플리케이션이 새로운 라이프사이클을 시작할 때(예: [Laravel Octane](/docs/12.x/octane) 워커가 새 요청을 처리하거나, Laravel [큐 워커](/docs/12.x/queues)가 새 작업을 처리할 때) 초기화됩니다:
 
 ```php
 use App\Services\Transistor;
@@ -209,7 +211,7 @@ $this->app->scoped(Transistor::class, function (Application $app) {
 });
 ```
 
-`scopedIf` 메서드는 해당 타입이 기존에 바인딩되지 않았다면 스코프드 바인딩을 등록합니다.
+`scopedIf` 메서드를 사용하면 아직 바인딩이 등록되지 않은 경우에 스코프드 바인딩을 등록합니다:
 
 ```php
 $this->app->scopedIf(Transistor::class, function (Application $app) {
@@ -217,7 +219,7 @@ $this->app->scopedIf(Transistor::class, function (Application $app) {
 });
 ```
 
-또한, `#[Scoped]` 속성을 통해 해당 타입이 각 요청 또는 잡 라이프사이클 당 단 한 번만 해석되도록 지정할 수 있습니다.
+또는 `#[Scoped]` 어트리뷰트를 붙여 Laravel 요청/작업 라이프사이클 내에서 단일 인스턴스가 되도록 지정할 수도 있습니다:
 
 ```php
 <?php
@@ -236,7 +238,7 @@ class Transistor
 <a name="binding-instances"></a>
 #### 인스턴스 바인딩
 
-이미 생성된 객체 인스턴스를 컨테이너에 바인딩하려면 `instance` 메서드를 사용합니다. 이렇게 등록된 인스턴스는 이후 컨테이너에서 동일하게 반환됩니다.
+기존 객체 인스턴스를 컨테이너에 바인딩할 수도 있습니다. `instance` 메서드를 사용하며, 전달된 인스턴스는 컨테이너가 해결할 때 항상 반환됩니다:
 
 ```php
 use App\Services\Transistor;
@@ -248,9 +250,9 @@ $this->app->instance(Transistor::class, $service);
 ```
 
 <a name="binding-interfaces-to-implementations"></a>
-### 인터페이스를 구현체에 바인딩하기
+### 인터페이스를 구현체에 바인딩하기 (Binding Interfaces to Implementations)
 
-서비스 컨테이너의 강력한 기능 중 하나는, 인터페이스를 특정 구현체에 바인딩할 수 있다는 점입니다. 예를 들어, `EventPusher`라는 인터페이스와 `RedisEventPusher`라는 구현체가 있다고 가정해 봅시다. 구현체 코드를 완성한 후, 다음과 같이 컨테이너에 등록할 수 있습니다.
+서비스 컨테이너의 강력한 기능 중 하나는 인터페이스를 특정 구현체에 바인딩하는 능력입니다. 예를 들어 `EventPusher` 인터페이스와 `RedisEventPusher` 구현체가 있다고 가정하면, 구현체를 다음과 같이 바인딩할 수 있습니다:
 
 ```php
 use App\Contracts\EventPusher;
@@ -259,13 +261,13 @@ use App\Services\RedisEventPusher;
 $this->app->bind(EventPusher::class, RedisEventPusher::class);
 ```
 
-이렇게 등록하면, 해당 인터페이스(`EventPusher`)를 필요로 하는 클래스에서 자동으로 `RedisEventPusher`가 주입됩니다. 컨트롤러, 이벤트 리스너, 미들웨어 등 라라벨 애플리케이션 내 여러 클래스에서 이 방식으로 의존성 주입을 활용할 수 있습니다.
+이 선언은 컨테이너에게 `EventPusher` 인터페이스가 필요할 때 `RedisEventPusher` 인스턴스를 주입하도록 지시합니다. 이제 컨테이너가 해석하는 클래스 생성자에 `EventPusher`를 타입힌트할 수 있습니다. 컨트롤러, 이벤트 리스너, 미들웨어 등 Laravel의 많은 클래스는 항상 컨테이너를 통해 해석되니까요:
 
 ```php
 use App\Contracts\EventPusher;
 
 /**
- * 새로운 클래스 인스턴스 생성.
+ * 클래스 인스턴스 생성.
  */
 public function __construct(
     protected EventPusher $pusher,
@@ -273,9 +275,9 @@ public function __construct(
 ```
 
 <a name="contextual-binding"></a>
-### 컨텍스트 바인딩
+### 컨텍스트 바인딩 (Contextual Binding)
 
-때로는 두 개의 클래스가 동일한 인터페이스를 사용하더라도, 각각 다른 구현체를 주입하고 싶을 때가 있습니다. 예를 들어 두 컨트롤러가 동일한 `Illuminate\Contracts\Filesystem\Filesystem` [컨트랙트](/docs/12.x/contracts)를 사용하지만, 서로 다른 구현체를 필요로 할 때 사용할 수 있습니다. 라라벨에서는 이런 요구를 위한 간단하고 플루언트(fluent)한 인터페이스를 제공합니다.
+때때로 두 개 이상의 클래스가 같은 인터페이스를 사용하지만, 각 클래스에 서로 다른 구현체를 주입하고 싶을 수 있습니다. 예를 들어 두 개의 컨트롤러가 `Illuminate\Contracts\Filesystem\Filesystem` [컨트랙트](/docs/12.x/contracts)의 다른 구현체에 의존할 수 있습니다. Laravel은 이런 동작을 정의할 수 있는 간단하고 직관적인 인터페이스를 제공합니다:
 
 ```php
 use App\Http\Controllers\PhotoController;
@@ -298,11 +300,11 @@ $this->app->when([VideoController::class, UploadController::class])
 ```
 
 <a name="contextual-attributes"></a>
-### 컨텍스트 속성(Contextual Attributes)
+### 컨텍스트 속성 (Contextual Attributes)
 
-컨텍스트 바인딩은 드라이버나 설정 값 등 특정 구현체를 주입할 때 자주 사용됩니다. 라라벨은 이러한 값을 서비스 프로바이더에서 직접 바인딩하지 않고도 간편하게 주입할 수 있도록 다양한 컨텍스트 속성을 제공합니다.
+컨텍스트 바인딩이 드라이버 구현체나 구성 값 주입에 자주 사용되므로, Laravel은 이를 수동으로 서비스 프로바이더에 정의하지 않고도 주입할 수 있는 여러 컨텍스트 바인딩용 어트리뷰트를 제공합니다.
 
-예를 들어, `Storage` 속성을 활용해 특정 [스토리지 디스크](/docs/12.x/filesystem) 인스턴스를 주입할 수 있습니다.
+예를 들어, 특정 [스토리지 디스크](/docs/12.x/filesystem)를 주입할 때 `Storage` 어트리뷰트를 사용할 수 있습니다:
 
 ```php
 <?php
@@ -322,7 +324,7 @@ class PhotoController extends Controller
 }
 ```
 
-`Storage`외에도, `Auth`, `Cache`, `Config`, `Context`, `DB`, `Give`, `Log`, `RouteParameter`, 그리고 [Tag](#tagging) 속성(attribute)을 사용할 수 있습니다.
+`Storage` 어트리뷰트 외에도, Laravel은 `Auth`, `Cache`, `Config`, `Context`, `DB`, `Give`, `Log`, `RouteParameter`, [Tag](#tagging) 어트리뷰트를 제공합니다:
 
 ```php
 <?php
@@ -365,7 +367,7 @@ class PhotoController extends Controller
 }
 ```
 
-또한, 라라벨에서는 현재 인증된 사용자를 주입받을 수 있는 `CurrentUser` 속성도 제공합니다.
+또한, 로그인한 현재 사용자 정보를 주입하는 `CurrentUser` 어트리뷰트도 Laravel에서 제공합니다:
 
 ```php
 use App\Models\User;
@@ -377,9 +379,9 @@ Route::get('/user', function (#[CurrentUser] User $user) {
 ```
 
 <a name="defining-custom-attributes"></a>
-#### 커스텀 속성 정의하기
+#### 커스텀 어트리뷰트 정의하기
 
-여러분만의 맞춤형 컨텍스트 속성이 필요하다면 `Illuminate\Contracts\Container\ContextualAttribute` 컨트랙트를 구현하여 직접 속성을 만들 수 있습니다. 이때 컨테이너는 속성의 `resolve` 메서드를 호출하며, 해당 클래스에 주입할 값을 반환하면 됩니다. 아래는 라라벨의 내장 `Config` 속성을 재구현한 예제입니다.
+`Illuminate\Contracts\Container\ContextualAttribute` 컨트랙트를 구현해 직접 컨텍스트 어트리뷰트를 만들 수 있습니다. 컨테이너는 해당 어트리뷰트의 `resolve` 메서드를 호출하여, 어트리뷰트를 사용하는 클래스에 주입할 값을 반환해야 합니다. 아래 예에서는 Laravel 내장 `Config` 어트리뷰트를 다시 구현해보았습니다:
 
 ```php
 <?php
@@ -394,14 +396,14 @@ use Illuminate\Contracts\Container\ContextualAttribute;
 class Config implements ContextualAttribute
 {
     /**
-     * 새로운 속성 인스턴스 생성.
+     * 새로운 어트리뷰트 인스턴스 생성.
      */
     public function __construct(public string $key, public mixed $default = null)
     {
     }
 
     /**
-     * 설정 값을 해석합니다.
+     * 구성 값을 해결.
      *
      * @param  self  $attribute
      * @param  \Illuminate\Contracts\Container\Container  $container
@@ -415,9 +417,9 @@ class Config implements ContextualAttribute
 ```
 
 <a name="binding-primitives"></a>
-### 프리미티브 타입 바인딩
+### 기본 자료형 바인딩 (Binding Primitives)
 
-클래스가 객체뿐 아니라 정수 등 기본형(primitive) 값도 주입받아야 할 때, 컨텍스트 바인딩을 이용해 필요한 값을 주입할 수 있습니다.
+어떤 클래스는 클래스 인스턴스뿐 아니라 정수 같은 기본 자료형도 주입받아야 할 수 있습니다. 이런 경우 컨텍스트 바인딩을 통해 필요한 값을 주입할 수 있습니다:
 
 ```php
 use App\Http\Controllers\UserController;
@@ -427,7 +429,7 @@ $this->app->when(UserController::class)
     ->give($value);
 ```
 
-때로는 태깅([tagged](#tagging))된 여러 인스턴스가 배열로 주입되어야 할 수도 있습니다. `giveTagged` 메서드를 사용하면 해당 태그가 붙은 모든 바인딩을 한 번에 주입할 수 있습니다.
+클래스가 [태그된](#tagging) 인스턴스 배열에 의존할 때도 있습니다. 이 경우 `giveTagged` 메서드를 사용해 같은 태그를 가진 컨테이너 바인딩 모두를 쉽게 주입할 수 있습니다:
 
 ```php
 $this->app->when(ReportAggregator::class)
@@ -435,7 +437,7 @@ $this->app->when(ReportAggregator::class)
     ->giveTagged('reports');
 ```
 
-응용 설정 파일에서 값을 주입하고 싶다면, `giveConfig` 메서드를 사용할 수 있습니다.
+애플리케이션 설정 파일에서 값을 주입해야 한다면, `giveConfig` 메서드를 사용할 수 있습니다:
 
 ```php
 $this->app->when(ReportAggregator::class)
@@ -444,9 +446,9 @@ $this->app->when(ReportAggregator::class)
 ```
 
 <a name="binding-typed-variadics"></a>
-### 타입 지정 가변 인자 바인딩
+### 타입을 지정한 가변 인자 바인딩 (Binding Typed Variadics)
 
-가끔, 클래스의 생성자에 여러 개의 동일 타입 객체가 가변 인자(variadic)로 들어갈 수 있습니다.
+가끔 클래스 생성자가 타입힌트된 가변 인자 배열을 받을 때가 있습니다:
 
 ```php
 <?php
@@ -457,7 +459,7 @@ use App\Services\Logger;
 class Firewall
 {
     /**
-     * 필터 인스턴스 목록.
+     * 필터 인스턴스 배열.
      *
      * @var array
      */
@@ -475,7 +477,7 @@ class Firewall
 }
 ```
 
-컨텍스트 바인딩을 활용해, 클로저에서 여러 `Filter` 인스턴스를 배열로 반환하도록 지정하면 이 의존성을 해결할 수 있습니다.
+컨텍스트 바인딩을 사용해, `Give` 메서드에 `Filter` 인스턴스 배열을 반환하는 클로저를 제공해 이 의존성을 해결할 수 있습니다:
 
 ```php
 $this->app->when(Firewall::class)
@@ -489,7 +491,7 @@ $this->app->when(Firewall::class)
     });
 ```
 
-더 간단하게, 원하는 클래스를 배열로 지정하면 해당 클래스들이 자동으로 해석되어 주입됩니다.
+또는 편하게 `Filter` 클래스 이름 배열을 제공해도 컨테이너가 자동으로 해결합니다:
 
 ```php
 $this->app->when(Firewall::class)
@@ -502,9 +504,9 @@ $this->app->when(Firewall::class)
 ```
 
 <a name="variadic-tag-dependencies"></a>
-#### 가변 인자 태그 의존성
+#### 가변 태그 의존성
 
-클래스가 가변 인자(variadic) 방식으로 특정 클래스 타입(`Report ...$reports`)의 의존성을 요구할 때, `needs`와 `giveTagged` 메서드로 태깅된 바인딩을 한 번에 주입할 수 있습니다.
+`Report ...$reports`와 같은 가변 인자가 특정 클래스로 타입힌트돼 있을 때는, `needs`와 `giveTagged` 메서드를 사용해 해당 태그(`reports`)가 붙은 모든 바인딩을 주입할 수 있습니다:
 
 ```php
 $this->app->when(ReportAggregator::class)
@@ -513,9 +515,9 @@ $this->app->when(ReportAggregator::class)
 ```
 
 <a name="tagging"></a>
-### 태깅(Tagging)
+### 태깅 (Tagging)
 
-가끔, 바인딩된 서비스 중 특정 "카테고리"에 속하는 모든 인스턴스를 한 번에 해석해야 할 때가 있습니다. 예를 들어, 다양한 `Report` 인터페이스 구현체들을 배열로 받아서 사용하는 리포트 분석기를 만든다고 가정해 보겠습니다. 먼저 구현체들을 바인딩한 후, `tag` 메서드로 태그를 부여합니다.
+때로는 특정 “카테고리”의 바인딩 전부를 한꺼번에 해결해야 할 때가 있습니다. 예를 들어 여러 `Report` 인터페이스 구현체를 배열로 받는 리포트 분석기를 만들고 싶을 수 있습니다. 구현체를 바인딩한 후 `tag` 메서드로 태그를 할당할 수 있습니다:
 
 ```php
 $this->app->bind(CpuReport::class, function () {
@@ -529,7 +531,7 @@ $this->app->bind(MemoryReport::class, function () {
 $this->app->tag([CpuReport::class, MemoryReport::class], 'reports');
 ```
 
-이제 컨테이너의 `tagged` 메서드를 사용해 태그된 모든 서비스를 쉽게 가져올 수 있습니다.
+태그가 할당된 서비스는 컨테이너의 `tagged` 메서드로 쉽게 모두 해결할 수 있습니다:
 
 ```php
 $this->app->bind(ReportAnalyzer::class, function (Application $app) {
@@ -538,9 +540,9 @@ $this->app->bind(ReportAnalyzer::class, function (Application $app) {
 ```
 
 <a name="extending-bindings"></a>
-### 바인딩 확장(Extending Bindings)
+### 바인딩 확장하기 (Extending Bindings)
 
-`extend` 메서드를 사용하면 이미 해석된 서비스에 추가적인 작업을 할 수 있습니다. 서비스가 해석될 때마다, 데코레이션하거나 추가 구성을 하고 싶다면 유용합니다. `extend`는 두 개의 인수(확장할 서비스 클래스, 수정된 서비스를 반환하는 클로저)를 받으며, 클로저에는 서비스 인스턴스와 컨테이너가 전달됩니다.
+`extend` 메서드를 사용하면 해석된 서비스를 수정할 수 있습니다. 예를 들어 서비스 해석 시 추가 로직을 실행해 서비스 인스턴스를 확장(데코레이트)하거나 설정할 수 있습니다. `extend`는 두 개의 인수를 받는데, 확장할 서비스 클래스와 수정된 서비스를 반환하는 클로저입니다. 클로저는 현재 서비스 인스턴스와 컨테이너 인스턴스를 받습니다:
 
 ```php
 $this->app->extend(Service::class, function (Service $service, Application $app) {
@@ -548,13 +550,15 @@ $this->app->extend(Service::class, function (Service $service, Application $app)
 });
 ```
 
+---
+
 <a name="resolving"></a>
-## 해석(Resolving)
+## 해결 (Resolving)
 
 <a name="the-make-method"></a>
 ### `make` 메서드
 
-컨테이너의 `make` 메서드를 사용하여 클래스 인스턴스를 해석(생성)할 수 있습니다. 이때 원하는 클래스나 인터페이스의 이름을 인수로 전달합니다.
+`make` 메서드를 사용해 컨테이너에서 클래스 인스턴스를 해결할 수 있습니다. `make`는 클래스 또는 인터페이스 이름을 인수로 받습니다:
 
 ```php
 use App\Services\Transistor;
@@ -562,7 +566,7 @@ use App\Services\Transistor;
 $transistor = $this->app->make(Transistor::class);
 ```
 
-클래스의 의존성 중에, 컨테이너가 해석할 수 없는 값이 있다면, `makeWith` 메서드를 통해 연관 배열로 추가 인수를 직접 전달할 수 있습니다. 예를 들어, `Transistor` 서비스의 생성자에 `$id` 인자가 필요하다면 이렇게 사용할 수 있습니다.
+클래스 의존성 중 일부가 컨테이너에서 해결되지 않을 경우, `makeWith` 메서드를 사용해 연관 배열로 직접 주입할 수도 있습니다. 예를 들어, `Transistor` 서비스 생성자의 `$id` 인수를 수동으로 넘길 수 있습니다:
 
 ```php
 use App\Services\Transistor;
@@ -570,7 +574,7 @@ use App\Services\Transistor;
 $transistor = $this->app->makeWith(Transistor::class, ['id' => 1]);
 ```
 
-`bound` 메서드를 사용하면, 특정 클래스나 인터페이스가 컨테이너에 명시적으로 바인딩되어 있는지 확인할 수 있습니다.
+`bound` 메서드는 특정 클래스나 인터페이스가 컨테이너에 명시적으로 바인딩되었는지 확인할 때 사용합니다:
 
 ```php
 if ($this->app->bound(Transistor::class)) {
@@ -578,7 +582,7 @@ if ($this->app->bound(Transistor::class)) {
 }
 ```
 
-서비스 프로바이더 밖, 즉 `$app` 변수를 사용할 수 없는 코드에서도, `App` [파사드](/docs/12.x/facades)나 `app` [헬퍼](/docs/12.x/helpers#method-app)를 이용해 컨테이너에서 클래스 인스턴스를 해석할 수 있습니다.
+서비스 프로바이더 밖에서 `$app` 변수를 쓸 수 없는 경우, `App` [파사드](/docs/12.x/facades) 또는 `app` [헬퍼](/docs/12.x/helpers#method-app)를 사용해 컨테이너에서 인스턴스를 해결할 수 있습니다:
 
 ```php
 use App\Services\Transistor;
@@ -589,13 +593,13 @@ $transistor = App::make(Transistor::class);
 $transistor = app(Transistor::class);
 ```
 
-만약 컨테이너에서 스스로를 주입받고 싶다면, 생성자의 타입힌트로 `Illuminate\Container\Container` 클래스를 지정할 수 있습니다.
+컨테이너 인스턴스 자체를 주입받고 싶다면, 클래스 생성자에 `Illuminate\Container\Container` 클래스를 타입힌트하면 됩니다:
 
 ```php
 use Illuminate\Container\Container;
 
 /**
- * 새로운 클래스 인스턴스 생성.
+ * 클래스 인스턴스 생성.
  */
 public function __construct(
     protected Container $container,
@@ -603,11 +607,11 @@ public function __construct(
 ```
 
 <a name="automatic-injection"></a>
-### 자동 의존성 주입
+### 자동 주입 (Automatic Injection)
 
-또한, 컨테이너에서 해석되는 대부분의 클래스에서는 생성자에 의존성을 타입힌트로 선언만 해도 자동으로 주입받을 수 있습니다. 이 방식은 [컨트롤러](/docs/12.x/controllers), [이벤트 리스너](/docs/12.x/events), [미들웨어](/docs/12.x/middleware)는 물론, [큐 작업](/docs/12.x/queues)의 `handle` 메서드 같은 곳에서도 전부 활용할 수 있습니다. 실제로 대부분의 객체는 이 자동 의존성 주입을 활용하여 컨테이너에서 해석됩니다.
+중요하게도, 컨테이너에 의해 해석되는 클래스 생성자에서 의존성을 타입힌트할 수 있습니다. 여기에는 [컨트롤러](/docs/12.x/controllers), [이벤트 리스너](/docs/12.x/events), [미들웨어](/docs/12.x/middleware) 등이 포함됩니다. 또한 [큐 작업](/docs/12.x/queues) `handle` 메서드에서도 의존성을 타입힌트할 수 있습니다. 실제로 대부분 객체는 이렇게 컨테이너가 자동 해결합니다.
 
-예를 들어, 컨트롤러의 생성자에 애플리케이션 서비스가 선언되어 있다면, 해당 서비스가 자동으로 주입됩니다.
+예를 들어, 컨트롤러 생성자에 애플리케이션이 정의한 서비스를 타입힌트하면 컨테이너가 자동으로 인스턴스를 만들어 주입합니다:
 
 ```php
 <?php
@@ -626,7 +630,7 @@ class PodcastController extends Controller
     ) {}
 
     /**
-     * 지정한 팟캐스트 정보 출력.
+     * 특정 팟캐스트 정보 조회.
      */
     public function show(string $id): Podcast
     {
@@ -635,10 +639,12 @@ class PodcastController extends Controller
 }
 ```
 
-<a name="method-invocation-and-injection"></a>
-## 메서드 호출과 의존성 주입
+---
 
-때때로, 객체 인스턴스의 메서드를 호출할 때 컨테이너가 해당 메서드의 의존성도 자동으로 주입해 주길 원할 수 있습니다. 아래의 클래스 예제를 보겠습니다.
+<a name="method-invocation-and-injection"></a>
+## 메서드 호출 및 주입 (Method Invocation and Injection)
+
+컨테이너가 특정 객체 인스턴스의 메서드를 호출하면서, 해당 메서드가 필요로 하는 의존성을 자동으로 주입하도록 할 수 있습니다. 예를 들어 다음 클래스를 가정해봅시다:
 
 ```php
 <?php
@@ -650,7 +656,7 @@ use App\Services\AppleMusic;
 class PodcastStats
 {
     /**
-     * 새로운 팟캐스트 통계 리포트 생성.
+     * 새 팟캐스트 통계 리포트 생성.
      */
     public function generate(AppleMusic $apple): array
     {
@@ -661,7 +667,7 @@ class PodcastStats
 }
 ```
 
-컨테이너의 `call` 메서드를 사용하면, 아래와 같이 `generate` 메서드를 호출하면서 의존성도 자동 주입할 수 있습니다.
+이 객체의 `generate` 메서드를 컨테이너를 통해 호출하려면 다음과 같이 합니다:
 
 ```php
 use App\PodcastStats;
@@ -670,7 +676,7 @@ use Illuminate\Support\Facades\App;
 $stats = App::call([new PodcastStats, 'generate']);
 ```
 
-`call` 메서드는 PHP의 어떤 콜러블(callable)도 받을 수 있습니다. 여기에는 클로저도 포함되며, 이 경우에도 의존성 자동 주입이 가능합니다.
+`call` 메서드는 어떤 PHP 호출(callable)도 받을 수 있으며, 클로저에 대해 자동으로 의존성을 주입해 실행할 수도 있습니다:
 
 ```php
 use App\Services\AppleMusic;
@@ -681,30 +687,32 @@ $result = App::call(function (AppleMusic $apple) {
 });
 ```
 
-<a name="container-events"></a>
-## 컨테이너 이벤트
+---
 
-서비스 컨테이너는 객체가 해석될 때마다 이벤트를 발생시킵니다. `resolving` 메서드를 이용해 이 이벤트를 감지할 수 있습니다.
+<a name="container-events"></a>
+## 컨테이너 이벤트 (Container Events)
+
+컨테이너는 객체를 해석할 때마다 이벤트를 발생시킵니다. `resolving` 메서드를 사용해 이를 청취할 수 있습니다:
 
 ```php
 use App\Services\Transistor;
 use Illuminate\Contracts\Foundation\Application;
 
 $this->app->resolving(Transistor::class, function (Transistor $transistor, Application $app) {
-    // "Transistor" 타입의 객체가 해석될 때 호출됩니다...
+    // "Transistor" 타입 객체가 컨테이너에서 해석될 때 호출...
 });
 
 $this->app->resolving(function (mixed $object, Application $app) {
-    // 어떤 타입이든 객체가 해석될 때 호출됩니다...
+    // 모든 타입 객체가 컨테이너에서 해석될 때 호출...
 });
 ```
 
-이벤트 콜백 함수에는 해석된 객체가 전달되므로, 실제로 객체가 사용되기 전에 필요한 추가 속성을 설정할 수 있습니다.
+객체가 콜백에 전달되므로, 서비스 사용자에게 넘겨지기 전에 추가 속성을 설정할 수 있습니다.
 
 <a name="rebinding"></a>
-### 리바인딩(Rebinding)
+### 재바인딩 (Rebinding)
 
-`rebinding` 메서드를 사용하면, 특정 서비스가 컨테이너에 재등록(리바인딩, 즉 다시 바인딩되거나, 기존 바인딩이 덮어써질 때)되는 순간을 감지할 수 있습니다. 이는 바인딩이 변경될 때마다 의존성을 업데이트하거나 동작을 수정해야 할 때 유용합니다.
+`rebinding` 메서드는 서비스가 컨테이너에서 다시 바인딩(재등록 혹은 덮어쓰기) 될 때 청취할 수 있게 합니다. 특정 바인딩이 갱신될 때마다 의존성을 업데이트하거나 동작을 수정하고 싶을 때 유용합니다:
 
 ```php
 use App\Contracts\PodcastPublisher;
@@ -721,14 +729,16 @@ $this->app->rebinding(
     },
 );
 
-// 새로운 바인딩 시 리바인딩 콜백이 실행됩니다...
+// 새로운 바인딩이 재바인딩 클로저를 트리거함...
 $this->app->bind(PodcastPublisher::class, TransistorPublisher::class);
 ```
+
+---
 
 <a name="psr-11"></a>
 ## PSR-11
 
-라라벨의 서비스 컨테이너는 [PSR-11](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-11-container.md) 인터페이스를 구현합니다. 따라서, PSR-11 컨테이너 인터페이스를 타입힌트로 지정해 라라벨 컨테이너 인스턴스를 받아올 수 있습니다.
+Laravel 서비스 컨테이너는 [PSR-11](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-11-container.md) 인터페이스를 구현합니다. 따라서 PSR-11 컨테이너 인터페이스를 타입힌트해 Laravel 컨테이너 인스턴스를 얻을 수 있습니다:
 
 ```php
 use App\Services\Transistor;
@@ -741,4 +751,4 @@ Route::get('/', function (ContainerInterface $container) {
 });
 ```
 
-지정한 식별자(identifier)를 해석할 수 없으면 예외가 발생합니다. 해당 식별자가 한 번도 바인딩된 적이 없다면 `Psr\Container\NotFoundExceptionInterface` 예외가, 식별자가 바인딩되어 있지만 해석할 수 없는 경우 `Psr\Container\ContainerExceptionInterface` 예외가 던져집니다.
+만약 주어진 식별자를 해결할 수 없으면 예외가 발생합니다. 식별자가 한 번도 바인딩되지 않은 경우엔 `Psr\Container\NotFoundExceptionInterface` 타입 예외가, 바인딩돼 있었지만 해결 실패 시 `Psr\Container\ContainerExceptionInterface` 타입 예외가 발생합니다.

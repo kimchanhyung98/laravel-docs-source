@@ -1,15 +1,15 @@
 # HTTP 응답 (HTTP Responses)
 
-- [응답 생성](#creating-responses)
-    - [응답에 헤더 추가하기](#attaching-headers-to-responses)
-    - [응답에 쿠키 추가하기](#attaching-cookies-to-responses)
+- [응답 생성하기](#creating-responses)
+    - [응답에 헤더 붙이기](#attaching-headers-to-responses)
+    - [응답에 쿠키 붙이기](#attaching-cookies-to-responses)
     - [쿠키와 암호화](#cookies-and-encryption)
 - [리다이렉트](#redirects)
-    - [네임드 라우트로 리다이렉트하기](#redirecting-named-routes)
-    - [컨트롤러 액션으로 리다이렉트하기](#redirecting-controller-actions)
-    - [외부 도메인으로 리다이렉트하기](#redirecting-external-domains)
-    - [세션 데이터와 함께 리다이렉트하기](#redirecting-with-flashed-session-data)
-- [기타 응답 타입](#other-response-types)
+    - [이름 있는 라우트로 리다이렉트](#redirecting-named-routes)
+    - [컨트롤러 액션으로 리다이렉트](#redirecting-controller-actions)
+    - [외부 도메인으로 리다이렉트](#redirecting-external-domains)
+    - [플래시 세션 데이터와 함께 리다이렉트](#redirecting-with-flashed-session-data)
+- [기타 응답 형식](#other-response-types)
     - [뷰 응답](#view-responses)
     - [JSON 응답](#json-responses)
     - [파일 다운로드](#file-downloads)
@@ -17,12 +17,12 @@
 - [응답 매크로](#response-macros)
 
 <a name="creating-responses"></a>
-## 응답 생성
+## 응답 생성하기 (Creating Responses)
 
 <a name="strings-arrays"></a>
-#### 문자열 및 배열
+#### 문자열과 배열 (Strings & Arrays)
 
-모든 라우트와 컨트롤러는 사용자 브라우저로 반환할 응답을 리턴해야 합니다. 라라벨은 다양한 방식으로 응답을 반환할 수 있습니다. 가장 기본적인 방법은 라우트나 컨트롤러에서 문자열을 반환하는 것입니다. 라라벨은 문자열을 자동으로 완전한 HTTP 응답으로 변환합니다.
+모든 라우트와 컨트롤러는 사용자의 브라우저로 다시 전송될 응답을 반환해야 합니다. Laravel은 여러 다양한 응답 반환 방식을 제공합니다. 가장 기본적인 응답 방식은 라우트나 컨트롤러에서 문자열을 반환하는 것입니다. 프레임워크는 해당 문자열을 자동으로 완전한 HTTP 응답으로 변환합니다:
 
 ```
 Route::get('/', function () {
@@ -30,7 +30,7 @@ Route::get('/', function () {
 });
 ```
 
-라우트나 컨트롤러에서 문자열뿐 아니라 배열도 반환할 수 있습니다. 배열을 반환하면 라라벨이 해당 배열을 자동으로 JSON 응답으로 변환합니다.
+라우트와 컨트롤러에서 문자열뿐 아니라 배열을 반환할 수도 있습니다. 그러면 프레임워크는 해당 배열을 자동으로 JSON 응답으로 변환합니다:
 
 ```
 Route::get('/', function () {
@@ -39,14 +39,14 @@ Route::get('/', function () {
 ```
 
 > [!TIP]
-> [Eloquent 컬렉션](/docs/8.x/eloquent-collections)도 라우트나 컨트롤러에서 반환할 수 있다는 사실, 알고 계셨나요? 컬렉션도 자동으로 JSON으로 변환됩니다. 한번 시도해 보세요!
+> 라우트 또는 컨트롤러에서 [Eloquent 컬렉션](/docs/{{version}}/eloquent-collections)을 반환할 수도 있다는 사실, 알고 계셨나요? 자동으로 JSON으로 변환됩니다. 한번 시도해보세요!
 
 <a name="response-objects"></a>
-#### 응답 객체
+#### 응답 객체 (Response Objects)
 
-실제 개발에서는 단순히 문자열이나 배열만 반환하는 경우는 드물며, 주로 `Illuminate\Http\Response` 인스턴스나 [뷰](/docs/8.x/views)를 반환하게 됩니다.
+대개 라우트 액션에서는 단순한 문자열이나 배열 대신 `Illuminate\Http\Response` 인스턴스나 [뷰](/docs/{{version}}/views)를 반환합니다.
 
-`Response` 인스턴스를 반환하면, HTTP 상태 코드와 헤더를 자유롭게 지정할 수 있습니다. `Response` 클래스는 `Symfony\Component\HttpFoundation\Response` 클래스를 상속하고 있기 때문에, HTTP 응답을 구성하기 위한 다양한 메서드를 사용할 수 있습니다.
+`Response` 인스턴스를 반환하면 응답의 HTTP 상태 코드와 헤더를 세밀하게 제어할 수 있습니다. `Response`는 `Symfony\Component\HttpFoundation\Response` 클래스를 상속받으며, 다양한 HTTP 응답을 생성하는 메서드를 제공합니다:
 
 ```
 Route::get('/home', function () {
@@ -56,9 +56,9 @@ Route::get('/home', function () {
 ```
 
 <a name="eloquent-models-and-collections"></a>
-#### Eloquent 모델 및 컬렉션
+#### Eloquent 모델 및 컬렉션 (Eloquent Models & Collections)
 
-[Eloquent ORM](/docs/8.x/eloquent) 모델이나 컬렉션을 라우트 또는 컨트롤러에서 바로 반환하는 것도 가능합니다. 이렇게 반환하면, 라라벨이 모델과 컬렉션을 자동으로 JSON 응답으로 변환해줍니다. 이때 모델의 [hidden 속성](/docs/8.x/eloquent-serialization#hiding-attributes-from-json)도 자동으로 반영됩니다.
+라우트와 컨트롤러에서 [Eloquent ORM](/docs/{{version}}/eloquent) 모델과 컬렉션을 직접 반환할 수도 있습니다. 이때 Laravel은 모델과 컬렉션을 자동으로 JSON 응답으로 변환하며, 모델의 [숨김 속성](/docs/{{version}}/eloquent-serialization#hiding-attributes-from-json)을 존중합니다:
 
 ```
 use App\Models\User;
@@ -69,9 +69,9 @@ Route::get('/user/{user}', function (User $user) {
 ```
 
 <a name="attaching-headers-to-responses"></a>
-### 응답에 헤더 추가하기
+### 응답에 헤더 붙이기 (Attaching Headers To Responses)
 
-대부분의 응답 관련 메서드는 체이닝이 가능하므로, 다양한 헤더를 메서드 체이닝 방식으로 손쉽게 추가할 수 있습니다. 예를 들어, `header` 메서드를 사용해서 응답에 여러 헤더를 추가할 수 있습니다.
+대부분의 응답 메서드는 체이닝이 가능하므로, 응답 인스턴스를 유창하게 구성할 수 있습니다. 예를 들어 `header` 메서드를 사용해 여러 헤더를 응답에 붙인 후 사용자에게 전송할 수 있습니다:
 
 ```
 return response($content)
@@ -80,7 +80,7 @@ return response($content)
             ->header('X-Header-Two', 'Header Value');
 ```
 
-또는 `withHeaders` 메서드를 사용해 한 번에 여러 헤더를 배열 형태로 지정할 수도 있습니다.
+또는 `withHeaders` 메서드를 사용해 여러 헤더를 배열로 한 번에 지정할 수도 있습니다:
 
 ```
 return response($content)
@@ -92,9 +92,9 @@ return response($content)
 ```
 
 <a name="cache-control-middleware"></a>
-#### 캐시 컨트롤 미들웨어
+#### 캐시 제어 미들웨어 (Cache Control Middleware)
 
-라라벨에는 `cache.headers` 미들웨어가 내장되어 있어, 여러 라우트에서 `Cache-Control` 헤더를 간편하게 지정할 수 있습니다. 각 디렉티브는 해당 캐시 컨트롤 디렉티브의 스네이크 케이스 형식으로 작성하며, 세미콜론으로 구분합니다. 만약 `etag` 디렉티브를 명시하면, 응답 내용의 MD5 해시값이 ETag 식별자로 자동 설정됩니다.
+Laravel은 `cache.headers` 미들웨어를 제공하며, 이를 사용하면 여러 라우트에 대해 빠르게 `Cache-Control` 헤더를 설정할 수 있습니다. 캐시 관련 지시어는 대응하는 캐시 제어 지시어의 "스네이크 케이스" 형태로 세미콜론으로 구분하여 전달해야 합니다. 만약 목록에 `etag`가 포함되어 있으면, 응답 본문의 MD5 해시가 자동으로 ETag 식별자로 설정됩니다:
 
 ```
 Route::middleware('cache.headers:public;max_age=2628000;etag')->group(function () {
@@ -109,9 +109,9 @@ Route::middleware('cache.headers:public;max_age=2628000;etag')->group(function (
 ```
 
 <a name="attaching-cookies-to-responses"></a>
-### 응답에 쿠키 추가하기
+### 응답에 쿠키 붙이기 (Attaching Cookies To Responses)
 
-`Illuminate\Http\Response` 인스턴스의 `cookie` 메서드를 사용해서, 응답에 쿠키를 붙일 수 있습니다. 쿠키명, 값, 그리고 쿠키가 유효한 시간(분)을 인수로 전달합니다.
+`cookie` 메서드를 사용하면 나가는 `Illuminate\Http\Response` 인스턴스에 쿠키를 붙일 수 있습니다. 이 메서드에는 쿠키 이름, 값, 그리고 쿠키가 유효한 분 단위 시간을 전달해야 합니다:
 
 ```
 return response('Hello World')->cookie(
@@ -119,7 +119,7 @@ return response('Hello World')->cookie(
 );
 ```
 
-`cookie` 메서드는 추가로 몇 가지 인수를 더 받을 수 있습니다. 이 인수들은 PHP의 [setcookie](https://secure.php.net/manual/en/function.setcookie.php) 함수와 거의 동일한 역할을 합니다.
+`cookie` 메서드는 그 외에도 덜 자주 사용되는 몇 가지 인자를 더 받습니다. 일반적으로 이 인자들은 PHP의 네이티브 [setcookie](https://secure.php.net/manual/en/function.setcookie.php) 함수에 전달하는 인자들과 동일한 역할을 합니다:
 
 ```
 return response('Hello World')->cookie(
@@ -127,7 +127,7 @@ return response('Hello World')->cookie(
 );
 ```
 
-아직 응답 인스턴스가 없는 상황에서, 특정 쿠키가 응답에 꼭 포함되길 원한다면 `Cookie` 파사드를 이용해서 쿠키를 "큐"에 등록할 수 있습니다. `queue` 메서드는 쿠키를 생성하는 데 필요한 인수들을 받아, 응답이 전송되기 전에 쿠키를 자동으로 붙여줍니다.
+아직 응답 인스턴스가 없더라도, `Cookie` 파사드를 사용해 "큐(queue)" 방식으로 쿠키를 저장할 수 있습니다. 이렇게 하면 응답이 전송될 때 해당 쿠키들이 자동으로 응답에 부착됩니다. 큐에 추가하는 `queue` 메서드에도 쿠키 생성에 필요한 인자를 전달합니다:
 
 ```
 use Illuminate\Support\Facades\Cookie;
@@ -136,9 +136,9 @@ Cookie::queue('name', 'value', $minutes);
 ```
 
 <a name="generating-cookie-instances"></a>
-#### 쿠키 인스턴스 생성하기
+#### 쿠키 인스턴스 생성하기 (Generating Cookie Instances)
 
-나중에 응답 인스턴스에 붙이기 위해 `Symfony\Component\HttpFoundation\Cookie` 인스턴스를 생성하고 싶다면, 전역 `cookie` 헬퍼를 사용하면 됩니다. 이렇게 생성한 쿠키는 반드시 응답에 추가해야만 실제로 클라이언트에 전달됩니다.
+`Symfony\Component\HttpFoundation\Cookie` 인스턴스를 생성하여 나중에 응답 인스턴스에 붙이고 싶다면, 전역 `cookie` 헬퍼를 사용할 수 있습니다. 이 쿠키는 반드시 응답에 붙여져야만 클라이언트에 전송됩니다:
 
 ```
 $cookie = cookie('name', 'value', $minutes);
@@ -147,28 +147,28 @@ return response('Hello World')->cookie($cookie);
 ```
 
 <a name="expiring-cookies-early"></a>
-#### 쿠키 미리 만료시키기
+#### 쿠키 빨리 만료시키기 (Expiring Cookies Early)
 
-응답의 `withoutCookie` 메서드를 이용해, 특정 쿠키를 만료시켜 삭제할 수 있습니다.
+`withoutCookie` 메서드를 사용하면 쿠키를 만료시켜 제거할 수 있습니다:
 
 ```
 return response('Hello World')->withoutCookie('name');
 ```
 
-아직 응답 인스턴스가 없다면, `Cookie` 파사드의 `expire` 메서드를 사용해 쿠키를 만료시킬 수 있습니다.
+아직 응답 인스턴스가 없으면 `Cookie` 파사드의 `expire` 메서드를 사용할 수도 있습니다:
 
 ```
 Cookie::expire('name');
 ```
 
 <a name="cookies-and-encryption"></a>
-### 쿠키와 암호화
+### 쿠키와 암호화 (Cookies & Encryption)
 
-라라벨이 기본적으로 만들어내는 모든 쿠키는 클라이언트에서 수정하거나 읽을 수 없도록 암호화 및 서명 처리가 되어 있습니다. 만약 애플리케이션에서 생성되는 일부 쿠키만 암호화를 비활성화하고 싶다면, `app/Http/Middleware` 디렉터리의 `App\Http\Middleware\EncryptCookies` 미들웨어 클래스 내 `$except` 속성에 쿠키명을 지정하면 됩니다.
+Laravel에서 생성된 모든 쿠키는 기본적으로 암호화 및 서명되어 클라이언트가 수정하거나 읽을 수 없습니다. 만약 애플리케이션에서 일부 쿠키에 대해 암호화를 비활성화하고 싶다면, `app/Http/Middleware` 디렉토리에 위치한 `App\Http\Middleware\EncryptCookies` 미들웨어의 `$except` 속성에 해당 쿠키 이름을 추가하면 됩니다:
 
 ```
 /**
- * The names of the cookies that should not be encrypted.
+ * 암호화하지 않을 쿠키 이름 목록.
  *
  * @var array
  */
@@ -178,9 +178,9 @@ protected $except = [
 ```
 
 <a name="redirects"></a>
-## 리다이렉트
+## 리다이렉트 (Redirects)
 
-리다이렉트 응답은 `Illuminate\Http\RedirectResponse` 클래스의 인스턴스이며, 사용자를 다른 URL로 안내하기 위한 적절한 헤더를 포함합니다. 여러 가지 방식으로 `RedirectResponse` 인스턴스를 만들 수 있는데, 가장 단순한 방법은 전역 `redirect` 헬퍼를 이용하는 것입니다.
+리다이렉트 응답은 `Illuminate\Http\RedirectResponse` 클래스의 인스턴스이며, 사용자를 다른 URL로 이동시키는 데 필요한 적절한 헤더를 포함합니다. `RedirectResponse` 인스턴스는 여러 방법으로 생성할 수 있는데, 가장 간단한 방법은 전역 `redirect` 헬퍼를 사용하는 것입니다:
 
 ```
 Route::get('/dashboard', function () {
@@ -188,49 +188,49 @@ Route::get('/dashboard', function () {
 });
 ```
 
-때로는 사용자를 이전 위치로 리다이렉트해야 할 때가 있습니다. 예를 들어, 폼 제출이 유효하지 않은 경우, `back` 헬퍼 함수를 사용하면 이전 위치로 쉽게 리다이렉트할 수 있습니다. 이 기능은 [세션](/docs/8.x/session)을 이용하므로, 해당 라우트가 반드시 `web` 미들웨어 그룹에 속해야 합니다.
+사용자가 이전 위치로 리다이렉트되어야 하는 경우가 종종 있습니다. 예를 들어 폼 전송이 유효하지 않을 때가 그렇습니다. 이럴 경우 전역 `back` 헬퍼 함수를 쓸 수 있습니다. 이 기능은 [세션](/docs/{{version}}/session)을 사용하기 때문에, `back` 함수를 호출하는 라우트는 반드시 `web` 미들웨어 그룹을 사용해야 합니다:
 
 ```
 Route::post('/user/profile', function () {
-    // Validate the request...
+    // 요청 유효성 검사...
 
     return back()->withInput();
 });
 ```
 
 <a name="redirecting-named-routes"></a>
-### 네임드 라우트로 리다이렉트하기
+### 이름 있는 라우트로 리다이렉트 (Redirecting To Named Routes)
 
-`redirect` 헬퍼를 인수 없이 호출하면, `Illuminate\Routing\Redirector` 인스턴스가 반환되어 그 위에서 다양한 메서드를 호출할 수 있습니다. 예를 들어, 네임드 라우트로 리다이렉트하려면 `route` 메서드를 사용합니다.
+`redirect` 헬퍼에 파라미터 없이 호출하면 `Illuminate\Routing\Redirector` 인스턴스가 반환되어, 해당 인스턴스 메서드를 자유롭게 사용할 수 있습니다. 예를 들어 이름 있는 라우트로 리다이렉트하려면 `route` 메서드를 사용하세요:
 
 ```
 return redirect()->route('login');
 ```
 
-라우트에 파라미터가 필요한 경우, 파라미터는 두 번째 인수로 전달합니다.
+라우트에 파라미터가 있다면 `route` 메서드의 두 번째 인자로 넘길 수 있습니다:
 
 ```
-// 아래와 같은 URI를 가진 라우트: /profile/{id}
+// URI가 /profile/{id}인 라우트의 경우
 
 return redirect()->route('profile', ['id' => 1]);
 ```
 
 <a name="populating-parameters-via-eloquent-models"></a>
-#### Eloquent 모델을 통한 파라미터 지정
+#### Eloquent 모델로 파라미터 채우기 (Populating Parameters Via Eloquent Models)
 
-Eloquent 모델에서 "ID" 파라미터를 추출해 라우트로 리다이렉트하려면, 모델 인스턴스를 직접 전달해도 됩니다. 라라벨이 ID를 자동으로 추출합니다.
+만약 "ID" 파라미터가 Eloquent 모델에서 자동으로 채워지는 라우트로 리다이렉트할 경우, 모델 인스턴스를 직접 넘길 수 있습니다. 그러면 Laravel이 자동으로 ID 값을 추출합니다:
 
 ```
-// 아래와 같은 URI를 가진 라우트: /profile/{id}
+// URI가 /profile/{id}인 라우트의 경우
 
 return redirect()->route('profile', [$user]);
 ```
 
-라우트 파라미터에 원하는 값을 직접 지정하고 싶다면, 라우트 파라미터 정의에서 컬럼명을 지정할 수 있고(`/profile/{id:slug}`), 또는 Eloquent 모델의 `getRouteKey` 메서드를 오버라이드할 수도 있습니다.
+파라미터에 넣을 값을 커스터마이징하려면, 라우트 파라미터를 `/profile/{id:slug}`처럼 컬럼을 지정하거나, Eloquent 모델의 `getRouteKey` 메서드를 오버라이드하세요:
 
 ```
 /**
- * Get the value of the model's route key.
+ * 모델의 라우트 키 값을 반환합니다.
  *
  * @return mixed
  */
@@ -241,9 +241,9 @@ public function getRouteKey()
 ```
 
 <a name="redirecting-controller-actions"></a>
-### 컨트롤러 액션으로 리다이렉트하기
+### 컨트롤러 액션으로 리다이렉트 (Redirecting To Controller Actions)
 
-[컨트롤러 액션](/docs/8.x/controllers)으로 리다이렉트해야 할 때는, `action` 메서드에 컨트롤러와 액션명을 지정해주면 됩니다.
+[컨트롤러 액션](/docs/{{version}}/controllers)으로 리다이렉트하려면 `action` 메서드에 컨트롤러 클래스와 액션 이름을 넘기면 됩니다:
 
 ```
 use App\Http\Controllers\UserController;
@@ -251,7 +251,7 @@ use App\Http\Controllers\UserController;
 return redirect()->action([UserController::class, 'index']);
 ```
 
-컨트롤러 라우트에 파라미터가 필요하다면, 두 번째 인수로 전달하면 됩니다.
+컨트롤러 라우트에 파라미터가 필요하다면, 두 번째 인자로 전달할 수 있습니다:
 
 ```
 return redirect()->action(
@@ -260,18 +260,18 @@ return redirect()->action(
 ```
 
 <a name="redirecting-external-domains"></a>
-### 외부 도메인으로 리다이렉트하기
+### 외부 도메인으로 리다이렉트 (Redirecting To External Domains)
 
-가끔 애플리케이션 외부의 도메인으로 리다이렉트해야 할 때가 있습니다. 이럴 때는 `away` 메서드를 사용하면 URL 추가 인코딩, 검증, 확인 없이 바로 `RedirectResponse`를 생성할 수 있습니다.
+애플리케이션 외부 도메인으로 리다이렉트하려면 `away` 메서드를 사용하세요. 이 메서드는 추가적인 URL 인코딩이나 검증 없이 `RedirectResponse`를 생성합니다:
 
 ```
 return redirect()->away('https://www.google.com');
 ```
 
 <a name="redirecting-with-flashed-session-data"></a>
-### 세션 데이터와 함께 리다이렉트하기
+### 플래시 세션 데이터와 함께 리다이렉트 (Redirecting With Flashed Session Data)
 
-새로운 URL로 리다이렉트하면서, 동시에 [데이터를 세션에 플래시](/docs/8.x/session#flash-data)하는 경우가 많습니다. 보통 어떤 작업이 성공했을 때, 성공 메시지를 세션에 저장하고 리다이렉트하는 식입니다. 편의를 위해, `RedirectResponse` 인스턴스를 생성한 뒤 메서드 체이닝으로 한 번에 세션에 데이터를 플래시할 수 있습니다.
+새 URL로 리다이렉트하고 동시에 [세션에 플래시 데이터](/docs/{{version}}/session#flash-data)를 저장하는 작업은 보통 같이 이루어집니다. 예를 들어, 동작을 성공적으로 수행한 후 성공 메시지를 세션에 플래시할 때 이렇게 합니다. 편리하도록 `RedirectResponse`를 생성하면서 세션 데이터도 한 번에 플래시하는 유창한 체인 메서드를 사용할 수 있습니다:
 
 ```
 Route::post('/user/profile', function () {
@@ -281,7 +281,7 @@ Route::post('/user/profile', function () {
 });
 ```
 
-사용자가 리다이렉트된 후에는, [세션](/docs/8.x/session)에서 플래시된 메시지를 꺼내서 표시할 수 있습니다. 예를 들어, [Blade 문법](/docs/8.x/blade)을 사용할 수 있습니다.
+사용자가 리다이렉트된 후 세션에 저장된 메시지를 [세션](/docs/{{version}}/session)에서 읽어 화면에 출력할 수 있습니다. 예를 들어 [Blade 문법](/docs/{{version}}/blade)으로는 다음과 같습니다:
 
 ```
 @if (session('status'))
@@ -292,23 +292,23 @@ Route::post('/user/profile', function () {
 ```
 
 <a name="redirecting-with-input"></a>
-#### 입력값과 함께 리다이렉트하기
+#### 입력값과 함께 리다이렉트하기 (Redirecting With Input)
 
-`RedirectResponse` 인스턴스의 `withInput` 메서드를 사용하면, 현재 요청의 입력 데이터를 세션에 저장하여, 사용자가 새로운 위치로 리다이렉트된 후에도 해당 입력 데이터를 쉽게 불러올 수 있습니다. 주로 유효성 검사에 실패했을 때 많이 활용합니다. 입력값이 세션에 플래시된 후에는, [이전 입력값을 조회](/docs/8.x/requests#retrieving-old-input)해서 폼을 다시 채워 넣을 수 있습니다.
+현재 요청의 입력값을 플래시해서 리다이렉트 전에 세션에 저장하려면, `RedirectResponse`의 `withInput` 메서드를 사용하세요. 일반적으로 사용자가 입력값 검증에서 실패했을 때 이 방식을 사용합니다. 입력값이 세션에 플래시되면, 다음 요청에서 해당 값을 쉽게 [재사용하여 폼을 다시 채울 수 있습니다](/docs/{{version}}/requests#retrieving-old-input):
 
 ```
 return back()->withInput();
 ```
 
 <a name="other-response-types"></a>
-## 기타 응답 타입
+## 기타 응답 형식 (Other Response Types)
 
-`response` 헬퍼는 다른 타입의 응답 인스턴스를 생성하는 데에도 사용할 수 있습니다. 인수 없이 호출하면, `Illuminate\Contracts\Routing\ResponseFactory` [계약](/docs/8.x/contracts)을 구현한 인스턴스가 반환됩니다. 이 계약에서는 여러 가지 유용한 응답 생성 메서드를 제공합니다.
+`response` 헬퍼는 다른 다양한 응답 인스턴스를 생성할 때도 사용됩니다. 인자 없이 호출하면 `Illuminate\Contracts\Routing\ResponseFactory` [계약](/docs/{{version}}/contracts)을 구현한 객체를 반환합니다. 이 계약은 여러 유용한 응답 생성 메서드를 제공합니다.
 
 <a name="view-responses"></a>
-### 뷰 응답
+### 뷰 응답 (View Responses)
 
-응답의 상태 코드와 헤더를 직접 지정하면서도, [뷰](/docs/8.x/views)를 응답 본문으로 사용해야 한다면 `view` 메서드를 사용하면 됩니다.
+응답의 상태와 헤더를 제어하면서 [뷰](/docs/{{version}}/views)를 반환해야 할 때는 `view` 메서드를 사용하면 됩니다:
 
 ```
 return response()
@@ -316,12 +316,12 @@ return response()
             ->header('Content-Type', $type);
 ```
 
-단, HTTP 상태 코드나 헤더 값을 지정할 필요가 없다면, 전역 `view` 헬퍼 함수를 그대로 사용해도 됩니다.
+만약 별도의 HTTP 상태 코드나 헤더 지정이 필요 없다면, 전역 `view` 헬퍼 함수를 사용해도 좋습니다.
 
 <a name="json-responses"></a>
-### JSON 응답
+### JSON 응답 (JSON Responses)
 
-`json` 메서드는 `Content-Type` 헤더를 자동으로 `application/json`으로 지정하고, 전달받은 배열을 PHP의 `json_encode` 함수를 사용해 JSON으로 변환해줍니다.
+`json` 메서드는 자동으로 `Content-Type` 헤더를 `application/json`으로 설정하며, 주어진 배열을 PHP의 `json_encode` 함수로 JSON 문자열로 변환합니다:
 
 ```
 return response()->json([
@@ -330,7 +330,7 @@ return response()->json([
 ]);
 ```
 
-만약 JSONP 응답을 만들고 싶다면, `json` 메서드와 `withCallback` 메서드를 조합해서 사용할 수 있습니다.
+JSONP 응답을 만들고 싶다면, `json` 메서드와 함께 `withCallback` 메서드를 사용할 수 있습니다:
 
 ```
 return response()
@@ -339,9 +339,9 @@ return response()
 ```
 
 <a name="file-downloads"></a>
-### 파일 다운로드
+### 파일 다운로드 (File Downloads)
 
-`download` 메서드는 지정한 경로의 파일을 사용자 브라우저가 강제로 다운로드 하게 하는 응답을 생성합니다. 다운로드되는 파일명은 두 번째 인수로 전달하면 되고, 세 번째 인수로 HTTP 헤더 배열을 넘길 수 있습니다.
+`download` 메서드는 특정 경로의 파일을 사용자 브라우저에서 강제로 다운로드하게 만드는 응답을 생성합니다. 두 번째 인자로 파일명을 지정할 수 있는데, 이 이름이 사용자가 보는 다운로드 파일명입니다. 세 번째 인자로는 HTTP 헤더 배열을 전달할 수 있습니다:
 
 ```
 return response()->download($pathToFile);
@@ -350,12 +350,12 @@ return response()->download($pathToFile, $name, $headers);
 ```
 
 > [!NOTE]
-> 파일 다운로드를 관리하는 Symfony HttpFoundation은, 다운로드할 파일명이 반드시 ASCII 문자여야 합니다.
+> Symfony HttpFoundation(파일 다운로드를 관리하는 라이브러리)는 다운로드할 파일명이 ASCII 문자여야 함을 요구합니다.
 
 <a name="streamed-downloads"></a>
-#### 스트림 다운로드
+#### 스트리밍 다운로드 (Streamed Downloads)
 
-특정 작업의 결과로 나온 문자열을 파일처럼 바로 다운로드시키고 싶을 때, 임시 파일을 따로 만들지 않고도 `streamDownload` 메서드를 사용할 수 있습니다. 이 메서드는 콜백, 파일명, 그리고 (선택적으로) 헤더 배열을 인수로 받습니다.
+작업 결과를 문자열로 곧바로 다운로드 응답으로 바꾸고 싶지만 파일로 저장하지 않고 싶을 때는 `streamDownload` 메서드를 사용하세요. 이 메서드는 콜백, 파일명, 헤더 배열(선택적)을 인자로 받습니다:
 
 ```
 use App\Services\GitHub;
@@ -368,9 +368,9 @@ return response()->streamDownload(function () {
 ```
 
 <a name="file-responses"></a>
-### 파일 응답
+### 파일 응답 (File Responses)
 
-`file` 메서드를 사용하면, 이미지나 PDF와 같이 파일을 다운로드하지 않고 브라우저 화면에 바로 표시할 수 있습니다. 첫 번째 인수로 파일 경로를, 두 번째 인수로 헤더 배열을 넘깁니다.
+`file` 메서드는 이미지나 PDF 같은 파일을 다운로드가 아닌 브라우저 내에서 바로 표시할 때 씁니다. 첫 번째 인자로 파일 경로, 두 번째 인자로 헤더 배열을 받습니다:
 
 ```
 return response()->file($pathToFile);
@@ -379,9 +379,9 @@ return response()->file($pathToFile, $headers);
 ```
 
 <a name="response-macros"></a>
-## 응답 매크로
+## 응답 매크로 (Response Macros)
 
-여러 라우트나 컨트롤러에서 재사용할 수 있는 커스텀 응답을 만들고 싶다면, `Response` 파사드의 `macro` 메서드를 사용할 수 있습니다. 보통 이 메서드는 애플리케이션의 [서비스 프로바이더](/docs/8.x/providers), 예를 들어 `App\Providers\AppServiceProvider`의 `boot` 메서드에서 호출합니다.
+여러 라우트나 컨트롤러에서 재사용할 수 있는 사용자 정의 응답을 만들고 싶다면, `Response` 파사드의 `macro` 메서드를 사용하세요. 보통 이 메서드는 애플리케이션의 [서비스 프로바이더](/docs/{{version}}/providers) 중 하나, 예를 들어 `App\Providers\AppServiceProvider`의 `boot` 메서드 안에서 호출합니다:
 
 ```
 <?php
@@ -394,7 +394,7 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
+     * 애플리케이션 서비스 초기화
      *
      * @return void
      */
@@ -407,7 +407,7 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-`macro` 함수는 첫 번째 인수에 매크로 이름을, 두 번째 인수에 클로저를 받습니다. 매크로로 등록된 클로저는 `ResponseFactory` 구현이나 `response` 헬퍼에서 매크로 이름으로 호출할 때 실행됩니다.
+`macro` 함수는 첫 번째 인자로 이름을, 두 번째 인자로 클로저를 받습니다. 이 매크로 클로저는 `ResponseFactory` 구현체나 `response` 헬퍼에서 해당 매크로 이름을 호출할 때 실행됩니다:
 
 ```
 return response()->caps('foo');

@@ -2,63 +2,63 @@
 
 - [소개](#introduction)
 - [설치](#installation)
-- [서버 사전 요구사항](#server-prerequisites)
+- [서버 전제 조건](#server-prerequisites)
     - [FrankenPHP](#frankenphp)
     - [RoadRunner](#roadrunner)
     - [Swoole](#swoole)
-- [애플리케이션 서빙](#serving-your-application)
-    - [HTTPS를 통한 애플리케이션 서빙](#serving-your-application-via-https)
-    - [Nginx를 통한 애플리케이션 서빙](#serving-your-application-via-nginx)
-    - [파일 변경 감지](#watching-for-file-changes)
-    - [워커 개수 지정](#specifying-the-worker-count)
-    - [최대 요청 개수 지정](#specifying-the-max-request-count)
-    - [워커 리로드](#reloading-the-workers)
-    - [서버 중지](#stopping-the-server)
+- [애플리케이션 서비스](#serving-your-application)
+    - [HTTPS를 통해 애플리케이션 서비스하기](#serving-your-application-via-https)
+    - [Nginx를 통해 애플리케이션 서비스하기](#serving-your-application-via-nginx)
+    - [파일 변경 감시](#watching-for-file-changes)
+    - [작업자 수 지정하기](#specifying-the-worker-count)
+    - [최대 요청 수 지정하기](#specifying-the-max-request-count)
+    - [작업자 재시작하기](#reloading-the-workers)
+    - [서버 중지하기](#stopping-the-server)
 - [의존성 주입과 Octane](#dependency-injection-and-octane)
     - [컨테이너 주입](#container-injection)
     - [요청 주입](#request-injection)
     - [설정 리포지토리 주입](#configuration-repository-injection)
-- [메모리 누수 관리](#managing-memory-leaks)
+- [메모리 누수 관리하기](#managing-memory-leaks)
 - [동시 작업](#concurrent-tasks)
 - [틱과 인터벌](#ticks-and-intervals)
 - [Octane 캐시](#the-octane-cache)
-- [테이블(Table)](#tables)
+- [테이블](#tables)
 
 <a name="introduction"></a>
-## 소개
+## 소개 (Introduction)
 
-[Laravel Octane](https://github.com/laravel/octane)는 [FrankenPHP](https://frankenphp.dev/), [Open Swoole](https://openswoole.com/), [Swoole](https://github.com/swoole/swoole-src), [RoadRunner](https://roadrunner.dev) 등 고성능 애플리케이션 서버를 활용하여 애플리케이션의 성능을 극대화합니다. Octane은 애플리케이션을 한 번 부팅한 뒤 메모리에 유지하며, 초고속으로 요청을 전달합니다.
+[Laravel Octane](https://github.com/laravel/octane)은 [FrankenPHP](https://frankenphp.dev/), [Open Swoole](https://openswoole.com/), [Swoole](https://github.com/swoole/swoole-src), [RoadRunner](https://roadrunner.dev) 등 강력한 애플리케이션 서버를 활용해 애플리케이션의 성능을 극대화합니다. Octane은 애플리케이션을 한 번만 부팅하여 메모리에 유지한 후, 초고속으로 요청을 처리합니다.
 
 <a name="installation"></a>
-## 설치
+## 설치 (Installation)
 
-Octane은 Composer 패키지 매니저로 설치할 수 있습니다:
+Octane은 Composer 패키지 관리자를 통해 설치할 수 있습니다:
 
 ```shell
 composer require laravel/octane
 ```
 
-Octane 설치 후, `octane:install` Artisan 명령어를 실행하여 Octane의 설정 파일을 애플리케이션에 설치할 수 있습니다:
+설치 후에는 `octane:install` Artisan 명령어를 실행해 Octane의 설정 파일을 애플리케이션에 설치할 수 있습니다:
 
 ```shell
 php artisan octane:install
 ```
 
 <a name="server-prerequisites"></a>
-## 서버 사전 요구사항
+## 서버 전제 조건 (Server Prerequisites)
 
 > [!WARNING]
-> Laravel Octane은 [PHP 8.1+](https://php.net/releases/)이 필요합니다.
+> Laravel Octane은 [PHP 8.1+](https://php.net/releases/)를 필요로 합니다.
 
 <a name="frankenphp"></a>
 ### FrankenPHP
 
-[FrankenPHP](https://frankenphp.dev)는 Go로 작성된 PHP 애플리케이션 서버이며, Early Hints, Brotli, Zstandard 압축 등 최신 웹 기능을 지원합니다. Octane 설치 과정에서 FrankenPHP를 서버로 선택하면, Octane이 FrankenPHP 바이너리를 자동으로 다운로드하여 설치합니다.
+[FrankenPHP](https://frankenphp.dev)는 Go로 작성된 PHP 애플리케이션 서버로, early hints, Brotli, Zstandard 압축 등 최신 웹 기능을 지원합니다. Octane을 설치하고 서버로 FrankenPHP를 선택하면, Octane이 자동으로 FrankenPHP 바이너리를 다운로드하고 설치합니다.
 
 <a name="frankenphp-via-laravel-sail"></a>
-#### Laravel Sail을 통한 FrankenPHP 사용
+#### Laravel Sail을 통한 FrankenPHP
 
-[Lavavel Sail](/docs/{{version}}/sail)을 활용해 개발할 경우, 아래 명령어로 Octane과 FrankenPHP를 설치하세요:
+[Laravel Sail](/docs/master/sail)을 사용해 개발할 계획이라면, 다음 명령어를 실행하여 Octane과 FrankenPHP를 설치하세요:
 
 ```shell
 ./vendor/bin/sail up
@@ -66,13 +66,13 @@ php artisan octane:install
 ./vendor/bin/sail composer require laravel/octane
 ```
 
-이후 `octane:install` Artisan 명령어로 FrankenPHP 바이너리를 설치합니다:
+그다음 `octane:install` Artisan 명령어로 FrankenPHP 바이너리를 설치합니다:
 
 ```shell
 ./vendor/bin/sail artisan octane:install --server=frankenphp
 ```
 
-마지막으로, `docker-compose.yml` 파일 내 `laravel.test` 서비스 정의에 `SUPERVISOR_PHP_COMMAND` 환경 변수를 추가합니다. 이 변수는 Sail이 PHP 개발 서버 대신 Octane으로 애플리케이션을 구동할 명령을 담고 있습니다:
+마지막으로, 애플리케이션의 `docker-compose.yml` 파일 내 `laravel.test` 서비스 정의에 `SUPERVISOR_PHP_COMMAND` 환경 변수를 추가하세요. 이 변수는 Sail이 PHP 개발 서버 대신 Octane을 이용해 애플리케이션을 서비스할 때 사용하는 명령어입니다:
 
 ```yaml
 services:
@@ -83,7 +83,7 @@ services:
       XDG_DATA_HOME:  /var/www/html/data # [tl! add]
 ```
 
-HTTPS, HTTP/2, HTTP/3를 활성화하려면 아래와 같이 수정하세요:
+HTTPS, HTTP/2, HTTP/3를 활성화하려면 다음과 같이 수정하세요:
 
 ```yaml
 services:
@@ -99,14 +99,14 @@ services:
       XDG_DATA_HOME:  /var/www/html/data # [tl! add]
 ```
 
-일반적으로 FrankenPHP Sail 애플리케이션은 `https://localhost`로 접속해야 하며, `https://127.0.0.1` 사용은 추가 설정이 필요하므로 [지양됩니다](https://frankenphp.dev/docs/known-issues/#using-https127001-with-docker).
+일반적으로 FrankenPHP Sail 애플리케이션에는 `https://localhost`로 접근하는 것이 좋으며, `https://127.0.0.1` 사용은 추가 설정이 필요하며 [권장되지 않습니다](https://frankenphp.dev/docs/known-issues/#using-https127001-with-docker).
 
 <a name="frankenphp-via-docker"></a>
-#### Docker를 통한 FrankenPHP 사용
+#### Docker를 통한 FrankenPHP
 
-FrankenPHP 공식 Docker 이미지를 사용하면 성능이 개선되고, FrankenPHP의 정적 설치에 포함되어 있지 않은 확장도 사용할 수 있습니다. 또한 공식 이미지는 Windows와 같이 네이티브 지원하지 않는 플랫폼에서 FrankenPHP 실행을 지원합니다. 이 Docker 이미지는 로컬 개발 및 운영 환경 모두에 적합합니다.
+FrankenPHP 공식 Docker 이미지는 정적 설치 버전에서 누락된 확장 프로그램 지원과 더 나은 성능을 제공합니다. 또한 Windows와 같이 공식적으로 지원하지 않는 플랫폼에서도 실행할 수 있게 도와줍니다. 공식 이미지는 로컬 개발과 프로덕션 모두에 적합합니다.
 
-아래 Dockerfile 예제를 시작점으로 활용할 수 있습니다:
+다음 Dockerfile을 시작점으로 사용해 FrankenPHP를 이용한 Laravel 애플리케이션 컨테이너를 만들 수 있습니다:
 
 ```dockerfile
 FROM dunglas/frankenphp
@@ -120,7 +120,7 @@ COPY . /app
 ENTRYPOINT ["php", "artisan", "octane:frankenphp"]
 ```
 
-개발 시에는 다음과 같은 Docker Compose 파일을 사용할 수 있습니다:
+개발 중에는 다음 Docker Compose 파일을 활용해 애플리케이션을 실행할 수 있습니다:
 
 ```yaml
 # compose.yaml
@@ -135,19 +135,19 @@ services:
       - .:/app
 ```
 
-`php artisan octane:start` 명령에 `--log-level` 옵션을 명시적으로 전달하면, Octane은 FrankenPHP의 기본 로거를 사용해 구조화된 JSON 로그를 생성합니다(별도로 설정하지 않았다면).
+`php artisan octane:start` 명령어에 `--log-level` 옵션을 명시적으로 전달하면 Octane은 FrankenPHP의 기본 로거를 사용하며, 별도 설정이 없으면 구조화된 JSON 로그를 생성합니다.
 
-Docker에서 FrankenPHP 사용에 관한 자세한 내용은 [공식 FrankenPHP 문서](https://frankenphp.dev/docs/docker/)를 참고하세요.
+더 자세한 Docker 환경에서 FrankenPHP 실행 정보는 [공식 문서](https://frankenphp.dev/docs/docker/)를 참고하세요.
 
 <a name="roadrunner"></a>
 ### RoadRunner
 
-[RoadRunner](https://roadrunner.dev)는 Go로 작성된 RoadRunner 바이너리로 구동됩니다. RoadRunner 기반 Octane 서버를 처음 시작할 때, Octane이 RoadRunner 바이너리를 다운로드 및 설치할지 안내합니다.
+[RoadRunner](https://roadrunner.dev)는 Go로 작성된 RoadRunner 바이너리를 사용합니다. RoadRunner 기반 Octane 서버를 처음 시작할 때 Octane이 RoadRunner 바이너리를 다운로드 및 설치할지 묻습니다.
 
 <a name="roadrunner-via-laravel-sail"></a>
-#### Laravel Sail을 통한 RoadRunner 사용
+#### Laravel Sail을 통한 RoadRunner
 
-[Lavavel Sail](/docs/{{version}}/sail)로 개발할 경우, 아래 명령어로 Octane과 RoadRunner를 설치하세요:
+[Laravel Sail](/docs/master/sail)을 사용하는 경우, 다음 명령어로 Octane과 RoadRunner를 설치하세요:
 
 ```shell
 ./vendor/bin/sail up
@@ -155,16 +155,16 @@ Docker에서 FrankenPHP 사용에 관한 자세한 내용은 [공식 FrankenPHP 
 ./vendor/bin/sail composer require laravel/octane spiral/roadrunner-cli spiral/roadrunner-http
 ```
 
-이후, Sail 셸을 열어서 `rr` 실행 파일을 사용해 최신 리눅스용 RoadRunner 바이너리를 받아옵니다:
+그런 다음 Sail 셸을 시작해 `rr` 실행 파일을 사용해 최신 Linux용 RoadRunner 바이너리를 받으세요:
 
 ```shell
 ./vendor/bin/sail shell
 
-# Sail 셸 내에서...
+# Sail 셸 내부...
 ./vendor/bin/rr get-binary
 ```
 
-그리고 `docker-compose.yml`의 `laravel.test` 서비스 정의에 `SUPERVISOR_PHP_COMMAND` 환경 변수를 추가하세요:
+애플리케이션의 `docker-compose.yml` 파일 내 `laravel.test` 서비스 정의에 `SUPERVISOR_PHP_COMMAND` 환경 변수를 추가하세요. 이 변수는 Sail이 PHP 개발 서버 대신 Octane을 이용해 애플리케이션을 서비스할 때 사용하는 명령어입니다:
 
 ```yaml
 services:
@@ -173,7 +173,7 @@ services:
       SUPERVISOR_PHP_COMMAND: "/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan octane:start --server=roadrunner --host=0.0.0.0 --rpc-port=6001 --port='${APP_PORT:-80}'" # [tl! add]
 ```
 
-마지막으로 `rr` 바이너리에 실행 권한을 주고 Sail 이미지를 빌드하세요:
+`rr` 바이너리가 실행 가능하도록 권한을 부여하고 Sail 이미지를 빌드하세요:
 
 ```shell
 chmod +x ./rr
@@ -184,7 +184,7 @@ chmod +x ./rr
 <a name="swoole"></a>
 ### Swoole
 
-Swoole 애플리케이션 서버로 Octane을 실행하려면 Swoole PHP 확장 설치가 필요합니다. 일반적으로 PECL로 설치합니다:
+Laravel Octane 애플리케이션을 Swoole 서버로 서비스하려면 Swoole PHP 확장 프로그램을 설치해야 합니다. 일반적으로 PECL을 통해 설치할 수 있습니다:
 
 ```shell
 pecl install swoole
@@ -193,23 +193,23 @@ pecl install swoole
 <a name="openswoole"></a>
 #### Open Swoole
 
-Open Swoole 서버를 활용하려면 Open Swoole PHP 확장을 설치해야 합니다. 마찬가지로 PECL을 사용할 수 있습니다:
+Open Swoole 서버를 사용하려면 Open Swoole PHP 확장을 설치해야 합니다. PECL을 통해 설치하는 것이 일반적입니다:
 
 ```shell
 pecl install openswoole
 ```
 
-Laravel Octane을 Open Swoole과 함께 사용하면, Swoole에서 제공하는 동시 작업, 틱, 인터벌 등의 동일한 기능을 사용할 수 있습니다.
+Open Swoole을 Laravel Octane과 함께 사용하면, 동시 작업, 틱, 인터벌과 같은 Swoole이 제공하는 기능을 똑같이 누릴 수 있습니다.
 
 <a name="swoole-via-laravel-sail"></a>
-#### Laravel Sail을 통한 Swoole 사용
+#### Laravel Sail을 통한 Swoole
 
 > [!WARNING]
-> Sail을 통해 Octane 애플리케이션을 구동하기 전에, Laravel Sail을 최신 버전으로 업데이트하고 애플리케이션 루트에서 `./vendor/bin/sail build --no-cache`를 실행하세요.
+> Sail을 통한 Octane 애플리케이션 서비스를 시작하기 전에, Laravel Sail 최신 버전인지 확인하고 애플리케이션 루트에서 `./vendor/bin/sail build --no-cache` 명령을 실행하세요.
 
-또는 [Laravel Sail](/docs/{{version}}/sail)에서 Swoole 기반 Octane 애플리케이션을 개발할 수 있습니다. Sail은 Swoole 확장을 기본적으로 포함하고 있습니다. 단, `docker-compose.yml` 파일에 추가 설정이 필요합니다.
+Swoole 기반 Octane 애플리케이션은 Laravel의 공식 Docker 개발 환경인 [Laravel Sail](/docs/master/sail)로 개발할 수 있습니다. Sail은 기본적으로 Swoole 확장을 포함하지만, `docker-compose.yml` 파일을 조정해야 합니다.
 
-시작하려면 다음처럼 `SUPERVISOR_PHP_COMMAND` 환경 변수를 추가하세요:
+먼저 `docker-compose.yml` 파일 내 `laravel.test` 서비스에 `SUPERVISOR_PHP_COMMAND` 환경 변수를 추가하세요. 이는 Sail이 PHP 개발 서버 대신 Octane을 이용해 애플리케이션을 서비스할 때 사용하는 명령어입니다:
 
 ```yaml
 services:
@@ -218,7 +218,7 @@ services:
       SUPERVISOR_PHP_COMMAND: "/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan octane:start --server=swoole --host=0.0.0.0 --port='${APP_PORT:-80}'" # [tl! add]
 ```
 
-마지막으로 Sail 이미지를 빌드합니다:
+마지막으로 Sail 이미지를 빌드하세요:
 
 ```shell
 ./vendor/bin/sail build --no-cache
@@ -227,7 +227,7 @@ services:
 <a name="swoole-configuration"></a>
 #### Swoole 설정
 
-Swoole은 `octane` 설정 파일에 추가 옵션을 지정할 수 있습니다. 이들은 변경이 드물어 기본 설정 파일에는 포함되어 있지 않습니다:
+Swoole은 필요에 따라 `octane` 설정 파일에 추가할 수 있는 몇 가지 구성 옵션을 지원합니다. 이 옵션들은 기본 설정 파일에는 포함되지 않습니다.
 
 ```php
 'swoole' => [
@@ -239,34 +239,34 @@ Swoole은 `octane` 설정 파일에 추가 옵션을 지정할 수 있습니다.
 ```
 
 <a name="serving-your-application"></a>
-## 애플리케이션 서빙
+## 애플리케이션 서비스 (Serving Your Application)
 
-Octane 서버는 `octane:start` Artisan 명령어로 시작할 수 있습니다. 기본적으로 이 명령어는 애플리케이션의 `octane` 설정 파일의 `server` 옵션에서 지정한 서버를 사용합니다:
+Octane 서버는 `octane:start` Artisan 명령어로 시작할 수 있습니다. 기본적으로 애플리케이션의 `octane` 설정 파일 내 `server` 옵션에 지정된 서버를 사용합니다:
 
 ```shell
 php artisan octane:start
 ```
 
-기본적으로 Octane은 8000번 포트에서 서버를 구동하므로, 브라우저에서 `http://localhost:8000`으로 접속할 수 있습니다.
+기본적으로 Octane은 8000번 포트에서 서버를 시작하므로, 브라우저에서 `http://localhost:8000`으로 접속할 수 있습니다.
 
 <a name="serving-your-application-via-https"></a>
-### HTTPS를 통한 애플리케이션 서빙
+### HTTPS를 통해 애플리케이션 서비스하기
 
-기본적으로 Octane을 통해 실행되는 애플리케이션은 `http://`로 시작하는 링크를 생성합니다. 애플리케이션의 `config/octane.php` 설정 파일에서 `OCTANE_HTTPS` 환경 변수를 `true`로 설정하면, Octane이 모든 링크를 `https://`로 생성하도록 라라벨에 지시합니다:
+기본적으로 Octane에서 실행되는 애플리케이션은 `http://` 접두사가 붙은 링크를 생성합니다. 애플리케이션의 `config/octane.php` 설정 파일 내 `OCTANE_HTTPS` 환경 변수를 `true`로 설정하면, Octane은 Laravel에게 모든 생성된 링크에 `https://` 접두사를 붙이라고 지시합니다:
 
 ```php
 'https' => env('OCTANE_HTTPS', false),
 ```
 
 <a name="serving-your-application-via-nginx"></a>
-### Nginx를 통한 애플리케이션 서빙
+### Nginx를 통해 애플리케이션 서비스하기
 
 > [!NOTE]
-> 자체 서버 설정이나 서비스 설정이 숙련되지 않았다면, 완전 관리형 Octane 환경을 제공하는 [Laravel Cloud](https://cloud.laravel.com)를 확인하세요.
+> 만약 직접 서버 설정을 관리할 준비가 안 되어 있거나, 견고한 Laravel Octane 애플리케이션 운영에 필요한 다양한 서비스 설정이 익숙하지 않다면, 완전 관리형 Laravel Octane 지원을 제공하는 [Laravel Cloud](https://cloud.laravel.com)를 확인해 보시기 바랍니다.
 
-운영 환경에서는 Octane 애플리케이션을 Nginx나 Apache 같은 전통적인 웹 서버 뒤에서 서빙해야 합니다. 이를 통해 정적 에셋(이미지, 스타일시트 등)을 웹 서버가 처리하고, SSL 인증서 종료 과정을 제어할 수 있습니다.
+운영 환경에서는 Nginx 또는 Apache 같은 전통적인 웹 서버 뒤에서 Octane 애플리케이션을 서비스하는 것이 좋습니다. 이렇게 하면 웹 서버가 이미지, 스타일시트 같은 정적 자산을 제공하고 SSL 인증서 종료를 관리할 수 있습니다.
 
-아래 Nginx 설정 예시는 사이트의 정적 에셋은 Nginx가 서빙하고, 나머지 요청을 8000번 포트에서 구동 중인 Octane 서버로 프록시하는 방식입니다:
+아래 Nginx 설정 예시에서는 Nginx가 사이트의 정적 자산을 서비스하고, 포트 8000번에서 실행 중인 Octane 서버에 요청을 프록시합니다:
 
 ```nginx
 map $http_upgrade $connection_upgrade {
@@ -323,86 +323,88 @@ server {
 ```
 
 <a name="watching-for-file-changes"></a>
-### 파일 변경 감지
+### 파일 변경 감시 (Watching for File Changes)
 
-Octane 서버가 시작될 때 애플리케이션이 메모리에 적재되므로, 파일을 수정해도 브라우저 새로고침 시 바로 반영되지 않습니다. 예를 들어, `routes/web.php`에 라우트를 추가해도 서버를 재시작하기 전까진 반영되지 않습니다. 이를 간편하게 하기 위해, `--watch` 플래그를 사용하면 애플리케이션 파일의 변경이 감지될 때마다 Octane이 자동으로 재시작됩니다:
+Octane 서버가 시작될 때 애플리케이션을 메모리에 한 번만 로드하기 때문에, 애플리케이션 파일 변경 사항은 브라우저 새로 고침 시 곧바로 반영되지 않습니다. 예를 들어 `routes/web.php`에 경로 정의를 추가해도 서버를 재시작해야 적용됩니다.
+
+편의를 위해 `--watch` 플래그를 사용하면 애플리케이션 내 파일 변경이 감지될 때 자동으로 서버를 재시작하도록 Octane에 지시할 수 있습니다:
 
 ```shell
 php artisan octane:start --watch
 ```
 
-이 기능을 사용하기 전에, 로컬 개발 환경에 [Node](https://nodejs.org)가 설치되어 있어야 합니다. 또한 프로젝트에 [Chokidar](https://github.com/paulmillr/chokidar) 파일 감시 라이브러리를 설치해야 합니다:
+이 기능을 사용하기 전에, 로컬 개발 환경에 [Node](https://nodejs.org)를 설치해야 하며, 프로젝트에 [Chokidar](https://github.com/paulmillr/chokidar) 파일 감시 라이브러리를 설치해야 합니다:
 
 ```shell
 npm install --save-dev chokidar
 ```
 
-감시할 디렉터리와 파일은 애플리케이션의 `config/octane.php` 파일에서 `watch` 설정 옵션을 통해 지정할 수 있습니다.
+감시할 디렉토리와 파일은 애플리케이션의 `config/octane.php` 설정 파일 내 `watch` 옵션으로 지정할 수 있습니다.
 
 <a name="specifying-the-worker-count"></a>
-### 워커 개수 지정
+### 작업자 수 지정하기 (Specifying the Worker Count)
 
-Octane은 기본적으로 시스템의 CPU 코어 개수만큼 요청 워커를 시작합니다. 워커들은 들어오는 HTTP 요청을 처리합니다. `octane:start` 명령 실행 시 `--workers` 옵션을 통해 시작할 워커 수를 수동으로 지정할 수 있습니다:
+기본적으로 Octane은 머신의 CPU 코어 수만큼의 요청 작업자를 시작합니다. 이 작업자들이 들어오는 HTTP 요청을 처리합니다. `octane:start` 명령어 실행 시 `--workers` 옵션으로 작업자 수를 직접 지정할 수 있습니다:
 
 ```shell
 php artisan octane:start --workers=4
 ```
 
-Swoole 서버를 사용한다면 ["태스크 워커"](#concurrent-tasks) 개수도 지정할 수 있습니다:
+Swoole 서버를 사용할 경우, ["task workers"](#concurrent-tasks) 수 또한 지정할 수 있습니다:
 
 ```shell
 php artisan octane:start --workers=4 --task-workers=6
 ```
 
 <a name="specifying-the-max-request-count"></a>
-### 최대 요청 개수 지정
+### 최대 요청 수 지정하기 (Specifying the Max Request Count)
 
-메모리 누수를 방지하기 위해 Octane은 각 워커가 500개의 요청을 처리하면 자동으로 재시작합니다. 이 숫자는 `--max-requests` 옵션으로 조정할 수 있습니다:
+메모리 누수 방지 차원에서, Octane은 작업자가 500개의 요청을 처리하면 작업자를 점진적으로 재시작합니다. 이 숫자는 `--max-requests` 옵션으로 조정할 수 있습니다:
 
 ```shell
 php artisan octane:start --max-requests=250
 ```
 
 <a name="reloading-the-workers"></a>
-### 워커 리로드
+### 작업자 재시작하기 (Reloading the Workers)
 
-`octane:reload` 명령어로 Octane 서버의 워커를 우아하게 재시작할 수 있습니다. 보통 신규 배포 후 새 코드를 메모리에 반영하고 이후 요청에 사용하려면 이 기능을 이용합니다:
+배포 후 새로 배포한 코드가 메모리에 반영되도록 Octane 서버 작업자들을 점진적으로 재시작할 수 있습니다. `octane:reload` 명령어를 사용하세요:
 
 ```shell
 php artisan octane:reload
 ```
 
 <a name="stopping-the-server"></a>
-### 서버 중지
+### 서버 중지하기 (Stopping the Server)
 
-`octane:stop` Artisan 명령어로 Octane 서버를 종료할 수 있습니다:
+Octane 서버를 중지하려면 다음 Artisan 명령어를 실행하세요:
 
 ```shell
 php artisan octane:stop
 ```
 
 <a name="checking-the-server-status"></a>
-#### 서버 상태 확인
+#### 서버 상태 확인하기 (Checking the Server Status)
 
-`octane:status` Artisan 명령어로 현재 Octane 서버의 상태를 확인할 수 있습니다:
+현재 Octane 서버 상태는 `octane:status` Artisan 명령어로 확인할 수 있습니다:
 
 ```shell
 php artisan octane:status
 ```
 
 <a name="dependency-injection-and-octane"></a>
-## 의존성 주입과 Octane
+## 의존성 주입과 Octane (Dependency Injection and Octane)
 
-Octane은 애플리케이션을 한 번만 부팅하고 요청 처리 시 메모리에 유지합니다. 이에 따라 다음과 같은 몇 가지 주의사항이 있습니다. 예를 들어, 서비스 프로바이더의 `register`와 `boot` 메서드는 워커가 처음 부팅될 때 단 한 번만 실행됩니다. 이후 요청에서는 동일한 애플리케이션 인스턴스가 재사용됩니다.
+Octane은 애플리케이션을 한 번만 부팅해 메모리에 유지하며 요청을 처리하므로, 애플리케이션을 구축할 때 유의할 점이 있습니다. 예를 들어, 애플리케이션의 서비스 프로바이더 `register`와 `boot` 메서드는 요청 작업자가 처음 부팅될 때 한 번만 실행됩니다. 이후 요청에서는 동일한 애플리케이션 인스턴스를 재사용합니다.
 
-따라서 애플리케이션 서비스 컨테이너 또는 요청(Request)을 객체의 생성자에 주입하는 경우 주의해야 합니다. 이렇게 하면 이후 요청에서 해당 객체는 이전 상태의 컨테이너나 요청을 사용하게 될 수 있습니다.
+따라서 애플리케이션 서비스 컨테이너나 요청(HTTP Request)을 객체 생성자에 주입하는 경우, 이후 요청에서 오래된(스테일) 버전의 컨테이너나 요청 데이터를 가지게 될 수 있어 조심해야 합니다.
 
-Octane은 기본 프레임워크의 상태는 자동으로 리셋해주지만, 애플리케이션에서 생성한 전역 상태는 Octane이 자동으로 리셋하지 못할 수 있습니다. Octane 친화적으로 애플리케이션을 설계해야 하며, 아래에 대표적인 문제 상황을 설명합니다.
+Octane은 기본 프레임워크 상태는 요청 간에 자동으로 재설정하지만, 애플리케이션이 생성하는 전역 상태는 항상 알 수 없습니다. 따라서 Octane 친화적으로 애플리케이션을 작성하는 방법을 숙지해야 합니다. 아래에서 Octane 사용 시 흔히 문제를 일으키는 사례들을 다룹니다.
 
 <a name="container-injection"></a>
-### 컨테이너 주입
+### 컨테이너 주입 (Container Injection)
 
-일반적으로, 애플리케이션 서비스 컨테이너(또는 HTTP 요청 인스턴스)를 다른 객체의 생성자에 주입하는 것을 피해야 합니다. 예를 들어, 아래 바인딩은 전체 컨테이너를 싱글턴으로 주입합니다:
+일반적으로 애플리케이션 서비스 컨테이너 또는 HTTP 요청 인스턴스를 다른 객체 생성자에 직접 주입하는 것을 피해야 합니다. 다음 예시는 애플리케이션 서비스 컨테이너를 단일 인스턴스로 바인딩된 객체 생성자에 주입하는 코드입니다:
 
 ```php
 use App\Service;
@@ -419,9 +421,9 @@ public function register(): void
 }
 ```
 
-이 예시에서, `Service` 인스턴스가 부트 과정 중 생성된다면, 컨테이너는 서비스에 주입되고 이후 요청에서도 같은 컨테이너가 재사용됩니다. 이는 특정 상황에서는 문제가 나타나지 않을 수도 있지만, 부트 주기 중에 추가된 바인딩이나 이후 추가된 바인딩을 Service에서 사용할 수 없게 만들 수 있습니다.
+예를 들어, `Service` 인스턴스가 애플리케이션 부팅 시 생성되면, 같은 컨테이너 인스턴스가 이후 요청에서도 `Service` 객체에 유지됩니다. 특정 애플리케이션에는 문제가 없을 수 있으나, 부팅 이후에 새로 추가된 바인딩을 컨테이너가 알지 못하는 문제를 일으킬 수 있습니다.
 
-해결책으로는 싱글턴 바인딩을 중지하거나, 항상 최신 컨테이너 인스턴스를 반환하는 클로저를 주입하는 방법이 있습니다:
+해결책으로는 바인딩을 단일 인스턴스(singleton)로 등록하지 않거나, 현재 컨테이너 인스턴스를 항상 반환하는 클로저를 서비스에 주입하는 방법이 있습니다:
 
 ```php
 use App\Service;
@@ -437,12 +439,12 @@ $this->app->singleton(Service::class, function () {
 });
 ```
 
-글로벌 `app` 헬퍼나 `Container::getInstance()`는 항상 최신 컨테이너를 반환하므로 안전하게 사용할 수 있습니다.
+글로벌 `app` 헬퍼 함수와 `Container::getInstance()` 메서드는 항상 최신 애플리케이션 컨테이너 인스턴스를 반환합니다.
 
 <a name="request-injection"></a>
-### 요청 주입
+### 요청 주입 (Request Injection)
 
-역시, 애플리케이션 서비스 컨테이너나 HTTP 요청 인스턴스를 객체 생성자에 주입하는 것도 피하세요. 예를 들어, 아래는 전체 Request 인스턴스를 싱글턴으로 주입합니다:
+일반적으로 애플리케이션 서비스 컨테이너나 HTTP 요청 인스턴스를 다른 객체 생성자에 직접 주입하는 것을 피해야 합니다. 다음 예시는 HTTP 요청 인스턴스를 단일 인스턴스로 바인딩된 객체 생성자에 주입하는 경우입니다:
 
 ```php
 use App\Service;
@@ -459,9 +461,9 @@ public function register(): void
 }
 ```
 
-이 예시에서, `Service` 인스턴스가 부트 과정에서 생성된다면, HTTP Request가 서비스에 주입되고 이후 요청들도 같은 요청 인스턴스를 재사용하게 됩니다. 따라서 헤더, 입력값, 쿼리스트링 등 모든 요청 관련 정보가 잘못되게 됩니다.
+이 경우, `Service` 인스턴스가 애플리케이션 부팅 시 생성되면, 그 요청 인스턴스가 이후 요청 시에도 유지되어 헤더, 입력값, 쿼리 문자열 등 요청 관련 데이터가 부정확합니다.
 
-해결책으로는 싱글턴 바인딩을 중지하거나, 항상 최신 요청 인스턴스를 반환하는 클로저를 주입하거나, 가장 권장되는 방법으로 객체의 메서드에 필요한 요청 정보를 런타임에 전달하는 것입니다:
+해결방법은 바인딩을 단일 인스턴스로 등록하지 않거나, 현재 요청 인스턴스를 반환하는 클로저를 서비스에 주입하는 방법, 혹은 가장 권장하는 방법으로는 특정 요청 정보를 런타임에 메서드 인수로 전달하는 것입니다:
 
 ```php
 use App\Service;
@@ -480,15 +482,15 @@ $this->app->singleton(Service::class, function (Application $app) {
 $service->method($request->input('name'));
 ```
 
-글로벌 `request` 헬퍼는 항상 현재 처리 중인 요청을 반환하므로 애플리케이션에서 안전하게 사용할 수 있습니다.
+글로벌 `request` 헬퍼는 항상 현재 처리 중인 요청을 반환하므로 안전하게 사용할 수 있습니다.
 
 > [!WARNING]
-> 컨트롤러 메서드나 라우트 클로저에서 `Illuminate\Http\Request` 타입힌트를 사용하는 것은 허용됩니다.
+> 컨트롤러 메서드와 라우트 클로저에서 `Illuminate\Http\Request` 인스턴스를 타입힌트하는 것은 허용됩니다.
 
 <a name="configuration-repository-injection"></a>
-### 설정 리포지토리 주입
+### 설정 리포지토리 주입 (Configuration Repository Injection)
 
-일반적으로 설정 리포지토리 인스턴스를 다른 객체의 생성자에 주입하는 것도 피해야 합니다. 아래는 설정 리포지토리를 싱글턴으로 주입하는 예시입니다:
+일반적으로 설정 리포지토리 인스턴스를 다른 객체 생성자에 직접 주입하는 것을 피해야 합니다. 예를 들어 다음 코드는 설정 리포지토리를 단일 인스턴스 객체에 주입하는 사례입니다:
 
 ```php
 use App\Service;
@@ -505,9 +507,9 @@ public function register(): void
 }
 ```
 
-이 예시에서, 만약 요청 간에 설정 값이 변경된다면, 서비스는 새로운 값을 사용할 수 없게 됩니다(초기 리포지토리에 의존하기 때문).
+요청 간에 설정 값이 변경되면, 이 서비스에서는 원래 주입된 리포지토리 인스턴스를 참조하여 최신 값을 얻지 못합니다.
 
-해결책으로는 싱글턴 바인딩을 중지하거나, 항상 최신 설정 리포지토리를 반환하는 클로저를 클래스에 주입하면 됩니다:
+해결책은 바인딩을 단일 인스턴스로 등록하지 않거나, 설정 리포지토리 인스턴스를 반환하는 클로저를 주입하는 방법입니다:
 
 ```php
 use App\Service;
@@ -523,12 +525,12 @@ $this->app->singleton(Service::class, function () {
 });
 ```
 
-글로벌 `config`는 항상 최신 설정 리포지토리를 반환하므로 안전하게 사용할 수 있습니다.
+글로벌 `config` 헬퍼는 항상 최신 설정 리포지토리를 반환하므로 안전하게 사용할 수 있습니다.
 
 <a name="managing-memory-leaks"></a>
-### 메모리 누수 관리
+### 메모리 누수 관리하기 (Managing Memory Leaks)
 
-Octane은 요청 간에도 애플리케이션을 메모리에 유지합니다. 따라서 정적(static) 배열 등에 데이터를 쌓으면 메모리 누수가 발생하게 됩니다. 예를 들어, 아래 컨트롤러는 매번 요청 시마다 static `$data` 배열에 데이터를 추가하여 메모리 누수를 일으킵니다:
+Octane은 요청 간 애플리케이션을 메모리에 유지하므로, static 배열에 데이터를 계속 추가하면 메모리 누수가 발생합니다. 다음 컨트롤러 예시는 요청이 올 때마다 static `$data` 배열에 데이터를 추가하여 메모리 누수가 발생하는 사례입니다:
 
 ```php
 use App\Service;
@@ -548,15 +550,15 @@ public function index(Request $request): array
 }
 ```
 
-애플리케이션을 개발할 때에는 이러한 메모리 누수가 발생하지 않도록 각별히 주의해야 합니다. 개발 중에는 애플리케이션의 메모리 사용량을 꼭 관찰하여 메모리 누수를 방지하세요.
+애플리케이션을 구축할 때는 이런 메모리 누수를 조심해야 하며, 로컬 개발 중에 메모리 사용량을 모니터링하는 것이 좋습니다.
 
 <a name="concurrent-tasks"></a>
-## 동시 작업
+## 동시 작업 (Concurrent Tasks)
 
 > [!WARNING]
-> 해당 기능은 [Swoole](#swoole)이 필요합니다.
+> 이 기능은 [Swoole](#swoole)이 필요합니다.
 
-Swoole 사용 시, 경량 백그라운드 태스크를 통해 동시에 여러 작업을 실행할 수 있습니다. Octane의 `concurrently` 메서드를 이용하여 아래와 같이 여러 연산 결과를 한 번에 병렬로 가져올 수 있습니다:
+Swoole을 사용할 경우, Octane의 `concurrently` 메서드를 통해 경량 백그라운드 작업을 동시에 실행할 수 있습니다. PHP 배열 구조 분해와 함께 사용해 각 작업 결과를 받는 것도 가능합니다:
 
 ```php
 use App\Models\User;
@@ -569,30 +571,30 @@ use Laravel\Octane\Facades\Octane;
 ]);
 ```
 
-Octane이 처리하는 동시 태스크는 Swoole의 "태스크 워커"를 사용하며, 각각은 요청과는 별개 프로세스에서 실행됩니다. 태스크 워커 개수는 `octane:start` 명령의 `--task-workers` 옵션으로 지정할 수 있습니다:
+Octane의 동시 작업은 Swoole의 "task workers"를 이용해 요청과는 별도의 프로세스에서 실행됩니다. 동시 작업 처리용 작업자 수는 `octane:start` 명령어의 `--task-workers` 옵션을 통해 설정합니다:
 
 ```shell
 php artisan octane:start --workers=4 --task-workers=6
 ```
 
-`concurrently` 메서드 호출 시 Swoole의 태스크 시스템 제한으로 1024개 이하의 태스크만 지정해야 합니다.
+`concurrently` 메서드 호출 시 Swoole 작업 시스템의 제한으로 1024개를 초과하는 작업은 제공하지 않는 것이 좋습니다.
 
 <a name="ticks-and-intervals"></a>
-## 틱과 인터벌
+## 틱과 인터벌 (Ticks and Intervals)
 
 > [!WARNING]
-> 해당 기능은 [Swoole](#swoole)이 필요합니다.
+> 이 기능은 [Swoole](#swoole)이 필요합니다.
 
-Swoole 사용 시, 주기적으로 실행되는 "tick" 작업을 등록할 수 있습니다. `tick` 메서드를 통해 틱 콜백을 등록할 수 있으며, 첫 번째 인자는 틱 이름, 두 번째는 콜백 함수입니다.
+Swoole을 사용할 때, 지정한 초마다 실행되는 "틱" 작업을 등록할 수 있습니다. `tick` 메서드로 틱 콜백을 등록하며, 첫 번째 인수는 틱 이름, 두 번째 인수는 지정된 인터벌마다 호출될 콜러블입니다.
 
-아래 예시는 10초마다 콜백을 실행하도록 등록한 것입니다. 일반적으로 `boot` 메서드에서 호출합니다.
+예시에서는 10초마다 호출되는 클로저를 등록합니다. 일반적으로 `tick` 메서드는 애플리케이션 서비스 프로바이더 `boot` 메서드 내부에서 호출합니다:
 
 ```php
 Octane::tick('simple-ticker', fn () => ray('Ticking...'))
     ->seconds(10);
 ```
 
-`immediate` 메서드를 사용하면 Octane 서버가 처음 부팅될 때 즉시 틱 콜백을 실행하게 설정할 수 있습니다:
+`immediate` 메서드를 함께 사용하면 Octane 서버가 처음 부팅되는 즉시 틱 콜백을 실행하고, 이후 N초마다 반복 호출하도록 할 수 있습니다:
 
 ```php
 Octane::tick('simple-ticker', fn () => ray('Ticking...'))
@@ -601,26 +603,26 @@ Octane::tick('simple-ticker', fn () => ray('Ticking...'))
 ```
 
 <a name="the-octane-cache"></a>
-## Octane 캐시
+## Octane 캐시 (The Octane Cache)
 
 > [!WARNING]
-> 해당 기능은 [Swoole](#swoole)이 필요합니다.
+> 이 기능은 [Swoole](#swoole)이 필요합니다.
 
-Swoole 사용 시 Octane 캐시 드라이버를 사용할 수 있습니다. 이 드라이버는 초당 최대 2백만 회의 읽기/쓰기 성능을 제공하므로, 초고속 캐싱이 필요한 애플리케이션에 적합합니다.
+Swoole 사용 시, 초당 200만 건 이상의 읽기/쓰기 속도를 제공하는 Octane 캐시 드라이버를 활용할 수 있습니다. 뛰어난 캐시 입출력 성능이 필요한 애플리케이션에 적합합니다.
 
-Octane 캐시는 [Swoole 테이블](https://www.swoole.co.uk/docs/modules/swoole-table)을 기반으로 하며, 저장된 데이터는 모든 워커에서 접근 가능합니다. 하지만 서버가 재시작될 경우 데이터는 모두 사라집니다:
+이 캐시 드라이버는 [Swoole 테이블](https://www.swoole.co.uk/docs/modules/swoole-table) 기반이며, 서버 내 모든 작업자가 캐시된 데이터를 공유합니다. 하지만 서버 재시작 시 캐시 데이터는 초기화됩니다:
 
 ```php
 Cache::store('octane')->put('framework', 'Laravel', 30);
 ```
 
 > [!NOTE]
-> Octane 캐시 허용 최대 항목 수는 애플리케이션의 `octane` 설정 파일에서 지정할 수 있습니다.
+> Octane 캐시의 최대 항목 수는 애플리케이션의 `octane` 설정 파일에서 정의할 수 있습니다.
 
 <a name="cache-intervals"></a>
-### 인터벌 캐시
+### 캐시 인터벌 (Cache Intervals)
 
-Laravel의 일반 캐시 메서드 외에도, Octane 캐시 드라이버는 특정 주기로 자동 갱신되는 인터벌 캐시를 제공합니다. 이들은 서비스 프로바이더의 `boot` 메서드에서 등록하는 것이 좋습니다. 아래 캐시는 5초마다 데이터가 갱신됩니다:
+Laravel 캐시 시스템의 일반 메서드 외에도, Octane 캐시 드라이버는 인터벌 기반 캐시를 지원합니다. 지정된 인터벌마다 자동으로 갱신되며, 애플리케이션 서비스 프로바이더 `boot` 메서드에서 등록해야 합니다. 다음 예시는 5초마다 갱신되는 캐시입니다:
 
 ```php
 use Illuminate\Support\Str;
@@ -631,14 +633,14 @@ Cache::store('octane')->interval('random', function () {
 ```
 
 <a name="tables"></a>
-## 테이블(Table)
+## 테이블 (Tables)
 
 > [!WARNING]
-> 해당 기능은 [Swoole](#swoole)이 필요합니다.
+> 이 기능은 [Swoole](#swoole)이 필요합니다.
 
-Swoole 사용 시, 임의의 [Swoole 테이블](https://www.swoole.co.uk/docs/modules/swoole-table)을 직접 정의하고 조작할 수 있습니다. Swoole 테이블은 매우 빠른 성능을 제공하며, 테이블의 데이터는 모든 워커가 공유할 수 있습니다. 단, 서버 리스타트 시 데이터는 모두 사라집니다.
+Swoole 사용 시, 임의의 [Swoole 테이블](https://www.swoole.co.uk/docs/modules/swoole-table)을 정의하고 상호작용할 수 있습니다. Swoole 테이블은 높은 성능 처리량을 제공하며 서버 내 모든 작업자가 해당 데이터에 접근할 수 있지만, 서버 재시작 시 데이터는 삭제됩니다.
 
-테이블은 애플리케이션의 `octane` 설정 파일 내 `tables` 설정 배열에 정의합니다. 1000개 행을 허락하는 예시 테이블이 이미 설정되어 있습니다. 문자열 컬럼의 최대 길이는 아래와 같이 타입 뒤에 지정할 수 있습니다:
+테이블은 애플리케이션의 `octane` 설정 파일 내 `tables` 배열에서 정의합니다. 최대 1000행을 허용하는 샘플 테이블이 기본적으로 포함되어 있습니다. 문자열 컬럼 크기는 컬럼 타입 뒤에 크기를 명시해 설정할 수 있습니다:
 
 ```php
 'tables' => [
@@ -649,7 +651,7 @@ Swoole 사용 시, 임의의 [Swoole 테이블](https://www.swoole.co.uk/docs/mo
 ],
 ```
 
-테이블에 접근하려면 `Octane::table` 메서드를 사용할 수 있습니다:
+테이블 접근은 `Octane::table` 메서드를 사용합니다:
 
 ```php
 use Laravel\Octane\Facades\Octane;
@@ -663,4 +665,4 @@ return Octane::table('example')->get('uuid');
 ```
 
 > [!WARNING]
-> Swoole 테이블에서 지원하는 컬럼 타입은 `string`, `int`, `float`입니다.
+> Swoole 테이블이 지원하는 컬럼 타입은 `string`, `int`, `float`입니다.

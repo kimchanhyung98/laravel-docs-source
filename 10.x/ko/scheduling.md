@@ -2,35 +2,35 @@
 
 - [소개](#introduction)
 - [스케줄 정의하기](#defining-schedules)
-    - [Artisan 명령어 스케줄링](#scheduling-artisan-commands)
-    - [큐 작업 스케줄링](#scheduling-queued-jobs)
-    - [셸 명령어 스케줄링](#scheduling-shell-commands)
-    - [스케줄 주기 옵션](#schedule-frequency-options)
+    - [Artisan 명령어 스케줄링하기](#scheduling-artisan-commands)
+    - [큐 작업 스케줄링하기](#scheduling-queued-jobs)
+    - [쉘 명령어 스케줄링하기](#scheduling-shell-commands)
+    - [스케줄 빈도 옵션](#schedule-frequency-options)
     - [타임존](#timezones)
-    - [작업 중복 방지](#preventing-task-overlaps)
-    - [단일 서버에서 작업 실행](#running-tasks-on-one-server)
+    - [작업 중복 실행 방지하기](#preventing-task-overlaps)
+    - [한 서버에서만 작업 실행하기](#running-tasks-on-one-server)
     - [백그라운드 작업](#background-tasks)
-    - [유지보수 모드](#maintenance-mode)
+    - [점검 모드 (Maintenance Mode)](#maintenance-mode)
 - [스케줄러 실행하기](#running-the-scheduler)
-    - [1분 미만 주기의 예약 작업](#sub-minute-scheduled-tasks)
+    - [1분 미만 간격 스케줄 작업](#sub-minute-scheduled-tasks)
     - [로컬에서 스케줄러 실행하기](#running-the-scheduler-locally)
-- [작업 출력 다루기](#task-output)
-- [작업 후킹(hook)](#task-hooks)
+- [작업 출력](#task-output)
+- [작업 훅(Hooks)](#task-hooks)
 - [이벤트](#events)
 
 <a name="introduction"></a>
-## 소개
+## 소개 (Introduction)
 
-과거에는 서버에서 예약해야 할 각 작업마다 별도의 cron 설정을 직접 추가하시곤 했을 것입니다. 하지만 이 방법은 금방 관리가 번거로워집니다. 작업 일정이 소스 코드로 관리되지 않고, 기존의 cron 항목을 확인하거나 새로운 항목을 추가하려면 매번 서버에 SSH로 접속해야 하기 때문입니다.
+과거에는 서버에서 실행할 각 작업을 위해 개별 크론(cron) 설정 항목을 작성해야 했을 것입니다. 하지만 이렇게 되면 작업 스케줄이 소스 관리에서 분리되고, 기존 크론 항목을 조회하거나 추가하기 위해 서버에 SSH로 접속해야 하는 번거로움이 발생합니다.
 
-라라벨의 명령어 스케줄러(Command Scheduler)는 서버의 예약 작업을 효율적으로 관리할 수 있는 새로운 방식을 제공합니다. 이 스케줄러를 사용하면 라라벨 애플리케이션 내에서 손쉽고 직관적으로 작업 일정을 정의할 수 있습니다. 스케줄러를 활용할 때 서버에는 오직 하나의 cron 항목만 추가하면 됩니다. 실제 예약에 관한 코드는 `app/Console/Kernel.php` 파일의 `schedule` 메서드에 정의하며, 시작에 도움이 될 수 있도록 간단한 예제가 이미 포함되어 있습니다.
+Laravel의 커맨드 스케줄러(command scheduler)는 서버에서 예약 작업을 관리하는 새로운 방식을 제공합니다. 스케줄러를 사용하면 Laravel 애플리케이션 내에서 명령어 스케줄을 유창하고 명확하게 정의할 수 있습니다. 서버에는 단 하나의 크론 항목만 필요하며, 작업 스케줄은 `app/Console/Kernel.php` 파일의 `schedule` 메서드 내에서 정의됩니다. 시작을 돕기 위해 해당 메서드 안에 간단한 예제가 포함되어 있습니다.
 
 <a name="defining-schedules"></a>
-## 스케줄 정의하기
+## 스케줄 정의하기 (Defining Schedules)
 
-애플리케이션의 `App\Console\Kernel` 클래스 안의 `schedule` 메서드에서 모든 예약 작업을 정의할 수 있습니다. 먼저 예제를 살펴보겠습니다. 다음 예제에서는 매일 자정에 호출되는 클로저를 예약하고, 클로저 내부에서 데이터베이스 쿼리를 실행하여 테이블을 비웁니다.
+애플리케이션의 `App\Console\Kernel` 클래스의 `schedule` 메서드에서 모든 예약 작업을 정의할 수 있습니다. 먼저 예제를 살펴보겠습니다. 이 예제에서는 매일 자정에 호출될 클로저를 스케줄링하며, 클로저 내에서 데이터베이스 테이블을 초기화하는 쿼리를 실행합니다:
 
-```
+```php
 <?php
 
 namespace App\Console;
@@ -42,7 +42,7 @@ use Illuminate\Support\Facades\DB;
 class Kernel extends ConsoleKernel
 {
     /**
-     * Define the application's command schedule.
+     * 애플리케이션의 명령어 스케줄 정의.
      */
     protected function schedule(Schedule $schedule): void
     {
@@ -53,26 +53,26 @@ class Kernel extends ConsoleKernel
 }
 ```
 
-클로저를 사용한 방식 외에도, [호출 가능한 객체(invokable object)](https://secure.php.net/manual/en/language.oop5.magic.php#object.invoke)를 예약할 수도 있습니다. 호출 가능한 객체란 `__invoke` 메서드를 가진 간단한 PHP 클래스를 말합니다.
+클로저를 이용한 스케줄링 외에도, [호출 가능한 객체(invokable objects)](https://secure.php.net/manual/en/language.oop5.magic.php#object.invoke)도 스케줄링할 수 있습니다. 호출 가능한 객체는 `__invoke` 메서드를 가진 간단한 PHP 클래스입니다:
 
-```
+```php
 $schedule->call(new DeleteRecentUsers)->daily();
 ```
 
-예약해둔 작업들의 전체 목록과 다음 실행 예정 시각을 확인하고 싶다면, `schedule:list` Artisan 명령어를 사용할 수 있습니다.
+스케줄된 작업과 다음 실행 예정 시간의 개요를 보고 싶다면, `schedule:list` Artisan 명령어를 사용하세요:
 
 ```bash
 php artisan schedule:list
 ```
 
 <a name="scheduling-artisan-commands"></a>
-### Artisan 명령어 스케줄링
+### Artisan 명령어 스케줄링하기 (Scheduling Artisan Commands)
 
-클로저뿐만 아니라, [Artisan 명령어](/docs/10.x/artisan) 또는 시스템 명령어를 예약할 수도 있습니다. 예를 들어, `command` 메서드를 이용해 Artisan 명령어를 이름이나 클래스명을 통해 예약할 수 있습니다.
+클로저 뿐만 아니라 [Artisan 명령어](/docs/10.x/artisan)와 시스템 명령어도 스케줄할 수 있습니다. 예를 들어 `command` 메서드를 통해 명령어 이름이나 클래스명을 사용해 Artisan 명령어를 예약할 수 있습니다.
 
-명령어를 클래스명으로 예약할 때, 해당 명령어가 실행될 때 전달할 추가 커맨드라인 인수를 배열로 넘길 수 있습니다.
+Artisan 명령어를 클래스명으로 스케줄링할 때는, 명령어가 호출될 때 제공해야 할 추가 커맨드라인 인수를 배열로 넘길 수도 있습니다:
 
-```
+```php
 use App\Console\Commands\SendEmailsCommand;
 
 $schedule->command('emails:send Taylor --force')->daily();
@@ -81,44 +81,44 @@ $schedule->command(SendEmailsCommand::class, ['Taylor', '--force'])->daily();
 ```
 
 <a name="scheduling-queued-jobs"></a>
-### 큐 작업 스케줄링
+### 큐 작업 스케줄링하기 (Scheduling Queued Jobs)
 
-`job` 메서드를 사용하면 [큐 작업](/docs/10.x/queues)을 예약할 수 있습니다. 이 방법을 이용하면 클로저를 따로 작성해서 큐 작업을 디스패치할 필요 없이, 바로 큐 작업 예약이 가능합니다.
+`job` 메서드를 활용하면 [큐 작업](/docs/10.x/queues)을 예약할 수 있습니다. 이 메서드는 클로저로 정의된 `call` 메서드를 사용하지 않고도 큐 작업을 쉽게 예약하는 방법을 제공합니다:
 
-```
+```php
 use App\Jobs\Heartbeat;
 
 $schedule->job(new Heartbeat)->everyFiveMinutes();
 ```
 
-또한, `job` 메서드에는 두 번째 인수와 세 번째 인수를 추가로 지정해서 어떤 큐 이름과 연결(connection)로 작업을 디스패치할지 설정할 수 있습니다.
+`job` 메서드는 선택적으로 두 번째, 세 번째 인수로 작업을 쓸 큐 이름과 큐 연결을 지정할 수도 있습니다:
 
-```
+```php
 use App\Jobs\Heartbeat;
 
-// "heartbeats" 큐에서 "sqs" 연결로 작업 디스패치...
+// "sqs" 연결의 "heartbeats" 큐로 작업 디스패치...
 $schedule->job(new Heartbeat, 'heartbeats', 'sqs')->everyFiveMinutes();
 ```
 
 <a name="scheduling-shell-commands"></a>
-### 셸 명령어 스케줄링
+### 쉘 명령어 스케줄링하기 (Scheduling Shell Commands)
 
-`exec` 메서드를 사용하면 OS에 직접 명령어를 실행시킬 수 있습니다.
+`exec` 메서드를 사용하면 운영체제에 명령어를 직접 실행하도록 지시할 수 있습니다:
 
-```
+```php
 $schedule->exec('node /home/forge/script.js')->daily();
 ```
 
 <a name="schedule-frequency-options"></a>
-### 스케줄 주기 옵션
+### 스케줄 빈도 옵션 (Schedule Frequency Options)
 
-앞서 특정 간격으로 작업을 실행하는 방법의 예시를 살펴봤지만, 라라벨의 예약 작업은 다양한 주기를 제공합니다.
+지금까지 몇 가지 예로 작업이 특정 간격으로 실행되게 설정하는 방법을 보았습니다. 그런데 Laravel 스케줄러는 훨씬 다양한 빈도로 작업을 실행할 수 있습니다:
 
 <div class="overflow-auto">
 
 메서드  | 설명
 ------------- | -------------
-`->cron('* * * * *');`  |  원하는 cron 스케줄로 작업 실행
+`->cron('* * * * *');`  |  원하는 커스텀 크론 스케줄로 작업 실행
 `->everySecond();`  |  매초 작업 실행
 `->everyTwoSeconds();`  |  2초마다 작업 실행
 `->everyFiveSeconds();`  |  5초마다 작업 실행
@@ -126,7 +126,7 @@ $schedule->exec('node /home/forge/script.js')->daily();
 `->everyFifteenSeconds();`  |  15초마다 작업 실행
 `->everyTwentySeconds();`  |  20초마다 작업 실행
 `->everyThirtySeconds();`  |  30초마다 작업 실행
-`->everyMinute();`  |  매 분 작업 실행
+`->everyMinute();`  |  매분 작업 실행
 `->everyTwoMinutes();`  |  2분마다 작업 실행
 `->everyThreeMinutes();`  |  3분마다 작업 실행
 `->everyFourMinutes();`  |  4분마다 작업 실행
@@ -135,39 +135,39 @@ $schedule->exec('node /home/forge/script.js')->daily();
 `->everyFifteenMinutes();`  |  15분마다 작업 실행
 `->everyThirtyMinutes();`  |  30분마다 작업 실행
 `->hourly();`  |  매시간 작업 실행
-`->hourlyAt(17);`  |  매시 17분에 작업 실행
+`->hourlyAt(17);`  |  매시간 17분에 작업 실행
 `->everyOddHour($minutes = 0);`  |  홀수 시간마다 작업 실행
 `->everyTwoHours($minutes = 0);`  |  2시간마다 작업 실행
 `->everyThreeHours($minutes = 0);`  |  3시간마다 작업 실행
 `->everyFourHours($minutes = 0);`  |  4시간마다 작업 실행
 `->everySixHours($minutes = 0);`  |  6시간마다 작업 실행
-`->daily();`  |  매일 자정 작업 실행
+`->daily();`  |  매일 자정에 작업 실행
 `->dailyAt('13:00');`  |  매일 13:00에 작업 실행
-`->twiceDaily(1, 13);`  |  매일 1:00, 13:00에 작업 실행
-`->twiceDailyAt(1, 13, 15);`  |  매일 1:15, 13:15에 작업 실행
+`->twiceDaily(1, 13);`  |  매일 1:00 및 13:00에 작업 실행
+`->twiceDailyAt(1, 13, 15);`  |  매일 1:15 및 13:15에 작업 실행
 `->weekly();`  |  매주 일요일 00:00에 작업 실행
 `->weeklyOn(1, '8:00');`  |  매주 월요일 8:00에 작업 실행
 `->monthly();`  |  매월 1일 00:00에 작업 실행
 `->monthlyOn(4, '15:00');`  |  매월 4일 15:00에 작업 실행
-`->twiceMonthly(1, 16, '13:00');`  |  매월 1일, 16일 13:00에 작업 실행
-`->lastDayOfMonth('15:00');` | 매월 마지막 날 15:00에 작업 실행
-`->quarterly();` |  매 분기 첫날 00:00에 작업 실행
-`->quarterlyOn(4, '14:00');` |  매 분기 4일 14:00에 작업 실행
-`->yearly();`  |  매년 1월 1일 00:00에 작업 실행
-`->yearlyOn(6, 1, '17:00');`  |  매년 6월 1일 17:00에 작업 실행
-`->timezone('America/New_York');` | 작업에 사용할 타임존 지정
+`->twiceMonthly(1, 16, '13:00');`  |  매달 1일과 16일 13:00에 작업 실행
+`->lastDayOfMonth('15:00');` | 매월 말일 15:00에 작업 실행
+`->quarterly();` | 분기별 첫날 00:00에 작업 실행
+`->quarterlyOn(4, '14:00');` | 분기별 4일 14:00에 작업 실행
+`->yearly();`  | 매년 1월 1일 00:00에 작업 실행
+`->yearlyOn(6, 1, '17:00');`  | 매년 6월 1일 17:00에 작업 실행
+`->timezone('America/New_York');` | 작업의 타임존 설정
 
 </div>
 
-위 메서드들은 추가 제약 조건과 조합해서, 특정 요일에만 작업을 실행하도록 정밀하게 설정할 수도 있습니다. 예를 들어, 특정 명령어를 매주 월요일에 실행하려면 다음과 같이 작성할 수 있습니다.
+이 메서드들은 추가 제약조건과 결합해 특정 요일에만 정교하게 실행되도록 만들 수도 있습니다. 예를 들어 매주 월요일에 한 번 실행되는 명령어를 스케줄할 수도 있습니다:
 
-```
-// 매주 월요일 13시에 한 번 실행
+```php
+// 매주 월요일 오후 1시에 실행...
 $schedule->call(function () {
     // ...
 })->weekly()->mondays()->at('13:00');
 
-// 평일 8시~17시 사이에 매시마다 실행
+// 평일 오전 8시부터 오후 5시까지 매시간 실행...
 $schedule->command('foo')
           ->weekdays()
           ->hourly()
@@ -175,43 +175,43 @@ $schedule->command('foo')
           ->between('8:00', '17:00');
 ```
 
-아래는 추가적으로 사용할 수 있는 스케줄 제약 메서드 목록입니다.
+추가 스케줄 제약조건 목록은 다음과 같습니다:
 
 <div class="overflow-auto">
 
 메서드  | 설명
 ------------- | -------------
-`->weekdays();`  |  평일로 제한
-`->weekends();`  |  주말로 제한
-`->sundays();`  |  일요일로 제한
-`->mondays();`  |  월요일로 제한
-`->tuesdays();`  |  화요일로 제한
-`->wednesdays();`  |  수요일로 제한
-`->thursdays();`  |  목요일로 제한
-`->fridays();`  |  금요일로 제한
-`->saturdays();`  |  토요일로 제한
-`->days(array\|mixed);`  |  특정 요일만 제한
-`->between($startTime, $endTime);`  |  지정한 시간 범위 내에만 실행
-`->unlessBetween($startTime, $endTime);`  |  지정한 시간 범위 외에만 실행
-`->when(Closure);`  |  특정 조건(참/거짓)에 따라 실행
-`->environments($env);`  |  특정 환경에서만 실행
+`->weekdays();`  |  작업을 평일로 제한
+`->weekends();`  |  작업을 주말로 제한
+`->sundays();`  |  작업을 일요일로 제한
+`->mondays();`  |  작업을 월요일로 제한
+`->tuesdays();`  |  작업을 화요일로 제한
+`->wednesdays();`  |  작업을 수요일로 제한
+`->thursdays();`  |  작업을 목요일로 제한
+`->fridays();`  |  작업을 금요일로 제한
+`->saturdays();`  |  작업을 토요일로 제한
+`->days(array\|mixed);`  |  작업을 특정 요일로 제한
+`->between($startTime, $endTime);`  |  지정 시간 사이에만 작업 실행
+`->unlessBetween($startTime, $endTime);`  |  지정 시간 사이 작업 제외
+`->when(Closure);`  |  진리 평가 조건에 따라 실행 제한
+`->environments($env);`  |  특정 환경에서만 실행 제한
 
 </div>
 
 <a name="day-constraints"></a>
-#### 요일 제약
+#### 요일 조건 (Day Constraints)
 
-`days` 메서드를 사용하면 특정 요일에만 작업을 실행하도록 제한할 수 있습니다. 예를 들어, 명령어를 일요일과 수요일에만 매시간 실행하려면 다음과 같이 작성합니다.
+`days` 메서드를 사용해 작업이 실행될 요일을 제한할 수 있습니다. 예를 들어, 일요일과 수요일에만 매시간 실행되도록 설정할 수 있습니다:
 
-```
+```php
 $schedule->command('emails:send')
                 ->hourly()
                 ->days([0, 3]);
 ```
 
-또는, 어떤 요일에 작업을 실행할지 정의할 때 `Illuminate\Console\Scheduling\Schedule` 클래스의 상수를 사용할 수도 있습니다.
+또는 `Illuminate\Console\Scheduling\Schedule` 클래스에 정의된 요일 상수를 사용할 수도 있습니다:
 
-```
+```php
 use Illuminate\Console\Scheduling\Schedule;
 
 $schedule->command('emails:send')
@@ -220,74 +220,74 @@ $schedule->command('emails:send')
 ```
 
 <a name="between-time-constraints"></a>
-#### 시간대 제약
+#### 특정 시간대 조건 (Between Time Constraints)
 
-`between` 메서드를 사용하면 작업 실행을 하루 중 특정 시간대 내로 제한할 수 있습니다.
+`between` 메서드는 작업 실행을 시간대 기준으로 제한할 때 사용합니다:
 
-```
+```php
 $schedule->command('emails:send')
                     ->hourly()
                     ->between('7:00', '22:00');
 ```
 
-반대로, `unlessBetween` 메서드를 활용하면 지정한 시간대에는 작업 실행을 제외할 수 있습니다.
+반대로 `unlessBetween` 메서드를 사용하면 특정 시간대에는 작업 실행을 제외할 수 있습니다:
 
-```
+```php
 $schedule->command('emails:send')
                     ->hourly()
                     ->unlessBetween('23:00', '4:00');
 ```
 
 <a name="truth-test-constraints"></a>
-#### 조건부 실행(Truth Test Constraints)
+#### 조건 평가 제한 (Truth Test Constraints)
 
-`when` 메서드를 사용하면 지정한 조건(클로저의 반환값이 `true`일 때)에 따라 작업 실행을 제한할 수 있습니다. 주어진 클로저가 `true`를 반환하면, 다른 제약 조건과 충돌하지 않는 한 작업이 실행됩니다.
+`when` 메서드는 주어진 조건 클로저가 `true`를 반환할 때만 작업이 실행되도록 제한합니다. 즉, 다른 제한 조건이 실행을 막지 않는 한 클로저가 `true`를 반환하면 작업이 실행됩니다:
 
-```
+```php
 $schedule->command('emails:send')->daily()->when(function () {
     return true;
 });
 ```
 
-`skip` 메서드는 `when` 메서드와 반대로 동작합니다. `skip`의 클로저에서 `true`가 반환되면 예약 작업은 실행되지 않습니다.
+반면, `skip` 메서드는 `when`의 반대 개념으로, `skip`이 `true`를 반환하면 스케줄 작업이 실행되지 않습니다:
 
-```
+```php
 $schedule->command('emails:send')->daily()->skip(function () {
     return true;
 });
 ```
 
-`when` 메서드를 체이닝해서 여러 개 지정한 경우, 모든 조건이 `true`를 반환할 때만 예약 명령어가 실제로 실행됩니다.
+여러 개의 `when` 체인 메서드를 사용할 경우, 모든 조건들이 `true`일 때만 작업이 실행됩니다.
 
 <a name="environment-constraints"></a>
-#### 환경 제약
+#### 환경 제한 (Environment Constraints)
 
-`environments` 메서드를 이용하면 [환경 변수](/docs/10.x/configuration#environment-configuration) `APP_ENV`의 값에 따라 특정 환경에서만 작업을 실행할 수 있습니다.
+`environments` 메서드를 사용하면 특정 환경(`APP_ENV` 환경변수에 정의된)에서만 작업을 실행하도록 제한할 수 있습니다:
 
-```
+```php
 $schedule->command('emails:send')
             ->daily()
             ->environments(['staging', 'production']);
 ```
 
 <a name="timezones"></a>
-### 타임존
+### 타임존 (Timezones)
 
-`timezone` 메서드를 활용하면, 지정한 타임존에서 예약 작업이 해석되도록 할 수 있습니다.
+`timezone` 메서드로 스케줄 작업의 실행 시간을 특정 타임존 기준으로 해석하도록 지정할 수 있습니다:
 
-```
+```php
 $schedule->command('report:generate')
          ->timezone('America/New_York')
-         ->at('2:00')
+         ->at('2:00');
 ```
 
-모든 예약 작업에 동일한 타임존을 반복 지정해야 할 경우, `App\Console\Kernel` 클래스에 `scheduleTimezone` 메서드를 만들어 기본 타임존을 지정할 수 있습니다.
+동일한 타임존을 여러 작업에 반복해서 지정한다면, `App\Console\Kernel` 클래스 내에 `scheduleTimezone` 메서드를 정의해 기본 타임존을 일괄로 지정할 수도 있습니다:
 
-```
+```php
 use DateTimeZone;
 
 /**
- * Get the timezone that should be used by default for scheduled events.
+ * 기본 스케줄 작업에 사용될 타임존 반환.
  */
 protected function scheduleTimezone(): DateTimeZone|string|null
 {
@@ -295,39 +295,39 @@ protected function scheduleTimezone(): DateTimeZone|string|null
 }
 ```
 
-> [!WARNING]
-> 일부 타임존에서는 서머타임(일광 절약 시간제)을 사용합니다. 이로 인해, 서머타임이 변경되는 시점에는 예약 작업이 두 번 실행되거나 아예 실행되지 않을 수도 있습니다. 이런 문제를 방지하려면 가능하면 타임존 기반 예약은 피하는 것이 좋습니다.
+> [!WARNING]  
+> 일부 타임존은 일광 절약 시간제(Daylight Saving Time)를 사용합니다. 일광 절약 시간 변경 시에는 작업이 두 번 실행되거나 아예 실행되지 않을 수 있으므로, 가능한 타임존 기반 스케줄링은 피하는 것을 권장합니다.
 
 <a name="preventing-task-overlaps"></a>
-### 작업 중복 방지
+### 작업 중복 실행 방지하기 (Preventing Task Overlaps)
 
-기본적으로 예약된 작업은 이전 인스턴스가 아직 실행 중이더라도 새로운 인스턴스가 실행됩니다. 이를 방지하려면 `withoutOverlapping` 메서드를 사용하세요.
+기본적으로 이전 작업이 아직 실행 중이어도 예약된 작업은 계속 실행됩니다. 이를 막으려면 `withoutOverlapping` 메서드를 사용하세요:
 
-```
+```php
 $schedule->command('emails:send')->withoutOverlapping();
 ```
 
-이 예시에서 `emails:send` [Artisan 명령어](/docs/10.x/artisan)는 이전 실행이 끝난 경우에만 1분마다 실행됩니다. `withoutOverlapping` 메서드는 실행 시간이 들쑥날쑥해 다음 실행 시간을 정확히 예측할 수 없는 작업에서 특히 유용합니다.
+위 예제는 `emails:send` Artisan 명령어가 실행 중이 아닐 때만 매분 실행되도록 합니다. `withoutOverlapping`은 실행 시간이 작업마다 크게 달라 정확한 종료 시간을 예측하기 어려운 작업에서 유용하게 쓰입니다.
 
-필요하다면, "중복 방지" 락이 만료되기까지 대기할 분(minutes) 수를 지정할 수 있습니다. 기본 설정은 24시간 후 락이 만료됩니다.
+필요에 따라 중복 실행 방지 락(lock) 만료 시간(분)을 지정할 수도 있으며, 기본 값은 24시간입니다:
 
-```
+```php
 $schedule->command('emails:send')->withoutOverlapping(10);
 ```
 
-내부적으로 `withoutOverlapping`은 애플리케이션의 [캐시](/docs/10.x/cache)를 활용해 락을 관리합니다. 예기치 못한 서버 문제 등으로 작업이 막혀버리는 경우, `schedule:clear-cache` Artisan 명령어로 캐시 락을 수동으로 해제할 수 있습니다. 이런 조치는 주로 작업이 비정상적으로 멈춤 현상이 발생할 때만 필요합니다.
+내부적으로 `withoutOverlapping`은 애플리케이션의 [캐시](/docs/10.x/cache)를 이용해 락을 관리합니다. 만약 작업이 서버 문제로 멈춰 락이 해제되지 않는다면, `schedule:clear-cache` Artisan 명령어로 락 캐시를 초기화할 수 있습니다.
 
 <a name="running-tasks-on-one-server"></a>
-### 단일 서버에서 작업 실행
+### 한 서버에서만 작업 실행하기 (Running Tasks on One Server)
 
-> [!WARNING]
-> 이 기능을 사용하려면 애플리케이션의 기본 캐시 드라이버가 `database`, `memcached`, `dynamodb`, `redis` 중 하나여야 하며, 모든 서버가 동일한 중앙 캐시 서버와 통신해야 합니다.
+> [!WARNING]  
+> 이 기능을 사용하려면 기본 캐시 드라이버로 `database`, `memcached`, `dynamodb`, 또는 `redis` 중 하나를 사용해야 하며, 모든 서버가 동일한 중앙 캐시 서버와 통신 중이어야 합니다.
 
-예약 스케줄러가 여러 대의 서버에서 실행되는 경우, 특정 작업을 한 서버에서만 실행하고 싶을 수 있습니다. 예를 들어, 금요일 밤마다 새로운 리포트를 생성하는 예약 작업이 있다고 가정해보겠습니다. 작업 스케줄러가 워커 서버 세 대에서 동시에 동작하고 있다면, 해당 작업이 세 대 모두에서 실행되어 리포트가 세 번 생성될 수 있습니다. 이는 바람직하지 않은 결과입니다.
+스케줄러가 여러 서버에서 실행 중이라면 특정 작업이 단 하나의 서버에서만 실행되도록 제한할 수 있습니다. 예를 들어, 매주 금요일 밤마다 보고서를 생성하는 작업이 있는데, 스케줄러가 3대 서버에서 돌고 있다면 보고서가 3번 생성되는 문제가 발생합니다.
 
-`onOneServer` 메서드를 이용해 해당 작업이 단일 서버에서만 실행되도록 지정할 수 있습니다. 가장 먼저 락을 획득한 서버가 해당 작업을 단독 실행하며, 다른 서버에서는 동시에 작업이 실행되지 않습니다.
+이런 상황을 방지하려면 스케줄 정의 시 `onOneServer` 메서드를 사용하세요. 가장 먼저 작업 락을 취득한 한 서버만 작업을 실행합니다:
 
-```
+```php
 $schedule->command('report:generate')
                 ->fridays()
                 ->at('17:00')
@@ -335,9 +335,9 @@ $schedule->command('report:generate')
 ```
 
 <a name="naming-unique-jobs"></a>
-#### 단일 서버 작업에 이름 붙이기
+#### 단일 서버 작업에 이름 붙이기 (Naming Single Server Jobs)
 
-같은 작업을 서로 다른 인수로 여러 번 예약하고, 각 작업이 동일하게 단일 서버에서만 실행되게 하려면 `name` 메서드를 이용해 각 예약 작업마다 고유한 이름을 부여하세요.
+같은 작업이라도 서로 다른 인수로 여러 개를 스케줄할 때, 각각을 단일 서버에서만 실행시키고 싶으면 각 스케줄에 고유한 이름을 지정해야 합니다. `name` 메서드를 사용해 이름을 지정하세요:
 
 ```php
 $schedule->job(new CheckUptime('https://laravel.com'))
@@ -351,7 +351,7 @@ $schedule->job(new CheckUptime('https://vapor.laravel.com'))
             ->onOneServer();
 ```
 
-마찬가지로, 클로저로 작성된 예약 작업 역시 단일 서버에서만 실행하려면 반드시 이름을 지정해야 합니다.
+비슷하게, 단일 서버에서 실행할 예정인 스케줄된 클로저도 이름을 지정해야 합니다:
 
 ```php
 $schedule->call(fn () => User::resetApiRequestCount())
@@ -361,55 +361,55 @@ $schedule->call(fn () => User::resetApiRequestCount())
 ```
 
 <a name="background-tasks"></a>
-### 백그라운드 작업
+### 백그라운드 작업 (Background Tasks)
 
-기본적으로, 같은 시각에 예약된 여러 작업들은 `schedule` 메서드에 정의된 순서대로 차례대로 실행됩니다. 오래 걸리는 작업이 있다면 그 이후 작업이 실행되는 시간이 예정보다 늦어질 수 있습니다. 모든 작업을 동시에 실행하고 싶다면 `runInBackground` 메서드를 사용하세요.
+기본적으로 동시에 스케줄된 여러 작업은 `schedule` 메서드에서 작성된 순서대로 순차 실행됩니다. 실행 시간이 긴 작업이 있으면 이후 작업 시작이 지연될 수 있습니다. 만약 작업을 동시에 백그라운드에서 실행하고 싶다면 `runInBackground` 메서드를 사용하세요:
 
-```
+```php
 $schedule->command('analytics:report')
          ->daily()
          ->runInBackground();
 ```
 
-> [!WARNING]
-> `runInBackground` 메서드는 `command`와 `exec` 메서드로 예약된 작업에서만 사용할 수 있습니다.
+> [!WARNING]  
+> `runInBackground` 메서드는 `command` 그리고 `exec` 메서드로 작업을 예약할 때만 사용할 수 있습니다.
 
 <a name="maintenance-mode"></a>
-### 유지보수 모드
+### 점검 모드 (Maintenance Mode)
 
-애플리케이션이 [유지보수 모드](/docs/10.x/configuration#maintenance-mode)에 들어가면, 예약 작업이 자동으로 중지됩니다. 이는 작업이 서버 유지보수 작업과 충돌하는 것을 방지하기 위해서입니다. 하지만, 꼭 유지보수 모드 중에도 특정 작업을 강제로 실행해야 한다면, 해당 작업 정의에 `evenInMaintenanceMode` 메서드를 추가하세요.
+애플리케이션이 [점검 모드](/docs/10.x/configuration#maintenance-mode)일 때는 예약 작업이 실행되지 않습니다. 이는 점검 중인 서버 상태와 작업이 충돌하지 않도록 하기 위함입니다. 만약 점검 모드일 때도 특정 작업을 강제로 실행하고 싶다면 `evenInMaintenanceMode` 메서드를 호출하세요:
 
-```
+```php
 $schedule->command('emails:send')->evenInMaintenanceMode();
 ```
 
 <a name="running-the-scheduler"></a>
-## 스케줄러 실행하기
+## 스케줄러 실행하기 (Running the Scheduler)
 
-지금까지 예약 작업을 정의하는 방법을 살펴봤으니, 실제 서버에서 이를 실행하는 방법을 알아보겠습니다. `schedule:run` Artisan 명령어는 예약된 모든 작업을 평가하여 서버의 현재 시간 기준으로 실행 여부를 결정합니다.
+이제 스케줄 작업을 정의하는 방법을 배웠으니, 실제로 서버에서 스케줄러를 어떻게 실행하는지 알아봅시다. `schedule:run` Artisan 명령어는 정의된 작업들을 확인하고 현재 서버 시간 기준으로 실행할 작업을 판단해 실행합니다.
 
-즉, 라라벨 스케줄러를 사용할 때는 서버에 오직 하나의 cron 항목만 등록해두면 됩니다. 이 cron 항목은 매 분마다 `schedule:run` 명령어를 실행하면 됩니다. 서버에 cron 항목을 추가하는 방법을 잘 모른다면, [Laravel Forge](https://forge.laravel.com)처럼 cron 설정을 대신 관리해주는 서비스를 활용하는 것도 좋습니다.
+따라서 Laravel 스케줄러를 사용할 때는, 서버에 `schedule:run`을 1분마다 실행하는 크론 설정 한 줄만 추가하면 됩니다. 크론 항목을 추가하는 방법을 모를 경우, [Laravel Forge](https://forge.laravel.com) 같은 서비스가 크론 관리를 해줍니다:
 
 ```shell
 * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 <a name="sub-minute-scheduled-tasks"></a>
-### 1분 미만 주기의 예약 작업
+### 1분 미만 간격 스케줄 작업 (Sub-Minute Scheduled Tasks)
 
-대부분의 운영체제에서 cron 작업은 최소 1분마다만 실행할 수 있습니다. 그러나 라라벨 스케줄러는 1초와 같이 더 짧은 간격으로도 작업을 예약할 수 있습니다.
+대부분 운영체제에서 크론 작업은 최소 1분 간격으로만 실행됩니다. 하지만 Laravel 스케줄러는 1초 단위 같은 그 이하 간격으로도 작업을 예약할 수 있습니다:
 
-```
+```php
 $schedule->call(function () {
     DB::table('recent_users')->delete();
 })->everySecond();
 ```
 
-1분 미만 작업(sub-minute tasks)이 애플리케이션 내에 정의되어 있을 때, `schedule:run` 명령어는 즉시 종료되지 않고, 해당 분이 끝날 때까지 계속 실행됩니다. 이 방식은 1초 단위 등 짧은 간격의 예약 작업이 분 단위로 모두 실행될 수 있도록 도와줍니다.
+하위 1분 작업이 정의되면, `schedule:run` 명령어는 즉시 종료하지 않고 현재 분이 끝날 때까지 실행 상태를 유지하면서 모든 하위 1분 작업을 호출합니다.
 
-하지만 1분 미만 작업의 실행 시간이 길어지면 뒤따르는 다른 작업들이 지연될 수 있습니다. 이런 경우에는 1분 미만 작업에서는 실제 처리를 큐 작업 또는 백그라운드 명령어로 디스패치하는 것이 좋습니다.
+단, 실행 시간이 길어질 경우 이후 하위 1분 작업 실행에 영향을 줄 수 있으므로, 실제 작업 처리는 큐 작업이나 백그라운드 명령어를 디스패치하는 방식을 권장합니다:
 
-```
+```php
 use App\Jobs\DeleteRecentUsers;
 
 $schedule->job(new DeleteRecentUsers)->everyTenSeconds();
@@ -418,152 +418,152 @@ $schedule->command('users:delete')->everyTenSeconds()->runInBackground();
 ```
 
 <a name="interrupting-sub-minute-tasks"></a>
-#### 1분 미만 작업 중단하기
+#### 하위 1분 작업 중단하기
 
-1분 미만 작업이 정의된 경우 `schedule:run` 명령어가 전체 1분 동안 동작하기 때문에, 애플리케이션 배포(deploy) 시에 이 과정을 중단해야 할 필요가 있습니다. 그렇지 않으면 이미 실행 중이던 `schedule:run` 명령어가 현재 분이 끝날 때까지 이전 코드를 계속 사용할 수 있습니다.
+`sub-minute` 작업이 켜진 상태의 `schedule:run` 명령은 한 분이 끝날 때까지 계속 실행되므로, 배포 중에 명령을 중단해야 할 때가 있습니다. 중단하지 않으면, 이미 실행 중인 `schedule:run`이 배포 전 코드로 계속 실행될 수 있습니다.
 
-이런 상황에서는 배포 스크립트의 마지막 단계에서 `schedule:interrupt` 명령어를 호출해 진행 중인 `schedule:run`을 안전하게 중단할 수 있습니다.
+이때는 배포 스크립트에 `schedule:interrupt` 명령어를 추가하여 배포가 끝난 후 실행 중인 스케줄 명령을 중단하세요:
 
 ```shell
 php artisan schedule:interrupt
 ```
 
 <a name="running-the-scheduler-locally"></a>
-### 로컬에서 스케줄러 실행하기
+### 로컬에서 스케줄러 실행하기 (Running the Scheduler Locally)
 
-일반적으로, 개발환경(로컬)에서는 별도의 cron 항목을 추가하지 않습니다. 대신, `schedule:work` Artisan 명령어를 사용하세요. 이 명령어는 포그라운드에서 동작하며, 명령어를 중단할 때까지 1분마다 스케줄러를 실행해줍니다.
+일반적으로 로컬 개발 환경에서는 크론 항목 설정을 하지 않습니다. 대신, `schedule:work` Artisan 명령어를 사용해 스케줄러를 백그라운드가 아닌 포그라운드로 실행할 수 있습니다. 이 명령은 종료할 때까지 매 분마다 스케줄러를 호출합니다:
 
 ```shell
 php artisan schedule:work
 ```
 
 <a name="task-output"></a>
-## 작업 출력 다루기
+## 작업 출력 (Task Output)
 
-라라벨 스케줄러는 예약 작업의 출력을 다루는 여러 가지 편리한 메서드를 제공합니다. 먼저, `sendOutputTo` 메서드를 사용하면 작업 실행 결과를 파일로 남겨 나중에 확인할 수 있습니다.
+Laravel 스케줄러는 작업 실행 중 생성된 출력 결과를 다루기 위한 여러 편리한 메서드를 제공합니다. `sendOutputTo` 메서드를 이용하면 출력 결과를 파일로 저장해 나중에 살펴볼 수 있습니다:
 
-```
+```php
 $schedule->command('emails:send')
          ->daily()
          ->sendOutputTo($filePath);
 ```
 
-출력 파일에 새로운 내용을 추가(append)하려면 `appendOutputTo` 메서드를 사용합니다.
+출력을 기존 파일에 추가하고 싶다면 `appendOutputTo` 메서드를 사용하세요:
 
-```
+```php
 $schedule->command('emails:send')
          ->daily()
          ->appendOutputTo($filePath);
 ```
 
-`emailOutputTo` 메서드는 작업 출력을 원하는 이메일 주소로 전송해줍니다. 이 기능을 사용하려면 먼저 라라벨의 [이메일 서비스](/docs/10.x/mail)를 올바르게 설정해야 합니다.
+`emailOutputTo` 메서드를 사용하면 출력 결과를 원하는 이메일 주소로 발송할 수도 있습니다. 이 기능을 쓰려면 미리 Laravel의 [이메일 서비스 설정](/docs/10.x/mail)을 구성해야 합니다:
 
-```
+```php
 $schedule->command('report:generate')
          ->daily()
          ->sendOutputTo($filePath)
          ->emailOutputTo('taylor@example.com');
 ```
 
-명령어가 0이 아닌 종료코드(실패)로 끝난 경우에만 이메일로 결과를 받고 싶을 때는 `emailOutputOnFailure` 메서드를 사용하세요.
+스케줄된 Artisan 혹은 시스템 명령이 비정상 종료(0이 아닌 코드) 시에만 메일을 보내려면 `emailOutputOnFailure` 메서드를 사용하세요:
 
-```
+```php
 $schedule->command('report:generate')
          ->daily()
          ->emailOutputOnFailure('taylor@example.com');
 ```
 
-> [!WARNING]
-> `emailOutputTo`, `emailOutputOnFailure`, `sendOutputTo`, `appendOutputTo` 메서드는 `command` 및 `exec` 메서드로 예약한 작업에서만 사용할 수 있습니다.
+> [!WARNING]  
+> `emailOutputTo`, `emailOutputOnFailure`, `sendOutputTo`, `appendOutputTo` 메서드는 `command`나 `exec` 메서드로 예약된 작업에서만 사용할 수 있습니다.
 
 <a name="task-hooks"></a>
-## 작업 후킹(hook)
+## 작업 훅(Hooks) (Task Hooks)
 
-`before` 및 `after` 메서드를 사용하면 예약 작업 실행 전후에 실행할 코드를 지정할 수 있습니다.
+`schedule` 메서드 체인에서 `before` 및 `after` 메서드를 사용해 작업 실행 전후에 실행할 코드를 지정할 수 있습니다:
 
-```
+```php
 $schedule->command('emails:send')
          ->daily()
          ->before(function () {
-             // 작업 직전 실행됨...
+             // 작업 실행 직전...
          })
          ->after(function () {
              // 작업 실행 후...
          });
 ```
 
-`onSuccess`와 `onFailure` 메서드는 작업이 성공 또는 실패할 때(즉, 예약된 Artisan 또는 시스템 명령어가 0 이외의 종료 코드로 종료될 때) 실행할 코드를 지정합니다.
+`onSuccess` 및 `onFailure` 메서드를 사용하면 작업의 성공 또는 실패 여부에 따라 실행할 코드를 지정할 수 있습니다. 실패는 Artisan 또는 시스템 명령이 비정상 종료되었음을 의미합니다:
 
-```
+```php
 $schedule->command('emails:send')
          ->daily()
          ->onSuccess(function () {
-             // 작업 성공...
+             // 작업 성공 시...
          })
          ->onFailure(function () {
-             // 작업 실패...
+             // 작업 실패 시...
          });
 ```
 
-명령어 실행 후 출력 결과가 필요하다면, 후킹 클로저의 `$output` 인자로 `Illuminate\Support\Stringable` 타입을 지정해 후킹 내에서 이를 사용할 수 있습니다.
+명령어 출력 결과가 있다면, `after`, `onSuccess`, `onFailure` 훅 함수에서 `Illuminate\Support\Stringable` 타입을 `$output` 인수로 타입 힌트해 접근할 수 있습니다:
 
-```
+```php
 use Illuminate\Support\Stringable;
 
 $schedule->command('emails:send')
          ->daily()
          ->onSuccess(function (Stringable $output) {
-             // 작업 성공...
+             // 작업 성공 시...
          })
          ->onFailure(function (Stringable $output) {
-             // 작업 실패...
+             // 작업 실패 시...
          });
 ```
 
 <a name="pinging-urls"></a>
-#### URL 핑(ping) 보내기
+#### URL 푸싱 (Pinging URLs)
 
-`pingBefore`, `thenPing` 메서드를 활용하면 스케줄러가 예약 작업 실행 전후에 지정한 URL을 자동으로 ping(HTTP 요청)할 수 있습니다. 이 방법은 [Envoyer](https://envoyer.io)와 같은 외부 서비스에 작업 시작/종료 알림을 보낼 때 유용합니다.
+`pingBefore` 및 `thenPing` 메서드를 사용하면 작업 실행 전후에 특정 URL을 자동으로 ping(HTTP 요청)할 수 있습니다. 이는 [Envoyer](https://envoyer.io) 같은 외부 서비스에 작업 시작 또는 종료를 알릴 때 유용합니다:
 
-```
+```php
 $schedule->command('emails:send')
          ->daily()
          ->pingBefore($url)
          ->thenPing($url);
 ```
 
-`pingBeforeIf` 및 `thenPingIf` 메서드는 특정 조건이 `true`일 때에만 URL을 ping하도록 할 수 있습니다.
+`pingBeforeIf`와 `thenPingIf` 메서드는 주어진 조건이 `true`일 때만 URL을 ping하도록 할 수 있습니다:
 
-```
+```php
 $schedule->command('emails:send')
          ->daily()
          ->pingBeforeIf($condition, $url)
          ->thenPingIf($condition, $url);
 ```
 
-`pingOnSuccess`, `pingOnFailure` 메서드는 작업 성공 또는 실패 시에만 URL로 ping을 보냅니다. 실패란 예약된 Artisan 또는 시스템 명령어가 0이 아닌 종료 코드로 종료된 경우입니다.
+`pingOnSuccess`와 `pingOnFailure`는 작업 성공 또는 실패 때 각각 URL에 ping을 보냅니다. 실패는 비정상 종료를 의미합니다:
 
-```
+```php
 $schedule->command('emails:send')
          ->daily()
          ->pingOnSuccess($successUrl)
          ->pingOnFailure($failureUrl);
 ```
 
-이러한 ping 메서드들은 모두 Guzzle HTTP 라이브러리를 필요로 합니다. Guzzle은 일반적으로 새로운 라라벨 프로젝트에 기본 탑재되어 있지만, 만약 삭제된 경우 Composer로 재설치할 수 있습니다.
+킷 모든 ping 관련 메서드는 Guzzle HTTP 라이브러리를 필요로 합니다. Laravel 프로젝트에는 기본으로 설치되어 있지만, 제거된 경우 Composer로 직접 설치하세요:
 
 ```shell
 composer require guzzlehttp/guzzle
 ```
 
 <a name="events"></a>
-## 이벤트
+## 이벤트 (Events)
 
-필요하다면, 스케줄러가 발생시키는 [이벤트](/docs/10.x/events)를 리스닝할 수 있습니다. 보통 이벤트 리스너 매핑은 애플리케이션의 `App\Providers\EventServiceProvider` 클래스 안에 정의합니다.
+필요하다면 스케줄러가 발생시키는 [이벤트](/docs/10.x/events)에 리스너를 달아 반응할 수도 있습니다. 보통 이벤트-리스너 매핑은 애플리케이션의 `App\Providers\EventServiceProvider` 클래스에서 정의합니다:
 
-```
+```php
 /**
- * The event listener mappings for the application.
+ * 애플리케이션의 이벤트-리스너 매핑.
  *
  * @var array
  */
