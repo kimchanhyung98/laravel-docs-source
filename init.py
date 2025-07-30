@@ -10,6 +10,11 @@ from utils.translation import translate_file
 
 
 def main():
+    """
+    Automates cloning, translating, and organizing documentation files from a GitHub repository across multiple branches.
+    
+    For each specified branch, clones the repository, checks out the branch, copies all markdown files to an 'origin' directory, translates eligible files to Korean in a 'ko' directory (excluding specified files), and stages the results for git. Cleans up temporary files after processing.
+    """
     load_dotenv()
     original_repo = "https://github.com/laravel/docs.git"
     temp_dir = "temp"

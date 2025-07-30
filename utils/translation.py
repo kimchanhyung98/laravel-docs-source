@@ -10,13 +10,14 @@ from utils.token_counter import get_token_count
 
 
 def get_translation_client():
-    """번역에 사용할 AI 클라이언트를 가져옴
-
+    """
+    Retrieve an AI translation client and model name based on environment variables.
+    
     Returns:
-        tuple: (client, model) - AI 클라이언트와 모델명
-
+        tuple: A tuple containing the AI client instance and the model name.
+    
     Raises:
-        ValueError: 필요한 환경변수가 설정되지 않은 경우
+        ValueError: If required environment variables are missing or if the translation provider is unsupported.
     """
     provider = os.environ.get("TRANSLATION_PROVIDER", "openai").lower()
     model = os.environ.get("TRANSLATION_MODEL", "gpt-4.1")
@@ -50,17 +51,18 @@ def get_translation_client():
 
 
 def translate_text_with_openai(text_to_translate, system_prompt):
-    """AI API를 사용하여 텍스트를 번역
-
-    Args:
-        text_to_translate: 번역할 텍스트
-        system_prompt: 시스템 프롬프트
-
+    """
+    Translates the given text using an AI chat completion API and a specified system prompt.
+    
+    Parameters:
+        text_to_translate (str): The text to be translated.
+        system_prompt (str): The system prompt guiding the translation.
+    
     Returns:
-        str: 번역된 텍스트
-
+        str: The translated text.
+    
     Raises:
-        Exception: API 호출 중 오류 발생 시
+        Exception: If the API call fails.
     """
     client, model = get_translation_client()
     system_message = ChatCompletionSystemMessageParam(role="system", content=system_prompt)
@@ -77,16 +79,19 @@ def translate_text_with_openai(text_to_translate, system_prompt):
 @retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,))
 @timeout(seconds=1000)
 def translate_file(source_file, target_file, source_lang="en", target_lang="ko"):
-    """OpenAI API를 사용하여, 마크다운 파일을 번역하고 저장
-
-    Args:
-        source_file: 원본 파일 경로
-        target_file: 번역된 파일을 저장할 경로
-        source_lang: 원본 언어 코드 (기본값: "en")
-        target_lang: 대상 언어 코드 (기본값: "ko")
-
+    """
+    Translates a markdown file from the source language to the target language using the OpenAI API and saves the result.
+    
+    Reads the source markdown file, applies version-based filtering, constructs a system prompt, and translates the content in a single API call. The translated content is written to the specified target file. Handles rate limiting and general exceptions during the translation process.
+    
+    Parameters:
+        source_file (str): Path to the source markdown file.
+        target_file (str): Path where the translated file will be saved.
+        source_lang (str): Source language code (default: "en").
+        target_lang (str): Target language code (default: "ko").
+    
     Returns:
-        bool: 번역 성공 여부
+        bool: True if translation succeeds and the file is saved; False if the source file is empty.
     """
     try:
         with open(source_file, 'r', encoding='utf-8') as f:
