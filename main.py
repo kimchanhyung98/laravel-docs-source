@@ -10,6 +10,18 @@ from utils.translation import translate_file
 
 
 def main():
+    """
+    Automates cloning, updating, and translating Laravel documentation across multiple branches.
+    
+    This function performs the following steps:
+    1. Loads environment variables.
+    2. Clones the original Laravel documentation repository into a temporary directory.
+    3. Updates documentation for each specified branch, excluding certain files.
+    4. Removes the temporary directory after processing.
+    5. Identifies changed documentation files using Git.
+    6. Translates changed files (excluding specified files) from the original to the target language directory, waiting 30 seconds between translations.
+    7. Stages all changes in Git and prints a completion message.
+    """
     load_dotenv()
     original_repo = "https://github.com/laravel/docs.git"
     temp_dir = "temp"
