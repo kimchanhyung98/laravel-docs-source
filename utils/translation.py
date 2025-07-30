@@ -115,7 +115,7 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
         content = filter_markdown(content, version)
 
         # 시스템 프롬프트 설정
-        with open("translation_prompt.txt", 'r', encoding='utf-8') as f:
+        with open("prompt.md", 'r', encoding='utf-8') as f:
             system_prompt_template = f.read()
         system_prompt = system_prompt_template.format(source_lang=source_lang, target_lang=target_lang)
 
