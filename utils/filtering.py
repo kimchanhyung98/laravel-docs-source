@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-"""
-마크다운 필터링 관련 유틸리티 함수 모듈
-"""
 import re
 
 
@@ -273,7 +269,6 @@ def standardize_callouts(content: str) -> str:
             i += 1
             continue
 
-
         # 다른 패턴이 아니면 그대로 추가
         result_lines.append(line)
         i += 1
@@ -295,6 +290,7 @@ def filter_markdown(content: str, version: str = None) -> str:
 
     Args:
         content: 필터링할 원본 마크다운 문자열
+        version: {{version}} 플레이스홀더를 치환할 버전 문자열
 
     Returns:
         모든 필터링이 적용된 마크다운 문자열
@@ -305,7 +301,6 @@ def filter_markdown(content: str, version: str = None) -> str:
     content = remove_title_braces(content)
     content = standardize_callouts(content)
 
-    # 버전 플레이스홀더 치환 (버전이 제공된 경우에만)
     if version is not None:
         content = replace_version_placeholder(content, version)
 
