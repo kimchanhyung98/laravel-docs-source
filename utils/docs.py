@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-"""
-Laravel 문서 관련 유틸리티 함수 모듈
-"""
 import os
 import shutil
 
@@ -27,7 +23,7 @@ def clone_laravel_docs(temp_dir, original_repo):
         run_command(f"git clone {original_repo} {temp_dir}")
         return True
     except Exception as e:
-        print(f"Laravel 문서 클론 중 오류 발생: {e}")
+        print(f"Laravel 클론 오류 발생: {e}")
         return False
 
 
@@ -43,7 +39,6 @@ def update_branch_docs(branch, temp_dir, excluded_files):
         bool: 성공 여부
     """
     try:
-        # 브랜치 체크아웃
         run_command(f"git checkout {branch}", cwd=temp_dir)
 
         # 현재 프로젝트의 해당 브랜치 디렉토리 확인
@@ -66,8 +61,8 @@ def update_branch_docs(branch, temp_dir, excluded_files):
             if file_name.lower() in excluded_files:
                 shutil.copy2(source_path, os.path.join(ko_dir, file_name))
 
-        print(f"{branch} 브랜치 문서 업데이트 완료")
+        print(f"{branch} 브랜치, 문서 업데이트 완료")
         return True
     except Exception as e:
-        print(f"{branch} 브랜치 문서 업데이트 중 오류 발생: {e}")
+        print(f"{branch} 브랜치, 문서 업데이트 오류 발생: {e}")
         return False

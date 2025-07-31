@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-"""
-공통 유틸리티 함수 모듈
-"""
 import subprocess
 import time
 from functools import wraps
@@ -33,12 +29,9 @@ def retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,)):
                         print(f"최대 시도 횟수 초과. 오류: {error_type} - {e}")
                         raise
 
-                    print(f"오류: {error_type} - {e}")
                     print(f"재시도 중... ({attempt}/{max_attempts})")
                     time.sleep(current_delay)
                     current_delay *= backoff
-
-            return None  # 이 코드는 실행되지 않지만 형식적으로 필요
 
         return wrapper
 
@@ -68,8 +61,7 @@ def timeout(seconds=600):
                 result = func(*args, **kwargs)
                 signal.alarm(0)  # 타이머 재설정
                 return result
-            except TimeoutError as e:
-                print(f"타임아웃: {e}")
+            except TimeoutError:
                 raise
             finally:
                 signal.alarm(0)  # 타이머 재설정
