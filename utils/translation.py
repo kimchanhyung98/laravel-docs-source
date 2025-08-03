@@ -1,29 +1,23 @@
-#!/usr/bin/env python3
-"""
-번역 관련 유틸리티 함수 모듈
-"""
 import os
-import re
 import time
 
 import openai
 from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam
 
-from utils.chunk import orchestrate_chunk_translation
 from utils.common import retry, timeout
 from utils.filtering import filter_markdown
+from utils.token_counter import get_token_count
 
 
 def get_translation_client():
-    """번역에 사용할 AI 클라이언트를 가져옴
-
-    TRANSLATION_PROVIDER 환경변수에 따라 OpenAI 또는 Azure OpenAI 클라이언트를 반환
-
+    """
+    Retrieve an AI translation client and model name based on environment variables.
+    
     Returns:
-        tuple: (client, model) - AI 클라이언트와 모델명
-
+        tuple: A tuple containing the AI client instance and the model name.
+    
     Raises:
-        ValueError: 필요한 환경변수가 설정되지 않은 경우
+        ValueError: If required environment variables are missing or if the translation provider is unsupported.
     """
     provider = os.environ.get("TRANSLATION_PROVIDER", "openai").lower()
     model = os.environ.get("TRANSLATION_MODEL", "gpt-4.1")
@@ -53,25 +47,24 @@ def get_translation_client():
         return client, model
 
     else:
-        raise ValueError(f"지원하지 않는 번역 제공자: {provider}. 'openai' 또는 'azure'를 사용하세요.")
+        raise ValueError(f"미지원 번역 제공자: {provider}")
 
 
 def translate_text_with_openai(text_to_translate, system_prompt):
-    """AI API를 사용하여 텍스트를 번역
-
-    Args:
-        text_to_translate: 번역할 텍스트
-        system_prompt: 시스템 프롬프트
-
-    Returns:
-        str: 번역된 텍스트
-
-    Raises:
-        Exception: API 호출 중 오류 발생 시
     """
-    # 클라이언트와 모델 가져오기
+    Translates the given text using an AI chat completion API and a specified system prompt.
+    
+    Parameters:
+        text_to_translate (str): The text to be translated.
+        system_prompt (str): The system prompt guiding the translation.
+    
+    Returns:
+        str: The translated text.
+    
+    Raises:
+        Exception: If the API call fails.
+    """
     client, model = get_translation_client()
-
     system_message = ChatCompletionSystemMessageParam(role="system", content=system_prompt)
     user_message = ChatCompletionUserMessageParam(role="user", content=text_to_translate)
 
@@ -84,22 +77,23 @@ def translate_text_with_openai(text_to_translate, system_prompt):
 
 
 @retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,))
-@timeout(seconds=600)
+@timeout(seconds=1000)
 def translate_file(source_file, target_file, source_lang="en", target_lang="ko"):
-    """OpenAI API를 사용하여, 마크다운 파일을 번역하고 저장
-    대용량 파일은 청크로 분할하여 번역
-
-    Args:
-        source_file: 원본 파일 경로
-        target_file: 번역된 파일을 저장할 경로
-        source_lang: 원본 언어 코드 (기본값: "en")
-        target_lang: 대상 언어 코드 (기본값: "ko")
-
+    """
+    Translates a markdown file from the source language to the target language using the OpenAI API and saves the result.
+    
+    Reads the source markdown file, applies version-based filtering, constructs a system prompt, and translates the content in a single API call. The translated content is written to the specified target file. Handles rate limiting and general exceptions during the translation process.
+    
+    Parameters:
+        source_file (str): Path to the source markdown file.
+        target_file (str): Path where the translated file will be saved.
+        source_lang (str): Source language code (default: "en").
+        target_lang (str): Target language code (default: "ko").
+    
     Returns:
-        bool: 번역 성공 여부
+        bool: True if translation succeeds and the file is saved; False if the source file is empty.
     """
     try:
-        # 파일 읽기
         with open(source_file, 'r', encoding='utf-8') as f:
             content = f.read()
 
@@ -107,13 +101,11 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
             print(f"빈 파일: {source_file}")
             return False
 
-        # 파일 경로에서 버전 정보 추출 - 안전한 방법 사용
+        print(f"번역 시작: {source_file}")
+
+        # 버전 정보 추출
         version = None
-
-        # 타겟 파일 경로에서 버전 정보 추출
         abs_target_path = os.path.abspath(target_file).replace("\\", "/")
-
-        # 타겟 파일 경로에서 버전 추출
         if '/9.x/' in abs_target_path:
             version = '9.x'
         elif '/10.x/' in abs_target_path:
@@ -125,55 +117,27 @@ def translate_file(source_file, target_file, source_lang="en", target_lang="ko")
         elif '/master/' in abs_target_path:
             version = 'master'
 
-        # 마크다운 필터링 적용 (버전 정보 포함)
         content = filter_markdown(content, version)
 
         # 시스템 프롬프트 설정
-        try:
-            with open("translation_prompt.txt", 'r', encoding='utf-8') as f:
-                system_prompt_template = f.read()
-        except Exception as e:
-            print(f"프롬프트 파일 오류: {e}")
-            return False
+        with open("prompt.md", 'r', encoding='utf-8') as f:
+            system_prompt_template = f.read()
+        system_prompt = system_prompt_template.format(source_lang=source_lang, target_lang=target_lang)
 
-        # 파일 크기 확인 (줄 수 기준)
-        line_count = len(content.splitlines())
-        file_name = os.path.basename(source_file)
+        content_tokens = get_token_count(content)
+        print(f"{source_file}: {content_tokens:,} 토큰")
 
-        print(f"번역 시작: {source_file} -> {target_file} ({line_count}줄)")
-
-        # 대용량 파일 기준 (800줄 이상)
-        if line_count > 800:
-            print(f"대용량 파일 감지: {file_name} - 청크 분할 번역 시작")
-            translated_content = orchestrate_chunk_translation(
-                content=content,
-                source_lang=source_lang,
-                target_lang=target_lang,
-                original_filename_for_logging=file_name,
-                translate_api_call_func=translate_text_with_openai
-            )
-        else:
-
-            system_prompt = system_prompt_template.format(source_lang=source_lang, target_lang=target_lang)
-            translated_content = translate_text_with_openai(content, system_prompt)
-
-        # 번역 결과 저장
+        translated_content = translate_text_with_openai(content, system_prompt)
         with open(target_file, 'w', encoding='utf-8') as f:
             f.write(translated_content)
 
         print(f"번역 완료: {source_file} -> {target_file}")
         return True
 
-    except openai.APITimeoutError as e:
-        print(f"APITimeoutError - {str(e)}")
-        raise
-    except openai.APIConnectionError as e:
-        print(f"APIConnectionError - {str(e)}")
-        raise
     except openai.RateLimitError as e:
-        print(f"RateLimitError - {str(e)}")
+        print(f"RateLimitError: {e}")
         time.sleep(30)
         raise
     except Exception as e:
-        print(f"Exception - {type(e).__name__} - {str(e)}")
+        print(f"번역 오류: {type(e).__name__}")
         raise

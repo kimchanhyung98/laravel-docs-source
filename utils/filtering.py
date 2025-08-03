@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-"""
-마크다운 필터링 관련 유틸리티 함수 모듈
-"""
 import re
 
 
@@ -206,19 +202,13 @@ def remove_title_braces(content: str) -> str:
 
 
 def standardize_callouts(content: str) -> str:
-    """마크다운 내용에서 다양한 형태의 툴팁/노트 형식을 표준화
-
-    다음과 같은 형태를 모두 `> [!NOTE]\n> message` 형식으로 통일:
-    1. `> {tip} message` -> `> [!TIP]\n> message`
-    2. `> {note} message` -> `> [!NOTE]\n> message`
-    3. `> [!NOTE] message` -> `> [!NOTE]\n> message`
-    4. `> **Note**` -> `> [!NOTE]`
-
-    Args:
-        content: 처리할 마크다운 원본 문자열
-
+    """
+    Standardizes various Markdown callout formats into a consistent blockquote style.
+    
+    Converts lines such as `> {tip} message`, `> {note} message`, `> [!NOTE] message`, and `> **Note**` into a unified format using `> [!TYPE]` followed by the message. The function processes each line and transforms recognized callout patterns to ensure consistent documentation formatting.
+    
     Returns:
-        툴팁/노트 형식이 표준화된 마크다운 문자열
+        The Markdown string with all callout and tooltip formats standardized.
     """
     # 패턴 1: > {tip} message 형태
     pattern1 = r'^(\s*)>\s*\{(tip|note)\}\s*(.+)$'
@@ -273,7 +263,6 @@ def standardize_callouts(content: str) -> str:
             i += 1
             continue
 
-
         # 다른 패턴이 아니면 그대로 추가
         result_lines.append(line)
         i += 1
@@ -282,22 +271,24 @@ def standardize_callouts(content: str) -> str:
 
 
 def filter_markdown(content: str, version: str = None) -> str:
-    """마크다운 내용에 여러 필터링 함수를 순차적으로 적용
-
-    적용되는 필터:
-    1. 들여쓰기 코드 블록을 펜스(백틱) 코드 블록으로 변환 (언어 태그 없음)
-    2. HTML <style> 태그와 그 내용을 완전히 제거
-    3. 닫히지 않은 이미지 태그(<img>)를 자동으로 닫는 태그(<img />)로 변환
-    4. 제목 옆에 있는 중괄호와 그 내용을 제거 ("# 설치 {.installation}" -> "# 설치")
-    5. 다양한 형태의 툴팁/노트 형식을 표준화
-    6. {{version}} 플레이스홀더를 지정된 버전으로 치환 (version 매개변수가 제공된 경우)
-    7. 파일 끝을 하나의 빈 줄로 표준화 (문서 중간의 빈 줄은 유지)
-
-    Args:
-        content: 필터링할 원본 마크다운 문자열
-
+    """
+    Applies a sequence of filters to the given Markdown content for formatting and syntax normalization.
+    
+    The function performs the following transformations in order:
+    1. Converts indented code blocks to fenced code blocks.
+    2. Removes all <style> HTML tags and their contents.
+    3. Converts unclosed <img> tags to self-closing <img /> tags.
+    4. Removes curly braces and their contents adjacent to headers.
+    5. Standardizes various callout and note formats.
+    6. Replaces all {{version}} placeholders with the provided version string, if specified.
+    7. Ensures the content ends with exactly one blank line.
+    
+    Parameters:
+        content (str): The original Markdown string to filter.
+        version (str, optional): The version string to replace {{version}} placeholders.
+    
     Returns:
-        모든 필터링이 적용된 마크다운 문자열
+        str: The fully filtered and normalized Markdown string.
     """
     content = convert_indented_code_blocks(content)
     content = remove_style_tags(content)
@@ -305,7 +296,6 @@ def filter_markdown(content: str, version: str = None) -> str:
     content = remove_title_braces(content)
     content = standardize_callouts(content)
 
-    # 버전 플레이스홀더 치환 (버전이 제공된 경우에만)
     if version is not None:
         content = replace_version_placeholder(content, version)
 
