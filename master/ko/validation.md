@@ -1,61 +1,57 @@
-아래는 요청하신 마크다운 문서의 한글 번역본입니다.
-
----
-
-# 유효성 검사(Validation)
+# 유효성 검증 (Validation)
 
 - [소개](#introduction)
-- [유효성 검사 빠르게 시작하기](#validation-quickstart)
+- [유효성 검증 빠른 시작 (Validation Quickstart)](#validation-quickstart)
     - [라우트 정의하기](#quick-defining-the-routes)
     - [컨트롤러 생성하기](#quick-creating-the-controller)
     - [유효성 검사 로직 작성하기](#quick-writing-the-validation-logic)
-    - [유효성 검사 에러 표시하기](#quick-displaying-the-validation-errors)
-    - [폼 값 다시 채우기](#repopulating-forms)
-    - [옵션 필드에 대한 참고](#a-note-on-optional-fields)
-    - [유효성 검사 에러 응답 포맷](#validation-error-response-format)
-- [폼 리퀘스트 유효성 검사](#form-request-validation)
-    - [폼 리퀘스트 생성하기](#creating-form-requests)
-    - [폼 리퀘스트 인가하기](#authorizing-form-requests)
-    - [에러 메시지 커스터마이즈](#customizing-the-error-messages)
-    - [유효성 검사 전 입력값 준비](#preparing-input-for-validation)
-- [수동으로 Validator 생성하기](#manually-creating-validators)
+    - [유효성 검사 오류 표시하기](#quick-displaying-the-validation-errors)
+    - [폼 복원하기](#repopulating-forms)
+    - [선택적 필드에 관한 참고사항](#a-note-on-optional-fields)
+    - [유효성 검사 오류 응답 포맷](#validation-error-response-format)
+- [폼 요청 유효성 검증 (Form Request Validation)](#form-request-validation)
+    - [폼 요청 생성하기](#creating-form-requests)
+    - [폼 요청 권한 부여](#authorizing-form-requests)
+    - [오류 메시지 커스터마이징](#customizing-the-error-messages)
+    - [유효성 검사 전 입력 준비하기](#preparing-input-for-validation)
+- [수동으로 유효성 검사기 생성하기 (Manually Creating Validators)](#manually-creating-validators)
     - [자동 리다이렉션](#automatic-redirection)
-    - [명명된 에러 백(Named Error Bags)](#named-error-bags)
-    - [에러 메시지 커스터마이징](#manual-customizing-the-error-messages)
+    - [명명된 오류 가방](#named-error-bags)
+    - [오류 메시지 커스터마이징](#manual-customizing-the-error-messages)
     - [추가 유효성 검사 수행하기](#performing-additional-validation)
-- [유효성 검사된 입력값 다루기](#working-with-validated-input)
-- [에러 메시지 다루기](#working-with-error-messages)
-    - [언어 파일에서 커스텀 메시지 지정하기](#specifying-custom-messages-in-language-files)
+- [검증된 입력 데이터를 활용하기](#working-with-validated-input)
+- [오류 메시지 작업하기](#working-with-error-messages)
+    - [언어 파일에서 사용자 지정 메시지 지정하기](#specifying-custom-messages-in-language-files)
     - [언어 파일에서 속성 지정하기](#specifying-attribute-in-language-files)
     - [언어 파일에서 값 지정하기](#specifying-values-in-language-files)
-- [사용 가능한 유효성 검사 규칙](#available-validation-rules)
+- [사용 가능한 유효성 규칙들](#available-validation-rules)
 - [조건부 규칙 추가하기](#conditionally-adding-rules)
-- [배열 유효성 검사하기](#validating-arrays)
-    - [중첩 배열 입력 유효성 검사](#validating-nested-array-input)
-    - [에러 메시지 인덱스와 위치](#error-message-indexes-and-positions)
-- [파일 유효성 검사하기](#validating-files)
-- [비밀번호 유효성 검사하기](#validating-passwords)
-- [커스텀 유효성 검사 규칙](#custom-validation-rules)
-    - [규칙 오브젝트 사용하기](#using-rule-objects)
+- [배열 검증하기](#validating-arrays)
+    - [중첩된 배열 입력 검증하기](#validating-nested-array-input)
+    - [오류 메시지 인덱스와 위치](#error-message-indexes-and-positions)
+- [파일 검증하기](#validating-files)
+- [비밀번호 검증하기](#validating-passwords)
+- [사용자 정의 유효성 규칙](#custom-validation-rules)
+    - [Rule 객체 사용하기](#using-rule-objects)
     - [클로저 사용하기](#using-closures)
-    - [암시적 규칙](#implicit-rules)
+    - [암묵적(Implicit) 규칙](#implicit-rules)
 
 <a name="introduction"></a>
-## 소개
+## 소개 (Introduction)
 
-Laravel은 애플리케이션에 들어오는 데이터를 유효성 검사하기 위한 여러 가지 방법을 제공합니다. 가장 일반적으로 사용하는 방법은 모든 HTTP 요청에서 사용할 수 있는 `validate` 메서드입니다. 하지만 이외의 다른 유효성 검사 방법에 대해서도 다룰 예정입니다.
+Laravel은 애플리케이션에 들어오는 데이터를 검증하는 여러 방법을 제공합니다. 가장 흔히 사용하는 방법은 모든 들어오는 HTTP 요청에서 사용할 수 있는 `validate` 메서드입니다. 하지만 다른 유효성 검증 방식도 다루겠습니다.
 
-Laravel은 데이터에 적용할 수 있는 다양한 편리한 유효성 검사 규칙을 제공합니다. 이는 값이 데이터베이스 테이블에서 고유한지까지도 검사할 수 있음을 의미합니다. 앞으로 각 유효성 검사 규칙을 자세히 다루니, Laravel의 유효성 검사 기능을 모두 익힐 수 있습니다.
+Laravel은 데이터에 적용할 수 있는 다양한 편리한 유효성 규칙을 제공하며, 특정 데이터베이스 테이블에서 값의 고유성을 검증할 수도 있습니다. 여기서는 Laravel의 모든 유효성 검증 기능에 익숙해질 수 있도록 각 규칙을 상세히 다루겠습니다.
 
 <a name="validation-quickstart"></a>
-## 유효성 검사 빠르게 시작하기
+## 유효성 검증 빠른 시작 (Validation Quickstart)
 
-Laravel의 강력한 유효성 검사 기능을 알아보기 위해, 폼을 유효성 검사하고 에러 메시지를 사용자에게 표시하는 전체 예제를 살펴보겠습니다. 이 내용을 읽고 나면, Laravel을 사용해 들어오는 요청 데이터를 어떻게 유효성 검사하는지 개괄적으로 이해할 수 있습니다.
+Laravel의 강력한 유효성 검증 기능을 배우기 위해, 먼저 폼을 검증하고 사용자에게 오류 메시지를 보여주는 완전한 예제를 살펴보겠습니다. 이 개요를 따라가면서 Laravel에서 들어오는 요청 데이터를 어떻게 검증하는지 전반을 이해할 수 있습니다.
 
 <a name="quick-defining-the-routes"></a>
 ### 라우트 정의하기
 
-먼저, `routes/web.php` 파일에 아래와 같은 라우트가 정의되어 있다고 가정합니다.
+먼저, `routes/web.php` 파일에 다음과 같은 라우트를 정의했다고 가정해 봅시다:
 
 ```php
 use App\Http\Controllers\PostController;
@@ -64,12 +60,12 @@ Route::get('/post/create', [PostController::class, 'create']);
 Route::post('/post', [PostController::class, 'store']);
 ```
 
-`GET` 라우트는 사용자가 새 블로그 포스트를 작성할 수 있는 폼을 보여주고, `POST` 라우트는 새로운 블로그 포스트를 데이터베이스에 저장합니다.
+`GET` 라우트는 사용자가 새로운 블로그 게시물을 작성할 수 있는 폼을 보여주고, `POST` 라우트는 새 게시물을 데이터베이스에 저장합니다.
 
 <a name="quick-creating-the-controller"></a>
 ### 컨트롤러 생성하기
 
-다음으로, 위 라우트의 요청을 처리할 간단한 컨트롤러 예제를 살펴봅니다. `store` 메서드는 일단 비워둡니다.
+다음으로, 위 라우트에 대응하는 단순 컨트롤러를 살펴봅시다. 일단 `store` 메서드는 비워둡니다:
 
 ```php
 <?php
@@ -83,7 +79,7 @@ use Illuminate\View\View;
 class PostController extends Controller
 {
     /**
-     * 새 블로그 포스트 작성 폼을 보여줍니다.
+     * 새 블로그 게시물 작성 폼을 보여준다.
      */
     public function create(): View
     {
@@ -91,11 +87,11 @@ class PostController extends Controller
     }
 
     /**
-     * 새 블로그 포스트를 저장합니다.
+     * 새 블로그 게시물을 저장한다.
      */
     public function store(Request $request): RedirectResponse
     {
-        // 블로그 포스트 유효성 검사 및 저장...
+        // 게시물 검증 및 저장...
 
         $post = /** ... */
 
@@ -107,15 +103,15 @@ class PostController extends Controller
 <a name="quick-writing-the-validation-logic"></a>
 ### 유효성 검사 로직 작성하기
 
-이제 `store` 메서드에 새 블로그 포스트를 유효성 검사하는 로직을 채울 준비가 되었습니다. 이를 위해 `Illuminate\Http\Request` 객체가 제공하는 `validate` 메서드를 사용합니다. 유효성 검사 규칙을 통과하면 코드는 정상적으로 계속 실행됩니다. 반면, 유효성 검사가 실패하면 `Illuminate\Validation\ValidationException` 예외가 발생하고, 적절한 에러 응답이 사용자에게 자동으로 반환됩니다.
+이제 `store` 메서드에 새 게시물을 검증하는 로직을 채워봅시다. `Illuminate\Http\Request` 객체가 제공하는 `validate` 메서드를 사용합니다. 규칙이 통과하면 코드가 정상 실행되지만, 실패하면 `Illuminate\Validation\ValidationException` 예외가 자동 발생하며 적절한 오류 응답이 사용자에게 반환됩니다.
 
-만약 일반 HTTP 요청 중에 유효성 검사가 실패하면, 이전 URL로 리다이렉트 응답이 생성됩니다. 들어온 요청이 XHR 요청일 경우, [유효성 검사 에러 메시지를 담은 JSON 응답](#validation-error-response-format)이 반환됩니다.
+전통적인 HTTP 요청에서 검증 실패 시 이전 URL로 리다이렉트됩니다. 만약 XHR 요청이면, [유효성 검사 오류 메시지를 담은 JSON 응답](#validation-error-response-format)이 반환됩니다.
 
-`validate` 메서드를 더 잘 이해하기 위해 `store` 메서드로 다시 돌아가봅니다.
+`validate` 메서드를 이해하기 위해 `store` 메서드를 다시 확인해 봅시다:
 
 ```php
 /**
- * 새 블로그 포스트를 저장합니다.
+ * 새 블로그 게시물을 저장한다.
  */
 public function store(Request $request): RedirectResponse
 {
@@ -124,15 +120,15 @@ public function store(Request $request): RedirectResponse
         'body' => 'required',
     ]);
 
-    // 블로그 포스트가 유효합니다...
+    // 게시물이 유효함...
 
     return redirect('/posts');
 }
 ```
 
-위 코드에서 보듯이 유효성 검사 규칙을 `validate` 메서드에 전달합니다. 사용할 수 있는 모든 유효성 검사 규칙은 [문서화](#available-validation-rules)되어 있으니 참고하세요. 다시 말하지만, 유효성 검사에 실패하면 적절한 응답이 자동으로 생성됩니다. 검사를 통과하면 컨트롤러는 계속 정상적으로 실행됩니다.
+보시다시피, 유효성 규칙이 `validate` 메서드에 전달됩니다. 걱정 마세요 — 사용 가능한 모든 유효성 규칙은 [기술 문서](#available-validation-rules)에 정리되어 있습니다. 규칙 검증에 실패하면 적절한 응답이 자동 생성되며, 성공 시 컨트롤러는 계속 실행됩니다.
 
-또한, 유효성 검사 규칙을 `|`로 구분된 문자열이 아닌 배열로 지정할 수도 있습니다.
+또는, 규칙을 단일 문자열(`|` 구분자) 대신 배열 형태로도 나타낼 수 있습니다:
 
 ```php
 $validatedData = $request->validate([
@@ -141,7 +137,7 @@ $validatedData = $request->validate([
 ]);
 ```
 
-또한, [명명된 에러 백](#named-error-bags)에 에러 메시지를 저장하려면 `validateWithBag` 메서드를 사용할 수 있습니다.
+그리고 `validateWithBag` 메서드를 사용해 요청을 검증하고, 검증 오류 메시지를 [명명된 오류 가방](#named-error-bags)에 저장할 수도 있습니다:
 
 ```php
 $validatedData = $request->validateWithBag('post', [
@@ -151,9 +147,9 @@ $validatedData = $request->validateWithBag('post', [
 ```
 
 <a name="stopping-on-first-validation-failure"></a>
-#### 첫 번째 유효성 검사 실패에서 중단하기
+#### 최초 실패 시 검증 중지하기
 
-어떤 속성의 첫 번째 유효성 검사 실패 이후로 검사를 중단하고 싶을 때가 있습니다. 그럴 땐 속성에 `bail` 규칙을 할당하면 됩니다.
+가끔 특정 속성에서 첫 번째 유효성 검사 실패 시 즉시 중단하고 싶을 때가 있습니다. 이때는 해당 속성에 `bail` 규칙을 할당하세요:
 
 ```php
 $request->validate([
@@ -162,12 +158,12 @@ $request->validate([
 ]);
 ```
 
-이 예시에서는, `title` 속성의 `unique` 규칙이 실패하면 `max` 규칙은 확인하지 않습니다. 규칙은 지정된 순서대로 검사됩니다.
+위 예제에서 만약 `title` 속성의 `unique` 규칙이 실패하면, `max` 규칙은 더 이상 검사하지 않습니다. 규칙은 지정한 순서대로 검증됩니다.
 
 <a name="a-note-on-nested-attributes"></a>
-#### 중첩 속성에 대한 참고
+#### 중첩 속성에 관한 참고사항
 
-들어오는 HTTP 요청이 "중첩된" 필드 데이터를 포함하고 있다면, 유효성 검사 규칙에서 "점(.) 표기법"을 사용해 해당 필드를 지정할 수 있습니다.
+들어오는 HTTP 요청에 "중첩"된 필드 데이터가 있다면, 유효성 검사 규칙 내에서 점(`.`) 표기법으로 필드를 지정할 수 있습니다:
 
 ```php
 $request->validate([
@@ -177,7 +173,7 @@ $request->validate([
 ]);
 ```
 
-반면, 필드 이름에 실제 점이 포함된 경우, 역슬래시로 점을 이스케이프하여 "점" 문법 해석을 방지할 수 있습니다.
+반대로, 필드 이름이 실제 점 문자를 포함할 경우 점 문자가 표현법으로 해석되지 않도록 역슬래시(`\`)로 이스케이프할 수 있습니다:
 
 ```php
 $request->validate([
@@ -187,18 +183,18 @@ $request->validate([
 ```
 
 <a name="quick-displaying-the-validation-errors"></a>
-### 유효성 검사 에러 표시하기
+### 유효성 검사 오류 표시하기
 
-입력값이 주어진 유효성 검사 규칙을 통과하지 못하면 어떻게 될까요? 앞서 언급했듯이, Laravel은 자동으로 사용자를 이전 위치로 리다이렉트합니다. 또한 모든 유효성 검사 에러와 [요청 입력값](/docs/{{version}}/requests#retrieving-old-input)이 자동으로 [세션에 flash](#)됩니다.
+그렇다면, 요청 필드들이 검증 규칙을 통과하지 못하면 어떻게 될까요? 앞서 말씀드렸듯이, Laravel은 자동으로 사용자를 이전 위치로 리다이렉트합니다. 뿐만 아니라, 모든 유효성 오류와 [요청 입력값](/docs/master/requests#retrieving-old-input)을 자동으로 세션에 [플래시 저장](/docs/master/session#flash-data)합니다.
 
-`Illuminate\View\Middleware\ShareErrorsFromSession` 미들웨어(웹 미들웨어 그룹에 포함됨)가 모든 뷰에 `$errors` 변수를 공유합니다. 이 미들웨어가 적용되면 모든 뷰에서 `$errors` 변수가 항상 사용 가능하므로, 언제든지 `$errors`를 안전하게 사용할 수 있습니다. 이 변수는 `Illuminate\Support\MessageBag` 인스턴스로 제공됩니다. 이 객체를 다루는 방법은 [별도 문서](#working-with-error-messages)를 참고하세요.
+`Illuminate\View\Middleware\ShareErrorsFromSession` 미들웨어는 모든 뷰에 `$errors` 변수를 공유하는데, 이 미들웨어는 `web` 미들웨어 그룹에 포함되어 있습니다. 이 미들웨어가 적용되면 `$errors` 변수는 항상 뷰에서 사용할 수 있으며, 안전하게 사용 가능하므로 예외 처리를 걱정하지 않아도 됩니다. `$errors` 변수는 `Illuminate\Support\MessageBag` 클래스의 인스턴스입니다. 이 객체와 작업하는 방법은 [오류 메시지 작업하기](#working-with-error-messages) 부분에서 더 자세히 알아볼 수 있습니다.
 
-따라서 유효성 검사에 실패할 경우 사용자는 컨트롤러의 `create` 메서드로 리다이렉트 되며, 뷰에서 에러 메시지를 표시할 수 있습니다.
+따라서, 위 예제에서 유효성 검증 실패 시 사용자는 컨트롤러의 `create` 메서드가 보여주는 페이지로 리다이렉트되며, 오류 메시지들을 뷰에 출력할 수 있습니다:
 
 ```blade
 <!-- /resources/views/post/create.blade.php -->
 
-<h1>글 작성</h1>
+<h1>게시물 작성</h1>
 
 @if ($errors->any())
     <div class="alert alert-danger">
@@ -210,35 +206,35 @@ $request->validate([
     </div>
 @endif
 
-<!-- 글 작성 폼 -->
+<!-- 게시물 작성 폼 -->
 ```
 
 <a name="quick-customizing-the-error-messages"></a>
-#### 에러 메시지 커스터마이즈
+#### 오류 메시지 커스터마이징
 
-Laravel 기본 유효성 검사 규칙의 각 에러 메시지는 애플리케이션의 `lang/en/validation.php` 파일에 저장되어 있습니다. 만약 `lang` 디렉터리가 없다면, `lang:publish` 아티즌 명령어로 생성할 수 있습니다.
+Laravel 내장 유효성 검사 규칙마다 오류 메시지가 애플리케이션의 `lang/en/validation.php` 파일에 위치합니다. 만약 `lang` 디렉터리가 없다면, `lang:publish` Artisan 명령어로 Laravel에게 생성하라고 지시할 수 있습니다.
 
-`lang/en/validation.php` 파일에는 각 유효성 검사 규칙에 대한 번역 항목이 존재합니다. 필요하다면 메시지를 자유롭게 변경하거나 수정할 수 있습니다.
+`lang/en/validation.php` 파일 내에서 각 유효성 규칙에 대한 번역 항목을 찾을 수 있으며, 필요에 따라 이 메시지들을 변경하거나 수정할 수 있습니다.
 
-또한, 이 파일을 다른 언어 디렉터리로 복사해서 번역할 수도 있습니다. Laravel 지역화에 대한 자세한 내용은 [지역화 문서](/docs/{{version}}/localization)를 참고하세요.
+뿐만 아니라, 해당 파일을 다른 언어 디렉터리로 복사하여 애플리케이션의 언어별로 메시지를 번역할 수도 있습니다. 자세한 내용은 [로컬라이제이션 문서](/docs/master/localization)를 참고하세요.
 
 > [!WARNING]
-> 기본적으로 Laravel 애플리케이션 스캐폴딩에는 `lang` 디렉터리가 없습니다. Laravel의 언어 파일을 커스터마이즈하려면 `lang:publish` 아티즌 명령어로 퍼블리시 할 수 있습니다.
+> 기본적으로 Laravel 애플리케이션 템플릿에는 `lang` 디렉터리가 포함되어 있지 않습니다. Laravel의 언어 파일을 커스터마이징하고 싶다면 `lang:publish` Artisan 명령어로 파일을 게시하세요.
 
 <a name="quick-xhr-requests-and-validation"></a>
-#### XHR 요청 및 유효성 검사
+#### XHR 요청과 유효성 검사
 
-이 예시에서는 전통적인 폼 제출을 사용해 데이터를 전송했습니다. 하지만 많은 애플리케이션은 자바스크립트 기반 프론트엔드로부터 XHR 요청을 받기도 합니다. XHR 요청 중에 `validate` 메서드를 사용하면, Laravel은 리다이렉트 응답을 생성하지 않습니다. 대신 [모든 유효성 검사 에러를 담은 JSON 응답](#validation-error-response-format)을 반환합니다. 이 JSON 응답에는 422 HTTP 상태 코드가 포함됩니다.
+이 예에서는 전통적인 폼을 통해 데이터를 전달했지만, 많은 애플리케이션은 자바스크립트 기반 프론트엔드에서 XHR 요청을 보냅니다. XHR 요청 중에 `validate` 메서드를 사용하면 Laravel은 리다이렉션 응답을 생성하지 않고, 대신 [모든 유효성 검사 오류를 담은 JSON 응답](#validation-error-response-format)을 생성하여 422 HTTP 상태 코드와 함께 전송합니다.
 
 <a name="the-at-error-directive"></a>
 #### `@error` 디렉티브
 
-[Blade](/docs/{{version}}/blade)의 `@error` 디렉티브를 사용하면 특정 속성에 유효성 검사 에러 메시지가 있는지 빠르게 확인할 수 있습니다. `@error` 블록 내에서 `$message` 변수를 출력해 에러 메시지를 표시할 수 있습니다.
+Blade 템플릿에서 `@error` 디렉티브를 사용하면 특정 속성에 대한 유효성 오류 메시지 존재 여부를 빠르게 확인할 수 있습니다. 이 디렉티브 내부에서 `$message` 변수를 출력하여 오류 메시지를 보여줄 수 있습니다:
 
 ```blade
 <!-- /resources/views/post/create.blade.php -->
 
-<label for="title">글 제목</label>
+<label for="title">게시물 제목</label>
 
 <input
     id="title"
@@ -252,33 +248,33 @@ Laravel 기본 유효성 검사 규칙의 각 에러 메시지는 애플리케�
 @enderror
 ```
 
-[명명된 에러 백](#named-error-bags)을 사용하는 경우, `@error` 디렉티브에 두 번째 인자로 에러 백 이름을 전달할 수 있습니다.
+명명된 오류 가방을 사용 중이라면, `@error` 디렉티브의 두 번째 인자로 오류 가방 이름을 전달할 수 있습니다:
 
 ```blade
 <input ... class="@error('title', 'post') is-invalid @enderror">
 ```
 
 <a name="repopulating-forms"></a>
-### 폼 값 다시 채우기
+### 폼 복원하기
 
-유효성 검사에서 실패해 Laravel이 리다이렉트 응답을 생성하면, 프레임워크가 모든 요청 입력값을 [자동으로 세션에 flash](#)합니다. 이는 다음 요청에서 입력값에 편리하게 접근하여 사용자가 제출하려던 폼을 다시 채울 수 있게 하기 위해서입니다.
+Laravel이 유효성 검사 실패로 리다이렉트를 생성할 때, 다음 요청에서 쉽게 접근하고 사용자가 제출한 폼을 다시 채울 수 있도록 프레임워크가 자동으로 [요청 입력을 세션에 플래시 저장](/docs/master/session#flash-data)합니다.
 
-이전 요청에서 플래시된 입력값을 가져오려면 `Illuminate\Http\Request` 인스턴스에서 `old` 메서드를 호출하면 됩니다. 이 메서드는 세션에서 이전 입력값을 꺼냅니다.
+이전 요청의 플래시된 입력값을 받으려면 `Illuminate\Http\Request` 인스턴스에서 `old` 메서드를 호출하세요. `old` 메서드는 이전에 플래시된 세션 데이터를 가져옵니다:
 
 ```php
 $title = $request->old('title');
 ```
 
-또한, Laravel은 전역 `old` 헬퍼를 제공합니다. [Blade 템플릿](/docs/{{version}}/blade)에서 이전 입력값을 표시할 때 이 헬퍼를 사용하면 더 편리합니다. 해당 필드에 이전 입력값이 없으면 `null`이 반환됩니다.
+또한 Blade 템플릿에서는 전역 `old` 헬퍼를 제공하여 더욱 편리하게 폼을 복원할 수 있습니다. 해당 필드에 이전 입력값이 없으면 `null`이 반환됩니다:
 
 ```blade
 <input type="text" name="title" value="{{ old('title') }}">
 ```
 
 <a name="a-note-on-optional-fields"></a>
-### 옵션 필드에 대한 참고
+### 선택적 필드에 관한 참고사항
 
-Laravel은 기본적으로 전역 미들웨어 스택에 `TrimStrings`와 `ConvertEmptyStringsToNull` 미들웨어가 포함되어 있습니다. 이로 인해, "옵션" 요청 필드의 값이 `null`일 때 이를 유효한 값으로 간주하려면 `nullable` 규칙을 지정해야 합니다. 예시:
+Laravel은 기본적으로 애플리케이션의 글로벌 미들웨어 스택에 `TrimStrings` 및 `ConvertEmptyStringsToNull` 미들웨어를 포함합니다. 이 때문에, 요청 필드가 "선택적"일 경우에 `nullable` 규칙을 명시적으로 넣어줘야 `null` 값이 유효성 검사에서 무시됩니다. 예:
 
 ```php
 $request->validate([
@@ -288,55 +284,55 @@ $request->validate([
 ]);
 ```
 
-위 예시에서 `publish_at` 필드는 `null`이거나, 유효한 날짜 표현이어야 함을 의미합니다. 만약 `nullable` 수식자를 추가하지 않으면, 유효성 검사기는 `null`을 유효하지 않은 날짜로 처리합니다.
+이 예에서는 `publish_at` 필드가 `null`이거나 유효한 날짜여야 함을 의미합니다. 만약 `nullable` 규칙을 넣지 않으면, `null` 값이 유효하지 않은 날짜로 간주됩니다.
 
 <a name="validation-error-response-format"></a>
-### 유효성 검사 에러 응답 포맷
+### 유효성 검사 오류 응답 포맷
 
-애플리케이션이 `Illuminate\Validation\ValidationException` 예외를 발생시키고 들어오는 HTTP 요청이 JSON 응답을 기대하는 경우, Laravel은 에러 메시지를 자동으로 포맷하여 `422 Unprocessable Entity` HTTP 응답과 함께 반환합니다.
+`Illuminate\Validation\ValidationException` 예외가 발생하고, 들어오는 HTTP 요청이 JSON 응답을 기대할 경우, Laravel은 오류 메시지를 자동으로 포맷하여 `422 Unprocessable Entity` HTTP 응답으로 반환합니다.
 
-아래는 유효성 검사 에러에 대한 JSON 응답 포맷 예시입니다. 중첩된 에러 키는 점 표기법(dot notation)으로 평탄화됩니다.
+다음은 유효성 오류에 대한 JSON 응답 포맷 예제입니다. 중첩된 오류 키는 점(`.`) 표기법으로 평탄화됩니다:
 
 ```json
 {
-    "message": "팀 이름은 문자열이어야 합니다. (그 외 4개의 에러)",
+    "message": "The team name must be a string. (and 4 more errors)",
     "errors": {
         "team_name": [
-            "팀 이름은 문자열이어야 합니다.",
-            "팀 이름은 최소 1자 이상이어야 합니다."
+            "The team name must be a string.",
+            "The team name must be at least 1 characters."
         ],
         "authorization.role": [
-            "선택된 authorization.role이 올바르지 않습니다."
+            "The selected authorization.role is invalid."
         ],
         "users.0.email": [
-            "users.0.email 필드는 필수입니다."
+            "The users.0.email field is required."
         ],
         "users.2.email": [
-            "users.2.email은 올바른 이메일 주소여야 합니다."
+            "The users.2.email must be a valid email address."
         ]
     }
 }
 ```
 
 <a name="form-request-validation"></a>
-## 폼 리퀘스트 유효성 검사
+## 폼 요청 유효성 검증 (Form Request Validation)
 
 <a name="creating-form-requests"></a>
-### 폼 리퀘스트 생성하기
+### 폼 요청 생성하기
 
-더 복잡한 유효성 검사 시나리오에서는 "폼 리퀘스트"를 생성하는 게 유용합니다. 폼 리퀘스트는 자체 유효성 검사 및 인가 로직을 캡슐화하는 커스텀 요청 클래스입니다. 이 클래스를 만들려면 `make:request` 아티즌 명령어를 사용하세요.
+복잡한 유효성 검사 상황에서는 "폼 요청" 클래스를 만들어 검증과 권한 로직을 별도로 캡슐화할 수 있습니다. 폼 요청 클래스는 `make:request` Artisan CLI 명령어를 사용해 생성합니다:
 
 ```shell
 php artisan make:request StorePostRequest
 ```
 
-생성된 폼 리퀘스트 클래스는 `app/Http/Requests` 디렉터리에 위치합니다. 이 디렉터리가 없다면 명령어 실행 시 자동으로 만들어집니다. Laravel이 생성하는 각 폼 리퀘스트 클래스엔 `authorize`와 `rules` 두 가지 메서드가 있습니다.
+생성된 폼 요청 클래스는 `app/Http/Requests` 디렉터리에 위치합니다. 해당 디렉터리가 없으면 명령어 실행 시 생성됩니다. 모든 폼 요청 클래스는 `authorize` 메서드와 `rules` 메서드 두 가지를 가집니다.
 
-`authorize` 메서드는 현재 인증된 사용자가 해당 요청의 동작을 실행할 수 있는지 판단하며, `rules` 메서드는 요청 데이터에 적용할 유효성 검사 규칙을 반환합니다.
+`authorize` 메서드는 현재 인증된 사용자가 요청이 나타내는 작업을 수행할 권한이 있는지 결정하고, `rules` 메서드는 요청 데이터에 적용할 유효성 규칙을 반환합니다:
 
 ```php
 /**
- * 요청에 적용할 유효성 검사 규칙을 반환합니다.
+ * 요청에 적용할 유효성 규칙을 반환한다.
  *
  * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
  */
@@ -350,48 +346,48 @@ public function rules(): array
 ```
 
 > [!NOTE]
-> `rules` 메서드 시그니처에 필요한 의존성을 타입힌트할 수 있습니다. Laravel [서비스 컨테이너](/docs/{{version}}/container)를 통해 자동 해결됩니다.
+> `rules` 메서드 시그니처에 필요한 의존성은 타입힌팅하면 Laravel [서비스 컨테이너](/docs/master/container)로 자동 해결됩니다.
 
-유효성 검사 규칙은 어떻게 평가될까요? 컨트롤러 메서드에서 해당 요청을 타입힌트로 선언만 하면, 폼 리퀘스트가 컨트롤러 메서드 호출 전에 유효성 검사되어 컨트롤러를 유효성 검사 로직 없이 깔끔하게 유지할 수 있습니다.
+검증 규칙은 컨트롤러 메서드에서 폼 요청 클래스를 타입힌팅 하면 실행됩니다. 요청이 유효성 검증되기 때문에 컨트롤러에 검증 로직을 넣지 않아도 됩니다:
 
 ```php
 /**
- * 새 블로그 포스트 저장
+ * 새 블로그 게시물 저장.
  */
 public function store(StorePostRequest $request): RedirectResponse
 {
-    // 요청이 유효합니다...
+    // 요청이 유효함...
 
-    // 검사된 입력값 전체 가져오기
+    // 검증된 입력값 전체 가져오기...
     $validated = $request->validated();
 
-    // 일부만 가져오기
+    // 검증된 입력값의 일부만 가져오기...
     $validated = $request->safe()->only(['name', 'email']);
     $validated = $request->safe()->except(['name', 'email']);
 
-    // 블로그 포스트 저장...
+    // 게시물 저장...
 
     return redirect('/posts');
 }
 ```
 
-유효성 검사 실패 시, 이전 위치로의 리다이렉트 응답이 생성되며, 에러는 세션에 flash되어 표시할 수 있습니다. XHR 요청일 경우, [유효성 에러의 JSON 표현](#validation-error-response-format)과 함께 422 HTTP 응답 코드가 반환됩니다.
+검증 실패 시 이전 위치로 리다이렉트되며 오류 메시지가 세션에 플래시됩니다. XHR 요청이면 422 상태 코드와 함께 [JSON 방식 오류 메시지](#validation-error-response-format)를 반환합니다.
 
 > [!NOTE]
-> Inertia 기반 Laravel 프론트엔드에 실시간 폼 리퀘스트 유효성 검사를 추가하고 싶으신가요? [Laravel Precognition](/docs/{{version}}/precognition)를 참고하세요.
+> Inertia 기반 Laravel 프론트엔드에 실시간 폼 요청 검증을 추가하려면 [Laravel Precognition](/docs/master/precognition)를 참고하세요.
 
 <a name="performing-additional-validation-on-form-requests"></a>
 #### 추가 유효성 검사 수행하기
 
-기본 유효성 검사 외에 추가 검사가 필요한 경우, 폼 리퀘스트의 `after` 메서드를 이용하세요.
+초기 유효성 검사 후 추가 검증이 필요한 경우, 폼 요청의 `after` 메서드를 활용할 수 있습니다.
 
-`after` 메서드는 유효성 검사 후 호출되는 콜러블 또는 클로저 배열을 반환해야 합니다. 각 콜러블은 `Illuminate\Validation\Validator` 인스턴스를 받아, 필요하다면 추가 에러 메시지를 발생시킬 수 있습니다.
+`after` 메서드는 클로저 또는 호출 가능한 배열을 반환해야 하며, 이들은 검증 완료 후 호출됩니다. 각 호출 가능 객체는 `Illuminate\Validation\Validator` 인스턴스를 인자로 받아, 추가 오류 메시지를 추가할 수 있습니다:
 
 ```php
 use Illuminate\Validation\Validator;
 
 /**
- * 유효성 검사 완료 후 호출될 콜러블 반환
+ * 요청의 "after" 유효성 검사 호출자들을 반환한다.
  */
 public function after(): array
 {
@@ -408,13 +404,16 @@ public function after(): array
 }
 ```
 
-필요하다면, `after` 메서드 반환 배열에 인보커블 클래스를 포함할 수도 있습니다. 이러한 클래스의 `__invoke` 메서드도 `Illuminate\Validation\Validator` 인스턴스를 전달받습니다.
+`after` 메서드가 반환하는 배열에는 호출 가능한 클래스도 포함할 수 있으며, 이 클래스의 `__invoke` 메서드가 `Validator` 인스턴스를 인자로 받습니다:
 
 ```php
 use App\Validation\ValidateShippingTime;
 use App\Validation\ValidateUserStatus;
 use Illuminate\Validation\Validator;
 
+/**
+ * 요청의 "after" 유효성 검사 호출자들을 반환한다.
+ */
 public function after(): array
 {
     return [
@@ -428,13 +427,13 @@ public function after(): array
 ```
 
 <a name="request-stopping-on-first-validation-rule-failure"></a>
-#### 첫 번째 유효성 검사 실패 시 전체 중단
+#### 최초 검증 실패 시 중지하기
 
-폼 리퀘스트 클래스에 `stopOnFirstFailure` 속성을 추가하면, 하나라도 유효성 검사 실패가 발생하면 나머지 속성 유효성 검사를 중단하도록 할 수 있습니다.
+폼 요청 클래스에 `stopOnFirstFailure` 프로퍼티를 추가해, 단일 검증 실패 발생 시 모든 속성에 대한 검사를 중단하도록 지시할 수 있습니다:
 
 ```php
 /**
- * 첫 번째 규칙 실패 시 validator가 전체 검증을 멈춰야 하는지 여부
+ * 검증 실패 시 첫 번째 규칙 실패에서 중지할지 여부.
  *
  * @var bool
  */
@@ -442,24 +441,24 @@ protected $stopOnFirstFailure = true;
 ```
 
 <a name="customizing-the-redirect-location"></a>
-#### 리다이렉트 위치 커스터마이즈
+#### 리다이렉트 위치 커스터마이징
 
-폼 리퀘스트 유효성 검사 실패 시, 기존에는 자동으로 이전 위치로 리다이렉트 되지만, 이 동작을 커스터마이즈할 수 있습니다. 폼 리퀘스트 클래스에 `$redirect` 속성을 지정하세요.
+폼 요청 유효성 검증 실패 시 사용자를 이전 위치로 돌려보내는 리다이렉트 동작을 커스터마이징하고 싶다면, 폼 요청 클래스에 `$redirect` 프로퍼티를 정의하세요:
 
 ```php
 /**
- * 유효성 검사 실패 시 사용자를 리다이렉트할 URI
+ * 검증 실패 시 리다이렉트할 URI.
  *
  * @var string
  */
 protected $redirect = '/dashboard';
 ```
 
-또는, 명명된 라우트로 리다이렉트하려면 `$redirectRoute` 속성을 지정하세요.
+또는 이름 있는 라우트로 리다이렉트하려면 `$redirectRoute` 프로퍼티를 사용할 수 있습니다:
 
 ```php
 /**
- * 유효성 검사 실패 시 사용자를 리다이렉트할 라우트
+ * 검증 실패 시 리다이렉트할 라우트 이름.
  *
  * @var string
  */
@@ -467,15 +466,15 @@ protected $redirectRoute = 'dashboard';
 ```
 
 <a name="authorizing-form-requests"></a>
-### 폼 리퀘스트 인가하기
+### 폼 요청 권한 부여
 
-폼 리퀘스트 클래스에는 `authorize` 메서드도 포함되어 있습니다. 이 메서드 내에서, 인증된 사용자가 실제로 어떤 리소스를 업데이트할 권한이 있는지 판단할 수 있습니다. 예를 들어, 사용자가 블로그 코멘트를 업데이트하려 할 때 자신이 해당 코멘트를 소유했는지 확인할 수 있습니다. 이 메서드에선 [인가 게이트와 정책](/docs/{{version}}/authorization)과 주로 상호작용하게 됩니다.
+폼 요청 클래스는 `authorize` 메서드도 포함합니다. 이 메서드에서 인증된 사용자가 특정 리소스를 수정할 권한이 있는지 판단할 수 있습니다. 예를 들어, 사용자가 수정하려는 블로그 댓글의 소유자인지 검증할 수 있죠. 보통 이 메서드에서는 [인가 게이트 및 정책](/docs/master/authorization)을 호출합니다:
 
 ```php
 use App\Models\Comment;
 
 /**
- * 사용자가 이 요청을 실행할 권한이 있는지 여부
+ * 사용자가 이 요청을 수행할 권한이 있는지 판단한다.
  */
 public function authorize(): bool
 {
@@ -485,23 +484,26 @@ public function authorize(): bool
 }
 ```
 
-폼 리퀘스트는 base Laravel request를 확장하므로, `user` 메서드를 사용해 현재 인증된 사용자에 접근할 수 있습니다. 위 예시의 `route` 메서드는 호출된 라우트에서 정의된 URI 파라미터(아래 예시의 `{comment}` 등)에 접근할 수 있도록 합니다.
+모든 폼 요청은 기본 Laravel 요청 클래스를 상속하므로 `user` 메서드로 현재 인증된 사용자에 접근할 수 있습니다. 예제에서 `route` 메서드는 호출된 라우트의 URI 파라미터(예: `{comment}`) 값에 접근할 수 있게 해줍니다:
 
 ```php
 Route::post('/comment/{comment}');
 ```
 
-[라우트 모델 바인딩](/docs/{{version}}/routing#route-model-binding)을 활용하면, 요청의 속성으로 모델 인스턴스를 바로 사용할 수 있어 코드를 더 간결하게 만들 수 있습니다.
+라우트 모델 바인딩을 활용한다면, 요청 객체의 속성으로 이미 조회된 모델에 더 간결하게 접근할 수 있습니다:
 
 ```php
 return $this->user()->can('update', $this->comment);
 ```
 
-만약 `authorize` 메서드가 `false`를 반환하면, 403 상태 코드의 HTTP 응답이 자동으로 반환되며 컨트롤러 메서드는 실행되지 않습니다.
+`authorize` 메서드가 `false`를 반환하면 403 HTTP 응답이 자동 전송되고 컨트롤러 메서드는 실행되지 않습니다.
 
-요청의 인가 로직을 애플리케이션의 다른 부분에서 처리할 계획이라면, `authorize` 메서드를 완전히 제거하거나 `true`만 반환하도록 할 수 있습니다.
+다른 곳에서 인가 로직을 처리할 계획이라면, `authorize` 메서드를 완전히 제거하거나 단순히 `true`를 반환하도록 해도 됩니다:
 
 ```php
+/**
+ * 사용자가 이 요청을 수행할 권한이 있는지 판단한다.
+ */
 public function authorize(): bool
 {
     return true;
@@ -509,29 +511,39 @@ public function authorize(): bool
 ```
 
 > [!NOTE]
-> `authorize` 메서드 시그니처에 필요한 의존성을 타입힌트할 수 있습니다. Laravel [서비스 컨테이너](/docs/{{version}}/container)를 통해 자동 해결됩니다.
+> `authorize` 메서드에도 필요한 의존성을 타입힌트하면 Laravel [서비스 컨테이너](/docs/master/container)로 자동 해결됩니다.
 
 <a name="customizing-the-error-messages"></a>
-### 에러 메시지 커스터마이즈
+### 오류 메시지 커스터마이징
 
-폼 리퀘스트에서 사용하는 에러 메시지는 `messages` 메서드를 오버라이드하여 커스터마이즈할 수 있습니다. 이 메서드는 속성/규칙 쌍과 각 에러 메시지로 이루어진 배열을 반환해야 합니다.
+폼 요청 클래스에서 `messages` 메서드를 오버라이드하여 사용하는 오류 메시지를 커스터마이징할 수 있습니다. 반환 값은 속성-규칙 쌍과 메시지 배열입니다:
 
 ```php
+/**
+ * 정의된 유효성 검사 규칙에 대한 오류 메시지를 반환한다.
+ *
+ * @return array<string, string>
+ */
 public function messages(): array
 {
     return [
         'title.required' => '제목은 필수입니다.',
-        'body.required' => '본문 내용이 필요합니다.',
+        'body.required' => '내용은 필수입니다.',
     ];
 }
 ```
 
 <a name="customizing-the-validation-attributes"></a>
-#### 유효성 검사 속성명 커스터마이즈
+#### 유효성 검사 속성 이름 커스터마이징
 
-Laravel의 기본 유효성 검사 에러 메시지에는 `:attribute` 플레이스홀더가 포함되어 있습니다. 자신의 검증 메시지에서 `:attribute` 플레이스홀더가 커스텀 속성명으로 대체되길 원한다면, `attributes` 메서드를 오버라이드해서 속성/이름 쌍의 배열을 반환하세요.
+내장 오류 메시지에는 `:attribute` 플레이스홀더가 포함됩니다. 이를 커스텀 이름으로 바꾸려면 `attributes` 메서드를 오버라이드하여 속성-이름 쌍 배열을 반환하세요:
 
 ```php
+/**
+ * 유효성 검사 오류에 대한 사용자 정의 속성 이름을 반환한다.
+ *
+ * @return array<string, string>
+ */
 public function attributes(): array
 {
     return [
@@ -541,13 +553,16 @@ public function attributes(): array
 ```
 
 <a name="preparing-input-for-validation"></a>
-### 유효성 검사 전 입력값 준비
+### 유효성 검사 전 입력 준비하기
 
-유효성 검사 규칙을 적용하기 전에 요청의 데이터를 준비(정규화)하거나 정리해야 할 경우, `prepareForValidation` 메서드를 사용하세요.
+유효성 규칙 적용 전 요청 데이터 전처리나 정제가 필요하다면 `prepareForValidation` 메서드를 사용할 수 있습니다:
 
 ```php
 use Illuminate\Support\Str;
 
+/**
+ * 유효성 검사 전 데이터를 준비한다.
+ */
 protected function prepareForValidation(): void
 {
     $this->merge([
@@ -556,19 +571,22 @@ protected function prepareForValidation(): void
 }
 ```
 
-반대로, 유효성 검사 후에 데이터를 정규화해야 할 땐 `passedValidation` 메서드를 사용하세요.
+검증 완료 후 데이터를 정규화해야 할 경우 `passedValidation` 메서드를 활용하세요:
 
 ```php
+/**
+ * 성공적인 유효성 검사 완료 후 처리.
+ */
 protected function passedValidation(): void
 {
-    $this->replace(['name' => '이름']);
+    $this->replace(['name' => 'Taylor']);
 }
 ```
 
 <a name="manually-creating-validators"></a>
-## 수동으로 Validator 생성하기
+## 수동으로 유효성 검사기 생성하기 (Manually Creating Validators)
 
-요청의 `validate` 메서드를 사용하지 않고 Validator 인스턴스를 직접 생성하려 할 땐, `Validator` [파사드](/docs/{{version}}/facades)의 `make` 메서드를 사용하세요.
+요청에서 `validate` 메서드를 사용하지 않고 직접 유효성 검사기 인스턴스를 생성하려면 `Validator` [파사드](/docs/master/facades)를 활용하면 됩니다. 파사드의 `make` 메서드는 새 유효성 검사기 객체를 생성합니다:
 
 ```php
 <?php
@@ -581,6 +599,9 @@ use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
+    /**
+     * 새 블로그 게시물 저장.
+     */
     public function store(Request $request): RedirectResponse
     {
         $validator = Validator::make($request->all(), [
@@ -594,27 +615,27 @@ class PostController extends Controller
                 ->withInput();
         }
 
-        // 유효성 검사된 입력값 가져오기
+        // 검증된 입력값 가져오기...
         $validated = $validator->validated();
 
-        // 일부만 가져오기
+        // 검증된 입력값의 일부만 가져오기...
         $validated = $validator->safe()->only(['name', 'email']);
         $validated = $validator->safe()->except(['name', 'email']);
 
-        // 블로그 포스트 저장...
+        // 게시물 저장...
 
         return redirect('/posts');
     }
 }
 ```
 
-`make` 메서드의 첫 번째 인자는 유효성 검사 대상 데이터이고, 두 번째 인자는 적용할 유효성 검사 규칙 배열입니다.
+`make` 메서드에 첫 번째 인자는 검증할 데이터, 두 번째 인자는 데이터에 적용할 유효성 규칙 배열입니다.
 
-유효성 검사 실패 여부를 확인한 다음, `withErrors` 메서드로 에러 메시지를 세션에 flash할 수 있습니다. 이 메서드를 사용할 경우, redirect 후 뷰에 `$errors` 변수가 자동으로 공유되므로 사용자가 에러를 볼 수 있습니다. `withErrors`는 validator, `MessageBag`, 혹은 PHP 배열을 받을 수 있습니다.
+검증 실패 여부 판별 후, `withErrors` 메서드를 사용해 오류 메시지를 세션에 플래시할 수 있습니다. 이 메서드를 사용하면 리다이렉트 후 `$errors` 변수가 자동으로 뷰에 공유되어 쉽게 오류를 표시할 수 있습니다. `withErrors`는 Validator, `MessageBag`, 또는 PHP 배열 모두를 인자로 받습니다.
 
-#### 첫 번째 실패 시 중단
+#### 최초 실패 시 검증 중지
 
-`stopOnFirstFailure` 메서드는 하나라도 유효성 검사 실패가 발생하면 전체 검증을 멈추도록 Validator에 알립니다.
+`stopOnFirstFailure` 메서드를 호출해 단일 검증 오류 발생 시 모든 유효성 검사를 중단시킬 수 있습니다:
 
 ```php
 if ($validator->stopOnFirstFailure()->fails()) {
@@ -625,7 +646,7 @@ if ($validator->stopOnFirstFailure()->fails()) {
 <a name="automatic-redirection"></a>
 ### 자동 리다이렉션
 
-Validator 인스턴스를 직접 만들면서도 HTTP 요청의 `validate` 메서드가 제공하는 자동 리다이렉션 기능을 활용하고 싶을 땐, 이미 생성한 validator 인스턴스에서 `validate` 메서드를 호출하세요. 실패 시, 사용자가 자동으로 리다이렉트 되거나, XHR 요청 시 [JSON 응답이 반환](#validation-error-response-format)됩니다.
+검증기를 직접 생성해도, HTTP 요청의 `validate` 메서드가 제공하는 자동 리다이렉션 기능을 활용하고 싶다면, 생성된 검증기 인스턴스에서 `validate` 메서드를 호출하세요. 유효성 실패 시 자동으로 리다이렉트되거나 XHR 요청이라면 [JSON 응답](#validation-error-response-format)을 반환합니다:
 
 ```php
 Validator::make($request->all(), [
@@ -634,7 +655,7 @@ Validator::make($request->all(), [
 ])->validate();
 ```
 
-`validateWithBag` 메서드를 사용해 [명명된 에러 백](#named-error-bags)에 에러 메시지를 저장할 수도 있습니다.
+`validateWithBag` 메서드로 명명된 오류 가방에 오류 메시지를 저장할 수도 있습니다:
 
 ```php
 Validator::make($request->all(), [
@@ -644,57 +665,59 @@ Validator::make($request->all(), [
 ```
 
 <a name="named-error-bags"></a>
-### 명명된 에러 백(Named Error Bags)
+### 명명된 오류 가방
 
-한 페이지에 여러 개의 폼이 있다면, 검증 에러를 담은 `MessageBag`에 이름을 붙여 특정 폼만의 에러 메시지를 가져올 수 있습니다. `withErrors`에 두 번째 인자로 이름을 전달하세요.
+한 페이지에 여러 폼이 있다면 각 폼별로 오류 메시지를 분리해서 관리하고 싶을 수 있습니다. `withErrors` 메서드의 두 번째 인자로 오류 가방의 이름을 지정하세요:
 
 ```php
 return redirect('/register')->withErrors($validator, 'login');
 ```
 
-뷰에서는 `$errors` 변수에서 명명된 `MessageBag` 인스턴스에 접근할 수 있습니다.
+뷰에서는 `$errors` 변수 내 해당 이름으로 된 오류 가방 인스턴스를 참조할 수 있습니다:
 
 ```blade
 {{ $errors->login->first('email') }}
 ```
 
 <a name="manual-customizing-the-error-messages"></a>
-### 에러 메시지 커스터마이징
+### 오류 메시지 커스터마이징
 
-필요하다면, validator 인스턴스가 기본 제공 에러 메시지 대신 사용할 커스텀 메시지들을 지정할 수 있습니다. 커스텀 메시지는 여러 방법으로 지정할 수 있습니다. 먼저, `Validator::make`의 세 번째 인자로 전달하는 방법입니다.
+필요에 따라 기본 Laravel 오류 메시지 대신 사용할 커스텀 오류 메시지를 지정할 수 있습니다. 몇 가지 지정 방법이 있습니다.
+
+우선 `Validator::make` 메서드의 세 번째 인자로 커스텀 메시지 배열을 전달할 수 있습니다:
 
 ```php
 $validator = Validator::make($input, $rules, $messages = [
-    'required' => ':attribute 필드는 필수입니다.',
+    'required' => 'The :attribute field is required.',
 ]);
 ```
 
-위 예시에서 `:attribute` 플레이스홀더는 해당 필드명으로 대체됩니다. 검증 메시지 내에서 다른 플레이스홀더도 사용할 수 있습니다. 예시:
+위 예의 `:attribute` 플레이스홀더는 검증 대상 필드 이름으로 바뀝니다. 그 외 기타 플레이스홀더도 사용할 수 있습니다. 예:
 
 ```php
 $messages = [
-    'same' => ':attribute와 :other는 일치해야 합니다.',
-    'size' => ':attribute는 정확히 :size여야 합니다.',
-    'between' => ':attribute 값 :input은 :min - :max 사이가 아닙니다.',
-    'in' => ':attribute는 다음 중 하나여야 합니다: :values',
+    'same' => 'The :attribute and :other must match.',
+    'size' => 'The :attribute must be exactly :size.',
+    'between' => 'The :attribute value :input is not between :min - :max.',
+    'in' => 'The :attribute must be one of the following types: :values',
 ];
 ```
 
 <a name="specifying-a-custom-message-for-a-given-attribute"></a>
-#### 특정 속성에 커스텀 메시지 지정하기
+#### 특정 속성에 대한 커스텀 메시지 지정
 
-특정 속성에만 커스텀 에러 메시지를 지정하고 싶을 땐 "점(.) 표기법"을 사용하세요. 속성명 다음에 규칙명을 붙이면 됩니다.
+특정 규칙의 커스텀 메시지를 특정 속성에만 적용하려면 점 표기법으로 속성명과 규칙을 함께 지정하세요:
 
 ```php
 $messages = [
-    'email.required' => '이메일 주소가 필요합니다!',
+    'email.required' => '이메일 주소는 필수입니다!',
 ];
 ```
 
 <a name="specifying-custom-attribute-values"></a>
-#### 커스텀 속성명 지정하기
+#### 커스텀 속성 값 지정
 
-Laravel 기본 에러 메시지에는 대부분 `:attribute` 플레이스홀더가 포함되어 있습니다. 특정 필드를 번역된 이름 등으로 표시하려면, 커스텀 속성명 배열을 `Validator::make`의 네 번째 인자로 전달하세요.
+`Validator::make`의 네 번째 인자로 속성 번역 배열을 넘기면, 오류 메시지 내 `:attribute` 플레이스홀더가 해당 이름으로 대체됩니다:
 
 ```php
 $validator = Validator::make($input, $rules, $messages, [
@@ -705,7 +728,7 @@ $validator = Validator::make($input, $rules, $messages, [
 <a name="performing-additional-validation"></a>
 ### 추가 유효성 검사 수행하기
 
-추가 유효성 검사가 필요한 경우, validator의 `after` 메서드를 이용하세요. 클로저나 콜러블 배열을 받아 검사 완료 후 호출됩니다.
+초기 검증 뒤 무엇인가 추가 검사를 해야 할 수도 있습니다. 이럴 땐 검증기의 `after` 메서드를 사용하세요. `after`는 클로저 또는 호출 가능한 배열을 인자로 받아 검증 완료 후 호출합니다. 인자로는 `Illuminate\Validation\Validator` 인스턴스가 전달되어 추가 오류를 넣을 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\Validator;
@@ -725,7 +748,7 @@ if ($validator->fails()) {
 }
 ```
 
-"사후 유효성 검사" 로직이 인보커블 클래스에 캡슐화된 경우, 아래와 같이 배열로도 전달 가능합니다.
+`after`는 호출 가능한 배열도 받으며, 복잡한 "검증 후" 로직을 호출 가능한 클래스로 캡슐화한 경우 매우 유용합니다. 해당 클래스는 `__invoke` 메서드에서 `Validator` 인스턴스를 받습니다:
 
 ```php
 use App\Validation\ValidateShippingTime;
@@ -741,9 +764,9 @@ $validator->after([
 ```
 
 <a name="working-with-validated-input"></a>
-## 유효성 검사된 입력값 다루기
+## 검증된 입력 데이터를 활용하기
 
-폼 리퀘스트 또는 수동으로 만든 validator 인스턴스로 들어온 요청 데이터를 검증한 이후, 실제로 검사받은 데이터를 얻고 싶을 수 있습니다. 몇 가지 방법이 있습니다. 먼저, 폼 리퀘스트나 validator 인스턴스에서 `validated` 메서드를 호출하세요. 이 메서드는 유효성 검사를 통과한 데이터 배열을 반환합니다.
+폼 요청이나 수동 생성한 유효성 검사기의 검증을 거친 후, 실제 검증된 입력 데이터를 가져오려면 여러 방법이 있습니다. 먼저, 폼 요청이나 유효성 검사기 인스턴스의 `validated` 메서드를 호출하면 검증된 데이터 배열을 반환합니다:
 
 ```php
 $validated = $request->validated();
@@ -751,7 +774,7 @@ $validated = $request->validated();
 $validated = $validator->validated();
 ```
 
-또는, `safe` 메서드를 사용할 수도 있습니다. 이 메서드는 `Illuminate\Support\ValidatedInput` 인스턴스를 반환하며, `only`, `except`, `all` 메서드로 일부 또는 전체 유효성 검사된 데이터를 얻을 수 있습니다.
+또는 `safe` 메서드를 호출하면 `Illuminate\Support\ValidatedInput` 인스턴스를 반환하는데, 이 객체는 `only`, `except`, `all` 메서드를 제공하여 검증 데이터의 일부 또는 전부를 가져올 수 있습니다:
 
 ```php
 $validated = $request->safe()->only(['name', 'email']);
@@ -761,38 +784,39 @@ $validated = $request->safe()->except(['name', 'email']);
 $validated = $request->safe()->all();
 ```
 
-또한, `Illuminate\Support\ValidatedInput` 인스턴스는 배열처럼 순회하거나 키로 접근할 수 있습니다.
+더불어 `ValidatedInput` 인스턴스는 `foreach` 반복문으로 순회할 수 있고 배열처럼 접근할 수도 있습니다:
 
 ```php
+// 검증된 데이터 반복 처리하기...
 foreach ($request->safe() as $key => $value) {
     // ...
 }
 
+// 배열처럼 데이터 접근하기...
 $validated = $request->safe();
+
 $email = $validated['email'];
 ```
 
-추가 필드를 유효성 검사된 데이터에 합치려면 `merge` 메서드를 호출하세요.
+검증 데이터에 필드를 추가하려면 `merge` 메서드를 호출할 수 있습니다:
 
 ```php
 $validated = $request->safe()->merge(['name' => 'Taylor Otwell']);
 ```
 
-유효성 검사된 데이터 전체를 [컬렉션](/docs/{{version}}/collections)으로 받고 싶으면 `collect` 메서드를 사용하세요.
+검증된 데이터를 [컬렉션](/docs/master/collections) 형태로 가져오려면 `collect` 메서드를 쓰세요:
 
 ```php
 $collection = $request->safe()->collect();
 ```
 
 <a name="working-with-error-messages"></a>
-## 에러 메시지 다루기
+## 오류 메시지 작업하기
 
-`Validator`의 `errors` 메서드를 호출하면 `Illuminate\Support\MessageBag` 인스턴스를 반환합니다. 자동으로 모든 뷰에서 사용할 수 있는 `$errors` 변수 역시 `MessageBag` 인스턴스입니다.
+`Validator` 인스턴스의 `errors` 메서드 호출 시 `Illuminate\Support\MessageBag` 인스턴스를 받게 되며, 오류 메시지 작업에 편리한 다양한 메서드가 포함되어 있습니다. 리다이렉션 후 뷰에 자동 공유되는 `$errors` 변수 역시 이 `MessageBag` 타입입니다.
 
 <a name="retrieving-the-first-error-message-for-a-field"></a>
-#### 첫 번째 에러 메시지 가져오기
-
-해당 필드의 첫 번째 에러 메시지는 `first` 메서드로 가져올 수 있습니다.
+#### 특정 필드의 첫 번째 오류 메시지 가져오기
 
 ```php
 $errors = $validator->errors();
@@ -801,9 +825,7 @@ echo $errors->first('email');
 ```
 
 <a name="retrieving-all-error-messages-for-a-field"></a>
-#### 특정 필드의 모든 에러 메시지 가져오기
-
-해당 필드에 대한 모든 메시지가 필요할 때는 `get` 메서드를 사용하세요.
+#### 특정 필드의 모든 오류 메시지 가져오기
 
 ```php
 foreach ($errors->get('email') as $message) {
@@ -811,7 +833,7 @@ foreach ($errors->get('email') as $message) {
 }
 ```
 
-배열 폼 필드를 검증하고 있다면, `*` 문자를 사용해 각 배열 원소별 메시지를 얻을 수 있습니다.
+배열 폼 필드인 경우 `*` 와일드카드를 사용해 각 요소에 대한 모든 메시지를 받을 수 있습니다:
 
 ```php
 foreach ($errors->get('attachments.*') as $message) {
@@ -820,9 +842,7 @@ foreach ($errors->get('attachments.*') as $message) {
 ```
 
 <a name="retrieving-all-error-messages-for-all-fields"></a>
-#### 모든 필드의 모든 에러 메시지 가져오기
-
-모든 필드의 메시지를 배열로 한 번에 가져오려면 `all` 메서드를 사용하세요.
+#### 모든 필드의 모든 오류 메시지 가져오기
 
 ```php
 foreach ($errors->all() as $message) {
@@ -831,9 +851,7 @@ foreach ($errors->all() as $message) {
 ```
 
 <a name="determining-if-messages-exist-for-a-field"></a>
-#### 해당 필드에 메시지가 있는지 확인하기
-
-해당 필드에 에러 메시지가 있는지 확인하려면 `has` 메서드를 사용하세요.
+#### 특정 필드에 오류 메시지 존재 여부 확인
 
 ```php
 if ($errors->has('email')) {
@@ -842,27 +860,27 @@ if ($errors->has('email')) {
 ```
 
 <a name="specifying-custom-messages-in-language-files"></a>
-### 언어 파일에서 커스텀 메시지 지정하기
+### 언어 파일에서 사용자 지정 메시지 지정하기
 
-Laravel의 기본 유효성 검사 규칙은 각각 애플리케이션의 `lang/en/validation.php` 파일에 에러 메시지가 존재합니다. `lang` 디렉터리가 없다면 `lang:publish` 아티즌 명령어로 생성할 수 있습니다.
+Laravel 내장 유효성 규칙 오류 메시지는 애플리케이션의 `lang/en/validation.php` 파일에 위치합니다. 만약 `lang` 디렉터리가 없다면 `lang:publish` Artisan 명령어로 생성할 수 있습니다.
 
-이 파일에서 각 유효성 규칙에 대한 번역 항목을 자유롭게 변경할 수 있습니다.
+`lang/en/validation.php` 파일 내에서 각 규칙에 대해 맞춤 메시지를 자유롭게 변경하거나 수정할 수 있습니다.
 
-또한, 해당 파일을 다른 언어 디렉터리로 복사해 번역 메시지를 지정할 수도 있습니다. [Laravel 지역화](#) 문서를 참고하세요.
+또한 이 파일을 다른 언어 디렉터리에 복사해 애플리케이션별 언어로 번역할 수도 있습니다. 자세한 내용은 [로컬라이제이션 문서](/docs/master/localization)를 보세요.
 
 > [!WARNING]
-> 기본적으로 Laravel 애플리케이션에는 `lang` 디렉터리가 없습니다. 언어 파일을 커스터마이즈 하려면 `lang:publish` 아티즌 명령어로 퍼블리시 하세요.
+> Laravel 기본 애플리케이션 템플릿에는 `lang` 디렉터리가 없기 때문에, 언어 파일을 수정하려면 `lang:publish` Artisan 명령어로 파일을 게시해야 합니다.
 
 <a name="custom-messages-for-specific-attributes"></a>
 #### 특정 속성에 대한 커스텀 메시지
 
-특정 속성과 규칙 조합에 대한 에러 메시지는 언어 파일 내의 `custom` 배열에 지정할 수 있습니다.
+애플리케이션 `lang/xx/validation.php` 언어 파일의 `custom` 배열에 속성-규칙별 오류 메시지를 넣어 커스터마이징할 수 있습니다:
 
 ```php
 'custom' => [
     'email' => [
         'required' => '이메일 주소가 필요합니다!',
-        'max' => '이메일 주소가 너무 깁니다!'
+        'max' => '이메일 주소가 너무 깁니다!',
     ],
 ],
 ```
@@ -870,7 +888,7 @@ Laravel의 기본 유효성 검사 규칙은 각각 애플리케이션의 `lang/
 <a name="specifying-attribute-in-language-files"></a>
 ### 언어 파일에서 속성 지정하기
 
-대부분의 Laravel 메시지에는 `:attribute` 플레이스홀더가 사용됩니다. 메시지에서 이 부분이 커스텀 값으로 대체되길 원하면, `lang/xx/validation.php`의 `attributes` 배열에 속성명을 추가하세요.
+기본 오류 메시지의 `:attribute` 플레이스홀더를 바꾸려면, `lang/xx/validation.php` 내 `attributes` 배열에서 해당 필드 이름에 대응하는 사용자 정의 이름을 지정하세요:
 
 ```php
 'attributes' => [
@@ -879,14 +897,26 @@ Laravel의 기본 유효성 검사 규칙은 각각 애플리케이션의 `lang/
 ```
 
 > [!WARNING]
-> (이전과 동일)
+> 기본 Laravel 템플릿에는 `lang` 디렉터리가 없으므로, 필요하면 `lang:publish` 명령어로 게시하세요.
 
 <a name="specifying-values-in-language-files"></a>
 ### 언어 파일에서 값 지정하기
 
-몇몇 Laravel 기본 유효성 검사 메시지는 `:value` 플레이스홀더도 사용합니다. 특정 값이 사용자 친화적으로 표시되길 원한다면, 언어 파일에 `values` 배열을 지정하세요.
+일부 유효성 오류 메시지에는 `:value` 플레이스홀더가 있는데, 이는 검증 대상 속성값으로 교체됩니다. 기본값 대신 더 친숙한 값을 표시하려면 `lang/xx/validation.php` 파일 내에 `values` 배열을 정의할 수 있습니다. 예를 들어, `payment_type` 필드 값이 `cc`인 경우 '신용카드'라는 표현을 쓰고 싶다면:
 
-예를 들어, `payment_type이 'cc'`일 때 신용카드 번호가 필수임을 검사하는 경우, 메시지에 '신용카드' 라고 보여주고 싶으면 아래처럼 지정합니다.
+```php
+Validator::make($request->all(), [
+    'credit_card_number' => 'required_if:payment_type,cc'
+]);
+```
+
+기본 오류 메시지는 다음과 같이 나타날 수 있습니다:
+
+```
+The credit card number field is required when payment type is cc.
+```
+
+이 경우, 언어 파일에 다음과 같이 설정하면,
 
 ```php
 'values' => [
@@ -896,20 +926,161 @@ Laravel의 기본 유효성 검사 규칙은 각각 애플리케이션의 `lang/
 ],
 ```
 
-> [!WARNING]
-> (이전과 동일)
+오류 메시지는 아래처럼 더 이해하기 쉽게 변경됩니다:
 
-정의한 뒤, 검사 메시지는 다음과 같이 표시됩니다.
-
-```text
-결제 방식이 신용카드일 경우, 신용카드 번호 필드는 필수입니다.
+```
+The credit card number field is required when payment type is 신용카드.
 ```
 
+> [!WARNING]
+> 기본 Laravel 템플릿에는 `lang` 디렉터리가 없으므로, 필요하면 `lang:publish` 명령어를 실행해 게시하세요.
+
+<a name="available-validation-rules"></a>
+## 사용 가능한 유효성 규칙들 (Available Validation Rules)
+
+아래는 Laravel에서 제공하는 모든 사용 가능한 유효성 규칙과 그 설명 목록입니다:
+
+#### 불린형 (Booleans)
+
+- [accepted](#rule-accepted)
+- [accepted_if](#rule-accepted-if)
+- [boolean](#rule-boolean)
+- [declined](#rule-declined)
+- [declined_if](#rule-declined-if)
+
+#### 문자열 (Strings)
+
+- [active_url](#rule-active-url)
+- [alpha](#rule-alpha)
+- [alpha_dash](#rule-alpha-dash)
+- [alpha_num](#rule-alpha-num)
+- [ascii](#rule-ascii)
+- [confirmed](#rule-confirmed)
+- [current_password](#rule-current-password)
+- [different](#rule-different)
+- [doesnt_start_with](#rule-doesnt-start-with)
+- [doesnt_end_with](#rule-doesnt-end-with)
+- [email](#rule-email)
+- [ends_with](#rule-ends-with)
+- [enum](#rule-enum)
+- [hex_color](#rule-hex-color)
+- [in](#rule-in)
+- [ip](#rule-ip)
+- [json](#rule-json)
+- [lowercase](#rule-lowercase)
+- [mac_address](#rule-mac)
+- [max](#rule-max)
+- [min](#rule-min)
+- [not_in](#rule-not-in)
+- [regex](#rule-regex)
+- [not_regex](#rule-not-regex)
+- [same](#rule-same)
+- [size](#rule-size)
+- [starts_with](#rule-starts-with)
+- [string](#rule-string)
+- [uppercase](#rule-uppercase)
+- [url](#rule-url)
+- [ulid](#rule-ulid)
+- [uuid](#rule-uuid)
+
+#### 숫자 (Numbers)
+
+- [between](#rule-between)
+- [decimal](#rule-decimal)
+- [different](#rule-different)
+- [digits](#rule-digits)
+- [digits_between](#rule-digits-between)
+- [gt](#rule-gt)
+- [gte](#rule-gte)
+- [integer](#rule-integer)
+- [lt](#rule-lt)
+- [lte](#rule-lte)
+- [max](#rule-max)
+- [max_digits](#rule-max-digits)
+- [min](#rule-min)
+- [min_digits](#rule-min-digits)
+- [multiple_of](#rule-multiple-of)
+- [numeric](#rule-numeric)
+- [same](#rule-same)
+- [size](#rule-size)
+
+#### 배열 (Arrays)
+
+- [array](#rule-array)
+- [between](#rule-between)
+- [contains](#rule-contains)
+- [distinct](#rule-distinct)
+- [in_array](#rule-in-array)
+- [list](#rule-list)
+- [max](#rule-max)
+- [min](#rule-min)
+- [size](#rule-size)
+
+#### 날짜 (Dates)
+
+- [after](#rule-after)
+- [after_or_equal](#rule-after-or-equal)
+- [before](#rule-before)
+- [before_or_equal](#rule-before-or-equal)
+- [date](#rule-date)
+- [date_equals](#rule-date-equals)
+- [date_format](#rule-date-format)
+- [different](#rule-different)
+- [timezone](#rule-timezone)
+
+#### 파일 (Files)
+
+- [between](#rule-between)
+- [dimensions](#rule-dimensions)
+- [extensions](#rule-extensions)
+- [file](#rule-file)
+- [image](#rule-image)
+- [max](#rule-max)
+- [mimetypes](#rule-mimetypes)
+- [mimes](#rule-mimes)
+- [size](#rule-size)
+
+#### 데이터베이스 (Database)
+
+- [exists](#rule-exists)
+- [unique](#rule-unique)
+
+#### 유틸리티 (Utilities)
+
+- [bail](#rule-bail)
+- [exclude](#rule-exclude)
+- [exclude_if](#rule-exclude-if)
+- [exclude_unless](#rule-exclude-unless)
+- [exclude_with](#rule-exclude-with)
+- [exclude_without](#rule-exclude-without)
+- [filled](#rule-filled)
+- [missing](#rule-missing)
+- [missing_if](#rule-missing-if)
+- [missing_unless](#rule-missing-unless)
+- [missing_with](#rule-missing-with)
+- [missing_with_all](#rule-missing-with-all)
+- [nullable](#rule-nullable)
+- [present](#rule-present)
+- [present_if](#rule-present-if)
+- [present_unless](#rule-present-unless)
+- [present_with](#rule-present-with)
+- [present_with_all](#rule-present-with-all)
+- [prohibited](#rule-prohibited)
+- [prohibited_if](#rule-prohibited-if)
+- [prohibited_unless](#rule-prohibited-unless)
+- [prohibits](#rule-prohibits)
+- [required](#rule-required)
+- [required_if](#rule-required-if)
+- [required_if_accepted](#rule-required-if-accepted)
+- [required_if_declined](#rule-required-if-declined)
+- [required_unless](#rule-required-unless)
+- [required_with](#rule-required-with)
+- [required_with_all](#rule-required-with-all)
+- [required_without](#rule-required-without)
+- [required_without_all](#rule-required-without-all)
+- [required_array_keys](#rule-required-array-keys)
+- [sometimes](#validating-when-present)
+
 ---
 
-(이후 규칙 목록/설명은 너무 방대하여 ‘유효성 검사 규칙’ 이하의 상세 규칙 설명 부분은 필요에 따라 요청해주시면 순차적으로 번역해 드립니다. 위의 방식대로 계속 포맷 유지해서 전체 번역이 가능합니다.)
-
----
-
-> ※ 위 번역은 마크다운 문서 구조 및 코드는 그대로 두었고, 예제, 경고, 중요한 부분, 링크 등도 요구조건에 맞춰 그대로 유지하며 번역했습니다.  
-> ※ 문서의 분량이 매우 방대하여 처음 ~ 언어 파일 값 처리까지 번역하였고, 이후 상세 규칙 설명은 필요하시면 추가로 요청해 주시면 이어서 번역 가능합니다.
+이하는 각 규칙에 대한 상세 설명이며, 본문에서 확인하실 수 있습니다.

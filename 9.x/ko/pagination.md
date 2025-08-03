@@ -5,27 +5,27 @@
     - [쿼리 빌더 결과 페이지네이션](#paginating-query-builder-results)
     - [Eloquent 결과 페이지네이션](#paginating-eloquent-results)
     - [커서 페이지네이션](#cursor-pagination)
-    - [페이지네이터 수동 생성](#manually-creating-a-paginator)
-    - [페이지네이션 URL 커스터마이즈](#customizing-pagination-urls)
-- [페이지네이션 결과 표시](#displaying-pagination-results)
-    - [페이지네이션 링크 윈도우 조정](#adjusting-the-pagination-link-window)
-    - [결과를 JSON으로 변환하기](#converting-results-to-json)
-- [페이지네이션 뷰 커스터마이즈](#customizing-the-pagination-view)
+    - [수동으로 페이저 인스턴스 생성하기](#manually-creating-a-paginator)
+    - [페이지네이션 URL 커스터마이징](#customizing-pagination-urls)
+- [페이징 결과 화면에 출력하기](#displaying-pagination-results)
+    - [페이지네이션 링크 범위 조정하기](#adjusting-the-pagination-link-window)
+    - [JSON으로 변환하기](#converting-results-to-json)
+- [페이지네이션 뷰 커스터마이징](#customizing-the-pagination-view)
     - [Bootstrap 사용하기](#using-bootstrap)
 - [Paginator 및 LengthAwarePaginator 인스턴스 메서드](#paginator-instance-methods)
-- [Cursor Paginator 인스턴스 메서드](#cursor-paginator-instance-methods)
+- [CursorPaginator 인스턴스 메서드](#cursor-paginator-instance-methods)
 
 <a name="introduction"></a>
-## 소개
+## 소개 (Introduction)
 
-다른 프레임워크에서는 페이지네이션 기능을 구현하는 것이 매우 번거로울 수 있습니다. 라라벨에서는 페이지네이션이 더 쉽고 편리하게 느껴지시길 바랍니다. 라라벨의 페이지네이터는 [쿼리 빌더](/docs/9.x/queries) 및 [Eloquent ORM](/docs/9.x/eloquent)에 통합되어 있으며, 별도의 설정 없이도 손쉽게 데이터베이스 레코드를 페이지 단위로 나눠 보여줄 수 있습니다.
+다른 프레임워크에서는 페이지네이션이 매우 번거로울 수 있습니다. Laravel의 페이지네이션 접근 방식은 신선한 바람이 될 것이라 기대합니다. Laravel의 페이저는 [쿼리 빌더](/docs/9.x/queries)와 [Eloquent ORM](/docs/9.x/eloquent)와 통합되어 있으며, 별도의 설정 없이 편리하고 사용하기 쉬운 데이터베이스 레코드 페이지네이션을 제공합니다.
 
-기본적으로 페이지네이터가 생성하는 HTML은 [Tailwind CSS 프레임워크](https://tailwindcss.com/)와 호환됩니다. 다만, Bootstrap 기반의 페이지네이션도 지원합니다.
+기본적으로 페이저가 생성하는 HTML은 [Tailwind CSS 프레임워크](https://tailwindcss.com/)와 호환되지만, Bootstrap 페이지네이션 지원도 제공됩니다.
 
 <a name="tailwind-jit"></a>
 #### Tailwind JIT
 
-라라벨의 기본 Tailwind 페이지네이션 뷰와 Tailwind의 JIT(Just-In-Time) 엔진을 함께 사용하는 경우, Tailwind 클래스가 삭제되지 않도록 애플리케이션의 `tailwind.config.js` 파일의 `content` 키에 라라벨의 페이지네이션 뷰 경로가 반드시 포함되어 있는지 확인해야 합니다.
+Laravel의 기본 Tailwind 페이지네이션 뷰와 Tailwind JIT 엔진을 사용한다면, 애플리케이션의 `tailwind.config.js` 파일 내 `content` 키에 Laravel 페이지네이션 뷰 경로를 반드시 포함시켜 Tailwind 클래스가 정리(purge)되지 않도록 해야 합니다:
 
 ```js
 content: [
@@ -37,16 +37,16 @@ content: [
 ```
 
 <a name="basic-usage"></a>
-## 기본 사용법
+## 기본 사용법 (Basic Usage)
 
 <a name="paginating-query-builder-results"></a>
-### 쿼리 빌더 결과 페이지네이션
+### 쿼리 빌더 결과 페이지네이션 (Paginating Query Builder Results)
 
-아이템을 페이지네이션하는 방법에는 여러 가지가 있습니다. 가장 간단한 방법은 [쿼리 빌더](/docs/9.x/queries)나 [Eloquent 쿼리](/docs/9.x/eloquent)에 `paginate` 메서드를 사용하는 것입니다. `paginate` 메서드는 사용자가 보고 있는 현재 페이지 정보에 따라 쿼리의 "limit" 및 "offset"을 자동으로 설정합니다. 기본적으로 현재 페이지는 HTTP 요청의 쿼리스트링에서 `page` 인수의 값으로 감지됩니다. 이 값은 라라벨에서 자동으로 감지하며, 페이지네이터가 생성하는 링크에도 자동으로 삽입됩니다.
+아이템을 페이지네이션하는 방법은 여러 가지가 있지만, 가장 간단한 방법은 [쿼리 빌더](/docs/9.x/queries)나 [Eloquent 쿼리](/docs/9.x/eloquent)의 `paginate` 메서드를 사용하는 것입니다. `paginate` 메서드는 사용자가 보고 있는 현재 페이지에 따라 자동으로 SQL 쿼리의 `limit`와 `offset`을 설정해줍니다. 기본적으로 현재 페이지는 HTTP 요청의 쿼리 문자열 인자인 `page` 값을 기준으로 인식됩니다. 이 값은 Laravel이 자동으로 감지하며, 페이저가 생성하는 링크에도 자동으로 추가됩니다.
 
-아래 예시에서는 `paginate` 메서드에 "한 페이지당 몇 개의 항목을 표시할지"를 나타내는 인수만 전달합니다. 여기서는 한 페이지에 `15`개 항목을 보여주도록 지정했습니다.
+다음 예제에서 `paginate` 메서드에 전달하는 인수는 단지 한 가지, 즉 한 페이지에 보여줄 아이템 수입니다. 여기서는 한 페이지당 `15`개의 아이템을 표시하도록 지정합니다:
 
-```
+```php
 <?php
 
 namespace App\Http\Controllers;
@@ -57,7 +57,7 @@ use Illuminate\Support\Facades\DB;
 class UserController extends Controller
 {
     /**
-     * Show all application users.
+     * 애플리케이션 사용자를 모두 보여줍니다.
      *
      * @return \Illuminate\Http\Response
      */
@@ -71,51 +71,51 @@ class UserController extends Controller
 ```
 
 <a name="simple-pagination"></a>
-#### 단순 페이지네이션
+#### 간단한 페이지네이션 (Simple Pagination)
 
-`paginate` 메서드는 데이터베이스에 쿼리를 실행하기 전에, 조건에 일치하는 전체 레코드 개수를 먼저 계산합니다. 이렇게 하면 전체 페이지 수를 알 수 있습니다. 하지만, 만약 UI에서 전체 페이지 수를 보여줄 필요가 없다면, 이 추가 쿼리는 불필요할 수 있습니다.
+`paginate` 메서드는 데이터베이스에서 레코드를 가져오기 전에 쿼리와 일치하는 전체 레코드 수를 먼저 세는 작업을 수행합니다. 이는 페이저가 전체 페이지 수를 알기 위해 필요합니다. 그러나 애플리케이션 UI에서 전체 페이지 수를 표시할 필요가 없다면, 이 전체 레코드 수를 세는 쿼리는 불필요한 비용이 될 수 있습니다.
 
-따라서 애플리케이션의 UI에 단순히 "다음"과 "이전" 링크만 표시하면 된다면, 보다 효율적인 단일 쿼리를 수행하는 `simplePaginate` 메서드를 사용할 수 있습니다.
+따라서 만약 "다음" 및 "이전" 링크만 간단히 표시하려면, `simplePaginate` 메서드를 사용하여 효율적인 단일 쿼리 방식 페이지네이션을 할 수 있습니다:
 
-```
+```php
 $users = DB::table('users')->simplePaginate(15);
 ```
 
 <a name="paginating-eloquent-results"></a>
-### Eloquent 결과 페이지네이션
+### Eloquent 결과 페이지네이션 (Paginating Eloquent Results)
 
-[Eloquent](/docs/9.x/eloquent) 쿼리도 같은 방식으로 페이지네이션할 수 있습니다. 아래 예시에서는 `App\Models\User` 모델을 한 페이지에 15개씩, 페이지네이션하여 보여줍니다. 쿼리 빌더로 페이지네이션하는 것과 거의 동일한 문법을 따릅니다.
+[Eloquent](/docs/9.x/eloquent) 쿼리도 페이지네이션할 수 있습니다. 다음 예시에서는 `App\Models\User` 모델을 페이지네이션하며, 페이지당 15개 레코드를 보여준다고 지정했습니다. 구문은 쿼리 빌더 페이지네이션과 거의 동일함을 알 수 있습니다:
 
-```
+```php
 use App\Models\User;
 
 $users = User::paginate(15);
 ```
 
-물론, 쿼리에 `where` 등 다른 조건을 추가한 뒤에 `paginate` 메서드를 호출할 수도 있습니다.
+물론, `where` 절 등 추가 조건을 설정한 후에도 `paginate`를 호출할 수 있습니다:
 
-```
+```php
 $users = User::where('votes', '>', 100)->paginate(15);
 ```
 
-Eloquent 모델을 페이지네이션할 때도 `simplePaginate` 메서드를 사용할 수 있습니다.
+`simplePaginate` 메서드도 Eloquent 모델에 사용할 수 있습니다:
 
-```
+```php
 $users = User::where('votes', '>', 100)->simplePaginate(15);
 ```
 
-마찬가지로, `cursorPaginate` 메서드를 사용해 Eloquent 모델에 커서 페이지네이션을 적용할 수도 있습니다.
+마찬가지로, Eloquent 모델에 대해 `cursorPaginate` 메서드를 사용하여 커서 페이지네이션도 할 수 있습니다:
 
-```
+```php
 $users = User::where('votes', '>', 100)->cursorPaginate(15);
 ```
 
 <a name="multiple-paginator-instances-per-page"></a>
-#### 한 화면에 여러 페이지네이터 인스턴스 사용
+#### 한 페이지에 여러 페이저 인스턴스 사용하기
 
-때로는 하나의 화면에서 서로 다른 두 개의 페이지네이션을 동시에 표시해야 할 수 있습니다. 이때 두 페이지네이터가 모두 `page` 쿼리스트링 파라미터를 사용한다면 충돌이 발생합니다. 이러한 상황에서는 `paginate`, `simplePaginate`, `cursorPaginate` 메서드의 세 번째 인수로 각 페이지네이터가 사용할 쿼리스트링 파라미터 이름을 지정해 충돌을 방지할 수 있습니다.
+한 화면에 두 개 이상의 별도 페이저를 렌더링해야 할 경우가 있습니다. 이때 두 페이저 인스턴스가 모두 기본 `page` 쿼리 문자열 변수를 사용하면 충돌이 발생합니다. 이 문제를 해결하려면 `paginate`, `simplePaginate`, `cursorPaginate` 메서드의 세 번째 인자로, 현재 페이지를 저장하는 쿼리 문자열 키 이름을 직접 지정할 수 있습니다:
 
-```
+```php
 use App\Models\User;
 
 $users = User::where('votes', '>', 100)->paginate(
@@ -124,31 +124,31 @@ $users = User::where('votes', '>', 100)->paginate(
 ```
 
 <a name="cursor-pagination"></a>
-### 커서 페이지네이션
+### 커서 페이지네이션 (Cursor Pagination)
 
-`paginate`와 `simplePaginate`는 SQL의 "offset" 절을 사용하는 반면, 커서 페이지네이션은 쿼리에서 정렬된 컬럼의 값들을 반복적으로 비교하는 "where" 절을 만들어 데이터베이스 효율을 극대화합니다. 커서 페이지네이션은 특히 대용량 데이터셋이나 "무한 스크롤"과 같은 UI에 매우 적합합니다.
+`paginate`와 `simplePaginate`는 SQL의 `offset` 절을 사용하여 쿼리를 생성하지만, 커서 페이지네이션은 쿼리 내 정렬된 컬럼 값을 비교하는 `where` 절을 생성하여 구현합니다. 이는 Laravel의 페이지네이션 메서드 중 가장 효율적인 데이터베이스 성능을 제공합니다. 특히 대용량 데이터셋이나 무한 스크롤 UI에 적합합니다.
 
-오프셋 기반 페이지네이션과 달리, 커서 기반 페이지네이션에서는 페이지네이터가 생성하는 URL 쿼리스트링에 "페이지 번호" 대신 "커서"라는 문자열이 들어갑니다. 이 커서란 다음 페이지네이션이 어디서부터 시작하면 될지, 또 어느 방향으로 페이지네이션해야 할지를 담고 있는 인코딩된 문자열입니다.
+오프셋 기반 페이지네이션과 달리, 커서 페이지네이션은 쿼리 문자열에 페이지 번호 대신 "커서(cursor)" 문자열을 포함합니다. 이 커서는 다음 페이지네이션 쿼리가 시작할 위치와 진행 방향을 담은 인코딩된 문자열입니다:
 
-```nothing
+```plaintext
 http://localhost/users?cursor=eyJpZCI6MTUsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0
 ```
 
-쿼리 빌더에서 `cursorPaginate` 메서드를 사용해 커서 기반 페이지네이터 인스턴스를 생성할 수 있습니다. 이 메서드는 `Illuminate\Pagination\CursorPaginator` 인스턴스를 반환합니다.
+쿼리 빌더에서 `cursorPaginate` 메서드를 호출해 커서 페이저 인스턴스를 생성할 수 있습니다. 이 메서드는 `Illuminate\Pagination\CursorPaginator` 인스턴스를 반환합니다:
 
-```
+```php
 $users = DB::table('users')->orderBy('id')->cursorPaginate(15);
 ```
 
-커서 페이지네이터 인스턴스를 얻었다면, `paginate` 및 `simplePaginate`와 마찬가지로 [페이지네이션 결과 표시](#displaying-pagination-results) 방식을 사용할 수 있습니다. 커서 페이지네이터의 더 많은 인스턴스 메서드들은 [커서 페이지네이터 인스턴스 메서드 문서](#cursor-paginator-instance-methods)에서 추가로 확인할 수 있습니다.
+커서 페이저 인스턴스를 얻으면, `paginate`, `simplePaginate`처럼 [페이징 결과를 출력](#displaying-pagination-results)할 수 있습니다. 커서 페이저가 제공하는 인스턴스 메서드에 대한 자세한 내용은 [커서 페이저 인스턴스 메서드 문서](#cursor-paginator-instance-methods)를 참고하세요.
 
 > [!WARNING]
-> 커서 페이지네이션을 제대로 동작시키려면 쿼리에 반드시 "order by" 절이 포함되어야 합니다.
+> 커서 페이지네이션을 사용하려면 쿼리에 반드시 `order by` 절이 존재해야 합니다.
 
 <a name="cursor-vs-offset-pagination"></a>
-#### 커서 페이지네이션 vs. 오프셋 페이지네이션
+#### 커서 페이지네이션과 오프셋 페이지네이션 차이점
 
-오프셋 페이지네이션과 커서 페이지네이션의 차이를 이해하기 위해, 예시 SQL 쿼리를 살펴보겠습니다. 아래 두 쿼리는 모두 `users` 테이블을 `id`로 정렬한 뒤 "두 번째 페이지"의 결과를 보여줍니다.
+오프셋 기반 페이지네이션과 커서 페이지네이션의 차이를 보여주기 위한 예시 SQL 쿼리입니다. 둘 다 `users` 테이블에서 `id`를 기준으로 정렬한 결과의 "두 번째 페이지"를 출력합니다:
 
 ```sql
 # 오프셋 페이지네이션...
@@ -158,36 +158,36 @@ select * from users order by id asc limit 15 offset 15;
 select * from users where id > 15 order by id asc limit 15;
 ```
 
-커서 페이지네이션 방식은 오프셋 방식에 비해 다음과 같은 장점이 있습니다.
+커서 페이지네이션이 오프셋 페이지네이션보다 갖는 장점은 다음과 같습니다:
 
-- 데이터셋이 매우 클 경우, "order by" 컬럼에 인덱스가 걸려 있으면 커서 방식이 훨씬 더 뛰어난 성능을 보입니다. 반면 offset 방식은 이전의 모든 데이터를 한 번씩 훑고 넘어가기 때문입니다.
-- 데이터가 자주 변경되는 환경(즉, insert 또는 delete가 자주 발생할 때)에서는, offset 페이지네이션은 레코드를 건너뛰거나 중복을 보여줄 수 있습니다.
+- 대용량 데이터셋에서 정렬 컬럼에 인덱스가 있으면 커서 페이지네이션이 더 나은 성능을 제공합니다. 오프셋 절은 앞선 모든 매칭 데이터를 스캔하기 때문입니다.
+- 자주 쓰기 작업이 발생하는 데이터셋에서는 오프셋 페이지네이션이 현재 사용자가 보고 있는 페이지에 새롭게 추가되거나 삭제된 레코드 때문에 데이터를 건너뛰거나 중복해서 보여줄 수 있습니다.
 
-하지만, 커서 페이지네이션에도 한계가 있습니다.
+하지만 커서 페이지네이션은 다음과 같은 제한 사항도 있습니다:
 
-- `simplePaginate`처럼 커서 페이지네이션은 "다음" 또는 "이전" 링크만 지원하며, 페이지 번호로 직접 이동하는 링크는 생성할 수 없습니다.
-- 정렬을 위해 반드시 하나 이상의 고유 컬럼, 또는 컬럼 조합이 필요합니다. null 값이 포함된 컬럼은 지원되지 않습니다.
-- "order by" 절에 쿼리 식을 사용하는 경우, 반드시 별칭(alias)이 지정되고 "select" 절에도 그 컬럼이 추가되어야 지원됩니다.
-- "order by" 절에 파라미터가 들어가는 쿼리 식은 지원되지 않습니다.
+- `simplePaginate`와 마찬가지로 "다음" 및 "이전" 링크만 생성하며, 페이지 번호가 포함된 링크를 생성하지 못합니다.
+- 정렬 기준 컬럼은 반드시 하나 이상의 고유(unique) 컬럼 또는 고유 조합이어야 하며, `null` 값을 가진 컬럼은 지원하지 않습니다.
+- `order by` 절 내 쿼리 식은 별칭(alias)이 지정되고 `select` 절에도 포함된 경우에만 지원됩니다.
+- 파라미터가 포함된 쿼리 식은 지원하지 않습니다.
 
 <a name="manually-creating-a-paginator"></a>
-### 페이지네이터 수동 생성
+### 수동으로 페이저 인스턴스 생성하기 (Manually Creating A Paginator)
 
-어떤 경우에는, 이미 메모리에 배열로 가지고 있는 데이터를 직접 넘겨서 페이지네이션 인스턴스를 수동으로 생성하고 싶을 때가 있습니다. 이런 경우, 필요에 따라 `Illuminate\Pagination\Paginator`, `Illuminate\Pagination\LengthAwarePaginator`, 또는 `Illuminate\Pagination\CursorPaginator` 중 하나의 인스턴스를 직접 생성하면 됩니다.
+이미 메모리에 가지고 있는 배열 아이템에 대해 수동으로 페이지네이터 인스턴스를 생성할 수도 있습니다. 상황에 따라 `Illuminate\Pagination\Paginator`, `Illuminate\Pagination\LengthAwarePaginator`, `Illuminate\Pagination\CursorPaginator` 중 하나를 생성하면 됩니다.
 
-`Paginator`와 `CursorPaginator` 클래스는 결과 집합의 전체 아이템 수를 알 필요가 없습니다. 대신, 이 클래스들은 마지막 페이지의 인덱스(location)는 구할 수 없습니다. 반면, `LengthAwarePaginator`는 `Paginator`와 거의 동일한 인자를 받지만, 전체 아이템 수를 반드시 인수로 넘겨주어야 합니다.
+`Paginator`와 `CursorPaginator`는 전체 아이템 수를 몰라도 되지만, 그래서 마지막 페이지 인덱스를 반환하는 메서드가 없습니다. 반면 `LengthAwarePaginator`는 `Paginator`와 거의 동일한 인자를 받지만, 결과 전체 아이템 수를 반드시 전달해야 합니다.
 
-정리하자면 `Paginator`는 쿼리 빌더의 `simplePaginate`, `CursorPaginator`는 `cursorPaginate`, `LengthAwarePaginator`는 `paginate`와 대응된다고 볼 수 있습니다.
+즉, `Paginator`는 쿼리 빌더의 `simplePaginate`와 대응되고, `CursorPaginator`는 `cursorPaginate`, `LengthAwarePaginator`는 `paginate` 메서드와 각각 대응됩니다.
 
 > [!WARNING]
-> 페이지네이터 인스턴스를 수동으로 생성할 때는 반드시 페이지네이션 할 배열을 직접 "slice"해서 넘겨주어야 합니다. 만약 정확한 방법을 잘 모르겠다면, PHP의 [array_slice](https://secure.php.net/manual/en/function.array-slice.php) 함수를 참고하세요.
+> 수동으로 페이저 인스턴스를 만들 때는 페이저에 넘길 배열 결과를 직접 적절히 잘라(slice) 전달해야 합니다. 방법이 헷갈린다면 PHP의 [array_slice](https://secure.php.net/manual/en/function.array-slice.php) 함수를 참고하세요.
 
 <a name="customizing-pagination-urls"></a>
-### 페이지네이션 URL 커스터마이즈
+### 페이지네이션 URL 커스터마이징 (Customizing Pagination URLs)
 
-기본적으로 페이지네이터가 생성하는 링크는 현재 요청의 URI와 동일하게 맞춰집니다. 하지만 페이지네이터의 `withPath` 메서드를 활용하면, 링크를 생성할 때 사용할 URI를 직접 지정할 수 있습니다. 예를 들어, 페이지네이터가 `http://example.com/admin/users?page=N`과 같은 링크를 만들길 원한다면, `withPath` 메서드에 `/admin/users`를 전달하면 됩니다.
+기본적으로 페이저가 생성하는 링크는 현재 요청의 URI를 따릅니다. 그러나 페이저의 `withPath` 메서드를 사용하면 링크 생성 시 사용할 URI 경로를 커스터마이징할 수 있습니다. 예를 들어, 페이저가 `http://example.com/admin/users?page=N`과 같은 URL을 생성하게 하려면 다음처럼 `withPath`에 `/admin/users`를 넘기면 됩니다:
 
-```
+```php
 use App\Models\User;
 
 Route::get('/users', function () {
@@ -200,11 +200,11 @@ Route::get('/users', function () {
 ```
 
 <a name="appending-query-string-values"></a>
-#### 쿼리스트링 값 추가하기
+#### 쿼리 문자열 값 덧붙이기 (Appending Query String Values)
 
-페이지네이션 링크의 쿼리스트링 끝에 값을 추가할 때는 `appends` 메서드를 사용합니다. 예를 들어, 모든 페이지네이션 링크에 `sort=votes`를 추가하고 싶다면, 아래와 같이 `appends`를 사용하면 됩니다.
+페이지네이션 링크의 쿼리 문자열에 값을 추가하려면 `appends` 메서드를 사용합니다. 예를 들어 각 페이지 링크에 `sort=votes`를 붙이고 싶다면 다음과 같이 호출하면 됩니다:
 
-```
+```php
 use App\Models\User;
 
 Route::get('/users', function () {
@@ -216,27 +216,27 @@ Route::get('/users', function () {
 });
 ```
 
-만약 현재 요청의 모든 쿼리스트링 값을 페이지네이션 링크에 자동으로 추가하고 싶으면, `withQueryString` 메서드를 사용할 수 있습니다.
+현재 요청의 모든 쿼리 문자열을 페이지네이션 링크에 그대로 덧붙이려면 `withQueryString` 메서드를 사용할 수 있습니다:
 
-```
+```php
 $users = User::paginate(15)->withQueryString();
 ```
 
 <a name="appending-hash-fragments"></a>
-#### 해시 프래그먼트 추가하기
+#### 해시 프래그먼트 덧붙이기 (Appending Hash Fragments)
 
-페이지네이터가 생성하는 각 링크에 "해시 프래그먼트"를 추가해야 할 경우에는 `fragment` 메서드를 사용할 수 있습니다. 예시로, 모든 페이지네이션 링크 끝에 `#users`를 붙이려면 다음과 같이 작성합니다.
+페이저가 생성하는 URL 뒤에 "해시 프래그먼트"(`#users` 등)를 덧붙이고 싶다면 `fragment` 메서드를 사용하면 됩니다. 예를 들어 모든 페이지네이션 링크에 `#users`를 덧붙이고 싶다면 다음과 같이 호출하세요:
 
-```
+```php
 $users = User::paginate(15)->fragment('users');
 ```
 
 <a name="displaying-pagination-results"></a>
-## 페이지네이션 결과 표시
+## 페이징 결과 화면에 출력하기 (Displaying Pagination Results)
 
-`paginate` 메서드를 사용하면 `Illuminate\Pagination\LengthAwarePaginator` 인스턴스를, `simplePaginate`는 `Illuminate\Pagination\Paginator` 인스턴스를, 그리고 `cursorPaginate`는 `Illuminate\Pagination\CursorPaginator` 인스턴스를 반환합니다.
+`paginate` 메서드는 `Illuminate\Pagination\LengthAwarePaginator` 인스턴스를 반환하고, `simplePaginate`는 `Illuminate\Pagination\Paginator` 인스턴스를 반환하며, `cursorPaginate`는 `Illuminate\Pagination\CursorPaginator` 인스턴스를 반환합니다.
 
-이 객체들은 결과셋의 여러가지 정보를 조회하는 다양한 메서드를 제공합니다. 또한 페이지네이터 인스턴스는 반복자(iterator)이기 때문에 배열처럼 반복문으로 순회할 수 있습니다. 결과를 받아온 후에는 [Blade](/docs/9.x/blade)를 사용해 결과를 출력하고 페이지 링크를 렌더링할 수 있습니다.
+이들 객체는 결과 집합 관련 여러 정보를 제공하는 메서드를 가지고 있으며, 페이저 인스턴스 자체가 반복 가능한 객체(iterable)이기 때문에 배열처럼 반복문에 사용할 수 있습니다. 따라서 결과를 조회한 후 [Blade](/docs/9.x/blade)를 활용해 다음과 같이 출력할 수 있습니다:
 
 ```blade
 <div class="container">
@@ -248,23 +248,23 @@ $users = User::paginate(15)->fragment('users');
 {{ $users->links() }}
 ```
 
-`links` 메서드는 결과 집합의 나머지 페이지로 이동할 수 있는 링크들을 렌더링합니다. 각각의 링크에는 올바른 `page` 쿼리스트링 변수가 이미 담겨 있습니다. 참고로, `links` 메서드가 만들어내는 HTML은 [Tailwind CSS 프레임워크](https://tailwindcss.com)와 호환됩니다.
+`links` 메서드는 결과의 나머지 페이지에 대한 링크를 렌더링합니다. 이 링크들에는 이미 적절한 `page` 쿼리 문자열 변수가 포함되어 있습니다. `links`가 생성하는 HTML은 기본적으로 [Tailwind CSS](https://tailwindcss.com) 프레임워크와 호환됩니다.
 
 <a name="adjusting-the-pagination-link-window"></a>
-### 페이지네이션 링크 윈도우 조정
+### 페이지네이션 링크 범위 조정하기 (Adjusting The Pagination Link Window)
 
-페이지네이터가 페이지 링크를 표시할 때, 현재 페이지 번호와 함께 앞뒤 각각 3개의 추가 링크가 기본적으로 표시됩니다. `onEachSide` 메서드를 사용하면, 현재 페이지 기준으로 양쪽에 몇 개의 추가 링크를 보여줄지 조정할 수 있습니다.
+페이저가 링크를 표시할 때, 현재 페이지 번호 주변으로 기본적으로 앞뒤 3개 페이지 링크가 표시됩니다. `onEachSide` 메서드를 사용하면 현재 페이지를 기준으로 왼쪽과 오른쪽에 추가로 몇 개의 링크를 보여줄지 조절 가능합니다:
 
 ```blade
 {{ $users->onEachSide(5)->links() }}
 ```
 
 <a name="converting-results-to-json"></a>
-### 결과를 JSON으로 변환하기
+### JSON으로 변환하기 (Converting Results To JSON)
 
-라라벨의 페이지네이터 클래스들은 `Illuminate\Contracts\Support\Jsonable` 인터페이스를 구현하고 있어, `toJson` 메서드로 쉽게 페이지네이션 결과를 JSON으로 변환할 수 있습니다. 또한, 페이지네이터 인스턴스를 라우트나 컨트롤러에서 반환하게 되면 자동으로 JSON으로 전환됩니다.
+Laravel 페이저 클래스는 `Illuminate\Contracts\Support\Jsonable` 인터페이스를 구현하며 `toJson` 메서드를 제공해 페이지네이션 결과를 쉽게 JSON으로 변환할 수 있습니다. 라우트나 컨트롤러 액션에서 페이저 인스턴스를 반환해도 자동으로 JSON으로 변환됩니다:
 
-```
+```php
 use App\Models\User;
 
 Route::get('/users', function () {
@@ -272,9 +272,9 @@ Route::get('/users', function () {
 });
 ```
 
-페이지네이터가 반환하는 JSON은 `total`, `current_page`, `last_page` 등 메타 정보도 함께 담고 있습니다. 실제 결과 레코드들은 JSON 배열의 `data` 키 아래에 위치합니다. 아래는 라우트에서 페이지네이터 인스턴스를 반환했을 때 생성되는 JSON 예시입니다.
+페이저 JSON에는 `total`, `current_page`, `last_page` 등 메타 정보가 포함되며, 결과 레코드는 `data` 키 아래 배열 형태로 나옵니다. 다음은 라우트에서 페이저를 반환할 때 생성되는 JSON 예시입니다:
 
-```
+```json
 {
    "total": 50,
    "per_page": 15,
@@ -289,38 +289,38 @@ Route::get('/users', function () {
    "to": 15,
    "data":[
         {
-            // Record...
+            // 레코드 내용...
         },
         {
-            // Record...
+            // 레코드 내용...
         }
    ]
 }
 ```
 
 <a name="customizing-the-pagination-view"></a>
-## 페이지네이션 뷰 커스터마이즈
+## 페이지네이션 뷰 커스터마이징 (Customizing The Pagination View)
 
-기본적으로 페이지네이션 링크를 표시하는 뷰는 [Tailwind CSS](https://tailwindcss.com) 프레임워크와 호환되도록 설계되어 있습니다. 하지만 Tailwind를 사용하지 않는 경우, 직접 만든 뷰 파일로 링크를 렌더링하도록 뷰 이름을 지정할 수 있습니다. 페이지네이터 인스턴스의 `links` 메서드에 뷰 이름을 첫 번째 인수로 전달하면 됩니다.
+기본적으로 페이지네이션 링크를 렌더링하는 뷰는 [Tailwind CSS](https://tailwindcss.com)와 호환됩니다. 그러나 Tailwind를 사용하지 않는 경우, 직접 뷰를 정의해 사용할 수 있습니다. 페이저 인스턴스에서 `links` 메서드 호출 시 첫 번째 인수로 뷰 이름을 전달하면 해당 뷰가 렌더링됩니다:
 
 ```blade
 {{ $paginator->links('view.name') }}
 
-<!-- 뷰로 추가 데이터를 넘기려면... -->
+<!-- 뷰에 추가 데이터 전달하기 -->
 {{ $paginator->links('view.name', ['foo' => 'bar']) }}
 ```
 
-하지만 페이지네이션 뷰를 커스터마이즈하는 가장 쉬운 방법은, `vendor:publish` 명령어로 기본 페이지네이션 뷰 파일을 `resources/views/vendor` 디렉터리 아래로 복사하는 것입니다.
+하지만 가장 편한 방법은 `vendor:publish` Artisan 커맨드를 통해 뷰 파일을 `resources/views/vendor` 디렉토리로 내보내 편집하는 것입니다:
 
 ```shell
 php artisan vendor:publish --tag=laravel-pagination
 ```
 
-이 명령은 애플리케이션의 `resources/views/vendor/pagination` 디렉터리에 뷰 파일들을 복사합니다. 이 디렉터리의 `tailwind.blade.php` 파일이 기본 페이지네이션 뷰입니다. 이 파일을 원하는 대로 수정해 페이지네이션 HTML을 바꿀 수 있습니다.
+이 명령은 애플리케이션의 `resources/views/vendor/pagination` 디렉토리에 관련 뷰를 생성합니다. 여기의 `tailwind.blade.php` 파일이 기본 페이지네이션 뷰이며, 이 파일을 수정해 페이지네이션 HTML을 커스터마이징할 수 있습니다.
 
-기본적으로 사용할 페이지네이션 뷰 파일을 바꾸고 싶다면, `App\Providers\AppServiceProvider` 클래스의 `boot` 메서드에서 페이지네이터의 `defaultView`와 `defaultSimpleView` 메서드를 호출해 지정할 수 있습니다.
+다른 뷰 파일을 기본 페이지네이션 뷰로 지정하려면, `App\Providers\AppServiceProvider` 클래스의 `boot` 메서드 내에서 페이저의 `defaultView`와 `defaultSimpleView` 메서드를 호출하면 됩니다:
 
-```
+```php
 <?php
 
 namespace App\Providers;
@@ -331,7 +331,7 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
+     * 애플리케이션 서비스 부트스트랩
      *
      * @return void
      */
@@ -345,15 +345,15 @@ class AppServiceProvider extends ServiceProvider
 ```
 
 <a name="using-bootstrap"></a>
-### Bootstrap 사용하기
+### Bootstrap 사용하기 (Using Bootstrap)
 
-라라벨에는 [Bootstrap CSS](https://getbootstrap.com/)를 기반으로 만든 페이지네이션 뷰도 포함되어 있습니다. 기본 Tailwind 뷰 대신 이를 사용하려면, `App\Providers\AppServiceProvider` 클래스의 `boot` 메서드에서 페이지네이터의 `useBootstrapFour` 또는 `useBootstrapFive` 메서드를 호출하면 됩니다.
+Laravel은 [Bootstrap CSS](https://getbootstrap.com/)로 제작된 페이지네이션 뷰도 포함하고 있습니다. 기본 Tailwind 뷰 대신 이 Bootstrap 뷰를 사용하려면 `App\Providers\AppServiceProvider` 클래스의 `boot` 메서드에서 페이저의 `useBootstrapFour` 또는 `useBootstrapFive` 메서드를 호출하세요:
 
-```
+```php
 use Illuminate\Pagination\Paginator;
 
 /**
- * Bootstrap any application services.
+ * 애플리케이션 서비스 부트스트랩
  *
  * @return void
  */
@@ -365,51 +365,51 @@ public function boot()
 ```
 
 <a name="paginator-instance-methods"></a>
-## Paginator / LengthAwarePaginator 인스턴스 메서드
+## Paginator / LengthAwarePaginator 인스턴스 메서드 (Paginator / LengthAwarePaginator Instance Methods)
 
-각 페이지네이터 인스턴스는 다음과 같은 메서드들을 통해 추가적인 페이지네이션 정보를 제공합니다.
+각 페이저 인스턴스는 다음과 같은 추가 페이지네이션 정보를 제공하는 메서드를 갖고 있습니다:
 
-메서드  |  설명
--------  |  -----------
-`$paginator->count()`  |  현재 페이지에 포함된 아이템 개수를 반환합니다.
-`$paginator->currentPage()`  |  현재 페이지 번호를 반환합니다.
-`$paginator->firstItem()`  |  결과셋에서 첫 번째 아이템의 번호(인덱스)를 반환합니다.
-`$paginator->getOptions()`  |  페이지네이터의 옵션들을 반환합니다.
-`$paginator->getUrlRange($start, $end)`  |  지정한 범위의 페이지에 대한 URL들을 생성합니다.
-`$paginator->hasPages()`  |  여러 페이지로 나눠질 만큼 충분한 데이터가 있는지 확인합니다.
-`$paginator->hasMorePages()`  |  아직 더 보여줄 수 있는 데이터가 남았는지 확인합니다.
-`$paginator->items()`  |  현재 페이지에 포함된 아이템들을 반환합니다.
-`$paginator->lastItem()`  |  결과셋에서 마지막 아이템의 번호(인덱스)를 반환합니다.
-`$paginator->lastPage()`  |  마지막 페이지의 번호를 반환합니다. (`simplePaginate` 사용 시에는 제공되지 않습니다.)
-`$paginator->nextPageUrl()`  |  다음 페이지의 URL을 반환합니다.
-`$paginator->onFirstPage()`  |  현재 페이지가 첫 번째 페이지인지 확인합니다.
-`$paginator->perPage()`  |  페이지당 표시할 아이템 개수를 반환합니다.
-`$paginator->previousPageUrl()`  |  이전 페이지의 URL을 반환합니다.
-`$paginator->total()`  |  전체 매칭되는 아이템 수를 반환합니다. (`simplePaginate` 사용 시에는 제공되지 않습니다.)
-`$paginator->url($page)`  |  주어진 페이지 번호에 대한 URL을 반환합니다.
-`$paginator->getPageName()`  |  페이지 정보를 저장하는 쿼리스트링 변수 이름을 반환합니다.
-`$paginator->setPageName($name)`  |  페이지 정보를 저장하는 쿼리스트링 변수 이름을 지정합니다.
+| 메서드                       | 설명                                              |
+|-----------------------------|-------------------------------------------------|
+| `$paginator->count()`         | 현재 페이지에 포함된 아이템 수를 가져옵니다.          |
+| `$paginator->currentPage()`   | 현재 페이지 번호를 가져옵니다.                       |
+| `$paginator->firstItem()`     | 결과 중 첫 번째 아이템의 전체 집합 내 순번을 가져옵니다. |
+| `$paginator->getOptions()`    | 페이저 옵션을 가져옵니다.                           |
+| `$paginator->getUrlRange($start, $end)` | 주어진 범위의 페이지 URL들을 생성합니다.            |
+| `$paginator->hasPages()`      | 여러 페이지로 나누기 위한 충분한 아이템이 있는지 확인합니다. |
+| `$paginator->hasMorePages()`  | 추가 페이지가 더 존재하는지 확인합니다.               |
+| `$paginator->items()`         | 현재 페이지에 포함된 아이템들을 가져옵니다.            |
+| `$paginator->lastItem()`      | 결과 중 마지막 아이템의 전체 집합 내 순번을 가져옵니다. |
+| `$paginator->lastPage()`      | 마지막 페이지 번호를 가져옵니다. (`simplePaginate` 사용 시 존재하지 않음) |
+| `$paginator->nextPageUrl()`   | 다음 페이지로 가는 URL을 가져옵니다.                   |
+| `$paginator->onFirstPage()`   | 현재 페이지가 첫 페이지인지 확인합니다.                 |
+| `$paginator->perPage()`       | 한 페이지당 보여줄 아이템 수를 가져옵니다.               |
+| `$paginator->previousPageUrl()` | 이전 페이지로 가는 URL을 가져옵니다.                   |
+| `$paginator->total()`          | 전체 아이템 개수를 가져옵니다. (`simplePaginate` 사용 시 존재하지 않음) |
+| `$paginator->url($page)`       | 지정한 페이지 번호의 URL을 가져옵니다.                  |
+| `$paginator->getPageName()`    | 페이지 번호를 저장하는 쿼리 문자열 변수명을 가져옵니다.     |
+| `$paginator->setPageName($name)` | 페이지 번호를 저장하는 쿼리 문자열 변수명을 설정합니다.    |
 
 <a name="cursor-paginator-instance-methods"></a>
-## Cursor Paginator 인스턴스 메서드
+## Cursor Paginator 인스턴스 메서드 (Cursor Paginator Instance Methods)
 
-각 커서 페이지네이터 인스턴스는 다음과 같은 메서드로 추가적인 페이지네이션 정보를 제공합니다.
+각 커서 페이저 인스턴스는 다음과 같은 추가 페이지네이션 정보를 제공하는 메서드를 제공합니다:
 
-메서드  |  설명
--------  |  -----------
-`$paginator->count()`  |  현재 페이지에 포함된 아이템 개수를 반환합니다.
-`$paginator->cursor()`  |  현재 커서 인스턴스를 반환합니다.
-`$paginator->getOptions()`  |  페이지네이터의 옵션들을 반환합니다.
-`$paginator->hasPages()`  |  여러 페이지로 나눠질 만큼 충분한 데이터가 있는지 확인합니다.
-`$paginator->hasMorePages()`  |  아직 더 보여줄 수 있는 데이터가 남았는지 확인합니다.
-`$paginator->getCursorName()`  |  커서 정보를 저장하는 쿼리스트링 변수 이름을 반환합니다.
-`$paginator->items()`  |  현재 페이지에 포함된 아이템들을 반환합니다.
-`$paginator->nextCursor()`  |  다음 데이터 집합의 커서 인스턴스를 반환합니다.
-`$paginator->nextPageUrl()`  |  다음 페이지의 URL을 반환합니다.
-`$paginator->onFirstPage()`  |  현재 페이지가 첫 번째 페이지인지 확인합니다.
-`$paginator->onLastPage()`  |  현재 페이지가 마지막 페이지인지 확인합니다.
-`$paginator->perPage()`  |  페이지당 표시할 아이템 개수를 반환합니다.
-`$paginator->previousCursor()`  |  이전 데이터 집합의 커서 인스턴스를 반환합니다.
-`$paginator->previousPageUrl()`  |  이전 페이지의 URL을 반환합니다.
-`$paginator->setCursorName()`  |  커서 정보를 저장하는 쿼리스트링 변수 이름을 지정합니다.
-`$paginator->url($cursor)`  |  특정 커서 인스턴스에 대한 URL을 반환합니다.
+| 메서드                          | 설명                                                   |
+|--------------------------------|------------------------------------------------------|
+| `$paginator->count()`            | 현재 페이지에 포함된 아이템 수를 가져옵니다.                 |
+| `$paginator->cursor()`           | 현재 커서 인스턴스를 가져옵니다.                             |
+| `$paginator->getOptions()`       | 페이저 옵션을 가져옵니다.                                  |
+| `$paginator->hasPages()`         | 여러 페이지로 나누기 위한 충분한 아이템이 있는지 확인합니다.      |
+| `$paginator->hasMorePages()`     | 추가 페이지가 더 존재하는지 확인합니다.                        |
+| `$paginator->getCursorName()`    | 커서를 저장하는 쿼리 문자열 변수명을 가져옵니다.                 |
+| `$paginator->items()`            | 현재 페이지에 포함된 아이템들을 가져옵니다.                     |
+| `$paginator->nextCursor()`       | 다음 페이지를 위한 커서 인스턴스를 가져옵니다.                   |
+| `$paginator->nextPageUrl()`      | 다음 페이지의 URL을 가져옵니다.                                |
+| `$paginator->onFirstPage()`      | 현재 페이지가 첫 페이지인지 확인합니다.                          |
+| `$paginator->onLastPage()`       | 현재 페이지가 마지막 페이지인지 확인합니다.                       |
+| `$paginator->perPage()`          | 한 페이지당 보여줄 아이템 수를 가져옵니다.                        |
+| `$paginator->previousCursor()`   | 이전 페이지를 위한 커서 인스턴스를 가져옵니다.                   |
+| `$paginator->previousPageUrl()`  | 이전 페이지의 URL을 가져옵니다.                                |
+| `$paginator->setCursorName()`    | 커서를 저장하는 쿼리 문자열 변수명을 설정합니다.                  |
+| `$paginator->url($cursor)`       | 지정한 커서 인스턴스에 대한 URL을 가져옵니다.                    |

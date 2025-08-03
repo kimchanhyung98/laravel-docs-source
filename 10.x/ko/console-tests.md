@@ -1,23 +1,23 @@
 # 콘솔 테스트 (Console Tests)
 
 - [소개](#introduction)
-- [성공 / 실패 기대값](#success-failure-expectations)
-- [입력 / 출력 기대값](#input-output-expectations)
+- [성공 / 실패 기대치](#success-failure-expectations)
+- [입력 / 출력 기대치](#input-output-expectations)
 - [콘솔 이벤트](#console-events)
 
 <a name="introduction"></a>
 ## 소개
 
-라라벨은 HTTP 테스트를 간단하게 만들어줄 뿐만 아니라, 애플리케이션의 [사용자 정의 콘솔 명령어](/docs/10.x/artisan)를 테스트할 수 있는 간단한 API도 제공합니다.
+Laravel은 HTTP 테스트를 간소화하는 것 외에도, 애플리케이션의 [커스텀 콘솔 명령어](/docs/10.x/artisan)를 테스트하기 위한 간단한 API를 제공합니다.
 
 <a name="success-failure-expectations"></a>
-## 성공 / 실패 기대값
+## 성공 / 실패 기대치
 
-먼저, Artisan 명령어의 종료 코드(exit code)를 어떻게 검증하는지 살펴보겠습니다. 이를 위해 테스트에서 `artisan` 메서드를 사용해 Artisan 명령어를 실행합니다. 그런 다음, `assertExitCode` 메서드를 이용해 명령어가 지정한 종료 코드로 정상적으로 완료되었는지 확인할 수 있습니다.
+시작하기 위해, Artisan 명령어의 종료 코드에 대한 검증(assertion)을 수행하는 방법을 살펴보겠습니다. 이를 위해 테스트 내에서 `artisan` 메서드를 사용해 Artisan 명령어를 호출합니다. 이후, `assertExitCode` 메서드를 사용하여 명령어가 특정 종료 코드로 완료되었음을 검증합니다:
 
 ```
 /**
- * 콘솔 명령어 테스트.
+ * Test a console command.
  */
 public function test_console_command(): void
 {
@@ -25,13 +25,13 @@ public function test_console_command(): void
 }
 ```
 
-`assertNotExitCode` 메서드를 사용하면 명령어가 특정 종료 코드로 종료되지 않았는지도 검증할 수 있습니다.
+또한, 명령어가 특정 종료 코드로 종료되지 않았음을 검증하기 위해 `assertNotExitCode` 메서드를 사용할 수 있습니다:
 
 ```
 $this->artisan('inspire')->assertNotExitCode(1);
 ```
 
-일반적으로 터미널 명령어는 성공하면 상태 코드 `0`으로, 실패했다면 0이 아닌 값으로 종료됩니다. 그래서 더 편리하게 사용하려면 `assertSuccessful`과 `assertFailed` 검증 메서드를 활용해 명령어가 성공했는지, 실패했는지를 간단히 확인할 수도 있습니다.
+물론, 일반적으로 터미널 명령어는 성공할 경우 종료 상태 코드가 `0`이고, 성공하지 못했을 경우 0이 아닌 종료 코드를 반환합니다. 따라서 편의를 위해, 특정 명령어가 성공 종료 코드를 반환했는지 또는 실패 종료 코드를 반환했는지를 검증하기 위해 `assertSuccessful`과 `assertFailed` 메서드를 사용할 수 있습니다:
 
 ```
 $this->artisan('inspire')->assertSuccessful();
@@ -40,9 +40,9 @@ $this->artisan('inspire')->assertFailed();
 ```
 
 <a name="input-output-expectations"></a>
-## 입력 / 출력 기대값
+## 입력 / 출력 기대치
 
-라라벨은 콘솔 명령어 테스트 시 `expectsQuestion` 메서드를 활용해 사용자 입력을 손쉽게 "모킹(mock)"할 수 있습니다. 또한, `assertExitCode`와 `expectsOutput` 메서드를 이용해 명령어 실행 결과의 종료 코드와 출력되는 텍스트도 기대할 수 있습니다. 예를 들어, 아래와 같은 콘솔 명령어가 있다고 가정해봅시다.
+Laravel은 `expectsQuestion` 메서드를 통해 콘솔 명령어에 대한 사용자 입력을 쉽게 "모킹(mock)"할 수 있도록 지원합니다. 추가로, 콘솔 명령어가 출력할 것으로 예상하는 종료 코드 및 텍스트를 `assertExitCode`와 `expectsOutput` 메서드를 통해 지정할 수 있습니다. 예를 들어, 다음과 같은 콘솔 명령어가 있다고 할 때:
 
 ```
 Artisan::command('question', function () {
@@ -58,11 +58,11 @@ Artisan::command('question', function () {
 });
 ```
 
-아래와 같이 `expectsQuestion`, `expectsOutput`, `doesntExpectOutput`, `expectsOutputToContain`, `doesntExpectOutputToContain`, `assertExitCode` 등의 다양한 메서드를 활용해 이 명령어를 테스트할 수 있습니다.
+아래와 같이 `expectsQuestion`, `expectsOutput`, `doesntExpectOutput`, `expectsOutputToContain`, `doesntExpectOutputToContain`, 그리고 `assertExitCode` 메서드를 사용하여 이 명령어에 대한 테스트를 작성할 수 있습니다:
 
 ```
 /**
- * 콘솔 명령어 테스트.
+ * Test a console command.
  */
 public function test_console_command(): void
 {
@@ -78,9 +78,9 @@ public function test_console_command(): void
 ```
 
 <a name="confirmation-expectations"></a>
-#### 확인(Confirmation) 기대값
+#### 확인 응답 기대치
 
-명령어에서 "yes" 또는 "no"와 같이 사용자의 확인 답변을 기대하는 경우, `expectsConfirmation` 메서드를 사용할 수 있습니다.
+"예" 또는 "아니오" 형태의 확인 응답을 기대하는 명령어를 작성할 때는, `expectsConfirmation` 메서드를 활용할 수 있습니다:
 
 ```
 $this->artisan('module:import')
@@ -89,9 +89,9 @@ $this->artisan('module:import')
 ```
 
 <a name="table-expectations"></a>
-#### 테이블 기대값
+#### 테이블 기대치
 
-만약 명령어가 Artisan의 `table` 메서드를 사용해 정보 테이블을 출력한다면, 테이블 전체에 대한 출력값을 모두 기대값으로 작성하는 게 번거로울 수 있습니다. 이럴 땐 `expectsTable` 메서드를 사용할 수 있습니다. 이 메서드는 테이블의 헤더를 첫 번째 인수로, 테이블의 데이터를 두 번째 인수로 받습니다.
+명령어가 Artisan의 `table` 메서드를 이용해 정보를 표 형식으로 출력할 경우, 전체 테이블에 대해 출력 기대치를 작성하는 것이 번거로울 수 있습니다. 대신 `expectsTable` 메서드를 사용할 수 있습니다. 이 메서드는 첫 번째 인자로 테이블의 헤더를, 두 번째 인자로 테이블의 데이터를 받습니다:
 
 ```
 $this->artisan('users:all')
@@ -107,7 +107,7 @@ $this->artisan('users:all')
 <a name="console-events"></a>
 ## 콘솔 이벤트
 
-기본적으로는, 테스트를 실행하는 동안 `Illuminate\Console\Events\CommandStarting`과 `Illuminate\Console\Events\CommandFinished` 이벤트가 발생하지 않습니다. 하지만, 테스트 클래스에서 `Illuminate\Foundation\Testing\WithConsoleEvents` 트레이트를 추가하면 해당 이벤트가 활성화됩니다.
+기본적으로, 애플리케이션 테스트 실행 시 `Illuminate\Console\Events\CommandStarting` 및 `Illuminate\Console\Events\CommandFinished` 이벤트는 발생하지 않습니다. 그러나 특정 테스트 클래스에서 이 이벤트들을 활성화하고 싶다면, 해당 클래스에 `Illuminate\Foundation\Testing\WithConsoleEvents` 트레이트(trait)를 추가하면 됩니다:
 
 ```
 <?php

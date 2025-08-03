@@ -2,42 +2,42 @@
 
 - [소개](#introduction)
 - [설정](#configuration)
-    - [드라이버 사전 준비 사항](#driver-prerequisites)
+    - [드라이버 사전 요구사항](#driver-prerequisites)
 - [캐시 사용법](#cache-usage)
-    - [캐시 인스턴스 획득](#obtaining-a-cache-instance)
-    - [캐시에서 아이템 가져오기](#retrieving-items-from-the-cache)
-    - [캐시에 아이템 저장하기](#storing-items-in-the-cache)
-    - [캐시에서 아이템 삭제하기](#removing-items-from-the-cache)
+    - [캐시 인스턴스 얻기](#obtaining-a-cache-instance)
+    - [캐시에서 항목 가져오기](#retrieving-items-from-the-cache)
+    - [캐시에 항목 저장하기](#storing-items-in-the-cache)
+    - [캐시에서 항목 제거하기](#removing-items-from-the-cache)
     - [캐시 헬퍼](#the-cache-helper)
-- [원자적 락(Atomic Locks)](#atomic-locks)
-    - [락 관리](#managing-locks)
+- [원자적 락 (Atomic Locks)](#atomic-locks)
+    - [락 관리하기](#managing-locks)
     - [프로세스 간 락 관리](#managing-locks-across-processes)
-- [커스텀 캐시 드라이버 추가](#adding-custom-cache-drivers)
-    - [드라이버 작성](#writing-the-driver)
-    - [드라이버 등록](#registering-the-driver)
+- [커스텀 캐시 드라이버 추가하기](#adding-custom-cache-drivers)
+    - [드라이버 작성하기](#writing-the-driver)
+    - [드라이버 등록하기](#registering-the-driver)
 - [이벤트](#events)
 
 <a name="introduction"></a>
-## 소개
+## 소개 (Introduction)
 
-애플리케이션에서 실행하는 데이터 조회나 처리 작업 중 일부는 CPU를 많이 사용하거나 여러 초가 소요될 수 있습니다. 이런 경우, 한 번 조회한 데이터를 일정 시간 동안 캐시에 넣어두고, 같은 데이터에 대한 후속 요청이 들어오면 신속하게 캐시에서 데이터를 반환하는 것이 일반적입니다. 이렇게 캐싱된 데이터는 보통 매우 빠른 데이터 저장소인 [Memcached](https://memcached.org)나 [Redis](https://redis.io) 등에 보관됩니다.
+애플리케이션에서 데이터를 가져오거나 처리하는 작업이 CPU 집약적일 수 있고 완료까지 몇 초가 걸릴 때가 있습니다. 이런 경우, 가져온 데이터를 일정 시간 동안 캐시해 두면 같은 데이터를 이후 요청에서 빠르게 불러올 수 있습니다. 일반적으로 캐시된 데이터는 [Memcached](https://memcached.org)나 [Redis](https://redis.io)와 같은 매우 빠른 데이터 저장소에 저장됩니다.
 
-라라벨은 다양한 캐시 백엔드를 하나의 통일된, 간단명료한 API로 사용할 수 있도록 지원하므로, 빠른 데이터 접근 속도를 활용하여 웹 애플리케이션의 성능을 쉽게 높일 수 있습니다.
+다행히도 Laravel은 여러 캐시 백엔드를 위한 통합되고 표현력 있는 API를 제공하여, 고속 데이터 조회를 통해 웹 애플리케이션의 성능을 향상시킬 수 있습니다.
 
 <a name="configuration"></a>
-## 설정
+## 설정 (Configuration)
 
-애플리케이션의 캐시 설정 파일은 `config/cache.php`에 있습니다. 이 파일에서 애플리케이션 전체에서 기본으로 사용할 캐시 저장소(cache store)를 지정할 수 있습니다. 라라벨은 [Memcached](https://memcached.org), [Redis](https://redis.io), [DynamoDB](https://aws.amazon.com/dynamodb), 그리고 관계형 데이터베이스 등의 유명한 캐시 백엔드를 기본적으로 지원합니다. 이외에도 파일 기반 캐시 드라이버가 있으며, `array`와 "null" 캐시 드라이버는 자동화된 테스트에 편리하게 사용할 수 있는 옵션입니다.
+애플리케이션의 캐시 설정 파일은 `config/cache.php`에 위치해 있습니다. 이 파일에서 애플리케이션 전반에 걸쳐 기본으로 사용할 캐시 저장소를 지정할 수 있습니다. Laravel은 기본으로 [Memcached](https://memcached.org), [Redis](https://redis.io), [DynamoDB](https://aws.amazon.com/dynamodb), 관계형 데이터베이스 등 인기 있는 캐시 백엔드를 지원합니다. 또한, 파일 기반 캐시 드라이버와 자동화된 테스트에 편리한 `array` 및 "null" 캐시 드라이버도 제공됩니다.
 
-캐시 설정 파일에는 이 외에도 다양한 설정 옵션이 포함되어 있으니 필요에 따라 참고하실 수 있습니다. 기본적으로 라라벨은 `database` 캐시 드라이버를 사용하도록 설정되어 있는데, 이는 직렬화된(serialize) 캐시 객체를 애플리케이션의 데이터베이스에 저장합니다.
+설정 파일에는 이 외에도 여러 옵션이 있으므로 검토해 보시기 바랍니다. 기본적으로 Laravel은 `database` 캐시 드라이버를 사용하도록 구성되어 있으며, 이 드라이버는 직렬화된 캐시 객체를 애플리케이션 데이터베이스에 저장합니다.
 
 <a name="driver-prerequisites"></a>
-### 드라이버 사전 준비 사항
+### 드라이버 사전 요구사항 (Driver Prerequisites)
 
 <a name="prerequisites-database"></a>
-#### 데이터베이스
+#### 데이터베이스 (Database)
 
-`database` 캐시 드라이버를 사용할 때는 캐시 데이터를 저장할 데이터베이스 테이블이 필요합니다. 보통 이 테이블은 라라벨 기본 제공 마이그레이션 파일인 `0001_01_01_000001_create_cache_table.php` [데이터베이스 마이그레이션](/docs/11.x/migrations)에 포함되어 있습니다. 만약 애플리케이션에 해당 마이그레이션이 없을 경우, `make:cache-table` Artisan 명령어로 마이그레이션 파일을 생성할 수 있습니다:
+`database` 캐시 드라이버를 사용할 경우 캐시 데이터를 저장할 데이터베이스 테이블이 필요합니다. 보통 Laravel의 기본 마이그레이션 `0001_01_01_000001_create_cache_table.php`에 포함되어 있습니다. 만약 애플리케이션에 이 마이그레이션이 없다면 `make:cache-table` Artisan 명령어로 생성할 수 있습니다:
 
 ```shell
 php artisan make:cache-table
@@ -48,7 +48,7 @@ php artisan migrate
 <a name="memcached"></a>
 #### Memcached
 
-Memcached 드라이버를 사용하려면 [Memcached PECL 패키지](https://pecl.php.net/package/memcached)를 설치해야 합니다. 여러 Memcached 서버를 `config/cache.php` 설정 파일에 나열할 수 있습니다. 기본적으로 이 파일에는 시작을 돕기 위한 `memcached.servers` 항목이 포함되어 있습니다:
+Memcached 드라이버를 사용하려면 [Memcached PECL 패키지](https://pecl.php.net/package/memcached)가 설치되어 있어야 합니다. 여러 Memcached 서버를 `config/cache.php`에서 `memcached.servers` 배열에 나열할 수 있습니다. 설정 파일에 시작용 기본값이 포함되어 있습니다:
 
 ```
 'memcached' => [
@@ -64,7 +64,7 @@ Memcached 드라이버를 사용하려면 [Memcached PECL 패키지](https://pec
 ],
 ```
 
-필요하다면 `host` 옵션에 유닉스 소켓 경로를 지정할 수도 있습니다. 이 경우 `port` 옵션은 `0`으로 설정해야 합니다:
+필요하면 `host` 옵션에 UNIX 소켓 경로를 지정할 수 있으며, 이 경우 `port`는 `0`으로 설정해야 합니다:
 
 ```
 'memcached' => [
@@ -83,26 +83,26 @@ Memcached 드라이버를 사용하려면 [Memcached PECL 패키지](https://pec
 <a name="redis"></a>
 #### Redis
 
-라라벨에서 Redis 캐시를 사용하기 전에, PECL을 통해 PhpRedis PHP 확장 프로그램을 설치하거나 Composer를 통해 `predis/predis` 패키지(~2.0)를 설치해야 합니다. [Laravel Sail](/docs/11.x/sail) 환경에는 이 확장 프로그램이 이미 포함되어 있습니다. 또한, [Laravel Forge](https://forge.laravel.com)나 [Laravel Vapor](https://vapor.laravel.com)와 같은 공식 라라벨 배포 플랫폼에는 기본적으로 PhpRedis가 설치되어 있습니다.
+Laravel에서 Redis 캐시를 사용하기 전에 PECL을 통해 PhpRedis 확장 프로그램을 설치하거나 Composer로 `predis/predis` (~2.0) 패키지를 설치해야 합니다. [Laravel Sail](/docs/11.x/sail)은 이미 이 확장을 포함하고 있으며, [Laravel Forge](https://forge.laravel.com)와 [Laravel Vapor](https://vapor.laravel.com) 같은 공식 배포 플랫폼에도 기본적으로 PhpRedis 확장이 설치되어 있습니다.
 
-Redis 설정 방법에 대한 자세한 내용은 [라라벨 공식 Redis 문서](/docs/11.x/redis#configuration)를 참조하세요.
+Redis 설정에 관한 자세한 내용은 Laravel의 [Redis 문서 페이지](/docs/11.x/redis#configuration)를 참고하세요.
 
 <a name="dynamodb"></a>
 #### DynamoDB
 
-[DynamoDB](https://aws.amazon.com/dynamodb) 캐시 드라이버를 사용하기 전에, 모든 캐시 데이터를 저장할 DynamoDB 테이블을 생성해야 합니다. 일반적으로 이 테이블 이름은 `cache`로 지정합니다. 하지만, 설정 파일(`cache` 설정 파일)의 `stores.dynamodb.table` 값에 따라 테이블 이름을 정해야 합니다. 테이블 이름은 환경 변수 `DYNAMODB_CACHE_TABLE`을 통해서도 지정할 수 있습니다.
+[DynamoDB](https://aws.amazon.com/dynamodb) 캐시 드라이버를 사용하기 전에는 모든 캐시 데이터를 저장할 DynamoDB 테이블을 미리 생성해야 합니다. 보통 테이블 이름은 `cache`로 설정하지만, 설정 파일 `cache`의 `stores.dynamodb.table` 값에 따라 테이블 이름을 지정할 수 있습니다. 환경 변수 `DYNAMODB_CACHE_TABLE`로도 설정할 수 있습니다.
 
-이 테이블에는 파티션 키로 사용할 문자열 타입의 키가 필요하며, 이 키의 이름은 `cache` 설정 파일의 `stores.dynamodb.attributes.key`에 지정된 값과 일치해야 합니다. 기본적으로 파티션 키 이름은 `key`입니다.
+이 테이블에는 문자열 파티션 키가 필요하며, 키 이름은 설정 파일 `stores.dynamodb.attributes.key` 값과 일치해야 합니다. 기본값은 `key`입니다.
 
-대부분의 경우 DynamoDB는 만료된 아이템을 테이블에서 능동적으로 제거하지 않으므로, [Time to Live (TTL)](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html) 기능을 테이블에 활성화하는 것이 좋습니다. 테이블의 TTL 속성 이름은 `expires_at`으로 지정해야 합니다.
+DynamoDB는 만료된 아이템을 자동 삭제하지 않으므로, 테이블에서 [Time to Live (TTL)](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html)을 활성화해야 합니다. TTL 속성 이름은 `expires_at`으로 설정하세요.
 
-다음으로, 라라벨 애플리케이션이 DynamoDB와 통신할 수 있도록 AWS SDK를 설치해야 합니다:
+이후 AWS SDK를 설치해 Laravel 애플리케이션에서 DynamoDB와 통신할 수 있게 합니다:
 
 ```shell
 composer require aws/aws-sdk-php
 ```
 
-또한, DynamoDB 캐시 저장소의 설정 옵션(`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` 등)도 반드시 값이 지정되어 있어야 합니다. 보통 이 값들은 애플리케이션의 `.env` 설정 파일에 정의합니다:
+그리고 DynamoDB 캐시 저장소 관련 설정(`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` 등)을 `.env` 파일에 제공해야 합니다:
 
 ```php
 'dynamodb' => [
@@ -118,17 +118,17 @@ composer require aws/aws-sdk-php
 <a name="mongodb"></a>
 #### MongoDB
 
-MongoDB를 사용하는 경우, 공식 `mongodb/laravel-mongodb` 패키지가 `mongodb` 캐시 드라이버를 제공합니다. 이 패키지는 `mongodb` 데이터베이스 연결을 사용해 캐시 드라이버를 설정할 수 있습니다. MongoDB는 TTL 인덱스를 지원하므로, 만료된 캐시 아이템을 자동으로 삭제할 수 있습니다.
+MongoDB를 사용하는 경우 공식 `mongodb/laravel-mongodb` 패키지가 제공하는 `mongodb` 캐시 드라이버를 데이터베이스 연결과 함께 설정할 수 있습니다. MongoDB는 TTL 인덱스를 지원하므로 만료된 캐시 항목을 자동으로 제거하는 데 활용할 수 있습니다.
 
-MongoDB 관련 추가 설정 방법은 [MongoDB Cache and Locks 문서](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/cache/)를 참고하세요.
+MongoDB 설정에 관한 자세한 내용은 MongoDB [Cache and Locks 문서](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/cache/)를 참고하세요.
 
 <a name="cache-usage"></a>
-## 캐시 사용법
+## 캐시 사용법 (Cache Usage)
 
 <a name="obtaining-a-cache-instance"></a>
-### 캐시 인스턴스 획득
+### 캐시 인스턴스 얻기 (Obtaining a Cache Instance)
 
-캐시 저장소 인스턴스를 얻으려면 `Cache` 파사드(Facade)를 사용할 수 있습니다. 본 문서 전체에서 이 파사드를 사용할 예정입니다. `Cache` 파사드는 라라벨 캐시 컨트랙트의 실제 구현체에 간결하게 접근할 수 있도록 해줍니다.
+캐시 저장소 인스턴스를 얻으려면 `Cache` 파사드를 사용할 수 있습니다. 이 문서 전체에서 `Cache` 파사드를 사용하여 Laravel 캐시 컨트랙트의 핵심 구현체에 간편하게 접근합니다:
 
 ```
 <?php
@@ -140,7 +140,7 @@ use Illuminate\Support\Facades\Cache;
 class UserController extends Controller
 {
     /**
-     * 애플리케이션의 모든 사용자 목록을 보여줍니다.
+     * 애플리케이션의 모든 사용자 목록을 표시합니다.
      */
     public function index(): array
     {
@@ -154,9 +154,9 @@ class UserController extends Controller
 ```
 
 <a name="accessing-multiple-cache-stores"></a>
-#### 여러 캐시 저장소 접근
+#### 여러 캐시 저장소 접근하기
 
-`Cache` 파사드의 `store` 메서드를 사용하면 다양한 캐시 저장소에 접근할 수 있습니다. `store` 메서드에 전달하는 키는 `cache` 설정 파일의 `stores` 배열에 정의된 저장소 이름과 일치해야 합니다.
+`Cache` 파사드의 `store` 메서드를 사용하면 여러 캐시 저장소에 접근할 수 있습니다. `store`에 전달하는 키는 `cache` 설정 파일의 `stores` 배열에 정의된 저장소 이름과 일치해야 합니다:
 
 ```
 $value = Cache::store('file')->get('foo');
@@ -165,9 +165,9 @@ Cache::store('redis')->put('bar', 'baz', 600); // 10분
 ```
 
 <a name="retrieving-items-from-the-cache"></a>
-### 캐시에서 아이템 가져오기
+### 캐시에서 항목 가져오기 (Retrieving Items From the Cache)
 
-`Cache` 파사드의 `get` 메서드는 캐시에서 아이템을 가져오는 데 사용합니다. 캐시에 해당 아이템이 없으면 `null`이 반환됩니다. 아이템이 없을 때 반환할 기본값을 두 번째 인수로 지정할 수도 있습니다.
+`Cache::get` 메서드는 캐시에서 값을 가져올 때 사용합니다. 캐시에 항목이 없으면 `null`을 반환합니다. 기본값을 지정하려면 두 번째 인수로 기본값을 전달할 수 있습니다:
 
 ```
 $value = Cache::get('key');
@@ -175,7 +175,7 @@ $value = Cache::get('key');
 $value = Cache::get('key', 'default');
 ```
 
-기본값으로 클로저(Closure)를 전달할 수도 있습니다. 캐시에 해당 아이템이 없으면 해당 클로저가 실행되어 반환값이 사용됩니다. 이를 통해 기본값을 데이터베이스나 외부 서비스에서 가져오도록 지연 처리할 수 있습니다.
+기본값으로 클로저를 전달할 수도 있는데, 이 경우 캐시에 항목이 없을 때 클로저 실행 결과가 반환됩니다. 클로저를 사용하면 데이터베이스 같은 외부 서비스에서 필요한 값을 지연 조회할 수 있습니다:
 
 ```
 $value = Cache::get('key', function () {
@@ -184,9 +184,9 @@ $value = Cache::get('key', function () {
 ```
 
 <a name="determining-item-existence"></a>
-#### 캐시 아이템 존재 여부 확인
+#### 항목 존재 여부 확인하기
 
-`has` 메서드를 사용하면 캐시에 아이템이 존재하는지 확인할 수 있습니다. 이 메서드는 아이템이 존재하지만 값이 `null`일 때도 `false`를 반환합니다.
+`has` 메서드를 사용하여 캐시에 항목이 존재하는지 확인할 수 있습니다. 단, 항목 값이 `null`이면 존재하지 않는 것으로 간주해 `false`를 반환합니다:
 
 ```
 if (Cache::has('key')) {
@@ -195,15 +195,15 @@ if (Cache::has('key')) {
 ```
 
 <a name="incrementing-decrementing-values"></a>
-#### 값 증가/감소시키기
+#### 값 증가와 감소
 
-`increment`와 `decrement` 메서드를 사용하면 캐시에 저장된 정수 값을 증가시키거나 감소시킬 수 있습니다. 두 메서드 모두 두 번째 인수로 증가/감소시킬 값을 지정할 수 있습니다.
+`increment`와 `decrement` 메서드는 캐시에 저장된 정수 값을 증가 또는 감소시킬 때 사용합니다. 두 메서드는 두 번째 인수로 조정할 값을 지정할 수 있습니다:
 
 ```
-// 값이 없다면 우선 0으로 초기화...
+// 값이 없으면 초기화...
 Cache::add('key', 0, now()->addHours(4));
 
-// 값 증가 또는 감소...
+// 값 증가/감소...
 Cache::increment('key');
 Cache::increment('key', $amount);
 Cache::decrement('key');
@@ -211,9 +211,9 @@ Cache::decrement('key', $amount);
 ```
 
 <a name="retrieve-store"></a>
-#### 가져오거나 저장하기
+#### 가져오기 및 저장 (Retrieve and Store)
 
-필요에 따라 캐시에서 아이템을 가져오되, 없으면 기본값을 저장하고 싶은 경우가 있습니다. 예를 들어, 모든 사용자를 캐시에서 가져오거나 없다면 데이터베이스에서 로드한 뒤 캐시에 저장할 수 있습니다. 이는 `Cache::remember` 메서드로 처리할 수 있습니다.
+캐시에서 항목을 가져오되, 요청한 항목이 없을 때 기본값을 저장하려면 `Cache::remember` 메서드를 사용합니다. 예를 들어, 캐시에서 모든 사용자를 가져오거나 없으면 데이터베이스에서 조회해 캐시에 저장할 때 유용합니다:
 
 ```
 $value = Cache::remember('users', $seconds, function () {
@@ -221,9 +221,9 @@ $value = Cache::remember('users', $seconds, function () {
 });
 ```
 
-캐시에 아이템이 없다면, `remember` 메서드에 전달한 클로저가 실행되고 그 결과가 캐시에 저장됩니다.
+캐시에 항목이 없으면 클로저가 실행되고 그 결과가 캐시에 저장됩니다.
 
-영구적으로(만료 없이) 저장하거나, 없으면 저장하고 싶다면 `rememberForever` 메서드를 사용할 수 있습니다.
+영구 저장하고 싶다면 `rememberForever` 메서드를 사용하세요:
 
 ```
 $value = Cache::rememberForever('users', function () {
@@ -232,13 +232,13 @@ $value = Cache::rememberForever('users', function () {
 ```
 
 <a name="swr"></a>
-#### Stale While Revalidate
+#### Stale While Revalidate (유효기간 만료 이후 캐시 사용 패턴)
 
-`Cache::remember` 메서드를 사용할 때, 캐시가 만료된 경우 일부 사용자는 느린 응답을 경험할 수 있습니다. 특정 데이터의 경우, 캐시된 값이 만료된 상태(stale)라도 캐시를 백그라운드에서 재계산하는 동안 임시로 반환하게 하는 것이 유용할 수 있습니다. 이를 통해 사용자가 느린 응답을 받지 않도록 할 수 있습니다. 이러한 방식을 "stale-while-revalidate" 패턴이라고 하며, `Cache::flexible` 메서드가 이 패턴을 구현합니다.
+`Cache::remember` 사용 시, 만료된 캐시 값을 다시 계산하는 동안 일부 사용자가 느린 응답을 경험할 수 있습니다. 이런 경우 배경에서 캐시 값을 재계산하면서 '일부 구식 데이터'를 제공하는 "stale-while-revalidate" 패턴이 유용합니다. `Cache::flexible` 메서드는 이를 지원합니다.
 
-`flexible` 메서드는 캐시된 값이 "신선(fresh)"하다고 간주되는 시간과 "stale"로 간주되어 다시 계산이 필요한 시점을 배열로 지정합니다. 배열의 첫 번째 값은 신선 기간(초 단위), 두 번째 값은 stale 상태로 허용되는 총 시간(초 단위)입니다.
+`flexible` 메서드는 첫 번째 값이 캐시가 '신선함'으로 간주되는 초, 두 번째 값이 '구식'으로 간주되면서 재계산 전까지 허용되는 초를 배열로 받습니다.
 
-첫 번째 값 이내의 요청에는 즉시 캐시가 반환됩니다. 두 값 사이(stale 기간)에는 이전 캐시 값을 사용자에게 반환하면서, 응답 후에 [지연 함수](/docs/11.x/helpers#deferred-functions)를 이용해 캐시 값을 갱신합니다. 두 번째 값(총 유효기간) 이후에는 캐시가 만료된 것으로 간주되어, 즉시 다시 계산하여 반환합니다(이 경우 사용자는 느린 응답을 받을 수 있습니다).
+첫 번째 구간에서는 즉시 캐시 값이 반환됩니다. 두 번째 구간에서는 이전 값을 사용자에게 제공하면서, [지연 함수](/docs/11.x/helpers#deferred-functions)를 등록해 응답 완료 후 캐시 값을 갱신합니다. 두 번째 구간이 지나면 캐시는 만료되어 즉시 다시 계산됩니다. 이때는 응답 속도가 느려질 수 있습니다:
 
 ```
 $value = Cache::flexible('users', [5, 10], function () {
@@ -247,9 +247,9 @@ $value = Cache::flexible('users', [5, 10], function () {
 ```
 
 <a name="retrieve-delete"></a>
-#### 가져오고 삭제하기
+#### 가져오기 및 삭제 (Retrieve and Delete)
 
-캐시에서 아이템을 가져온 후, 바로 해당 아이템을 삭제하고 싶을 때는 `pull` 메서드를 사용할 수 있습니다. 해당 아이템이 없으면 `null`이 반환됩니다.
+캐시에서 항목을 가져오고 즉시 삭제하려면 `pull` 메서드를 사용합니다. 항목이 없으면 `get`과 마찬가지로 `null`을 반환합니다:
 
 ```
 $value = Cache::pull('key');
@@ -258,57 +258,57 @@ $value = Cache::pull('key', 'default');
 ```
 
 <a name="storing-items-in-the-cache"></a>
-### 캐시에 아이템 저장하기
+### 캐시에 항목 저장하기 (Storing Items in the Cache)
 
-`Cache` 파사드의 `put` 메서드를 사용하여 캐시에 아이템을 저장할 수 있습니다.
+`Cache::put` 메서드로 캐시에 항목을 저장할 수 있습니다:
 
 ```
 Cache::put('key', 'value', $seconds = 10);
 ```
 
-저장 시간을 지정하지 않으면 해당 아이템은 만료 없이 영구적으로 저장됩니다.
+만약 저장 시간을 지정하지 않으면 무기한 저장됩니다:
 
 ```
 Cache::put('key', 'value');
 ```
 
-초 단위 정수 대신 원하는 만료 시점을 `DateTime` 인스턴스로도 전달할 수 있습니다.
+저장 시간을 초 단위 정수 대신 만료 시점을 나타내는 `DateTime` 인스턴스로 전달할 수도 있습니다:
 
 ```
 Cache::put('key', 'value', now()->addMinutes(10));
 ```
 
 <a name="store-if-not-present"></a>
-#### 없을 때만 저장하기
+#### 존재하지 않을 때만 저장하기
 
-`add` 메서드는 해당 키가 캐시에 이미 없을 때만 아이템을 추가합니다. 실제로 아이템이 저장될 경우 `true`를, 이미 존재할 경우 `false`를 반환합니다. `add` 메서드는 원자적(atomic)으로 동작합니다.
+`add` 메서드는 캐시에 항목이 없을 때만 저장합니다. 저장에 성공하면 `true`, 이미 존재하면 `false`를 반환하는 원자적 연산입니다:
 
 ```
 Cache::add('key', 'value', $seconds);
 ```
 
 <a name="storing-items-forever"></a>
-#### 영구적으로 저장하기
+#### 영구 저장하기
 
-`forever` 메서드는 아이템을 만료 없이 영구적으로 캐시에 저장합니다. 이런 아이템은 직접 `forget` 메서드를 사용해서 삭제해야 합니다.
+`forever` 메서드는 만료 없이 영구 저장합니다. 이런 항목은 수동으로 `forget` 메서드를 호출해 삭제해야 합니다:
 
 ```
 Cache::forever('key', 'value');
 ```
 
 > [!NOTE]  
-> Memcached 드라이버를 사용 중인 경우, "forever"로 저장한 아이템이더라도 캐시 크기 한도에 도달하면 삭제될 수 있습니다.
+> Memcached 드라이버를 사용하는 경우 "영구 저장"된 아이템도 캐시 용량 한계에 도달하면 제거될 수 있습니다.
 
 <a name="removing-items-from-the-cache"></a>
-### 캐시에서 아이템 삭제하기
+### 캐시에서 항목 제거하기 (Removing Items From the Cache)
 
-`forget` 메서드로 캐시에서 아이템을 삭제할 수 있습니다.
+`forget` 메서드로 캐시 항목을 삭제할 수 있습니다:
 
 ```
 Cache::forget('key');
 ```
 
-만료 시간을 0 또는 음수로 지정해도 아이템을 삭제할 수 있습니다.
+또는 만료 시간을 0 또는 음수로 지정해도 삭제됩니다:
 
 ```
 Cache::put('key', 'value', 0);
@@ -316,25 +316,25 @@ Cache::put('key', 'value', 0);
 Cache::put('key', 'value', -5);
 ```
 
-캐시 전체를 비우려면 `flush` 메서드를 사용할 수 있습니다.
+전체 캐시를 비우려면 `flush` 메서드를 사용합니다:
 
 ```
 Cache::flush();
 ```
 
 > [!WARNING]  
-> 캐시를 flush하면 설정한 캐시 "prefix"와는 상관없이 모든 캐시 엔트리가 삭제되므로, 여러 애플리케이션이 캐시를 공유하는 경우 주의해서 사용해야 합니다.
+> `flush`는 캐시 키 접두사(prefix)를 무시하고 모든 캐시 데이터를 삭제합니다. 여러 애플리케이션이 캐시를 공유하는 경우 주의해서 사용하세요.
 
 <a name="the-cache-helper"></a>
-### 캐시 헬퍼
+### 캐시 헬퍼 (The Cache Helper)
 
-`Cache` 파사드 외에도, 전역 `cache` 함수를 사용하여 캐시 데이터에 접근하거나 저장할 수 있습니다. 문자열 인수 한 개로 호출하면 해당 키의 값을 반환합니다.
+`Cache` 파사드 외에도, 전역 `cache` 함수를 이용해 캐시 데이터를 조회하거나 저장할 수 있습니다. 문자열 인자 하나를 전달하면 해당 키의 값을 반환합니다:
 
 ```
 $value = cache('key');
 ```
 
-키/값 쌍의 배열과 만료 시간을 함수에 전달하면, 해당 값들을 지정한 시간 동안 캐시에 저장합니다.
+키와 값의 배열, 만료 시간을 함께 전달하면 지정된 기간 동안 값을 저장합니다:
 
 ```
 cache(['key' => 'value'], $seconds);
@@ -342,7 +342,7 @@ cache(['key' => 'value'], $seconds);
 cache(['key' => 'value'], now()->addMinutes(10));
 ```
 
-인수 없이 호출하면 `Illuminate\Contracts\Cache\Factory` 구현 인스턴스를 반환하며, 이를 통해 다른 캐시 메서드도 호출할 수 있습니다.
+인자를 전달하지 않으면 `Illuminate\Contracts\Cache\Factory` 구현체 인스턴스가 반환되어, 다른 캐시 메서드를 호출할 수 있습니다:
 
 ```
 cache()->remember('users', $seconds, function () {
@@ -351,18 +351,18 @@ cache()->remember('users', $seconds, function () {
 ```
 
 > [!NOTE]  
-> 전역 `cache` 함수 호출을 테스트할 때는 [파사드 테스트](/docs/11.x/mocking#mocking-facades)와 동일하게 `Cache::shouldReceive`를 사용할 수 있습니다.
+> 전역 `cache` 함수 호출을 테스트할 때는 `Cache::shouldReceive`를 사용해 파사드를 모킹(mocking)하는 것과 동일하게 처리할 수 있습니다.
 
 <a name="atomic-locks"></a>
-## 원자적 락(Atomic Locks)
+## 원자적 락 (Atomic Locks)
 
 > [!WARNING]  
-> 이 기능을 사용하려면, 애플리케이션의 기본 캐시 드라이버가 `memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 중 하나여야 하며, 모든 서버가 동일한 중앙 캐시 서버에 연결되어 있어야 합니다.
+> 이 기능을 사용하려면 애플리케이션 기본 캐시 드라이버가 `memcached`, `redis`, `dynamodb`, `database`, `file`, 또는 `array` 중 하나여야 하며, 모든 서버가 같은 중앙 캐시 서버와 통신해야 합니다.
 
 <a name="managing-locks"></a>
-### 락 관리
+### 락 관리하기 (Managing Locks)
 
-원자적(atomic) 락을 이용하면 레이스 컨디션(race condition) 걱정 없이 분산 환경에서 락을 조작할 수 있습니다. 예를 들어, [Laravel Forge](https://forge.laravel.com)에서는 원자적 락을 사용해 한 서버에서 한 번에 한 개의 원격 작업만 실행되도록 보장합니다. 락은 `Cache::lock` 메서드로 생성하고 관리합니다.
+원자적 락을 사용하면 경쟁 상태(race condition)를 걱정하지 않고 분산 락을 조작할 수 있습니다. 예를 들어, [Laravel Forge](https://forge.laravel.com)에서는 한 서버에서 한번에 하나의 원격 작업만 실행되도록 원자적 락을 사용합니다. `Cache::lock` 메서드를 이용해 락을 만들고 관리할 수 있습니다:
 
 ```
 use Illuminate\Support\Facades\Cache;
@@ -370,21 +370,21 @@ use Illuminate\Support\Facades\Cache;
 $lock = Cache::lock('foo', 10);
 
 if ($lock->get()) {
-    // 10초 동안 락 획득...
+    // 10초 동안 락 획득됨...
 
     $lock->release();
 }
 ```
 
-`get` 메서드는 클로저도 받을 수 있습니다. 클로저 실행이 끝나면 락은 자동으로 해제됩니다.
+`get` 메서드는 클로저도 받습니다. 클로저 실행이 끝나면 자동으로 락이 해제됩니다:
 
 ```
 Cache::lock('foo', 10)->get(function () {
-    // 10초간 락을 획득하고, 자동으로 해제됨...
+    // 10초 동안 락 획득 후 자동 해제됨...
 });
 ```
 
-락을 요청하는 시점에 이미 락이 잡혀 있다면, 라라벨이 지정한 시간(초 단위)만큼 락이 풀릴 때까지 대기하도록 할 수 있습니다. 제한 시간 내 락을 획득하지 못하면 `Illuminate\Contracts\Cache\LockTimeoutException` 예외가 발생합니다.
+락이 해당 시점에 사용 불가능하면 Laravel에게 기다리도록 요청할 수 있습니다. 이 경우 지정한 시간 내에 락을 얻지 못하면 `Illuminate\Contracts\Cache\LockTimeoutException` 예외가 발생합니다:
 
 ```
 use Illuminate\Contracts\Cache\LockTimeoutException;
@@ -394,28 +394,28 @@ $lock = Cache::lock('foo', 10);
 try {
     $lock->block(5);
 
-    // 최대 5초까지 기다린 후 락 획득...
+    // 최대 5초 대기 후 락 획득...
 } catch (LockTimeoutException $e) {
-    // 락을 획득할 수 없음...
+    // 락 획득 불가...
 } finally {
     $lock->release();
 }
 ```
 
-위 예시에서처럼, `block` 메서드에 클로저를 전달해 코드를 더욱 간결하게 작성할 수도 있습니다. 이 경우 라라벨이 지정한 시간(초) 동안 락을 기다렸다가 획득하면 클로저 실행 후 자동으로 락을 해제합니다.
+위 예시를 간소화하려면 `block` 메서드에 클로저를 전달하세요. 락을 얻을 때까지 최대 지정 시간 동안 시도하며, 클로저가 실행 완료되면 자동으로 락이 해제됩니다:
 
 ```
 Cache::lock('foo', 10)->block(5, function () {
-    // 최대 5초 대기 후 락 획득, 실행 후 락 해제...
+    // 최대 5초 대기 후 락 획득...
 });
 ```
 
 <a name="managing-locks-across-processes"></a>
-### 프로세스 간 락 관리
+### 프로세스 간 락 관리 (Managing Locks Across Processes)
 
-때로는 한 프로세스에서 락을 획득한 뒤, 다른 프로세스에서 해당 락을 해제하고 싶을 수 있습니다. 예컨대, 웹 요청 중에 락을 획득하고, 이 요청에서 생성된 대기 중인(queued) 작업의 마지막에서 락을 해제하는 경우 등입니다. 이런 때는 락에 할당된 "owner token(소유자 토큰)"을 큐 작업으로 전달하여, 받은 토큰으로 락을 재생성해야 합니다.
+한 프로세스에서 락을 획득하고 다른 프로세스에서 해제해야 하는 경우도 있습니다. 예를 들어, 웹 요청 중 락을 얻고, 해당 요청이 트리거한 큐 작업이 락을 해제하게 할 때입니다. 이럴 때는 락 소유자 토큰(owner token)을 큐 작업에 전달해, 락을 재생성하고 해제할 수 있도록 해야 합니다.
 
-아래는 락을 성공적으로 획득하면 큐 작업을 디스패치하고, 락의 소유자 토큰을 큐 작업에 함께 전달하는 예시입니다.
+아래 예시는 락을 성공적으로 획득한 후 큐 작업에 소유자 토큰을 전달하는 코드입니다:
 
 ```
 $podcast = Podcast::find($id);
@@ -427,25 +427,25 @@ if ($lock->get()) {
 }
 ```
 
-큐 작업인 `ProcessPodcast` 내부에서는, 소유자 토큰을 이용해 락을 복원하고 해제할 수 있습니다.
+`ProcessPodcast` 작업 클래스에서 전달받은 토큰으로 락을 복원하고 해제할 수 있습니다:
 
 ```
 Cache::restoreLock('processing', $this->owner)->release();
 ```
 
-현재 소유자를 고려하지 않고 강제로 락을 해제하고 싶다면 `forceRelease` 메서드를 사용할 수 있습니다.
+현재 락 소유자를 무시하고 락을 해제하려면 `forceRelease` 메서드를 사용하세요:
 
 ```
 Cache::lock('processing')->forceRelease();
 ```
 
 <a name="adding-custom-cache-drivers"></a>
-## 커스텀 캐시 드라이버 추가
+## 커스텀 캐시 드라이버 추가하기 (Adding Custom Cache Drivers)
 
 <a name="writing-the-driver"></a>
-### 드라이버 작성
+### 드라이버 작성하기 (Writing the Driver)
 
-커스텀 캐시 드라이버를 만들려면, 먼저 `Illuminate\Contracts\Cache\Store` [컨트랙트](/docs/11.x/contracts)를 구현해야 합니다. 예를 들어, MongoDB 캐시를 구현한다면 다음과 같이 작성할 수 있습니다.
+커스텀 캐시 드라이버를 만들려면 먼저 `Illuminate\Contracts\Cache\Store` [컨트랙트](/docs/11.x/contracts)를 구현해야 합니다. 예를 들어 MongoDB 캐시 구현은 다음과 같을 수 있습니다:
 
 ```
 <?php
@@ -469,7 +469,7 @@ class MongoStore implements Store
 }
 ```
 
-이제 각 메서드를 MongoDB 연결로 구현하면 됩니다. 실제 구현 예시는 [라라벨 프레임워크 소스코드의 `Illuminate\Cache\MemcachedStore`](https://github.com/laravel/framework)를 참고할 수 있습니다. 구현이 끝나면, `Cache` 파사드의 `extend` 메서드로 커스텀 드라이버 등록을 마무리합니다.
+이 메서드들을 MongoDB 연결을 사용해 구현하면 됩니다. 구현 예시는 Laravel 프레임워크 소스 코드 내 `Illuminate\Cache\MemcachedStore`를 참고하세요. 구현이 끝나면 `Cache` 파사드의 `extend` 메서드로 커스텀 드라이버 등록을 마칩니다:
 
 ```
 Cache::extend('mongo', function (Application $app) {
@@ -478,12 +478,12 @@ Cache::extend('mongo', function (Application $app) {
 ```
 
 > [!NOTE]  
-> 커스텀 캐시 드라이버 코드를 어디에 둘지 고민된다면, `app` 디렉터리 안에 `Extensions` 네임스페이스를 만들어 관리할 수 있습니다. 하지만 라라벨은 엄격한 구조를 강제하지 않으므로, 원하는 대로 폴더 구조를 설계하셔도 됩니다.
+> 커스텀 캐시 드라이버 코드를 어디에 둘지 고민된다면, `app` 디렉터리 내 `Extensions` 네임스페이스를 만들어 관리하는 방법이 있습니다. Laravel은 엄격한 애플리케이션 구조를 강제하지 않으므로 원하는 방식으로 자유롭게 조직하세요.
 
 <a name="registering-the-driver"></a>
-### 드라이버 등록
+### 드라이버 등록하기 (Registering the Driver)
 
-라라벨에서 커스텀 캐시 드라이버를 등록하려면, `Cache` 파사드의 `extend` 메서드를 사용합니다. 서비스 프로바이더의 `boot` 메서드에서 캐시 값을 읽으려는 경우가 있을 수 있으므로, 커스텀 드라이버는 `boot` 호출 직전 but 모든 서비스 프로바이더 등록(register) 이후에 등록하는 것이 안전합니다. 이를 위해 `App\Providers\AppServiceProvider` 클래스의 `register` 메서드에서 `booting` 콜백에 등록 코드를 작성합니다.
+Laravel에 커스텀 캐시 드라이버를 등록하려면 `Cache` 파사드의 `extend` 메서드를 사용합니다. 다른 서비스 프로바이더가 `boot` 메서드에서 캐시된 값을 읽으려 할 수 있으므로, `register` 메서드 내에서 `booting` 콜백을 등록해 드라이버를 등록하는 것이 좋습니다. 이렇게 하면 모든 서비스 프로바이더의 `register`가 다 호출된 후, `boot`가 호출되기 전에 드라이버가 등록됩니다. 다음은 `App\Providers\AppServiceProvider` 클래스 내 예시입니다:
 
 ```
 <?php
@@ -510,7 +510,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * 애플리케이션을 부트스트랩합니다.
+     * 애플리케이션 서비스를 부트스트랩합니다.
      */
     public function boot(): void
     {
@@ -519,18 +519,18 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
-`extend` 메서드의 첫 번째 인수로 드라이버의 이름을 지정합니다. 이 이름은 `config/cache.php`의 `driver` 옵션 값과 일치해야 합니다. 두 번째 인수로는 `Illuminate\Cache\Repository` 인스턴스를 반환하는 클로저를 지정하며, 이 클로저에는 [서비스 컨테이너](/docs/11.x/container) 인스턴스인 `$app`이 전달됩니다.
+`extend` 메서드 첫 번째 인자는 드라이버 이름으로, `config/cache.php` 설정 파일의 `driver` 옵션과 동일해야 합니다. 두 번째 인자는 `Illuminate\Cache\Repository` 인스턴스를 반환하는 클로저이며, 클로저 인자로 서비스 컨테이너 `$app`이 전달됩니다.
 
-등록이 끝나면, 애플리케이션의 환경 변수 `CACHE_STORE` 또는 `config/cache.php` 파일의 `default` 옵션을 확장한 커스텀 드라이버 이름으로 변경하세요.
+등록 후 `.env`의 `CACHE_STORE`나 `config/cache.php`의 `default` 옵션을 커스텀 드라이버 이름으로 변경하세요.
 
 <a name="events"></a>
-## 이벤트
+## 이벤트 (Events)
 
-모든 캐시 작업 시마다 특정 코드를 실행하고 싶다면, 캐시에서 발생하는 다양한 [이벤트](/docs/11.x/events)를 리스닝할 수 있습니다.
+모든 캐시 작업에서 코드를 실행하려면 다음과 같이 캐시가 발생시키는 [이벤트](/docs/11.x/events)에 리스너를 등록할 수 있습니다:
 
 <div class="overflow-auto">
 
-| 이벤트명 |
+| 이벤트 이름 |
 | --- |
 | `Illuminate\Cache\Events\CacheHit` |
 | `Illuminate\Cache\Events\CacheMissed` |
@@ -539,7 +539,7 @@ class AppServiceProvider extends ServiceProvider
 
 </div>
 
-성능 향상을 위해, 특정 캐시 저장소의 캐시 이벤트를 비활성화하려면 `config/cache.php` 설정 파일에서 해당 저장소의 `events` 옵션을 `false`로 지정하세요.
+성능 향상을 위해 애플리케이션 `config/cache.php`에서 각 캐시 저장소 설정에 `events` 옵션을 `false`로 설정해 캐시 이벤트를 비활성화할 수 있습니다:
 
 ```php
 'database' => [

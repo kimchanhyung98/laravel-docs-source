@@ -1,21 +1,21 @@
-# 파사드 (Facades)
+# 페이시드 (Facades)
 
 - [소개](#introduction)
-- [파사드를 언제 사용할 것인가](#when-to-use-facades)
-    - [파사드와 의존성 주입](#facades-vs-dependency-injection)
-    - [파사드와 헬퍼 함수](#facades-vs-helper-functions)
-- [파사드가 동작하는 방식](#how-facades-work)
-- [실시간(Real-Time) 파사드](#real-time-facades)
-- [파사드 클래스 레퍼런스](#facade-class-reference)
+- [페이시드를 언제 사용하나요?](#when-to-use-facades)
+    - [페이시드와 의존성 주입 비교](#facades-vs-dependency-injection)
+    - [페이시드와 헬퍼 함수 비교](#facades-vs-helper-functions)
+- [페이시드 작동 원리](#how-facades-work)
+- [실시간 페이시드 (Real-Time Facades)](#real-time-facades)
+- [페이시드 클래스 참조](#facade-class-reference)
 
 <a name="introduction"></a>
-## 소개
+## 소개 (Introduction)
 
-라라벨 공식 문서 전반에 걸쳐, 라라벨의 다양한 기능을 "파사드(facade)"를 통해 사용하는 코드 예제를 자주 보게 됩니다. 파사드는 애플리케이션의 [서비스 컨테이너](/docs/9.x/container)에서 사용할 수 있는 클래스에 "정적(static)" 인터페이스를 제공합니다. 라라벨은 거의 모든 핵심 기능에 접근할 수 있도록 다양한 파사드를 기본으로 제공하고 있습니다.
+라라벨 문서 전반에서 "페이시드(facades)"를 통해 라라벨의 기능들과 상호작용하는 예제 코드를 자주 보게 됩니다. 페이시드는 애플리케이션의 [서비스 컨테이너](/docs/9.x/container)에 등록된 클래스에 대해 "정적(static)" 인터페이스를 제공합니다. 라라벨은 거의 모든 기능에 접근할 수 있도록 다양한 페이시드를 기본 제공하고 있습니다.
 
-라라벨 파사드는 서비스 컨테이너 내부 클래스에 대한 "정적 프록시" 역할을 하며, 전통적인 정적 메서드에 비해 테스트 가능성과 유연성은 그대로 유지하면서 더욱 간결하고 표현력 있는 문법을 사용할 수 있게 해줍니다. 파사드가 정확히 어떻게 작동하는지 아직 완전히 이해하지 못해도 괜찮으니 우선 계속 라라벨을 학습해 나가시기 바랍니다.
+라라벨 페이시드는 서비스 컨테이너 내부의 클래스에 대해 "정적 프록시" 역할을 하며, 전통적인 정적 메서드보다 더 유연하고 테스트하기 쉬운, 간결하고 표현력 있는 문법을 제공합니다. 페이시드가 어떻게 동작하는지 완벽히 이해하지 못해도 괜찮으니, 라라벨 학습을 계속 진행하면서 자연스럽게 익혀가면 됩니다.
 
-라라벨의 모든 파사드는 `Illuminate\Support\Facades` 네임스페이스에 정의되어 있습니다. 파사드는 아래처럼 쉽게 사용할 수 있습니다.
+라라벨의 모든 페이시드는 `Illuminate\Support\Facades` 네임스페이스에 정의되어 있습니다. 따라서 페이시드 사용은 아래처럼 간단합니다:
 
 ```
 use Illuminate\Support\Facades\Cache;
@@ -26,14 +26,14 @@ Route::get('/cache', function () {
 });
 ```
 
-라라벨 공식 문서에서는 프레임워크의 다양한 기능을 보여주기 위해 파사드를 활용한 예시가 자주 사용됩니다.
+라라벨 문서 내 많은 예제에서 프레임워크의 다양한 기능을 보여주기 위해 페이시드를 활용합니다.
 
 <a name="helper-functions"></a>
-#### 헬퍼 함수
+#### 헬퍼 함수 (Helper Functions)
 
-파사드와 더불어, 라라벨은 주요 기능을 더 쉽게 사용할 수 있도록 다양한 전역 "헬퍼 함수"도 제공합니다. 자주 사용되는 헬퍼 함수로는 `view`, `response`, `url`, `config` 등이 있습니다. 각 헬퍼 함수는 관련 기능 문서에서 개별적으로 설명되어 있지만, 전체 목록은 별도의 [헬퍼 함수 공식 문서](/docs/9.x/helpers)에서 확인할 수 있습니다.
+페이시드를 보완하기 위해 라라벨은 다양한 전역 "헬퍼 함수"도 제공합니다. 이를 통해 자주 쓰이는 라라벨 기능에 훨씬 쉽게 접근할 수 있습니다. 자주 사용하는 헬퍼 함수의 예로는 `view`, `response`, `url`, `config` 등이 있습니다. 각 헬퍼 함수는 대응하는 기능과 함께 문서화되어 있으며, 전체 목록은 [헬퍼 함수 문서](/docs/9.x/helpers)에서 확인할 수 있습니다.
 
-예를 들어, JSON 응답을 만들 때 굳이 `Illuminate\Support\Facades\Response` 파사드를 사용할 필요 없이 `response` 헬퍼 함수를 바로 사용할 수 있습니다. 헬퍼 함수는 전역적으로 사용할 수 있기 때문에, 별도로 클래스를 임포트하거나 준비할 필요도 없습니다.
+예를 들어, JSON 응답을 생성하려고 할 때 `Illuminate\Support\Facades\Response` 페이시드 대신 `response` 헬퍼 함수를 사용할 수도 있습니다. 헬퍼 함수는 전역적으로 사용 가능하기 때문에 별도로 클래스를 임포트할 필요가 없습니다:
 
 ```
 use Illuminate\Support\Facades\Response;
@@ -52,18 +52,18 @@ Route::get('/users', function () {
 ```
 
 <a name="when-to-use-facades"></a>
-## 파사드를 언제 사용할 것인가
+## 페이시드를 언제 사용하나요? (When To Use Facades)
 
-파사드는 다양한 장점을 가지고 있습니다. 가장 큰 장점 중 하나는 복잡한 클래스명을 일일이 기억하거나 직접 등록/주입하지 않아도 라라벨의 기능을 빠르고 간결하게 사용할 수 있다는 점입니다. 또한 PHP의 동적 메서드(dynamic method) 활용 방식 덕분에 테스트도 더욱 용이합니다.
+페이시드는 여러 가지 장점이 있습니다. 긴 클래스명을 기억하지 않고도 라라벨 기능을 사용할 수 있게 하는 간결하고 기억하기 쉬운 문법을 제공합니다. 또한, PHP의 동적 메서드 사용 덕분에 테스트하기도 수월합니다.
 
-하지만 파사드 사용 시 주의점도 있습니다. 파사드를 너무 간편하게 쓸 수 있기 때문에, 별다른 의존성 주입 없이도 손쉽게 다양한 파사드를 한 클래스에 잔뜩 넣게 되는 "책임 범위(scope)" 확장 문제가 발생할 수 있습니다. 반면 의존성 주입을 사용할 때는 생성자가 길어지는 등 시각적으로 클래스가 지나치게 커지고 있음을 쉽게 감지할 수 있습니다. 따라서 파사드를 사용할 때도 하나의 클래스가 너무 많은 역할을 하지는 않는지 주의 깊게 점검하고, 클래스가 너무 커진다면 작은 단위로 나누는 것이 좋습니다.
+하지만 페이시드를 사용할 때는 주의가 필요합니다. 주요 위험은 클래스의 "범위 확장(scope creep)"입니다. 페이시드는 사용하기 쉽고 의존성 주입을 요구하지 않기 때문에, 하나의 클래스에 너무 많은 페이시드를 남용하며 클래스가 지나치게 비대해질 수 있습니다. 의존성 주입을 사용하면, 생성자에 많은 인수들이 나타나 클래스가 커지는 것이 눈에 보이기에 이를 자연스럽게 경계할 수 있습니다. 따라서 페이시드를 사용할 때는 클래스가 담당하는 책임의 범위를 좁게 유지하는 데 주의를 기울이세요. 만약 클래스가 너무 커지면 여러 개의 작은 클래스로 분리하는 것을 고려해야 합니다.
 
 <a name="facades-vs-dependency-injection"></a>
-### 파사드와 의존성 주입
+### 페이시드와 의존성 주입 비교 (Facades Vs. Dependency Injection)
 
-의존성 주입(Dependency Injection)의 가장 큰 장점 중 하나는, 주입받는 클래스의 구현을 쉽게 교체할 수 있다는 점입니다. 특히 테스트 환경에서는, 실제 클래스 대신 목(mock)이나 스텁(stub) 객체를 주입해 해당 메서드가 올바르게 호출되는지 검증하기 쉬워집니다.
+의존성 주입의 주요 장점 중 하나는 주입하는 클래스의 구현체를 쉽게 교체할 수 있다는 점입니다. 테스트 시에는 목(mock)이나 스텁(stub)을 주입하여 특정 메서드들이 호출되었는지 확인할 수 있어 매우 유용합니다.
 
-전통적인 정적(static) 클래스 메서드는 목(mock)이나 스텁을 사용해 테스트하기 어렵지만, 파사드는 서비스 컨테이너에서 객체를 동적으로 꺼내 메서드를 위임하기 때문에, 실제 주입받은 클래스 인스턴스를 테스트하듯이 파사드 역시 동일하게 테스트 가능합니다. 예를 들어, 아래와 같은 경로(Route)가 있다고 가정해봅시다.
+일반적으로 진정한 정적 메서드는 모킹하거나 스텁 처리하기 어렵습니다. 그러나 페이시드는 서비스 컨테이너에서 객체를 동적으로 찾아내어 메서드 호출을 전달하는 동적 메서드를 이용하기 때문에, 실제로는 주입된 클래스 인스턴스를 테스트하듯 페이시드도 테스트할 수 있습니다. 예를 들어, 아래 라우트를 살펴보세요:
 
 ```
 use Illuminate\Support\Facades\Cache;
@@ -73,13 +73,13 @@ Route::get('/cache', function () {
 });
 ```
 
-라라벨이 제공하는 파사드 테스트 메서드를 활용하면, `Cache::get` 메서드가 우리가 기대한 인수로 호출되는지 아래와 같이 쉽게 검증할 수 있습니다.
+라라벨의 페이시드 테스트 메서드를 사용해 다음과 같은 테스트를 작성하여 `Cache::get` 메서드가 예상 인수로 호출되었는지 확인할 수 있습니다:
 
 ```
 use Illuminate\Support\Facades\Cache;
 
 /**
- * A basic functional test example.
+ * 기본적인 기능 테스트 예제입니다.
  *
  * @return void
  */
@@ -96,9 +96,9 @@ public function testBasicExample()
 ```
 
 <a name="facades-vs-helper-functions"></a>
-### 파사드와 헬퍼 함수
+### 페이시드와 헬퍼 함수 비교 (Facades Vs. Helper Functions)
 
-파사드 외에도, 라라벨은 뷰 생성, 이벤트 발생, 작업 디스패치, HTTP 응답 전송 등 주요 기능을 수행하는 다양한 "헬퍼 함수"도 내장하고 있습니다. 이 중 상당수 헬퍼 함수는 대응되는 파사드와 같은 동작을 합니다. 예를 들어, 아래 두 코드는 같은 역할을 합니다.
+페이시드 외에도 라라벨은 뷰 생성, 이벤트 호출, 작업 디스패치, HTTP 응답 전송과 같은 일반 작업을 수행하는 여러 "헬퍼 함수"를 포함합니다. 많은 헬퍼 함수는 대응하는 페이시드와 동일한 기능을 합니다. 예를 들어 다음 두 코드는 같습니다:
 
 ```
 return Illuminate\Support\Facades\View::make('profile');
@@ -106,7 +106,7 @@ return Illuminate\Support\Facades\View::make('profile');
 return view('profile');
 ```
 
-파사드와 헬퍼 함수는 실질적으로 차이가 없습니다. 헬퍼 함수를 사용하더라도, 테스트에서는 파사드와 똑같이 테스트할 수 있습니다. 예를 들어, 아래 라우트(Route)에서는:
+페이시드와 헬퍼 함수는 실질적으로 아무 차이가 없습니다. 헬퍼 함수도 대응하는 페이시드와 같은 방식으로 테스트할 수 있습니다. 예를 들어, 다음 라우트가 있다고 가정해 보죠:
 
 ```
 Route::get('/cache', function () {
@@ -114,13 +114,13 @@ Route::get('/cache', function () {
 });
 ```
 
-`cache` 헬퍼 함수는 내부적으로 `Cache` 파사드가 감싸고 있는 클래스의 `get` 메서드를 호출하게 됩니다. 따라서 헬퍼 함수를 사용하더라도, 기대한 인수로 메서드가 호출되는지 아래처럼 테스트할 수 있습니다.
+`cache` 헬퍼는 `Cache` 페이시드에 대응하는 클래스의 `get` 메서드를 호출합니다. 따라서 헬퍼 함수를 사용하더라도, 아래 테스트처럼 메서드가 예상 인수로 호출되었는지 확인할 수 있습니다:
 
 ```
 use Illuminate\Support\Facades\Cache;
 
 /**
- * A basic functional test example.
+ * 기본적인 기능 테스트 예제입니다.
  *
  * @return void
  */
@@ -137,11 +137,11 @@ public function testBasicExample()
 ```
 
 <a name="how-facades-work"></a>
-## 파사드가 동작하는 방식
+## 페이시드 작동 원리 (How Facades Work)
 
-라라벨 애플리케이션에서, 파사드는 컨테이너에 등록된 객체에 접근할 수 있도록 하는 클래스입니다. 이 동작을 가능하게 하는 핵심은 `Facade` 클래스에 있습니다. 라라벨의 모든 파사드, 그리고 여러분이 만드는 커스텀 파사드는 기본적으로 `Illuminate\Support\Facades\Facade` 클래스를 상속합니다.
+라라벨 애플리케이션에서 페이시드는 서비스 컨테이너로부터 객체에 접근할 수 있게 해주는 클래스입니다. 이 동작을 가능하게 하는 핵심은 `Facade` 클래스에 있습니다. 라라벨의 기본 페이시드와 직접 만든 커스텀 페이시드는 모두 `Illuminate\Support\Facades\Facade` 기본 클래스를 상속받습니다.
 
-`Facade` 기본 클래스는 PHP의 매직 메서드인 `__callStatic()`을 활용하여, 파사드에 호출된 모든 메서드 요청을 서비스 컨테이너에서 꺼낸 실제 객체로 위임합니다. 아래 예시 코드를 보면, 라라벨의 캐시 시스템에 메서드를 호출하는 코드가 있습니다. 언뜻 보기에는 `Cache` 클래스에서 정적 메서드로 `get`을 바로 호출하는 것처럼 보입니다.
+`Facade` 기본 클래스는 `__callStatic()` 매직 메서드를 이용해, 페이시드에 대한 호출을 컨테이너에서 해석한 객체로 연기(delegate)합니다. 아래 예제에서 Laravel 캐시 시스템을 호출하고 있습니다. 이 코드를 보면 마치 `Cache` 클래스의 정적 `get` 메서드를 호출하는 것처럼 보일 수 있습니다:
 
 ```
 <?php
@@ -154,7 +154,7 @@ use Illuminate\Support\Facades\Cache;
 class UserController extends Controller
 {
     /**
-     * Show the profile for the given user.
+     * 주어진 사용자의 프로필을 보여줍니다.
      *
      * @param  int  $id
      * @return Response
@@ -168,15 +168,15 @@ class UserController extends Controller
 }
 ```
 
-파일 상단에 `Cache` 파사드를 임포트(import)하는 부분을 확인할 수 있습니다. 이 파사드는 사실 `Illuminate\Contracts\Cache\Factory` 인터페이스의 구현체에 접근하기 위한 프록시 역할을 합니다. 파사드를 통해 호출하는 모든 메서드는 라라벨 캐시 서비스의 실제 인스턴스로 전달되어 실행됩니다.
+파일 상단에서 `Cache` 페이시드를 임포트한 것을 확인할 수 있습니다. 이 페이시드는 `Illuminate\Contracts\Cache\Factory` 인터페이스의 실제 구현체에 접근하는 프록시 역할을 합니다. 페이시드를 통해 호출하는 모든 메서드는 라라벨 캐시 서비스의 실제 인스턴스에 전달됩니다.
 
-실제로 `Illuminate\Support\Facades\Cache` 클래스를 살펴보면, `get`이라는 정적 메서드는 존재하지 않습니다.
+`Illuminate\Support\Facades\Cache` 클래스를 보면, 실제로 `get`이라는 정적 메서드는 존재하지 않습니다:
 
 ```
 class Cache extends Facade
 {
     /**
-     * Get the registered name of the component.
+     * 컴포넌트의 등록된 이름을 반환합니다.
      *
      * @return string
      */
@@ -184,12 +184,12 @@ class Cache extends Facade
 }
 ```
 
-여기서 주목할 점은 `Cache` 파사드가 기본 `Facade` 클래스를 확장하고, `getFacadeAccessor()`라는 메서드를 구현하고 있다는 것입니다. 이 메서드는 서비스 컨테이너에 등록된 바인딩 이름을 반환합니다. 사용자가 `Cache` 파사드의 어떤 메서드든 호출하면, 라라벨은 서비스 컨테이너에서 `'cache'` 바인딩을 찾아 해당 객체의(여기서는 `get`) 메서드를 실행하게 됩니다. 보다 자세한 작동 원리는 [서비스 컨테이너 공식 문서](/docs/9.x/container)에서 확인할 수 있습니다.
+이 클래스는 기본 `Facade` 클래스를 상속하며 `getFacadeAccessor()` 메서드를 정의하고 있습니다. 이 메서드는 서비스 컨테이너에 바인딩된 키 이름을 반환합니다. 사용자가 `Cache` 페이시드의 정적 메서드를 호출하면 라라벨은 `cache`라는 이름의 바인딩을 서비스 컨테이너에서 찾아 해당 객체에 메서드 호출(이 경우 `get`)을 실행합니다.
 
 <a name="real-time-facades"></a>
-## 실시간(Real-Time) 파사드
+## 실시간 페이시드 (Real-Time Facades)
 
-실시간(Real-Time) 파사드를 이용하면, 여러분 애플리케이션 내의 어느 클래스든 마치 파사드처럼 사용할 수 있습니다. 우선 아래에 실시간 파사드를 사용하지 않은 기존 코드 예시를 살펴보겠습니다. 예를 들어, `Podcast` 모델에 `publish`라는 메서드가 있다고 가정합시다. 이 때 실제로 팟캐스트를 발행(publish)하려면 `Publisher` 인스턴스를 의존성 주입해야 합니다.
+실시간 페이시드를 사용하면, 애플리케이션의 어떤 클래스든 페이시드처럼 다룰 수 있습니다. 이를 설명하기 위해, 우선 실시간 페이시드를 사용하지 않는 코드를 살펴보겠습니다. 예를 들어, `Podcast` 모델이 `publish` 메서드를 가지고 있다고 합시다. 하지만 팟캐스트를 발행하려면 `Publisher` 인스턴스를 주입받아야 합니다:
 
 ```
 <?php
@@ -202,7 +202,7 @@ use Illuminate\Database\Eloquent\Model;
 class Podcast extends Model
 {
     /**
-     * Publish the podcast.
+     * 팟캐스트를 발행합니다.
      *
      * @param  Publisher  $publisher
      * @return void
@@ -216,7 +216,7 @@ class Podcast extends Model
 }
 ```
 
-Publisher 구현체를 메서드에 주입하면 해당 메서드를 별도로 격리해서(test isolation) 테스트할 때 매우 유용합니다. 왜냐하면 Publisher를 mock 객체로 주입해 자유롭게 동작을 제어할 수 있기 때문입니다. 하지만 이 방식의 단점은 publish 메서드를 호출할 때마다 항상 Publisher 인스턴스를 인수로 넘겨줘야 한다는 점입니다. 실시간 파사드를 사용하면, 테스트 용이성(testability)은 그대로 유지하면서도 Publisher 인스턴스를 명시적으로 전달할 필요가 없어집니다. 실시간 파사드로 만들고 싶다면 임포트(import) 문에서 네임스페이스 앞에 `Facades`를 붙이면 됩니다.
+메서드에 퍼블리셔 구현체를 주입받으면 쉽게 목(mock) 처리가 가능해 개별 메서드 테스트가 쉽습니다. 하지만 `publish` 메서드를 호출할 때마다 퍼블리셔 인스턴스를 반드시 전달해야 합니다. 실시간 페이시드를 활용하면 테스트 가능성을 유지하면서도 `Publisher` 인스턴스를 명시적으로 전달할 필요가 없습니다. 실시간 페이시드를 만들려면 임포트하는 클래스 네임스페이스 앞에 `Facades`를 붙이면 됩니다:
 
 ```
 <?php
@@ -229,7 +229,7 @@ use Illuminate\Database\Eloquent\Model;
 class Podcast extends Model
 {
     /**
-     * Publish the podcast.
+     * 팟캐스트를 발행합니다.
      *
      * @return void
      */
@@ -242,7 +242,7 @@ class Podcast extends Model
 }
 ```
 
-실시간 파사드를 사용하면, Publisher 구현체는 클래스 또는 인터페이스 명에서 `Facades` 접두사 뒤에 오는 이름 부분을 바탕으로 서비스 컨테이너에서 자동으로 해결(resolved)됩니다. 또한 테스트할 때도 라라벨이 제공하는 파사드용 테스트 헬퍼를 사용해서 간단하게 mock 처리를 할 수 있습니다.
+실시간 페이시드를 사용하면, 퍼블리셔 구현체는 자동으로 서비스 컨테이너에서 `Facades` 접두사 이후에 나오는 인터페이스 혹은 클래스 이름을 기준으로 찾아집니다. 테스트 시에는 라라벨 내장 페이시드 테스트 도구를 활용해 메서드 호출을 목 처리할 수 있습니다:
 
 ```
 <?php
@@ -259,7 +259,7 @@ class PodcastTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * A test example.
+     * 테스트 예제입니다.
      *
      * @return void
      */
@@ -275,57 +275,57 @@ class PodcastTest extends TestCase
 ```
 
 <a name="facade-class-reference"></a>
-## 파사드 클래스 레퍼런스
+## 페이시드 클래스 참조 (Facade Class Reference)
 
-아래 표는 모든 기본 파사드와 해당 파사드가 감싸고 있는 실제 클래스, 그리고 해당되는 경우 서비스 컨테이너 바인딩 키를 정리한 것입니다. 각 파사드가 어떤 기능을 담당하고 있는지, 그리고 API 문서를 빠르게 찾아보는 데 참고할 수 있습니다. [서비스 컨테이너 바인딩](/docs/9.x/container) 키도 함께 안내되어 있습니다.
+아래는 대표적인 라라벨 페이시드와 그 기반 클래스, 그리고 해당 서비스 컨테이너 바인딩 키입니다. 특정 페이시드의 API 문서를 빠르게 확인하는 데 유용합니다.
 
-| 파사드 | 클래스 | 서비스 컨테이너 바인딩 |
+| 페이시드 (Facade) | 클래스 (Class) | 서비스 컨테이너 바인딩 (Service Container Binding) |
 |-------------|-------------|-------------|
-| App  |  [Illuminate\Foundation\Application](https://laravel.com/api/9.x/Illuminate/Foundation/Application.html)  |  `app` |
-| Artisan  |  [Illuminate\Contracts\Console\Kernel](https://laravel.com/api/9.x/Illuminate/Contracts/Console/Kernel.html)  |  `artisan` |
-| Auth  |  [Illuminate\Auth\AuthManager](https://laravel.com/api/9.x/Illuminate/Auth/AuthManager.html)  |  `auth` |
-| Auth (Instance)  |  [Illuminate\Contracts\Auth\Guard](https://laravel.com/api/9.x/Illuminate/Contracts/Auth/Guard.html)  |  `auth.driver` |
-| Blade  |  [Illuminate\View\Compilers\BladeCompiler](https://laravel.com/api/9.x/Illuminate/View/Compilers/BladeCompiler.html)  |  `blade.compiler` |
-| Broadcast  |  [Illuminate\Contracts\Broadcasting\Factory](https://laravel.com/api/9.x/Illuminate/Contracts/Broadcasting/Factory.html)  |  &nbsp; |
-| Broadcast (Instance)  |  [Illuminate\Contracts\Broadcasting\Broadcaster](https://laravel.com/api/9.x/Illuminate/Contracts/Broadcasting/Broadcaster.html)  |  &nbsp; |
-| Bus  |  [Illuminate\Contracts\Bus\Dispatcher](https://laravel.com/api/9.x/Illuminate/Contracts/Bus/Dispatcher.html)  |  &nbsp; |
-| Cache  |  [Illuminate\Cache\CacheManager](https://laravel.com/api/9.x/Illuminate/Cache/CacheManager.html)  |  `cache` |
-| Cache (Instance)  |  [Illuminate\Cache\Repository](https://laravel.com/api/9.x/Illuminate/Cache/Repository.html)  |  `cache.store` |
-| Config  |  [Illuminate\Config\Repository](https://laravel.com/api/9.x/Illuminate/Config/Repository.html)  |  `config` |
-| Cookie  |  [Illuminate\Cookie\CookieJar](https://laravel.com/api/9.x/Illuminate/Cookie/CookieJar.html)  |  `cookie` |
-| Crypt  |  [Illuminate\Encryption\Encrypter](https://laravel.com/api/9.x/Illuminate/Encryption/Encrypter.html)  |  `encrypter` |
-| Date  |  [Illuminate\Support\DateFactory](https://laravel.com/api/9.x/Illuminate/Support/DateFactory.html)  |  `date` |
-| DB  |  [Illuminate\Database\DatabaseManager](https://laravel.com/api/9.x/Illuminate/Database/DatabaseManager.html)  |  `db` |
-| DB (Instance)  |  [Illuminate\Database\Connection](https://laravel.com/api/9.x/Illuminate/Database/Connection.html)  |  `db.connection` |
-| Event  |  [Illuminate\Events\Dispatcher](https://laravel.com/api/9.x/Illuminate/Events/Dispatcher.html)  |  `events` |
-| File  |  [Illuminate\Filesystem\Filesystem](https://laravel.com/api/9.x/Illuminate/Filesystem/Filesystem.html)  |  `files` |
-| Gate  |  [Illuminate\Contracts\Auth\Access\Gate](https://laravel.com/api/9.x/Illuminate/Contracts/Auth/Access/Gate.html)  |  &nbsp; |
-| Hash  |  [Illuminate\Contracts\Hashing\Hasher](https://laravel.com/api/9.x/Illuminate/Contracts/Hashing/Hasher.html)  |  `hash` |
-| Http  |  [Illuminate\Http\Client\Factory](https://laravel.com/api/9.x/Illuminate/Http/Client/Factory.html)  |  &nbsp; |
-| Lang  |  [Illuminate\Translation\Translator](https://laravel.com/api/9.x/Illuminate/Translation/Translator.html)  |  `translator` |
-| Log  |  [Illuminate\Log\LogManager](https://laravel.com/api/9.x/Illuminate/Log/LogManager.html)  |  `log` |
-| Mail  |  [Illuminate\Mail\Mailer](https://laravel.com/api/9.x/Illuminate/Mail/Mailer.html)  |  `mailer` |
-| Notification  |  [Illuminate\Notifications\ChannelManager](https://laravel.com/api/9.x/Illuminate/Notifications/ChannelManager.html)  |  &nbsp; |
-| Password  |  [Illuminate\Auth\Passwords\PasswordBrokerManager](https://laravel.com/api/9.x/Illuminate/Auth/Passwords/PasswordBrokerManager.html)  |  `auth.password` |
-| Password (Instance)  |  [Illuminate\Auth\Passwords\PasswordBroker](https://laravel.com/api/9.x/Illuminate/Auth/Passwords/PasswordBroker.html)  |  `auth.password.broker` |
-| Queue  |  [Illuminate\Queue\QueueManager](https://laravel.com/api/9.x/Illuminate/Queue/QueueManager.html)  |  `queue` |
-| Queue (Instance)  |  [Illuminate\Contracts\Queue\Queue](https://laravel.com/api/9.x/Illuminate/Contracts/Queue/Queue.html)  |  `queue.connection` |
-| Queue (Base Class)  |  [Illuminate\Queue\Queue](https://laravel.com/api/9.x/Illuminate/Queue/Queue.html)  |  &nbsp; |
-| Redirect  |  [Illuminate\Routing\Redirector](https://laravel.com/api/9.x/Illuminate/Routing/Redirector.html)  |  `redirect` |
-| Redis  |  [Illuminate\Redis\RedisManager](https://laravel.com/api/9.x/Illuminate/Redis/RedisManager.html)  |  `redis` |
-| Redis (Instance)  |  [Illuminate\Redis\Connections\Connection](https://laravel.com/api/9.x/Illuminate/Redis/Connections/Connection.html)  |  `redis.connection` |
-| Request  |  [Illuminate\Http\Request](https://laravel.com/api/9.x/Illuminate/Http/Request.html)  |  `request` |
-| Response  |  [Illuminate\Contracts\Routing\ResponseFactory](https://laravel.com/api/9.x/Illuminate/Contracts/Routing/ResponseFactory.html)  |  &nbsp; |
-| Response (Instance)  |  [Illuminate\Http\Response](https://laravel.com/api/9.x/Illuminate/Http/Response.html)  |  &nbsp; |
-| Route  |  [Illuminate\Routing\Router](https://laravel.com/api/9.x/Illuminate/Routing/Router.html)  |  `router` |
-| Schema  |  [Illuminate\Database\Schema\Builder](https://laravel.com/api/9.x/Illuminate/Database/Schema/Builder.html)  |  &nbsp; |
-| Session  |  [Illuminate\Session\SessionManager](https://laravel.com/api/9.x/Illuminate/Session/SessionManager.html)  |  `session` |
-| Session (Instance)  |  [Illuminate\Session\Store](https://laravel.com/api/9.x/Illuminate/Session/Store.html)  |  `session.store` |
-| Storage  |  [Illuminate\Filesystem\FilesystemManager](https://laravel.com/api/9.x/Illuminate/Filesystem/FilesystemManager.html)  |  `filesystem` |
-| Storage (Instance)  |  [Illuminate\Contracts\Filesystem\Filesystem](https://laravel.com/api/9.x/Illuminate/Contracts/Filesystem/Filesystem.html)  |  `filesystem.disk` |
-| URL  |  [Illuminate\Routing\UrlGenerator](https://laravel.com/api/9.x/Illuminate/Routing/UrlGenerator.html)  |  `url` |
-| Validator  |  [Illuminate\Validation\Factory](https://laravel.com/api/9.x/Illuminate/Validation/Factory.html)  |  `validator` |
-| Validator (Instance)  |  [Illuminate\Validation\Validator](https://laravel.com/api/9.x/Illuminate/Validation/Validator.html)  |  &nbsp; |
-| View  |  [Illuminate\View\Factory](https://laravel.com/api/9.x/Illuminate/View/Factory.html)  |  `view` |
-| View (Instance)  |  [Illuminate\View\View](https://laravel.com/api/9.x/Illuminate/View/View.html)  |  &nbsp; |
-| Vite  |  [Illuminate\Foundation\Vite](https://laravel.com/api/9.x/Illuminate/Foundation/Vite.html)  |  &nbsp; |
+| App  | [Illuminate\Foundation\Application](https://laravel.com/api/9.x/Illuminate/Foundation/Application.html) | `app` |
+| Artisan  | [Illuminate\Contracts\Console\Kernel](https://laravel.com/api/9.x/Illuminate/Contracts/Console/Kernel.html) | `artisan` |
+| Auth  | [Illuminate\Auth\AuthManager](https://laravel.com/api/9.x/Illuminate/Auth/AuthManager.html) | `auth` |
+| Auth (인스턴스) | [Illuminate\Contracts\Auth\Guard](https://laravel.com/api/9.x/Illuminate/Contracts/Auth/Guard.html) | `auth.driver` |
+| Blade  | [Illuminate\View\Compilers\BladeCompiler](https://laravel.com/api/9.x/Illuminate/View/Compilers/BladeCompiler.html) | `blade.compiler` |
+| Broadcast  | [Illuminate\Contracts\Broadcasting\Factory](https://laravel.com/api/9.x/Illuminate/Contracts/Broadcasting/Factory.html) |  |
+| Broadcast (인스턴스) | [Illuminate\Contracts\Broadcasting\Broadcaster](https://laravel.com/api/9.x/Illuminate/Contracts/Broadcasting/Broadcaster.html) |  |
+| Bus  | [Illuminate\Contracts\Bus\Dispatcher](https://laravel.com/api/9.x/Illuminate/Contracts/Bus/Dispatcher.html) |  |
+| Cache  | [Illuminate\Cache\CacheManager](https://laravel.com/api/9.x/Illuminate/Cache/CacheManager.html) | `cache` |
+| Cache (인스턴스) | [Illuminate\Cache\Repository](https://laravel.com/api/9.x/Illuminate/Cache/Repository.html) | `cache.store` |
+| Config  | [Illuminate\Config\Repository](https://laravel.com/api/9.x/Illuminate/Config/Repository.html) | `config` |
+| Cookie  | [Illuminate\Cookie\CookieJar](https://laravel.com/api/9.x/Illuminate/Cookie/CookieJar.html) | `cookie` |
+| Crypt  | [Illuminate\Encryption\Encrypter](https://laravel.com/api/9.x/Illuminate/Encryption/Encrypter.html) | `encrypter` |
+| Date  | [Illuminate\Support\DateFactory](https://laravel.com/api/9.x/Illuminate/Support/DateFactory.html) | `date` |
+| DB  | [Illuminate\Database\DatabaseManager](https://laravel.com/api/9.x/Illuminate/Database/DatabaseManager.html) | `db` |
+| DB (인스턴스) | [Illuminate\Database\Connection](https://laravel.com/api/9.x/Illuminate/Database/Connection.html) | `db.connection` |
+| Event  | [Illuminate\Events\Dispatcher](https://laravel.com/api/9.x/Illuminate/Events/Dispatcher.html) | `events` |
+| File  | [Illuminate\Filesystem\Filesystem](https://laravel.com/api/9.x/Illuminate/Filesystem/Filesystem.html) | `files` |
+| Gate  | [Illuminate\Contracts\Auth\Access\Gate](https://laravel.com/api/9.x/Illuminate/Contracts/Auth/Access/Gate.html) |  |
+| Hash  | [Illuminate\Contracts\Hashing\Hasher](https://laravel.com/api/9.x/Illuminate/Contracts/Hashing/Hasher.html) | `hash` |
+| Http  | [Illuminate\Http\Client\Factory](https://laravel.com/api/9.x/Illuminate/Http/Client/Factory.html) |  |
+| Lang  | [Illuminate\Translation\Translator](https://laravel.com/api/9.x/Illuminate/Translation/Translator.html) | `translator` |
+| Log  | [Illuminate\Log\LogManager](https://laravel.com/api/9.x/Illuminate/Log/LogManager.html) | `log` |
+| Mail  | [Illuminate\Mail\Mailer](https://laravel.com/api/9.x/Illuminate/Mail/Mailer.html) | `mailer` |
+| Notification  | [Illuminate\Notifications\ChannelManager](https://laravel.com/api/9.x/Illuminate/Notifications/ChannelManager.html) |  |
+| Password  | [Illuminate\Auth\Passwords\PasswordBrokerManager](https://laravel.com/api/9.x/Illuminate/Auth/Passwords/PasswordBrokerManager.html) | `auth.password` |
+| Password (인스턴스) | [Illuminate\Auth\Passwords\PasswordBroker](https://laravel.com/api/9.x/Illuminate/Auth/Passwords/PasswordBroker.html) | `auth.password.broker` |
+| Queue  | [Illuminate\Queue\QueueManager](https://laravel.com/api/9.x/Illuminate/Queue/QueueManager.html) | `queue` |
+| Queue (인스턴스) | [Illuminate\Contracts\Queue\Queue](https://laravel.com/api/9.x/Illuminate/Contracts/Queue/Queue.html) | `queue.connection` |
+| Queue (기본 클래스) | [Illuminate\Queue\Queue](https://laravel.com/api/9.x/Illuminate/Queue/Queue.html) |  |
+| Redirect  | [Illuminate\Routing\Redirector](https://laravel.com/api/9.x/Illuminate/Routing/Redirector.html) | `redirect` |
+| Redis  | [Illuminate\Redis\RedisManager](https://laravel.com/api/9.x/Illuminate/Redis/RedisManager.html) | `redis` |
+| Redis (인스턴스) | [Illuminate\Redis\Connections\Connection](https://laravel.com/api/9.x/Illuminate/Redis/Connections/Connection.html) | `redis.connection` |
+| Request  | [Illuminate\Http\Request](https://laravel.com/api/9.x/Illuminate/Http/Request.html) | `request` |
+| Response  | [Illuminate\Contracts\Routing\ResponseFactory](https://laravel.com/api/9.x/Illuminate/Contracts/Routing/ResponseFactory.html) |  |
+| Response (인스턴스) | [Illuminate\Http\Response](https://laravel.com/api/9.x/Illuminate/Http/Response.html) |  |
+| Route  | [Illuminate\Routing\Router](https://laravel.com/api/9.x/Illuminate/Routing/Router.html) | `router` |
+| Schema  | [Illuminate\Database\Schema\Builder](https://laravel.com/api/9.x/Illuminate/Database/Schema/Builder.html) |  |
+| Session  | [Illuminate\Session\SessionManager](https://laravel.com/api/9.x/Illuminate/Session/SessionManager.html) | `session` |
+| Session (인스턴스) | [Illuminate\Session\Store](https://laravel.com/api/9.x/Illuminate/Session/Store.html) | `session.store` |
+| Storage  | [Illuminate\Filesystem\FilesystemManager](https://laravel.com/api/9.x/Illuminate/Filesystem/FilesystemManager.html) | `filesystem` |
+| Storage (인스턴스) | [Illuminate\Contracts\Filesystem\Filesystem](https://laravel.com/api/9.x/Illuminate/Contracts/Filesystem/Filesystem.html) | `filesystem.disk` |
+| URL  | [Illuminate\Routing\UrlGenerator](https://laravel.com/api/9.x/Illuminate/Routing/UrlGenerator.html) | `url` |
+| Validator  | [Illuminate\Validation\Factory](https://laravel.com/api/9.x/Illuminate/Validation/Factory.html) | `validator` |
+| Validator (인스턴스) | [Illuminate\Validation\Validator](https://laravel.com/api/9.x/Illuminate/Validation/Validator.html) |  |
+| View  | [Illuminate\View\Factory](https://laravel.com/api/9.x/Illuminate/View/Factory.html) | `view` |
+| View (인스턴스) | [Illuminate\View\View](https://laravel.com/api/9.x/Illuminate/View/View.html) |  |
+| Vite  | [Illuminate\Foundation\Vite](https://laravel.com/api/9.x/Illuminate/Foundation/Vite.html) |  |
