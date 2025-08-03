@@ -5,14 +5,15 @@ from utils.common import run_command
 
 
 def clone_laravel_docs(temp_dir, original_repo):
-    """Laravel 원본 문서를 임시 디렉토리에 클론
-
-    Args:
-        temp_dir: 임시 디렉토리 경로
-        original_repo: Laravel 원본 문서 저장소 URL
-
+    """
+    Clone the original Laravel documentation repository into a specified temporary directory.
+    
+    Parameters:
+        temp_dir (str): Path to the temporary directory where the repository will be cloned.
+        original_repo (str): URL of the original Laravel documentation repository.
+    
     Returns:
-        bool: 성공 여부
+        bool: True if the repository was successfully cloned, False otherwise.
     """
     try:
         # 임시 디렉토리가 있으면 삭제
@@ -28,15 +29,18 @@ def clone_laravel_docs(temp_dir, original_repo):
 
 
 def update_branch_docs(branch, temp_dir, excluded_files):
-    """특정 브랜치의 문서를 업데이트
-
-    Args:
-        branch: 브랜치 이름
-        temp_dir: 임시 디렉토리 경로
-        excluded_files: 번역에서 제외할 파일 목록
-
+    """
+    Update documentation files for a specific branch from a cloned Laravel documentation repository.
+    
+    Copies all markdown files from the specified branch in the temporary directory to an "origin" subdirectory within the branch folder in the current working directory. Files listed in `excluded_files` are also copied to a "ko" subdirectory.
+    
+    Parameters:
+        branch (str): The name of the branch to update.
+        temp_dir (str): Path to the temporary directory containing the cloned repository.
+        excluded_files (list): List of markdown file names (case-insensitive) to also copy to the "ko" directory.
+    
     Returns:
-        bool: 성공 여부
+        bool: True if the update succeeds, False if an error occurs.
     """
     try:
         run_command(f"git checkout {branch}", cwd=temp_dir)

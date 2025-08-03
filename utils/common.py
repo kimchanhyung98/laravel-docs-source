@@ -4,16 +4,28 @@ from functools import wraps
 
 
 def retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,)):
-    """예외 발생 시 함수를 재시도하는 데코레이터
-
-    Args:
-        max_attempts: 최대 시도 횟수
-        delay: 초기 대기 시간(초)
-        backoff: 대기 시간 증가 요소(다음 시도에서는 delay * backoff)
-        exceptions: 재시도할 예외 클래스 튜플
+    """
+    Decorator that retries a function call upon specified exceptions.
+    
+    Parameters:
+        max_attempts (int): Maximum number of retry attempts.
+        delay (int or float): Initial delay in seconds before the first retry.
+        backoff (int or float): Multiplier applied to the delay after each failed attempt.
+        exceptions (tuple): Tuple of exception classes that trigger a retry.
+    
+    Returns:
+        function: The decorated function with retry logic applied.
+    
+    Raises:
+        The last exception encountered if all retry attempts fail.
     """
 
     def decorator(func):
+        """
+        Decorator that retries a function call upon specified exceptions up to a maximum number of attempts.
+        
+        If the decorated function raises an exception listed in `exceptions`, it will be retried after a delay, with the delay increasing by the `backoff` multiplier after each attempt. If the maximum number of attempts is reached, the exception is re-raised.
+        """
         @wraps(func)
         def wrapper(*args, **kwargs):
             attempt = 0
@@ -39,13 +51,22 @@ def retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,)):
 
 
 def timeout(seconds=600):
-    """함수 실행 시 타임아웃을 적용하는 데코레이터
-
-    Args:
-        seconds: 타임아웃 시간(초)
+    """
+    Decorator that enforces a time limit on the execution of the decorated function.
+    
+    Parameters:
+        seconds (int): Maximum allowed execution time in seconds before raising a TimeoutError.
+    
+    Raises:
+        TimeoutError: If the decorated function exceeds the specified execution time.
     """
 
     def decorator(func):
+        """
+        Decorator that enforces a time limit on the execution of the decorated function.
+        
+        If the function does not complete within the specified number of seconds, a TimeoutError is raised.
+        """
         @wraps(func)
         def wrapper(*args, **kwargs):
             import signal
