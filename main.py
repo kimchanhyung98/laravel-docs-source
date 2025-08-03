@@ -66,13 +66,6 @@ def main():
                     print(f"예외 파일: {file_key}")
                     continue
 
-                processed_files.add(file_key)
-
-                # 번역 제외 파일 확인
-                if filename.lower() in excluded_files:
-                    print(f"예외 파일: {file_key}")
-                    continue
-
                 # 경로 생성
                 source_path = os.path.join(branch, 'origin', filename)
                 target_path = os.path.join(branch, 'ko', filename)
