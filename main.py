@@ -55,7 +55,15 @@ def main():
 
                 # 이미 처리한 파일인지 확인
                 file_key = f"{branch}/{filename}"
-                if file_key in processed_files or filename.lower() in excluded_files:
+                # 이미 처리한 파일인지 확인
+                if file_key in processed_files:
+                    continue
+
+                processed_files.add(file_key)
+
+                # 번역 제외 파일 확인
+                if filename.lower() in excluded_files:
+                    print(f"예외 파일: {file_key}")
                     continue
 
                 processed_files.add(file_key)
