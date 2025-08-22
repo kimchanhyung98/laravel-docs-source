@@ -2,33 +2,33 @@
 
 - [소개](#introduction)
     - [커넥션과 큐의 차이](#connections-vs-queues)
-    - [드라이버별 안내 및 필수 조건](#driver-prerequisites)
-- [잡 생성하기](#creating-jobs)
+    - [드라이버 주의사항 및 선행 조건](#driver-prerequisites)
+- [잡 생성](#creating-jobs)
     - [잡 클래스 생성](#generating-job-classes)
     - [클래스 구조](#class-structure)
-    - [유일한 잡(Unique Jobs)](#unique-jobs)
+    - [유니크 잡](#unique-jobs)
     - [암호화된 잡](#encrypted-jobs)
 - [잡 미들웨어](#job-middleware)
-    - [요율 제한(Rate Limiting)](#rate-limiting)
+    - [속도 제한](#rate-limiting)
     - [잡 중복 실행 방지](#preventing-job-overlaps)
-    - [예외 처리 요율 제한(Throttling)](#throttling-exceptions)
-    - [잡 스킵하기](#skipping-jobs)
-- [잡 디스패치하기](#dispatching-jobs)
+    - [예외 발생 제한(Throttling)](#throttling-exceptions)
+    - [잡 건너뛰기](#skipping-jobs)
+- [잡 디스패치](#dispatching-jobs)
     - [지연 디스패치](#delayed-dispatching)
-    - [동기식 디스패치](#synchronous-dispatching)
-    - [잡과 데이터베이스 트랜잭션](#jobs-and-database-transactions)
-    - [잡 체이닝(Job Chaining)](#job-chaining)
-    - [큐 및 커넥션 커스터마이징](#customizing-the-queue-and-connection)
-    - [최대 시도 횟수/타임아웃 값 지정](#max-job-attempts-and-timeout)
+    - [동기 디스패치](#synchronous-dispatching)
+    - [데이터베이스 트랜잭션과 잡](#jobs-and-database-transactions)
+    - [잡 체이닝](#job-chaining)
+    - [큐와 커넥션 커스터마이징](#customizing-the-queue-and-connection)
+    - [최대 시도 횟수/타임아웃 지정](#max-job-attempts-and-timeout)
     - [에러 처리](#error-handling)
-- [잡 배치(Job Batching)](#job-batching)
-    - [배치 가능한 잡 정의](#defining-batchable-jobs)
+- [잡 배치](#job-batching)
+    - [배치 처리 가능한 잡 정의](#defining-batchable-jobs)
     - [배치 디스패치](#dispatching-batches)
-    - [배치와 체인 결합](#chains-and-batches)
+    - [체인과 배치](#chains-and-batches)
     - [배치에 잡 추가](#adding-jobs-to-batches)
     - [배치 조회](#inspecting-batches)
     - [배치 취소](#cancelling-batches)
-    - [배치 실패 처리](#batch-failures)
+    - [배치 실패](#batch-failures)
     - [배치 레코드 정리(Pruning)](#pruning-batches)
     - [DynamoDB에 배치 저장](#storing-batches-in-dynamodb)
 - [클로저 큐잉](#queueing-closures)
@@ -39,17 +39,17 @@
     - [잡 만료 및 타임아웃](#job-expirations-and-timeouts)
 - [Supervisor 구성](#supervisor-configuration)
 - [실패한 잡 처리](#dealing-with-failed-jobs)
-    - [실패 잡 후처리](#cleaning-up-after-failed-jobs)
+    - [실패한 잡 후처리](#cleaning-up-after-failed-jobs)
     - [실패한 잡 재시도](#retrying-failed-jobs)
-    - [모델이 없는 경우 무시](#ignoring-missing-models)
-    - [실패 잡 정리(Pruning)](#pruning-failed-jobs)
-    - [DynamoDB에 실패 잡 저장](#storing-failed-jobs-in-dynamodb)
-    - [실패 잡 저장 비활성화](#disabling-failed-job-storage)
-    - [실패 잡 이벤트](#failed-job-events)
+    - [모델 미존재 무시](#ignoring-missing-models)
+    - [실패한 잡 레코드 정리](#pruning-failed-jobs)
+    - [DynamoDB에 실패한 잡 저장](#storing-failed-jobs-in-dynamodb)
+    - [실패한 잡 저장 비활성화](#disabling-failed-job-storage)
+    - [실패한 잡 이벤트](#failed-job-events)
 - [큐에서 잡 삭제](#clearing-jobs-from-queues)
 - [큐 모니터링](#monitoring-your-queues)
 - [테스트](#testing)
-    - [특정 잡만 가짜로 처리](#faking-a-subset-of-jobs)
+    - [일부 잡만 Fake 처리](#faking-a-subset-of-jobs)
     - [잡 체인 테스트](#testing-job-chains)
     - [잡 배치 테스트](#testing-job-batches)
     - [잡/큐 상호작용 테스트](#testing-job-queue-interactions)
@@ -58,45 +58,45 @@
 <a name="introduction"></a>
 ## 소개 (Introduction)
 
-웹 애플리케이션을 개발할 때, 업로드된 CSV 파일을 파싱 및 저장하는 작업과 같이 웹 요청 중에 처리하기에는 너무 오래 걸리는 작업들이 있을 수 있습니다. 다행히 Laravel은 백그라운드에서 처리할 수 있는 큐드 잡(queued jobs)을 쉽게 생성할 수 있도록 지원합니다. 이렇게 시간 소요가 큰 작업을 큐로 분리하면, 애플리케이션이 웹 요청에 훨씬 빠르게 반응할 수 있고 사용자에게 더 나은 경험을 제공합니다.
+웹 애플리케이션을 개발하다 보면 업로드된 CSV 파일을 파싱 및 저장하는 작업처럼 일반적인 웹 요청 내에서 처리하기에는 시간이 오래 걸리는 작업이 발생할 수 있습니다. Laravel은 이러한 작업을 큐에 대기시켜 백그라운드에서 처리할 수 있도록 쉽게 큐잉 잡(queued job)을 만들 수 있게 해줍니다. 시간 소모가 많은 작업을 큐로 분리하면 애플리케이션은 웹 요청에 더 빠르게 응답할 수 있으므로, 고객에게 더 나은 사용자 경험을 제공할 수 있습니다.
 
-Laravel 큐는 [Amazon SQS](https://aws.amazon.com/sqs/), [Redis](https://redis.io) 또는 관계형 데이터베이스와 같은 다양한 큐 백엔드에 대해 통합된 큐잉 API를 제공합니다.
+Laravel 큐 시스템은 [Amazon SQS](https://aws.amazon.com/sqs/), [Redis](https://redis.io), 관계형 데이터베이스 등 다양한 큐 백엔드를 대상으로 일관된 큐 API를 제공합니다.
 
-Laravel의 큐 관련 설정은 애플리케이션의 `config/queue.php` 설정 파일에 있습니다. 이 파일에는 프레임워크에 내장된 각 큐 드라이버(데이터베이스, [Amazon SQS](https://aws.amazon.com/sqs/), [Redis](https://redis.io), [Beanstalkd](https://beanstalkd.github.io/)) 및 동기식 드라이버(로컬 개발용, 잡을 즉시 실행)를 위한 커넥션 설정이 포함되어 있습니다. 또한 큐에 쌓인 잡을 버리는 `null` 큐 드라이버도 제공됩니다.
+큐 관련 모든 설정은 애플리케이션의 `config/queue.php` 파일에 저장되어 있습니다. 이 파일에는 프레임워크에서 기본 제공하는 각 큐 드라이버(데이터베이스, [Amazon SQS](https://aws.amazon.com/sqs/), [Redis](https://redis.io), [Beanstalkd](https://beanstalkd.github.io/) 등)와, 로컬 개발 시 사용할 수 있는 즉시 잡을 실행하는 동기 드라이버(synchronous driver)의 커넥션 설정이 포함되어 있습니다. 또한, 큐잉 잡을 아무 동작 없이 바로 폐기하는 `null` 큐 드라이버도 포함되어 있습니다.
 
 > [!NOTE]
-> Laravel Horizon은 Redis 기반 큐를 위한 아름다운 대시보드 및 설정 시스템입니다. 자세한 내용은 [Horizon 문서](/docs/12.x/horizon)를 참고하세요.
+> Laravel Horizon은 Redis 기반 큐를 시각적으로 대시보드로 모니터링하고 구성하는 훌륭한 도구입니다. 자세한 내용은 [Horizon 문서](/docs/12.x/horizon)를 참고하세요.
 
 <a name="connections-vs-queues"></a>
-### 커넥션과 큐의 차이
+### 커넥션과 큐의 차이 (Connections vs. Queues)
 
-Laravel 큐를 사용하기 전, "커넥션(connection)"과 "큐(queue)"의 차이를 이해하는 것이 중요합니다. `config/queue.php` 파일에는 `connections` 설정 배열이 있습니다. 이 옵션은 Amazon SQS, Beanstalk, Redis와 같은 백엔드 큐 서비스에 연결하는 커넥션을 정의합니다. 하지만 하나의 큐 커넥션은 여러 개의 "큐"를 가질 수 있습니다. 각각 다른 작업 스택처럼 생각할 수 있습니다.
+Laravel 큐를 시작하기 전에 "커넥션(connection)"과 "큐(queue)"의 차이를 이해하는 것이 중요합니다. `config/queue.php` 파일의 `connections` 배열은 Amazon SQS, Beanstalk, Redis 등 여러 큐 백엔드를 정의합니다. 그러나 각 큐 커넥션 내에서는 여러 개의 "큐"를 둘 수 있으며, 이는 여러 잡의 스택 또는 분리된 작업 대기열로 볼 수 있습니다.
 
-각 커넥션 설정 예제에는 `queue` 속성이 포함되어 있습니다. 이는 해당 커넥션으로 보낼 때 기본으로 사용되는 큐를 뜻합니다. 즉, 잡을 디스패치할 때 어떤 큐에 넣을지 명시하지 않으면, 해당 커넥션 설정의 `queue` 속성에 정의된 큐에 잡이 들어갑니다.
+각 커넥션 설정 예시에는 `queue` 속성이 있습니다. 잡을 디스패치할 때 명시적으로 대상 큐를 지정하지 않으면, 이 속성에 지정된 기본 큐가 활용됩니다. 예를 들어:
 
 ```php
 use App\Jobs\ProcessPodcast;
 
-// 기본 커넥션의 기본 큐로 잡을 전송...
+// 해당 잡은 기본 커넥션의 기본 큐로 전송됩니다...
 ProcessPodcast::dispatch();
 
-// 기본 커넥션의 "emails" 큐로 잡을 전송...
+// 해당 잡은 기본 커넥션의 "emails" 큐로 전송됩니다...
 ProcessPodcast::dispatch()->onQueue('emails');
 ```
 
-대부분의 애플리케이션에서는 하나의 큐만 사용해도 문제가 없지만, 여러 큐로 작업을 분산시키면 잡을 우선순위에 따라 처리하거나, 처리 방식에 따라 세분화할 수 있어 유용합니다. 예를 들어, `high`라는 큐에 잡을 추가하면, 해당 큐에 우선적으로 작업을 할당하는 워커를 실행할 수 있습니다.
+대부분의 애플리케이션에서는 큐를 단일 개만 사용해도 충분할 수 있습니다. 하지만 여러 개의 큐로 잡을 분산하여 우선순위를 부여하거나 작업을 세분화해야 한다면, 각 큐에 할당된 워커(worker)를 통해 작업 처리 우선순위를 다르게 설정할 수 있습니다. 예를 들어, `high`라는 큐에 잡을 보낸 후 고우선 워커로 해당 큐를 먼저 처리하도록 운영할 수 있습니다:
 
 ```shell
 php artisan queue:work --queue=high,default
 ```
 
 <a name="driver-prerequisites"></a>
-### 드라이버별 안내 및 필수 조건
+### 드라이버 주의사항 및 선행 조건 (Driver Notes and Prerequisites)
 
 <a name="database"></a>
-#### 데이터베이스
+#### 데이터베이스 사용 시
 
-`database` 큐 드라이버를 사용하려면 잡을 저장할 데이터베이스 테이블이 필요합니다. 일반적으로 Laravel의 기본 마이그레이션인 `0001_01_01_000002_create_jobs_table.php` [마이그레이션](/docs/12.x/migrations)에 포함되어 있습니다. 만약 적용되어 있지 않다면, `make:queue-table` Artisan 명령어로 생성할 수 있습니다.
+`database` 큐 드라이버를 사용하려면 잡 데이터를 저장할 데이터베이스 테이블이 필요합니다. 일반적으로 Laravel의 기본 제공 마이그레이션인 `0001_01_01_000002_create_jobs_table.php` [마이그레이션](/docs/12.x/migrations)에 포함되어 있지만, 만약 애플리케이션에 해당 마이그레이션 파일이 없다면, 다음 Artisan 명령어로 직접 생성 후 마이그레이션을 적용할 수 있습니다:
 
 ```shell
 php artisan make:queue-table
@@ -105,17 +105,17 @@ php artisan migrate
 ```
 
 <a name="redis"></a>
-#### Redis
+#### Redis 사용 시
 
-`redis` 큐 드라이버를 사용하려면, 우선 `config/database.php`에서 Redis 데이터베이스 커넥션을 설정해야 합니다.
+`redis` 큐 드라이버를 사용하려면 `config/database.php` 파일에서 Redis 데이터베이스 커넥션을 미리 설정해야 합니다.
 
 > [!WARNING]
-> `redis` 큐 드라이버는 Redis의 `serializer` 및 `compression` 옵션을 지원하지 않습니다.
+> `redis` 큐 드라이버는 Redis의 `serializer`, `compression` 옵션을 지원하지 않습니다.
 
 <a name="redis-cluster"></a>
-##### Redis 클러스터
+##### Redis 클러스터(Cluster)
 
-Redis 클러스터([Redis Cluster](https://redis.io/docs/latest/operate/rs/databases/durability-ha/clustering))를 사용하는 경우, 큐 이름에 [키 해시 태그(key hash tag)](https://redis.io/docs/latest/develop/using-commands/keyspace/#hashtags)를 포함해야 합니다. 이는 같은 큐의 모든 Redis 키가 동일한 해시 슬롯에 속하도록 보장하기 위해 필요합니다.
+Redis 큐 커넥션이 [Redis Cluster](https://redis.io/docs/latest/operate/rs/databases/durability-ha/clustering)를 사용할 경우, 큐 이름에 반드시 [key hash 태그](https://redis.io/docs/latest/develop/using-commands/keyspace/#hashtags)가 포함되어야 합니다. 이는 동일한 큐의 모든 Redis 키가 같은 해시 슬롯에 배치되도록 보장하기 위함입니다:
 
 ```php
 'redis' => [
@@ -129,11 +129,11 @@ Redis 클러스터([Redis Cluster](https://redis.io/docs/latest/operate/rs/datab
 ```
 
 <a name="blocking"></a>
-##### 블로킹 (Blocking)
+##### Blocking 옵션
 
-Redis 큐를 사용할 때, `block_for` 설정 옵션으로 잡이 나타날 때까지 워커 루프에서 얼마나 대기할지 지정할 수 있습니다.
+Redis 큐를 사용할 때, `block_for` 설정 옵션을 활용하여, 잡이 큐에 들어올 때까지 워커 루프에서 얼마나 대기할지 지정할 수 있습니다.
 
-큐의 로드 양에 따라 이 값을 조절하면 Redis 데이터베이스를 계속 폴링하는 것보다 효율적으로 처리할 수 있습니다. 예를 들어 이 값을 `5`로 두면, 잡이 나타날 때까지 5초 동안 기다립니다.
+이 값을 조정하면 Redis 데이터베이스를 계속 폴링(polling)하는 것보다 더욱 효율적으로 잡을 처리할 수 있습니다. 예를 들어, `block_for` 값을 5로 두면, 잡이 대기열에 들어올 때까지 최대 5초 동안 대기합니다:
 
 ```php
 'redis' => [
@@ -147,43 +147,43 @@ Redis 큐를 사용할 때, `block_for` 설정 옵션으로 잡이 나타날 때
 ```
 
 > [!WARNING]
-> `block_for`를 `0`으로 설정하면 잡이 도착할 때까지 무한히 대기하게 됩니다. 이 경우 `SIGTERM` 등의 신호도 다음 잡이 처리되기 전까지는 전달되지 않습니다.
+> `block_for` 값을 `0`으로 설정하면 작업자가 잡이 들어올 때까지 무한 대기 상태가 됩니다. 이로 인해, 예를 들어 `SIGTERM` 신호와 같은 처리가 잡이 완료될 때까지 지연됩니다.
 
 <a name="other-driver-prerequisites"></a>
-#### 기타 드라이버 필수 조건
+#### 기타 드라이버 선행 조건
 
-아래 드라이버를 사용하려면 다음 의존성이 필요합니다. Composer 패키지 관리자를 통해 설치하세요.
+아래에 명시된 큐 드라이버를 사용하려면 해당 의존 패키지를 Composer로 설치해야 합니다:
 
 <div class="content-list" markdown="1">
 
 - Amazon SQS: `aws/aws-sdk-php ~3.0`
 - Beanstalkd: `pda/pheanstalk ~5.0`
-- Redis: `predis/predis ~2.0` 또는 phpredis PHP 확장
+- Redis: `predis/predis ~2.0` 또는 phpredis PHP 확장(extension)
 - [MongoDB](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/queues/): `mongodb/laravel-mongodb`
 
 </div>
 
 <a name="creating-jobs"></a>
-## 잡 생성하기 (Creating Jobs)
+## 잡 생성 (Creating Jobs)
 
 <a name="generating-job-classes"></a>
-### 잡 클래스 생성
+### 잡 클래스 생성 (Generating Job Classes)
 
-애플리케이션의 큐 처리 가능한(job queueable) 잡 클래스는 기본적으로 `app/Jobs` 디렉터리에 보관됩니다. 만약 이 디렉터리가 없다면, `make:job` Artisan 명령어 실행 시 자동으로 생성됩니다.
+기본적으로, 애플리케이션의 큐잉 잡 클래스는 `app/Jobs` 디렉토리에 저장됩니다. 만약 해당 디렉토리가 없다면, `make:job` Artisan 명령어를 실행했을 때 자동으로 생성됩니다:
 
 ```shell
 php artisan make:job ProcessPodcast
 ```
 
-생성된 클래스는 `Illuminate\Contracts\Queue\ShouldQueue` 인터페이스를 구현하여 비동기적으로 큐에 쌓아 실행할 수 있음을 나타냅니다.
+생성된 클래스는 `Illuminate\Contracts\Queue\ShouldQueue` 인터페이스를 구현하게 되며, 이는 Laravel에게 해당 잡이 비동기적으로 큐에 쌓여야 함을 알립니다.
 
 > [!NOTE]
-> 잡 스텁은 [스텁 퍼블리싱](/docs/12.x/artisan#stub-customization)을 통해 커스터마이즈할 수 있습니다.
+> 잡 스텁(stub)은 [스텁 커스터마이징](/docs/12.x/artisan#stub-customization) 기능을 이용해 수정할 수 있습니다.
 
 <a name="class-structure"></a>
-### 클래스 구조
+### 클래스 구조 (Class Structure)
 
-잡 클래스는 보통 간단하며, 큐가 잡을 처리할 때 호출되는 `handle` 메서드만 포함합니다. 예시로 팟캐스트 업로드 파일을 처리하는 잡 클래스를 살펴보겠습니다.
+잡 클래스는 매우 간단하며, 보통 큐에서 잡이 처리될 때 호출되는 하나의 `handle` 메서드만을 가집니다. 아래 예시에서 우리는 팟캐스트 업로드 후 게시 전 파일을 처리하는 잡을 다룹니다:
 
 ```php
 <?php
@@ -200,32 +200,32 @@ class ProcessPodcast implements ShouldQueue
     use Queueable;
 
     /**
-     * 새 잡 인스턴스 생성
+     * Create a new job instance.
      */
     public function __construct(
         public Podcast $podcast,
     ) {}
 
     /**
-     * 잡 실행
+     * Execute the job.
      */
     public function handle(AudioProcessor $processor): void
     {
-        // 업로드된 팟캐스트 처리...
+        // Process uploaded podcast...
     }
 }
 ```
 
-위 예시에서는 [Eloquent 모델](/docs/12.x/eloquent)을 생성자 파라미터로 바로 전달할 수 있습니다. 잡에서 사용하는 `Queueable` 트레이트 덕분에, Eloquent 모델 및 로드된 연관관계도 직렬화/역직렬화가 자연스럽게 처리됩니다.
+위 예시처럼, [Eloquent 모델](/docs/12.x/eloquent)을 잡 생성자에 직접 전달할 수 있습니다. 잡에서 사용하는 `Queueable` 트레잇 덕분에 Eloquent 모델과 그 연관관계도 잡 처리 시 정상적으로 직렬화/역직렬화됩니다.
 
-큐로 보낼 잡의 생성자에 Eloquent 모델을 전달하면, 모델의 식별자만 큐에 직렬화되어 저장됩니다. 잡이 실제로 처리될 때는 큐 시스템이 데이터베이스에서 전체 모델 인스턴스와 로드된 연관관계를 다시 가져옵니다. 이런 모델 직렬화 방식 덕분에 잡 페이로드가 매우 작아집니다.
+잡에서 Eloquent 모델을 인수로 받을 경우, 큐에 실제로 저장되는 값은 해당 모델의 식별자(ID)만 저장됩니다. 잡이 실제 실행될 때, 큐 시스템이 데이터베이스에서 전체 모델 인스턴스와 로드된 연관관계를 자동으로 다시 조회합니다. 이렇게 하면 잡의 페이로드가 매우 작아지고 효율이 증가합니다.
 
 <a name="handle-method-dependency-injection"></a>
-#### `handle` 메서드의 의존성 주입
+#### `handle` 메서드 의존성 주입
 
-`handle` 메서드는 큐에서 잡을 처리할 때 호출됩니다. 이 메서드에서 타입힌트를 지정하면, [서비스 컨테이너](/docs/12.x/container)가 자동으로 해당 의존성을 주입해줍니다.
+`handle` 메서드는 잡이 큐에서 처리될 때 호출되며, 이 메서드에 타입힌트된 의존성은 [서비스 컨테이너](/docs/12.x/container)에 의해 자동으로 주입됩니다.
 
-컨테이너의 의존성 주입 방식을 완전히 제어하고 싶다면, 컨테이너의 `bindMethod` 메서드를 활용할 수 있습니다. 이 메서드는 잡과 컨테이너를 콜백으로 받아 직접 `handle` 메서드 호출을 원하는 방식으로 구현할 수 있습니다. 보통 이 작업은 `App\Providers\AppServiceProvider`의 `boot` 메서드 등 [서비스 프로바이더](/docs/12.x/providers)에서 이루어집니다.
+컨테이너가 `handle` 메서드의 의존성을 주입하는 방식을 직접 제어하고 싶다면, 컨테이너의 `bindMethod` 메서드를 사용할 수 있습니다. 일반적으로 이 작업은 `App\Providers\AppServiceProvider`의 `boot` 메서드에서 수행합니다:
 
 ```php
 use App\Jobs\ProcessPodcast;
@@ -238,18 +238,18 @@ $this->app->bindMethod([ProcessPodcast::class, 'handle'], function (ProcessPodca
 ```
 
 > [!WARNING]
-> 원시 이미지 데이터 등 바이너리 데이터는 잡으로 전달하기 전에 반드시 `base64_encode` 함수로 인코딩하십시오. 그렇지 않으면 큐에 잡을 넣을 때 JSON으로 직렬화하는 과정에서 문제가 발생할 수 있습니다.
+> 원시 바이너리 데이터(예: 이미지 원본 등)는 잡에 전달하기 전에 반드시 `base64_encode` 함수를 거쳐야 합니다. 그렇지 않으면 JSON 직렬화가 정상적으로 이뤄지지 않을 수 있습니다.
 
 <a name="handling-relationships"></a>
-#### 큐에 포함된 연관관계
+#### 큐잉된 연관관계 처리
 
-큐에 잡을 넣을 때 Eloquent 모델의 연관관계도 함께 직렬화됩니다. 이 때 직렬화된 잡 문자열이 커질 수 있습니다. 잡이 역직렬화되고 모델의 연관관계가 재조회될 때, 이전에 애플리케이션에서 적용한 연관관계 제한 조건이 그대로 적용되지 않는다는 점에 유의해야 합니다. 만약 특정 연관관계 컬렉션의 일부만 사용하고 싶다면, 잡 내에서 연관관계 제한을 다시 적용해야 합니다.
+큐에 올라간 잡에 로드된 Eloquent 연관관계까지 포함될 경우 직렬화 데이터가 매우 커질 수 있습니다. 또한, 잡 역직렬화 후 모델의 연관관계를 다시 조회할 때는 기존 직렬화 시 적용했던 쿼리 제약조건이 반영되지 않습니다. 따라서, 특정 연관관계의 일부 데이터만 필요하다면, 잡 안에서 필요한 조건을 적용해 다시 조회하는 것이 좋습니다.
 
-아니면 연관관계 직렬화를 아예 방지하고 싶을 땐, 프로퍼티를 지정할 때 모델의 `withoutRelations` 메서드를 호출하면 됩니다. 이 메서드는 로드된 연관관계가 제거된 모델 인스턴스를 반환합니다.
+혹은, 연관관계 데이터가 직렬화되지 않도록 하고 싶다면, 모델에 `withoutRelations` 메서드를 호출한 후 속성에 할당하면 됩니다. 이 메서드는 연관관계 없는 모델 인스턴스를 반환합니다:
 
 ```php
 /**
- * 새 잡 인스턴스 생성
+ * Create a new job instance.
  */
 public function __construct(
     Podcast $podcast,
@@ -258,13 +258,13 @@ public function __construct(
 }
 ```
 
-[PHP 생성자 프로퍼티 프로모션](https://www.php.net/manual/en/language.oop5.decon.php#language.oop5.decon.constructor.promotion)을 사용할 때, Eloquent 모델의 연관관계를 직렬화하지 않으려면 `WithoutRelations` 속성(attribute)을 활용할 수 있습니다.
+[PHP 생성자 프로퍼티 프로모션](https://www.php.net/manual/en/language.oop5.decon.php#language.oop5.decon.constructor.promotion)을 사용할 때, 특정 모델의 연관관계 직렬화를 막으려면 `WithoutRelations` 속성(Attribute)을 지정합니다:
 
 ```php
 use Illuminate\Queue\Attributes\WithoutRelations;
 
 /**
- * 새 잡 인스턴스 생성
+ * Create a new job instance.
  */
 public function __construct(
     #[WithoutRelations]
@@ -272,7 +272,7 @@ public function __construct(
 ) {}
 ```
 
-모든 모델의 연관관계를 직렬화하지 않으려면, 각 프로퍼티가 아니라 클래스 전체에 `WithoutRelations` 속성을 부여할 수도 있습니다.
+편의를 위해, 모든 모델에 연관관계 직렬화를 방지하려면 클래스 전체에 `WithoutRelations` 속성을 적용할 수 있습니다:
 
 ```php
 <?php
@@ -291,7 +291,7 @@ class ProcessPodcast implements ShouldQueue
     use Queueable;
 
     /**
-     * 새 잡 인스턴스 생성
+     * Create a new job instance.
      */
     public function __construct(
         public Podcast $podcast,
@@ -300,15 +300,15 @@ class ProcessPodcast implements ShouldQueue
 }
 ```
 
-잡이 단일 모델이 아닌 Eloquent 모델의 컬렉션 또는 배열을 받는 경우, 역직렬화 및 실행 시 컬렉션 내부의 각 모델은 연관관계가 복원되지 않습니다. 이는 많은 모델을 다루는 잡에서 과도한 리소스 사용을 방지하기 위함입니다.
+잡이 단일 모델이 아닌 컬렉션 또는 배열의 Eloquent 모델을 받는 경우, 역직렬화/실행시 연관관계까지 자동 복구되진 않습니다. 이는 다수 모델을 취급하는 잡에서 리소스 사용량을 제어하기 위함입니다.
 
 <a name="unique-jobs"></a>
-### 유일한 잡 (Unique Jobs)
+### 유니크 잡 (Unique Jobs)
 
 > [!WARNING]
-> 유일한 잡 기능은 [락(locks)](/docs/12.x/cache#atomic-locks)을 지원하는 캐시 드라이버가 필요합니다. 현재 `memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 캐시 드라이버가 지원됩니다. 또한 유일 잡 제약은 배치 내 잡에는 적용되지 않습니다.
+> 유니크 잡은 [락(lock)](/docs/12.x/cache#atomic-locks)를 지원하는 캐시 드라이버가 필요합니다. 현재 `memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 드라이버에서 지원합니다. 참고로, 유니크 잡 제약 조건은 잡 배치 내의 작업에는 적용되지 않습니다.
 
-특정 잡 인스턴스가 한 번에 큐에 하나만 존재하도록 하고 싶을 때, 잡 클래스에 `ShouldBeUnique` 인터페이스를 구현하면 됩니다. 이 인터페이스는 추가 메서드 구현이 필요 없습니다.
+특정 잡이 한 번에 큐에 오직 하나만 존재하도록 하고 싶을 때, 잡 클래스에 `ShouldBeUnique` 인터페이스를 구현하세요. 별도의 추가 메서드는 필요하지 않습니다:
 
 ```php
 <?php
@@ -322,9 +322,9 @@ class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
 }
 ```
 
-위 예시에서 `UpdateSearchIndex` 잡은 큐에 이미 동일한 잡이 처리 중이라면 새롭게 디스패치되지 않습니다.
+이렇게 하면 `UpdateSearchIndex` 잡은 이미 동일한 잡이 큐에 있거나 처리 중이면 추가 디스패치가 무시됩니다.
 
-특정 "키"로 잡의 유일성을 결정하거나, 일정 시간 후 유일성이 풀리도록 하고 싶을 때는 `uniqueId` 및 `uniqueFor` 프로퍼티(또는 메서드)를 정의할 수 있습니다.
+특정 키로 유니크 제약 조건을 걸거나, 시간이 지난 뒤 제약이 풀리게 제어하고 싶다면 `uniqueId`와 `uniqueFor` 속성(또는 메서드)을 잡 클래스에서 정의할 수 있습니다:
 
 ```php
 <?php
@@ -337,21 +337,21 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
 {
     /**
-     * 상품 인스턴스
+     * The product instance.
      *
      * @var \App\Models\Product
      */
     public $product;
 
     /**
-     * 잡의 유일 락이 해제될 시간(초)
+     * 유니크 락이 해제될 때까지의 초(second) 단위 시간.
      *
      * @var int
      */
     public $uniqueFor = 3600;
 
     /**
-     * 잡의 유일 ID 반환
+     * Get the unique ID for the job.
      */
     public function uniqueId(): string
     {
@@ -360,15 +360,15 @@ class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
 }
 ```
 
-이 예시에서 `UpdateSearchIndex` 잡은 상품 ID로 유일성이 결정됩니다. 동일 상품에 대한 새 잡은, 기존 잡이 끝나기 전에는 무시됩니다. 만약 1시간 내에 기존 잡이 끝나지 않으면, 유일 락이 해제되어 같은 상품에 대한 새 잡을 디스패치할 수 있습니다.
+위 예시는 product ID 기준으로 잡이 유니크하게 적용됩니다. 같은 product ID로 추가 디스패치된 잡은 기존 잡이 끝날 때까지 무시됩니다. 또한, 기존 잡이 1시간 내에 처리되지 않으면 락이 풀리고 동일한 키로 새로운 잡을 다시 디스패치할 수 있습니다.
 
 > [!WARNING]
-> 여러 웹 서버나 컨테이너에서 잡을 디스패치한다면, 반드시 모든 서버가 동일한 중앙 캐시 서버와 통신하는지 확인해야, Laravel이 잡의 유일성을 정확히 판단할 수 있습니다.
+> 여러 웹 서버 혹은 컨테이너에서 잡을 디스패치하는 경우, 모든 서버가 동일한 중앙 캐시 서버를 사용하도록 해야 Laravel이 유니크 조건을 정확하게 판단할 수 있습니다.
 
 <a name="keeping-jobs-unique-until-processing-begins"></a>
-#### 잡 처리 직전까지 유일 락 유지
+#### 처리 시작 전까지 잡 유니크 상태 유지
 
-기본적으로 유일한 잡은 처리 완료 또는 모든 재시도 실패 후 "락 해제"됩니다. 하지만 때로는 잡이 실제 처리 직전에 즉시 락을 해제하고 싶을 때도 있습니다. 이 경우 `ShouldBeUnique` 대신 `ShouldBeUniqueUntilProcessing` 인터페이스를 구현하세요.
+기본적으로, 유니크 잡은 처리 완료(혹은 모든 재시도 실패) 시 "락"이 해제됩니다. 그러나, 잡이 실제로 처리되기 직전까지만 유니크 상태를 유지하고 싶다면, `ShouldBeUnique` 대신 `ShouldBeUniqueUntilProcessing` 인터페이스를 구현하세요:
 
 ```php
 <?php
@@ -383,9 +383,9 @@ class UpdateSearchIndex implements ShouldQueue, ShouldBeUniqueUntilProcessing
 ```
 
 <a name="unique-job-locks"></a>
-#### 유일 잡 락
+#### 유니크 잡 락 (Unique Job Locks)
 
-내부적으로 `ShouldBeUnique` 잡을 디스패치할 때 Laravel은 `uniqueId` 키로 [락](/docs/12.x/cache#atomic-locks)을 시도합니다. 이미 락이 잡혀 있다면 잡은 디스패치되지 않습니다. 이 락은 잡이 처리 완료되거나 모든 재시도에 실패할 때 해제됩니다. 기본적으로 Laravel은 기본 캐시 드라이버를 사용합니다. 특정 캐시 드라이버를 사용하고 싶다면 `uniqueVia` 메서드를 정의할 수 있습니다.
+`ShouldBeUnique` 잡이 디스패치되면, Laravel은 백그라운드에서 `uniqueId` 키로 [락](/docs/12.x/cache#atomic-locks)을 시도합니다. 이미 락이 잡혀있다면 해당 잡은 디스패치되지 않습니다. 락은 잡 처리(성공/실패) 후 해제됩니다. 기본 캐시 드라이버를 사용하지만, 락을 위한 캐시 드라이버를 다르게 지정하고 싶으면 `uniqueVia` 메서드에서 직접 리턴하세요:
 
 ```php
 use Illuminate\Contracts\Cache\Repository;
@@ -396,7 +396,7 @@ class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
     // ...
 
     /**
-     * 유일 잡 락용 캐시 드라이버 반환
+     * Get the cache driver for the unique job lock.
      */
     public function uniqueVia(): Repository
     {
@@ -406,12 +406,12 @@ class UpdateSearchIndex implements ShouldQueue, ShouldBeUnique
 ```
 
 > [!NOTE]
-> 잡의 동시 실행만 제한하고 싶다면 [WithoutOverlapping](#preventing-job-overlaps) 잡 미들웨어를 사용하는 것이 더 간단합니다.
+> 단순히 동시 실행 제한만 필요하다면, [WithoutOverlapping](/docs/12.x/queues#preventing-job-overlaps) 잡 미들웨어를 사용하세요.
 
 <a name="encrypted-jobs"></a>
 ### 암호화된 잡 (Encrypted Jobs)
 
-잡의 데이터 프라이버시 및 무결성을 [암호화](/docs/12.x/encryption)로 보장할 수 있습니다. 잡 클래스에 `ShouldBeEncrypted` 인터페이스를 추가하면 됩니다. 이 인터페이스가 추가된 잡은 Laravel이 큐에 추가하기 전에 자동으로 암호화합니다.
+잡의 데이터 보안 및 무결성이 필요한 경우, [암호화](/docs/12.x/encryption) 기능을 활용할 수 있습니다. 잡 클래스에 `ShouldBeEncrypted` 인터페이스를 추가하면, Laravel이 큐에 올리기 전 자동으로 잡 페이로드를 암호화합니다:
 
 ```php
 <?php
@@ -428,29 +428,29 @@ class UpdateSearchIndex implements ShouldQueue, ShouldBeEncrypted
 <a name="job-middleware"></a>
 ## 잡 미들웨어 (Job Middleware)
 
-잡 미들웨어를 사용하면 큐 잡 실행 시 커스텀 로직을 감쌀 수 있어, 잡 코드 자체가 간결해집니다. 예를 들어, 아래 `handle` 메서드는 Laravel의 Redis 요율 제한 기능을 이용해 5초마다 한 번씩 잡을 처리하고 있습니다.
+잡 미들웨어는 큐잉 잡 실행 전후에 커스텀 로직을 감싸서 반복되는 코드를 줄이고, 잡 처리 로직을 더 깔끔하게 유지할 수 있도록 해줍니다. 예를 들어, 아래와 같이 Redis 기반의 속도 제한을 직접 `handle`에 작성하면, 코드가 복잡해집니다:
 
 ```php
 use Illuminate\Support\Facades\Redis;
 
 /**
- * 잡 실행
+ * Execute the job.
  */
 public function handle(): void
 {
     Redis::throttle('key')->block(0)->allow(1)->every(5)->then(function () {
         info('Lock obtained...');
 
-        // 잡 처리...
+        // Handle job...
     }, function () {
-        // 락 획득 실패...
+        // Could not obtain lock...
 
         return $this->release(5);
     });
 }
 ```
 
-이 로직은 유효하지만, 실제 잡 처리 로직과 요율 제한 코드가 섞이게 되어 복잡해집니다. 그리고 비슷한 요율 제한이 필요한 다른 잡에서도 중복해줘야 하죠. 이런 경우 직접 잡 미들웨어 클래스를 만들어서 처리할 수 있습니다.
+이렇게 작성하면, handle 메서드에 속도 제한 코드가 반복해서 들어가므로 잡 미들웨어로 추출하는 것이 더 좋습니다:
 
 ```php
 <?php
@@ -463,7 +463,7 @@ use Illuminate\Support\Facades\Redis;
 class RateLimited
 {
     /**
-     * 큐 잡 처리
+     * Process the queued job.
      *
      * @param  \Closure(object): void  $next
      */
@@ -472,11 +472,11 @@ class RateLimited
         Redis::throttle('key')
             ->block(0)->allow(1)->every(5)
             ->then(function () use ($job, $next) {
-                // 락 획득됨...
+                // Lock obtained...
 
                 $next($job);
             }, function () use ($job) {
-                // 락 획득 실패...
+                // Could not obtain lock...
 
                 $job->release(5);
             });
@@ -484,15 +484,15 @@ class RateLimited
 }
 ```
 
-이처럼 [라우트 미들웨어](/docs/12.x/middleware)와 비슷하게, 잡 미들웨어는 처리 중인 잡과 다음 콜백을 받아 작업을 이어갈 수 있습니다.
+위 예시처럼, [라우트 미들웨어](/docs/12.x/middleware)와 유사하게, 잡 미들웨어는 처리 잡 인스턴스와 다음 프로세스 콜백을 인자로 받습니다.
 
-`make:job-middleware` Artisan 명령어를 사용해 새로운 잡 미들웨어 클래스를 생성할 수 있습니다. 미들웨어를 잡에 연결하려면 잡의 `middleware` 메서드에서 반환하세요. 이 메서드는 Artisan이 생성한 기본 잡에서는 생성되지 않으니, 직접 추가해야 합니다.
+새 잡 미들웨어 클래스를 생성하려면 `make:job-middleware` Artisan 명령어를 사용할 수 있습니다. 잡 미들웨어는 잡 클래스의 `middleware` 메서드에서 리턴하여 적용합니다. 이 메서드는 `make:job`으로 scaffold된 잡에는 기본적으로 없으므로 직접 추가해야 합니다:
 
 ```php
 use App\Jobs\Middleware\RateLimited;
 
 /**
- * 잡이 통과해야 할 미들웨어 반환
+ * Get the middleware the job should pass through.
  *
  * @return array<int, object>
  */
@@ -503,21 +503,21 @@ public function middleware(): array
 ```
 
 > [!NOTE]
-> 잡 미들웨어는 [큐잉 이벤트 리스너](/docs/12.x/events#queued-event-listeners), [메일러블](/docs/12.x/mail#queueing-mail), [알림](/docs/12.x/notifications#queueing-notifications)에도 적용할 수 있습니다.
+> 잡 미들웨어는 [대기 이벤트 리스너](/docs/12.x/events#queued-event-listeners), [메일러블](/docs/12.x/mail#queueing-mail), [노티피케이션](/docs/12.x/notifications#queueing-notifications) 등에도 사용할 수 있습니다.
 
 <a name="rate-limiting"></a>
-### 요율 제한 (Rate Limiting)
+### 속도 제한 (Rate Limiting)
 
-직접 요율 제한 미들웨어를 작성하지 않아도 Laravel이 미리 준비한 요율 제한 미들웨어를 사용할 수 있습니다. [라우트 요율 제한자](/docs/12.x/routing#defining-rate-limiters)와 유사하게, 잡 요율 제한자도 `RateLimiter` 파사드의 `for` 메서드로 정의합니다.
+위에서 직접 속도 제한 미들웨어를 구현하는 방법을 소개했지만, 실제로 Laravel에는 기본 제공되는 속도 제한 미들웨어가 있습니다. 라우트 레이트 리미터와 마찬가지로, 잡 레이트 리미터는 `RateLimiter` 파사드의 `for` 메서드를 사용하여 정의합니다.
 
-예를 들어, 일반 사용자는 한 시간에 한 번만 데이터 백업을 허용하고 프리미엄 고객은 제한을 두지 않으려면 `AppServiceProvider`의 `boot`에서 RateLimiter를 정의하세요.
+예를 들어, 일반 사용자는 1시간에 한 번만 백업이 가능하고, 프리미엄 고객은 제한이 없는 경우 다음과 같이 작성할 수 있습니다:
 
 ```php
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 
 /**
- * 애플리케이션 서비스 부트스트랩
+ * Bootstrap any application services.
  */
 public function boot(): void
 {
@@ -529,19 +529,19 @@ public function boot(): void
 }
 ```
 
-여기서는 1시간 제한을 설정했지만, `perMinute` 등으로 단위도 쉽게 바꿀 수 있습니다. `by` 메서드에는 고객 등 분할 기준이 되는 값을 전달합니다.
+위 예시에서는 시간 단위로 제한하고 있지만, `perMinute`로 분 단위 제한도 가능합니다. `by` 메서드에는 레이트 리미터 분리를 위해 원하는 값을 넣을 수 있습니다:
 
 ```php
 return Limit::perMinute(50)->by($job->user->id);
 ```
 
-요율 제한자를 정의했다면, `Illuminate\Queue\Middleware\RateLimited` 미들웨어를 잡에 붙이세요. 제한을 초과할 때마다 미들웨어가 잡을 적절한 지연을 두고 큐로 다시 내보냅니다.
+이제 잡에서 `Illuminate\Queue\Middleware\RateLimited` 미들웨어를 사용하여 위에서 정의한 레이트 리미터를 지정할 수 있습니다. 잡이 속도 제한을 초과하면, 미들웨어가 일정 시간 지연시켜 잡을 다시 큐에 등록합니다:
 
 ```php
 use Illuminate\Queue\Middleware\RateLimited;
 
 /**
- * 잡이 통과해야 할 미들웨어 반환
+ * Get the middleware the job should pass through.
  *
  * @return array<int, object>
  */
@@ -551,9 +551,9 @@ public function middleware(): array
 }
 ```
 
-요율 제한 미들웨어로 인해 잡이 재시도될 때는 `attempts` 횟수도 증가합니다. 이에 따라 `tries`, `maxExceptions` 등을 적절히 조정하세요. 또는 [retryUntil 메서드](#time-based-attempts)를 사용해 잡의 유효 기간을 지정하세요.
+레이트 리미팅으로 인해 잡이 큐에 다시 올라오면 `attempts` 시도 횟수가 증가합니다. 따라서 잡 클래스의 `tries`, `maxExceptions` 속성을 적절히 조정하거나, [retryUntil 메서드](#time-based-attempts)로 재시도 기간을 제어할 수 있습니다.
 
-`releaseAfter` 메서드로 다시 시도까지 대기할 시간을 초 단위로 지정할 수 있습니다.
+`releaseAfter` 메서드를 활용하면, 재시도 지연 시간을 초 단위로 지정할 수도 있습니다:
 
 ```php
 public function middleware(): array
@@ -562,7 +562,7 @@ public function middleware(): array
 }
 ```
 
-잡이 요율 제한에 걸릴 때마다 재시도하고 싶지 않다면 `dontRelease` 메서드를 사용하세요.
+잡이 레이트 리밋된 경우 재시도를 원하지 않는다면, `dontRelease` 메서드를 사용하세요:
 
 ```php
 public function middleware(): array
@@ -572,32 +572,25 @@ public function middleware(): array
 ```
 
 > [!NOTE]
-> Redis를 사용하는 경우에는 `Illuminate\Queue\Middleware\RateLimitedWithRedis` 미들웨어를 사용하면 성능이 더 우수합니다.
+> Redis를 사용하는 경우, `Illuminate\Queue\Middleware\RateLimitedWithRedis` 미들웨어를 사용하는 것이 효율적입니다.
 
 <a name="preventing-job-overlaps"></a>
-### 잡 중복 실행 방지
+### 잡 중복 실행 방지 (Preventing Job Overlaps)
 
-Laravel에는 임의의 키로 잡의 중첩 실행을 방지하는  `Illuminate\Queue\Middleware\WithoutOverlapping` 미들웨어가 내장되어 있습니다. 하나의 리소스를 동시에 여러 잡이 수정하는 것을 방지할 때 유용합니다.
-
-예를 들어, 사용자의 신용 점수를 갱신하는 잡이 있는데 동일 사용자에 대한 갱신 잡이 겹치지 않도록 하려면 `middleware`에 아래처럼 반환하면 됩니다.
+Laravel은 임의 키를 기준으로 잡 중복 실행을 막는 `Illuminate\Queue\Middleware\WithoutOverlapping` 미들웨어를 제공합니다. 예를 들어, 동일 사용자에 대해 자동 크레딧 점수 갱신 잡이 중복 실행되지 않도록 하려면 다음과 같이 구현할 수 있습니다:
 
 ```php
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 
-/**
- * 잡이 통과해야 할 미들웨어 반환
- *
- * @return array<int, object>
- */
 public function middleware(): array
 {
     return [new WithoutOverlapping($this->user->id)];
 }
 ```
 
-중첩 잡이 큐로 다시 전송되면 시도 횟수도 증가하므로, 필요한 만큼 `tries`와 `maxExceptions` 등을 조정하세요. 예를 들어 `tries` 기본값이 1이면 중첩 잡은 다시 실행되지 않습니다.
+중복된 잡이 큐에 다시 올라갈 때마다 시도 횟수도 증가합니다. 중복 잡의 재시도를 허락하지 않으려면 `tries` 값을 1로 유지하면 됩니다.
 
-동일 타입의 중첩 잡은 큐로 다시 전달됩니다. 지연 시간을 지정하고 싶을 때는
+재시도까지의 대기 시간 설정도 가능합니다:
 
 ```php
 public function middleware(): array
@@ -606,7 +599,7 @@ public function middleware(): array
 }
 ```
 
-중첩 잡을 즉시 삭제해 다시 시도하지 않으려면 `dontRelease`를 사용합니다.
+중복 잡을 즉시 삭제하려면 `dontRelease`를 사용할 수 있습니다:
 
 ```php
 public function middleware(): array
@@ -615,7 +608,7 @@ public function middleware(): array
 }
 ```
 
-`WithoutOverlapping` 미들웨어는 Laravel의 원자적 락 기능을 이용합니다. 드물지만 잡이 실패하거나 타임아웃으로 락이 해제되지 않을 수도 있습니다. 이럴 땐 `expireAfter`로 락 만료 시간을 명시하세요.
+락이 예상치 못하게 풀리지 않을 수 있으므로, `expireAfter`로 락 만료 시간도 명시할 수 있습니다:
 
 ```php
 public function middleware(): array
@@ -625,20 +618,18 @@ public function middleware(): array
 ```
 
 > [!WARNING]
-> `WithoutOverlapping` 미들웨어는 [락을 지원하는](/docs/12.x/cache#atomic-locks) 캐시 드라이버(`memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 등)가 필요합니다.
+> `WithoutOverlapping` 미들웨어는 락 지원 캐시 드라이버(`memcached`, `redis`, `dynamodb`, `database`, `file`, `array`)가 필요합니다.
 
 <a name="sharing-lock-keys"></a>
 #### 잡 클래스 간 락 키 공유
 
-기본적으로 `WithoutOverlapping` 미들웨어는 동일 클래스 잡끼리만 중첩 실행을 막습니다. 서로 다른 잡 클래스가 똑같은 락 키를 사용해도 동시 실행이 막히지 않습니다. 여러 잡 클래스에 걸쳐 락 키를 공유하려면 `shared` 메서드를 추가로 사용하세요.
+기본적으로, `WithoutOverlapping` 미들웨어는 동일 잡 클래스 내에서만 중첩 실행을 막습니다. 서로 다른 잡 클래스도 동일한 락 키를 공유하도록 하려면, `shared` 메서드를 사용하세요:
 
 ```php
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 class ProviderIsDown
 {
-    // ...
-
     public function middleware(): array
     {
         return [
@@ -649,8 +640,6 @@ class ProviderIsDown
 
 class ProviderIsUp
 {
-    // ...
-
     public function middleware(): array
     {
         return [
@@ -661,56 +650,52 @@ class ProviderIsUp
 ```
 
 <a name="throttling-exceptions"></a>
-### 예외 처리 요율 제한(Throttling Exceptions)
+### 예외 발생 제한(Throttling Exceptions)
 
-`Illuminate\Queue\Middleware\ThrottlesExceptions` 미들웨어를 사용하면 예외 발생 빈도를 제한할 수 있습니다. 잡에서 특정 횟수 만큼 예외가 발생하면, 이후 일정 시간 동안 실행을 지연시킵니다. 서드파티 서비스 등 불안정한 시스템과 연동하는 잡에서 특히 유용합니다.
+`Illuminate\Queue\Middleware\ThrottlesExceptions` 미들웨어는 잡에서 예외가 여러 번 발생할 경우 스로틀(throttle)하여 일정 시간 후 다시 시도하도록 합니다. 특히 외부 불안정 서비스와 연동하는 잡에 활용하면 좋습니다.
 
-예를 들어, 외부 API와 연동하는 잡에서 예외가 반복된다면 아래처럼 미들웨어를 붙이고, [시간 기반 시도 제한](#time-based-attempts)을 함께 사용하세요.
+예를 들어, 연속 10회 예외가 발생할 경우 5분간 재시도를 멈추는 경우:
 
 ```php
 use DateTime;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
 
-/**
- * 잡이 통과해야 할 미들웨어 반환
- *
- * @return array<int, object>
- */
 public function middleware(): array
 {
     return [new ThrottlesExceptions(10, 5 * 60)];
 }
 
-/**
- * 잡이 더 이상 시도되지 않아야 할 시간 반환
- */
 public function retryUntil(): DateTime
 {
     return now()->addMinutes(30);
 }
 ```
 
-첫 번째 인수는 허용할 예외 최대 횟수, 두 번째 인수는 제한 해제까지 대기할 초입니다. 예시처럼 10번 연속 예외시 5분 대기, 30분 내에 이 조건에 도달하지 않으면 제한이 해제됩니다.
+첫 번째 인자는 예외 허용 개수, 두 번째 인자는 재시도까지의 딜레이(초)입니다.
 
-예외 임계값 미만에서는 바로 재시도하지만, `backoff`로 일정 시간 지연도 가능합니다.
+예외가 아직 제한치에 도달하지 않았더라도, `backoff`를 사용해 재시도 지연을 줄 수 있습니다:
 
 ```php
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
+
 public function middleware(): array
 {
     return [(new ThrottlesExceptions(10, 5 * 60))->backoff(5)];
 }
 ```
 
-이 미들웨어는 쿠키로 잡 클래스 이름이 캐시 "키"로 사용됩니다. `by` 메서드로 키를 변경해 여러 잡이 한 버킷을 공유하도록 할 수 있습니다.
+동일한 외부 API에 여러 잡에서 접근할 때는 `by` 메서드로 동일 스로틀 버킷을 사용할 수 있습니다:
 
 ```php
+use Illuminate\Queue\Middleware\ThrottlesExceptions;
+
 public function middleware(): array
 {
     return [(new ThrottlesExceptions(10, 10 * 60))->by('key')];
 }
 ```
 
-기본적으로 모든 예외에 대해 요율 제한이 걸리지만, `when`에 클로저를 전달해 특정 조건의 예외만 제한할 수도 있습니다.
+기본적으로 모든 예외가 스로틀링 대상이지만, `when` 메서드에 클로저를 넘겨 조건을 지정할 수 있습니다:
 
 ```php
 use Illuminate\Http\Client\HttpClientException;
@@ -724,7 +709,7 @@ public function middleware(): array
 }
 ```
 
-`when`과 달리, `deleteWhen`을 사용하면 특정 예외 발생 시 잡을 큐에서 완전히 삭제할 수 있습니다.
+특정 예외 시 잡을 바로 삭제하려면 `deleteWhen` 메서드를 사용하세요:
 
 ```php
 use App\Exceptions\CustomerDeletedException;
@@ -736,7 +721,7 @@ public function middleware(): array
 }
 ```
 
-예외 제한에 걸린 예외를 애플리케이션 예외 핸들러로 리포트하고 싶다면, `report` 메서드를 사용하세요. 클로저를 전달해 조건부 리포트도 가능합니다.
+예외 발생 시 애플리케이션의 예외 핸들러에서 처리하도록 하고 싶으면, `report`를 사용합니다:
 
 ```php
 use Illuminate\Http\Client\HttpClientException;
@@ -751,12 +736,12 @@ public function middleware(): array
 ```
 
 > [!NOTE]
-> Redis를 사용하는 경우에는, 더 최적화된 `Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis` 미들웨어를 사용하세요.
+> Redis 기반 큐라면, 더욱 효율적인 `Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis` 미들웨어를 사용하세요.
 
 <a name="skipping-jobs"></a>
-### 잡 스킵하기 (Skipping Jobs)
+### 잡 건너뛰기 (Skipping Jobs)
 
-`Skip` 미들웨어는 잡 로직을 수정하지 않고도 잡을 건너뛰거나 삭제할 수 있게 해줍니다. `Skip::when`은 조건이 true일 때 잡을 삭제하고, `Skip::unless`는 false일 때 삭제합니다.
+`Skip` 미들웨어를 사용하면 잡 로직을 수정하지 않고도 특정 조건에서 잡을 건너뛸 수 있습니다. `Skip::when`은 조건식이 참이면 잡을 삭제하고, `Skip::unless`는 조건식이 거짓이면 잡을 삭제합니다:
 
 ```php
 use Illuminate\Queue\Middleware\Skip;
@@ -769,7 +754,7 @@ public function middleware(): array
 }
 ```
 
-더 복잡한 조건식을 위해 클로저를 전달할 수도 있습니다.
+좀 더 복잡한 조건이 필요하면 클로저를 사용하세요:
 
 ```php
 use Illuminate\Queue\Middleware\Skip;
@@ -784,4 +769,4 @@ public function middleware(): array
 }
 ```
 
-<!-- 이하  문서 내용 계속... *** 답변 길이 제한으로 중단되었으니, 추가 번역이 필요하면 말씀해 주세요. *** -->
+(이후 내용 생략 없음)
