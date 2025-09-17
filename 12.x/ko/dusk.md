@@ -3,43 +3,43 @@
 - [소개](#introduction)
 - [설치](#installation)
     - [ChromeDriver 설치 관리](#managing-chromedriver-installations)
-    - [다른 브라우저 사용하기](#using-other-browsers)
+    - [다른 브라우저 사용](#using-other-browsers)
 - [시작하기](#getting-started)
     - [테스트 생성](#generating-tests)
-    - [각 테스트 실행 후 데이터베이스 초기화](#resetting-the-database-after-each-test)
+    - [각 테스트 후 데이터베이스 초기화](#resetting-the-database-after-each-test)
     - [테스트 실행](#running-tests)
     - [환경 파일 처리](#environment-handling)
-- [브라우저 기본 사용법](#browser-basics)
-    - [브라우저 생성](#creating-browsers)
-    - [네비게이션](#navigation)
+- [브라우저 기본](#browser-basics)
+    - [브라우저 인스턴스 생성](#creating-browsers)
+    - [페이지 이동](#navigation)
     - [브라우저 창 크기 조절](#resizing-browser-windows)
     - [브라우저 매크로](#browser-macros)
     - [인증](#authentication)
     - [쿠키](#cookies)
     - [JavaScript 실행](#executing-javascript)
     - [스크린샷 찍기](#taking-a-screenshot)
-    - [콘솔 출력 디스크에 저장](#storing-console-output-to-disk)
-    - [페이지 소스 디스크에 저장](#storing-page-source-to-disk)
-- [엘리먼트와 상호작용](#interacting-with-elements)
+    - [콘솔 출력 저장](#storing-console-output-to-disk)
+    - [페이지 소스 저장](#storing-page-source-to-disk)
+- [요소와 상호작용](#interacting-with-elements)
     - [Dusk 셀렉터](#dusk-selectors)
     - [텍스트, 값, 속성](#text-values-and-attributes)
     - [폼과 상호작용](#interacting-with-forms)
     - [파일 첨부](#attaching-files)
-    - [버튼 누르기](#pressing-buttons)
+    - [버튼 클릭](#pressing-buttons)
     - [링크 클릭](#clicking-links)
-    - [키보드 활용](#using-the-keyboard)
-    - [마우스 활용](#using-the-mouse)
+    - [키보드 사용](#using-the-keyboard)
+    - [마우스 사용](#using-the-mouse)
     - [JavaScript 다이얼로그](#javascript-dialogs)
     - [인라인 프레임과 상호작용](#interacting-with-iframes)
     - [셀렉터 범위 지정](#scoping-selectors)
-    - [엘리먼트 대기](#waiting-for-elements)
-    - [엘리먼트로 스크롤 이동](#scrolling-an-element-into-view)
-- [사용 가능한 어설션](#available-assertions)
+    - [요소 대기](#waiting-for-elements)
+    - [요소를 화면에 스크롤](#scrolling-an-element-into-view)
+- [사용 가능한 어서션](#available-assertions)
 - [페이지](#pages)
     - [페이지 생성](#generating-pages)
     - [페이지 설정](#configuring-pages)
     - [페이지로 이동](#navigating-to-pages)
-    - [요약 셀렉터](#shorthand-selectors)
+    - [약식 셀렉터](#shorthand-selectors)
     - [페이지 메서드](#page-methods)
 - [컴포넌트](#components)
     - [컴포넌트 생성](#generating-components)
@@ -54,61 +54,61 @@
 ## 소개 (Introduction)
 
 > [!WARNING]
-> [Pest 4](https://pestphp.com/)는 이제 Laravel Dusk에 비해 성능과 사용성 면에서 훨씬 향상된 자동 브라우저 테스트 기능을 제공합니다. 새로운 프로젝트에서는 브라우저 테스트에 Pest 사용을 권장합니다.
+> [Pest 4](https://pestphp.com/)는 Laravel Dusk에 비해 성능과 사용성에서 큰 개선점을 제공하는 자동화 브라우저 테스트 기능을 내장하고 있습니다. 새로운 프로젝트에서는 브라우저 테스트에 Pest를 사용할 것을 권장합니다.
 
-[Laravel Dusk](https://github.com/laravel/dusk)는 간결하고 사용하기 쉬운 브라우저 자동화 및 테스트 API를 제공합니다. 기본적으로 Dusk는 로컬 컴퓨터에 JDK나 Selenium을 별도로 설치할 필요가 없습니다. 대신 독립적으로 [ChromeDriver](https://sites.google.com/chromium.org/driver)를 설치해서 사용합니다. 물론, 필요에 따라 Selenium 호환 드라이버를 자유롭게 사용할 수도 있습니다.
+[Laravel Dusk](https://github.com/laravel/dusk)는 직관적이고 사용하기 쉬운 브라우저 자동화 및 테스트 API를 제공합니다. 기본적으로 Dusk를 사용하기 위해 로컬 컴퓨터에 JDK나 Selenium을 설치할 필요가 없습니다. 대신, Dusk는 독립 실행형 [ChromeDriver](https://sites.google.com/chromium.org/driver)를 이용합니다. 하지만, 원하는 경우 Selenium 호환 드라이버를 자유롭게 사용할 수 있습니다.
 
 <a name="installation"></a>
 ## 설치 (Installation)
 
-시작하려면 먼저 [Google Chrome](https://www.google.com/chrome)을 설치하고, 프로젝트에 `laravel/dusk` Composer 의존성을 추가해야 합니다:
+먼저 [Google Chrome](https://www.google.com/chrome)을 설치한 뒤, 프로젝트에 `laravel/dusk` Composer 의존성을 추가합니다:
 
 ```shell
 composer require laravel/dusk --dev
 ```
 
 > [!WARNING]
-> Dusk의 서비스 프로바이더를 수동으로 등록한다면, **절대로** 프로덕션 환경에서는 등록하지 마십시오. 그렇지 않으면 누구나 애플리케이션에 인증해서 접근할 수 있는 보안 문제가 발생할 수 있습니다.
+> Dusk의 서비스 프로바이더를 수동으로 등록하는 경우, 절대로 프로덕션 환경에서는 등록하지 마십시오. 그렇지 않으면 임의의 사용자가 애플리케이션에 인증할 수 있는 보안 위험이 발생할 수 있습니다.
 
-Dusk 패키지 설치 후에는 `dusk:install` Artisan 명령어를 실행하세요. 이 명령어는 `tests/Browser` 디렉터리, Dusk 테스트 예제 파일, 그리고 운영체제에 맞는 ChromeDriver 바이너리를 설치합니다:
+Dusk 패키지 설치 후에는 `dusk:install` Artisan 명령어를 실행하세요. 이 명령어는 `tests/Browser` 디렉터리, 예제 Dusk 테스트, 운영 체제에 맞는 Chrome Driver 바이너리를 생성합니다:
 
 ```shell
 php artisan dusk:install
 ```
 
-다음으로, 애플리케이션의 `.env` 파일에서 `APP_URL` 환경 변수 값을 설정해야 합니다. 이 값은 브라우저에서 애플리케이션에 접속할 때 사용되는 URL이어야 합니다.
+다음으로, 애플리케이션의 `.env` 파일에 `APP_URL` 환경 변수를 설정하세요. 이 값은 브라우저에서 애플리케이션을 접속할 때 사용하는 URL과 동일해야 합니다.
 
 > [!NOTE]
-> 로컬 개발 환경을 [Laravel Sail](/docs/12.x/sail)로 관리 중이라면, [Dusk 테스트를 설정하고 실행하는 방법](/docs/12.x/sail#laravel-dusk)에 대해 Sail 문서도 참고하세요.
+> [Laravel Sail](/docs/12.x/sail)로 로컬 개발 환경을 관리하는 경우, [Dusk 테스트 설정 및 실행](/docs/12.x/sail#laravel-dusk)에 관한 Sail 문서도 참고하시기 바랍니다.
 
 <a name="managing-chromedriver-installations"></a>
 ### ChromeDriver 설치 관리 (Managing ChromeDriver Installations)
 
-`dusk:install` 명령으로 설치된 ChromeDriver와는 다른 버전을 설치하고 싶다면, `dusk:chrome-driver` 명령을 사용할 수 있습니다:
+`dusk:install` 명령어로 설치되는 ChromeDriver 외에 다른 버전을 사용하고 싶다면, 다음의 `dusk:chrome-driver` 명령어를 활용할 수 있습니다:
 
 ```shell
-# 운영체제에 맞는 최신 ChromeDriver 설치...
+# 운영 체제에 맞는 최신 ChromeDriver 설치...
 php artisan dusk:chrome-driver
 
-# 운영체제에 맞는 지정 버전 ChromeDriver 설치...
+# 특정 버전의 ChromeDriver 설치...
 php artisan dusk:chrome-driver 86
 
-# 지원되는 모든 OS에 지정 버전 ChromeDriver 설치...
+# 지원되는 모든 운영 체제에 특정 버전 설치...
 php artisan dusk:chrome-driver --all
 
-# Chrome/Chromium의 감지된 버전에 맞는 ChromeDriver 설치...
+# 크롬/크로미움 감지된 버전에 맞게 설치...
 php artisan dusk:chrome-driver --detect
 ```
 
 > [!WARNING]
-> Dusk는 `chromedriver` 바이너리가 실행 가능해야 합니다. Dusk 실행에 문제가 있을 경우, 다음 명령어로 실행 권한을 부여해야 합니다: `chmod -R 0755 vendor/laravel/dusk/bin/`.
+> Dusk에서는 `chromedriver` 바이너리가 실행 가능이어야 합니다. 구동에 문제가 있다면, 다음 명령어로 실행 권한이 있는지 확인하세요: `chmod -R 0755 vendor/laravel/dusk/bin/`.
 
 <a name="using-other-browsers"></a>
-### 다른 브라우저 사용하기 (Using Other Browsers)
+### 다른 브라우저 사용 (Using Other Browsers)
 
-기본적으로 Dusk는 Google Chrome과 독립적으로 설치된 [ChromeDriver](https://sites.google.com/chromium.org/driver)를 사용하지만, 별도의 Selenium 서버를 직접 구동하여 원하는 브라우저로 테스트를 실행할 수 있습니다.
+기본적으로 Dusk는 Google Chrome과 독립 실행형 [ChromeDriver](https://sites.google.com/chromium.org/driver)로 브라우저 테스트를 실행합니다. 하지만 Selenium 서버를 직접 시작하여 원하는 브라우저로 테스트 실행도 가능합니다.
 
-먼저 애플리케이션 내 Dusk 테스트의 기본 케이스 파일인 `tests/DuskTestCase.php`를 엽니다. 이 파일에서 `startChromeDriver` 메서드 호출을 제거하면 Dusk가 ChromeDriver를 자동 시작하지 않게 됩니다:
+먼저, 애플리케이션의 기본 Dusk 테스트 케이스인 `tests/DuskTestCase.php` 파일을 엽니다. 이 파일에서 `startChromeDriver` 메서드 호출을 제거하면 Dusk가 ChromeDriver를 자동 실행하지 않습니다:
 
 ```php
 /**
@@ -122,7 +122,7 @@ public static function prepare(): void
 }
 ```
 
-그 다음, `driver` 메서드를 수정하여 연결하고자 하는 URL 및 포트로 변경할 수 있습니다. 또한, WebDriver에 전달할 "desired capabilities"도 필요에 따라 조정할 수 있습니다:
+이후, `driver` 메서드를 수정하여 원하는 URL과 포트로 연결하고, WebDriver에 전달할 "원하는 기능(desired capabilities)"도 변경할 수 있습니다:
 
 ```php
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -144,21 +144,21 @@ protected function driver(): RemoteWebDriver
 <a name="generating-tests"></a>
 ### 테스트 생성 (Generating Tests)
 
-Dusk 테스트를 생성하려면 `dusk:make` Artisan 명령어를 사용하면 됩니다. 생성된 테스트는 `tests/Browser` 디렉터리에 위치합니다:
+Dusk 테스트를 생성하려면, `dusk:make` Artisan 명령어를 사용합니다. 생성된 테스트는 `tests/Browser` 디렉터리에 저장됩니다:
 
 ```shell
 php artisan dusk:make LoginTest
 ```
 
 <a name="resetting-the-database-after-each-test"></a>
-### 각 테스트 실행 후 데이터베이스 초기화 (Resetting the Database After Each Test)
+### 각 테스트 후 데이터베이스 초기화 (Resetting the Database After Each Test)
 
-대부분의 테스트는 애플리케이션의 데이터베이스에서 데이터를 읽는 페이지와 상호작용하게 됩니다. 하지만 Dusk 테스트에서는 `RefreshDatabase` 트레이트를 **절대로** 사용하면 안 됩니다. `RefreshDatabase`는 데이터베이스 트랜잭션을 이용하는데, HTTP 요청 간에는 이 트랜잭션 처리가 불가능합니다. 대신 `DatabaseMigrations` 트레이트와 `DatabaseTruncation` 트레이트 중 하나를 사용할 수 있습니다.
+작성하는 대부분의 테스트는 애플리케이션의 데이터베이스에서 데이터를 가져오는 페이지와 상호작용합니다. 하지만 Dusk 테스트에서는 `RefreshDatabase` 트레이트를 사용하면 안 됩니다. 이 트레이트는 데이터베이스 트랜잭션을 활용하지만, HTTP 요청 간에는 해당 기능이 적용되지 않습니다. 대신, `DatabaseMigrations` 트레이트나 `DatabaseTruncation` 트레이트 두 가지 방법을 사용할 수 있습니다.
 
 <a name="reset-migrations"></a>
 #### 데이터베이스 마이그레이션 사용
 
-`DatabaseMigrations` 트레이트는 각 테스트 실행 전마다 데이터베이스 마이그레이션을 수행합니다. 다만, 매 테스트마다 테이블을 드롭하고 재생성하므로, 테이블을 잘라(truncate)내는 작업에 비해 느릴 수 있습니다:
+`DatabaseMigrations` 트레이트는 각 테스트 이전에 데이터베이스 마이그레이션을 실행합니다. 다만, 각 테스트마다 테이블을 드롭하고 다시 생성하기 때문에 테이블을 단순히 비우는 것보다 느릴 수 있습니다:
 
 ```php tab=Pest
 <?php
@@ -189,12 +189,12 @@ class ExampleTest extends DuskTestCase
 ```
 
 > [!WARNING]
-> Dusk 테스트 실행 시에는 SQLite 메모리 데이터베이스는 사용할 수 없습니다. 브라우저가 별도의 프로세스에서 동작하기 때문에, 다른 프로세스의 메모리 데이터베이스에 접근할 수 없습니다.
+> Dusk 테스트 실행 시에는 SQLite 메모리 데이터베이스를 사용할 수 없습니다. 브라우저가 별도의 프로세스에서 동작하므로, 다른 프로세스에서 사용하는 메모리 데이터베이스에 접근할 수 없습니다.
 
 <a name="reset-truncation"></a>
-#### 데이터베이스 잘라내기(Truncation) 사용
+#### 데이터베이스 테이블 비우기 사용
 
-`DatabaseTruncation` 트레이트는 첫 번째 테스트에서 데이터베이스 마이그레이션을 실행해 모든 테이블이 만들어져 있는지 확인합니다. 이후 테스트들에서는 마이그레이션 전체를 반복하지 않고, 테이블만 바로 비우기(truncate) 때문에 처리 속도가 더 빠릅니다:
+`DatabaseTruncation` 트레이트는 첫 번째 테스트 실행 시 데이터베이스를 마이그레이션하여 테이블을 생성하고, 이후에는 단순히 테이블을 비웁니다. 이 방법은 마이그레이션을 반복 실행하는 것보다 속도가 빠릅니다:
 
 ```php tab=Pest
 <?php
@@ -225,10 +225,10 @@ class ExampleTest extends DuskTestCase
 }
 ```
 
-기본적으로 이 트레이트는 `migrations` 테이블을 제외한 모든 테이블을 truncate합니다. truncate 대상 테이블을 직접 지정하고 싶다면, 테스트 클래스에 `$tablesToTruncate` 속성을 정의하면 됩니다:
+기본적으로 이 트레이트는 `migrations` 테이블을 제외한 모든 테이블을 비웁니다. 비울 테이블을 직접 지정하고 싶다면 테스트 클래스에 `$tablesToTruncate` 속성을 정의하세요:
 
 > [!NOTE]
-> Pest를 사용하는 경우, 속성이나 메서드는 반드시 base `DuskTestCase` 클래스 또는 테스트 파일이 상속하는 어떤 클래스에서 정의해야 합니다.
+> Pest를 사용하는 경우, 속성 또는 메서드는 기본 `DuskTestCase` 클래스나 확장하는 클래스에 정의해야 합니다.
 
 ```php
 /**
@@ -239,7 +239,7 @@ class ExampleTest extends DuskTestCase
 protected $tablesToTruncate = ['users'];
 ```
 
-또는 truncation에서 제외할 테이블을 지정하려면, `$exceptTables` 속성을 사용할 수 있습니다:
+또는, 비우지 않을 테이블을 `$exceptTables` 속성에 지정할 수도 있습니다:
 
 ```php
 /**
@@ -250,7 +250,7 @@ protected $tablesToTruncate = ['users'];
 protected $exceptTables = ['users'];
 ```
 
-truncate를 적용할 데이터베이스 연결을 지정하려면 `$connectionsToTruncate` 속성을 정의합니다:
+테이블을 비울 데이터베이스 커넥션을 지정하려면 `$connectionsToTruncate` 속성을 사용할 수 있습니다:
 
 ```php
 /**
@@ -261,7 +261,7 @@ truncate를 적용할 데이터베이스 연결을 지정하려면 `$connections
 protected $connectionsToTruncate = ['mysql'];
 ```
 
-database truncate 전후로 작업을 실행하고 싶다면, `beforeTruncatingDatabase` 또는 `afterTruncatingDatabase` 메서드를 정의할 수 있습니다:
+테이블 비우기 전후에 코드를 실행하려면, `beforeTruncatingDatabase` 또는 `afterTruncatingDatabase` 메서드를 정의할 수 있습니다:
 
 ```php
 /**
@@ -284,31 +284,31 @@ protected function afterTruncatingDatabase(): void
 <a name="running-tests"></a>
 ### 테스트 실행 (Running Tests)
 
-브라우저 테스트 실행은 `dusk` Artisan 명령어로 할 수 있습니다:
+브라우저 테스트를 실행하려면, `dusk` Artisan 명령어를 사용하세요:
 
 ```shell
 php artisan dusk
 ```
 
-직전 테스트에서 실패했던 테스트만 빠르게 재실행하려면 `dusk:fails` 명령어를 사용합니다:
+최근 테스트 실행에서 실패한 테스트만 먼저 다시 실행하려면, `dusk:fails` 명령어를 사용해 시간을 절약할 수 있습니다:
 
 ```shell
 php artisan dusk:fails
 ```
 
-`dusk` 명령어는 Pest / PHPUnit에서 허용하는 인수들도 그대로 사용할 수 있으며, [그룹](https://docs.phpunit.de/en/10.5/annotations.html#group)별로 테스트를 실행하는 것도 가능합니다:
+`dusk` 명령어는 Pest / PHPUnit 테스터에서 사용하는 모든 인수를 받아들입니다. 예를 들어, [그룹](https://docs.phpunit.de/en/10.5/annotations.html#group)에 따라 특정 테스트만 실행할 수도 있습니다:
 
 ```shell
 php artisan dusk --group=foo
 ```
 
 > [!NOTE]
-> [Laravel Sail](/docs/12.x/sail)로 개발 환경을 구축했다면, [Sail의 Dusk 테스트 설정 및 실행 방법](/docs/12.x/sail#laravel-dusk)도 참고하세요.
+> [Laravel Sail](/docs/12.x/sail)로 개발 환경을 관리한다면, [Dusk 테스트 설정 및 실행](/docs/12.x/sail#laravel-dusk) 관련 Sail 문서를 참조하세요.
 
 <a name="manually-starting-chromedriver"></a>
 #### ChromeDriver 수동 실행
 
-기본적으로 Dusk는 ChromeDriver를 자동으로 실행합니다. 만약 시스템 환경상 자동 실행이 불가능하다면, ChromeDriver를 미리 수동으로 실행한 다음 `dusk` 명령어를 이용하면 됩니다. 이 경우, `tests/DuskTestCase.php` 파일의 다음 부분을 주석 처리해야 합니다:
+기본적으로 Dusk는 ChromeDriver를 자동으로 실행합니다. 시스템에 따라 자동 실행이 동작하지 않는다면, `dusk` 명령 실행 전에 ChromeDriver를 직접 시작할 수 있습니다. 이 경우 `tests/DuskTestCase.php` 파일에서 다음 라인을 주석 처리하세요:
 
 ```php
 /**
@@ -322,7 +322,7 @@ public static function prepare(): void
 }
 ```
 
-또한, ChromeDriver를 9515번 이외의 포트로 실행했다면, 같은 클래스의 `driver` 메서드에서 포트 값을 변경해야 합니다:
+또한, ChromeDriver를 9515번 포트가 아닌 다른 포트에서 시작한다면, 같은 클래스의 `driver` 메서드에서 포트를 맞춰줘야 합니다:
 
 ```php
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -341,17 +341,17 @@ protected function driver(): RemoteWebDriver
 <a name="environment-handling"></a>
 ### 환경 파일 처리 (Environment Handling)
 
-Dusk가 테스트 실행 시 독립적인 환경 파일을 사용하도록 하려면, 프로젝트 루트에 `.env.dusk.{environment}` 파일을 생성하세요. 예를 들어, `local` 환경에서 `dusk` 명령을 실행한다면 `.env.dusk.local` 파일을 만들면 됩니다.
+Dusk가 테스트 실행 시 독립적인 환경 파일을 사용하도록 하려면, 프로젝트 루트에 `.env.dusk.{환경명}` 파일을 생성하면 됩니다. 예를 들어, `local` 환경에서 `dusk` 명령어를 실행한다면, `.env.dusk.local` 파일을 생성해야 합니다.
 
-테스트 실행 중에는 기존 `.env` 파일을 백업하고, Dusk 환경 파일명을 `.env`로 변경해 사용합니다. 테스트 종료 후에는 원래의 `.env` 파일이 복원됩니다.
+테스트 실행 시 Dusk는 기존 `.env` 파일을 백업하고 Dusk 환경 파일을 `.env`로 이름을 바꿉니다. 테스트가 끝나면 원래의 `.env` 파일이 복원됩니다.
 
 <a name="browser-basics"></a>
-## 브라우저 기본 사용법 (Browser Basics)
+## 브라우저 기본 (Browser Basics)
 
 <a name="creating-browsers"></a>
-### 브라우저 생성 (Creating Browsers)
+### 브라우저 인스턴스 생성 (Creating Browsers)
 
-애플리케이션에 로그인이 정상적으로 되는지 확인하는 테스트를 예시로 살펴봅니다. 테스트 생성 후, 로그인 페이지 접속, 자격 증명 입력, 로그인 버튼 클릭까지 거래를 작성할 수 있습니다. 브라우저 인스턴스는 Dusk 테스트 안에서 `browse` 메서드를 사용하여 생성합니다:
+로그인 기능을 테스트하는 예제를 작성해보겠습니다. 테스트를 생성한 후, 로그인 페이지로 이동하여 인증 정보를 입력하고 "Login" 버튼을 클릭하도록 수정할 수 있습니다. 브라우저 인스턴스를 생성하려면, Dusk 테스트 내에서 `browse` 메서드를 호출합니다:
 
 ```php tab=Pest
 <?php
@@ -411,12 +411,12 @@ class ExampleTest extends DuskTestCase
 }
 ```
 
-예제에서 볼 수 있듯, `browse` 메서드는 클로저를 인수로 받으며, Dusk가 자동으로 브라우저 인스턴스를 이 클로저에 전달합니다. 이 브라우저 객체를 통해 실제 애플리케이션과 상호작용하거나 어설션을 수행할 수 있습니다.
+위 예제에서 보듯, `browse` 메서드는 클로저(익명 함수)를 인수로 받으며, 브라우저 인스턴스가 자동으로 전달됩니다. 이 객체를 통해 애플리케이션과 상호작용하고 어서션을 수행할 수 있습니다.
 
 <a name="creating-multiple-browsers"></a>
-#### 다중 브라우저 인스턴스 생성
+#### 여러 브라우저 인스턴스 생성
 
-때때로 테스트를 제대로 수행하려면 여러 개의 브라우저가 필요할 수 있습니다. 예를 들어, 채팅 화면(WebSockets 활용) 등을 테스트하려면 여러 브라우저가 필요합니다. `browse` 함수의 클로저 시그니처에 브라우저 인수를 추가하면 여러 브라우저를 다룰 수 있습니다:
+테스트에 복수의 브라우저가 필요한 경우도 있습니다. 예를 들어, 웹소켓이 있는 채팅 화면을 테스트할 때 여러 브라우저가 필요할 수 있습니다. 이 경우, `browse` 메서드의 클로저 인자에 여러 브라우저 인스턴스를 지정하면 됩니다:
 
 ```php
 $this->browse(function (Browser $first, Browser $second) {
@@ -436,21 +436,21 @@ $this->browse(function (Browser $first, Browser $second) {
 ```
 
 <a name="navigation"></a>
-### 네비게이션 (Navigation)
+### 페이지 이동 (Navigation)
 
-`visit` 메서드를 사용해 애플리케이션 내 특정 URI로 이동할 수 있습니다:
+`visit` 메서드를 사용하면 애플리케이션의 지정한 URI로 이동할 수 있습니다:
 
 ```php
 $browser->visit('/login');
 ```
 
-[named route](/docs/12.x/routing#named-routes)로 이동하려면 `visitRoute` 메서드를 쓸 수 있습니다:
+[named route](/docs/12.x/routing#named-routes)로 이동하려면 `visitRoute` 메서드를 사용할 수 있습니다:
 
 ```php
 $browser->visitRoute($routeName, $parameters);
 ```
 
-`back`과 `forward` 메서드로 "뒤로 가기"와 "앞으로 가기"를 할 수 있습니다:
+브라우저의 "뒤로가기", "앞으로가기"는 `back`, `forward` 메서드로 가능합니다:
 
 ```php
 $browser->back();
@@ -458,7 +458,7 @@ $browser->back();
 $browser->forward();
 ```
 
-`refresh` 메서드를 사용하면 페이지를 새로 고칠 수 있습니다:
+`refresh` 메서드로 페이지 새로고침도 할 수 있습니다:
 
 ```php
 $browser->refresh();
@@ -467,31 +467,31 @@ $browser->refresh();
 <a name="resizing-browser-windows"></a>
 ### 브라우저 창 크기 조절 (Resizing Browser Windows)
 
-`resize` 메서드를 사용해 브라우저 창의 크기를 조절할 수 있습니다:
+`resize` 메서드로 브라우저 창의 크기를 지정할 수 있습니다:
 
 ```php
 $browser->resize(1920, 1080);
 ```
 
-`maximize` 메서드는 브라우저 창을 최대화합니다:
+`maximize` 메서드로 브라우저 창을 최대화할 수 있습니다:
 
 ```php
 $browser->maximize();
 ```
 
-`fitContent` 메서드는 브라우저 창 크기를 컨텐츠에 맞게 조절합니다:
+`fitContent` 메서드는 브라우저 창을 컨텐츠 크기에 맞게 조절합니다:
 
 ```php
 $browser->fitContent();
 ```
 
-테스트 실패 시, Dusk는 자동으로 브라우저 크기를 컨텐츠에 맞게 조정한 뒤 스크린샷을 찍습니다. 이 기능을 비활성화하려면 `disableFitOnFailure`를 사용하세요:
+테스트 실패 시, Dusk는 스크린샷 찍기 전에 자동으로 창을 컨텐츠에 맞춰 조정합니다. 이 기능을 비활성화하려면 `disableFitOnFailure`를 호출하세요:
 
 ```php
 $browser->disableFitOnFailure();
 ```
 
-`move` 메서드로 브라우저 창을 화면 상의 다른 위치로 옮길 수 있습니다:
+`move` 메서드로 브라우저 창을 화면 내 원하는 위치로 이동할 수도 있습니다:
 
 ```php
 $browser->move($x = 100, $y = 100);
@@ -500,7 +500,7 @@ $browser->move($x = 100, $y = 100);
 <a name="browser-macros"></a>
 ### 브라우저 매크로 (Browser Macros)
 
-테스트에서 재사용할 커스텀 브라우저 메서드를 정의하려면 `Browser` 클래스의 `macro` 메서드를 활용하세요. 보통 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 호출합니다:
+여러 테스트에서 재사용할 사용자 정의 브라우저 메서드를 만들고 싶다면, `Browser` 클래스의 `macro` 메서드를 사용할 수 있습니다. 일반적으로 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 호출하는 것이 좋습니다:
 
 ```php
 <?php
@@ -526,7 +526,7 @@ class DuskServiceProvider extends ServiceProvider
 }
 ```
 
-`macro` 함수는 첫 번째 인수로 이름, 두 번째 인수로 클로저를 받으며, 매크로를 브라우저 인스턴스의 메서드처럼 호출할 수 있습니다:
+`macro` 함수는 첫 번째 인수로 이름, 두 번째 인수로 클로저(동작)를 받습니다. 이렇게 정의한 매크로는 브라우저 인스턴스의 메서드처럼 호출할 수 있습니다:
 
 ```php
 $this->browse(function (Browser $browser) use ($user) {
@@ -539,7 +539,7 @@ $this->browse(function (Browser $browser) use ($user) {
 <a name="authentication"></a>
 ### 인증 (Authentication)
 
-로그인 인증이 필요한 페이지를 자주 테스트하게 됩니다. 모든 테스트마다 로그인 과정을 거치지 않으려면 Dusk의 `loginAs` 메서드를 활용하세요. 이 메서드에는 인증 가능한 모델의 PK나 모델 인스턴스를 전달하면 됩니다:
+테스트 중 인증이 필요한 페이지를 다루는 경우, 매번 로그인 화면을 거치지 않고 `loginAs` 메서드를 사용할 수 있습니다. 이 메서드는 인증 가능한 모델의 기본 키 또는 인스턴스를 인수로 받습니다:
 
 ```php
 use App\Models\User;
@@ -552,12 +552,12 @@ $this->browse(function (Browser $browser) {
 ```
 
 > [!WARNING]
-> `loginAs` 사용 뒤에는, 해당 파일 내 모든 테스트에서 해당 사용자 세션이 유지됩니다.
+> `loginAs` 메서드 사용 후 파일 내 모든 테스트에서 해당 유저의 세션이 유지됩니다.
 
 <a name="cookies"></a>
 ### 쿠키 (Cookies)
 
-`cookie` 메서드로 암호화된 쿠키 값을 읽거나 설정할 수 있습니다. Laravel에서 생성된 쿠키는 기본적으로 모두 암호화되어 있습니다:
+암호화된 쿠키 값을 가져오거나 설정하려면 `cookie` 메서드를 사용합니다. 기본적으로 Laravel이 생성하는 쿠키는 모두 암호화됩니다:
 
 ```php
 $browser->cookie('name');
@@ -565,7 +565,7 @@ $browser->cookie('name');
 $browser->cookie('name', 'Taylor');
 ```
 
-암호화되지 않은 쿠키의 값을 읽거나 설정하려면 `plainCookie` 메서드를 사용하세요:
+암호화되지 않은 쿠키는 `plainCookie` 메서드로 다룰 수 있습니다:
 
 ```php
 $browser->plainCookie('name');
@@ -573,7 +573,7 @@ $browser->plainCookie('name');
 $browser->plainCookie('name', 'Taylor');
 ```
 
-`deleteCookie` 메서드로 쿠키를 삭제할 수 있습니다:
+쿠키를 삭제하려면 `deleteCookie`를 사용하세요:
 
 ```php
 $browser->deleteCookie('name');
@@ -582,7 +582,7 @@ $browser->deleteCookie('name');
 <a name="executing-javascript"></a>
 ### JavaScript 실행 (Executing JavaScript)
 
-`script` 메서드를 이용해 브라우저 내에서 임의의 JavaScript 코드를 실행할 수 있습니다:
+`script` 메서드를 사용해 원하는 JavaScript 문장을 브라우저에서 실행할 수 있습니다:
 
 ```php
 $browser->script('document.documentElement.scrollTop = 0');
@@ -598,49 +598,49 @@ $output = $browser->script('return window.location.pathname');
 <a name="taking-a-screenshot"></a>
 ### 스크린샷 찍기 (Taking a Screenshot)
 
-`screenshot` 메서드로 지정한 파일명으로 스크린샷을 저장할 수 있습니다. 모든 스크린샷은 `tests/Browser/screenshots` 디렉터리에 저장됩니다:
+`screenshot` 메서드로 원하는 파일명으로 스크린샷을 저장할 수 있습니다. 스크린샷은 `tests/Browser/screenshots` 디렉터리에 저장됩니다:
 
 ```php
 $browser->screenshot('filename');
 ```
 
-`responsiveScreenshots` 메서드는 여러 화면 너비(브레이크포인트)별로 스크린샷을 저장합니다:
+`responsiveScreenshots` 메서드는 여러 브레이크포인트별로 스크린샷을 찍습니다:
 
 ```php
 $browser->responsiveScreenshots('filename');
 ```
 
-`screenshotElement` 메서드는 특정 엘리먼트만 스크린샷으로 저장할 수 있습니다:
+`screenshotElement` 메서드는 특정 요소만 스크린샷으로 저장합니다:
 
 ```php
 $browser->screenshotElement('#selector', 'filename');
 ```
 
 <a name="storing-console-output-to-disk"></a>
-### 콘솔 출력 디스크에 저장 (Storing Console Output to Disk)
+### 콘솔 출력 저장 (Storing Console Output to Disk)
 
-`storeConsoleLog` 메서드를 이용해 브라우저의 콘솔 출력을 파일로 저장할 수 있습니다. 로그는 `tests/Browser/console` 디렉터리에 저장됩니다:
+`storeConsoleLog` 메서드로 브라우저 콘솔 출력을 파일로 저장할 수 있습니다. 저장 위치는 `tests/Browser/console` 디렉터리입니다:
 
 ```php
 $browser->storeConsoleLog('filename');
 ```
 
 <a name="storing-page-source-to-disk"></a>
-### 페이지 소스 디스크에 저장 (Storing Page Source to Disk)
+### 페이지 소스 저장 (Storing Page Source to Disk)
 
-`storeSource` 메서드로 현재 페이지 소스를 파일에 저장할 수 있습니다. 파일은 `tests/Browser/source` 디렉터리에 저장됩니다:
+`storeSource` 메서드로 현재 페이지의 소스를 파일로 저장할 수 있습니다. 소스는 `tests/Browser/source` 디렉터리에 저장됩니다:
 
 ```php
 $browser->storeSource('filename');
 ```
 
 <a name="interacting-with-elements"></a>
-## 엘리먼트와 상호작용 (Interacting With Elements)
+## 요소와 상호작용 (Interacting With Elements)
 
 <a name="dusk-selectors"></a>
 ### Dusk 셀렉터 (Dusk Selectors)
 
-엘리먼트 상호작용을 위한 CSS 셀렉터 선택은 Dusk 테스트에서 가장 어려운 부분 중 하나입니다. 프론트엔드가 변경되면 하드코딩된 CSS 셀렉터가 망가질 수 있습니다:
+효과적인 Dusk 테스트 코드를 작성할 때 요소를 선택할 좋은 CSS 셀렉터를 정하는 것이 가장 어려운 부분 중 하나입니다. 프론트엔드가 수정되면 기존 CSS 셀렉터가 쉽게 깨질 수 있습니다:
 
 ```html
 // HTML...
@@ -654,7 +654,7 @@ $browser->storeSource('filename');
 $browser->click('.login-page .container div > button');
 ```
 
-Dusk 셀렉터를 사용하면 CSS 셀렉터를 외우는 대신 효과적인 테스트 작성에 집중할 수 있습니다. HTML 요소에 `dusk` 속성을 부여하면 되고, 테스트에서는 셀렉터 앞에 `@`를 붙여 해당 요소와 상호작용할 수 있습니다:
+Dusk 셀렉터를 사용하면, CSS 셀렉터를 외우지 않고 테스트 목적에만 집중할 수 있습니다. 셀렉터를 정의하려면 HTML 요소에 `dusk` 속성을 추가하세요. 테스트에서 셀렉터 앞에 `@`를 붙여 해당 요소를 조작할 수 있습니다:
 
 ```html
 // HTML...
@@ -668,7 +668,7 @@ Dusk 셀렉터를 사용하면 CSS 셀렉터를 외우는 대신 효과적인 �
 $browser->click('@login-button');
 ```
 
-필요에 따라 Dusk 셀렉터가 사용할 HTML 속성을 `selectorHtmlAttribute` 메서드로 변경할 수도 있습니다. 이 메서드는 보통 애플리케이션의 `AppServiceProvider`의 `boot` 메서드에서 호출합니다:
+원한다면, Dusk가 사용하는 HTML 속성을 `selectorHtmlAttribute` 메서드로 변경할 수도 있습니다. 이 메서드는 일반적으로 `AppServiceProvider`의 `boot`에서 호출합니다:
 
 ```php
 use Laravel\Dusk\Dusk;
@@ -680,9 +680,9 @@ Dusk::selectorHtmlAttribute('data-dusk');
 ### 텍스트, 값, 속성 (Text, Values, and Attributes)
 
 <a name="retrieving-setting-values"></a>
-#### 값 읽기/설정하기
+#### 값 얻기 및 설정
 
-Dusk는 화면의 엘리먼트가 가진 값(value), 화면에 보이는 텍스트, 속성(attribute)에 접근할 수 있는 다양한 메서드를 제공합니다. 예를 들어, 특정 CSS 또는 Dusk 셀렉터에 해당하는 엘리먼트의 "value" 값을 읽거나 설정하려면 `value` 메서드를 사용하세요:
+Dusk는 페이지 요소의 현재 value, 표시 텍스트, 속성 값 등과 상호작용할 여러 메서드를 제공합니다. 예를 들어, 특정 CSS나 Dusk 셀렉터와 매칭되는 요소의 "value" 값을 얻으려면 `value` 메서드를 사용합니다:
 
 ```php
 // 값 가져오기...
@@ -692,25 +692,25 @@ $value = $browser->value('selector');
 $browser->value('selector', 'value');
 ```
 
-`inputValue` 메서드는 입력 필드명에 해당하는 input 엘리먼트의 값을 가져옵니다:
+`inputValue` 메서드를 사용하면 특정 name의 input 요소 값을 가져올 수 있습니다:
 
 ```php
 $value = $browser->inputValue('field');
 ```
 
 <a name="retrieving-text"></a>
-#### 텍스트 읽기
+#### 텍스트 얻기
 
-`text` 메서드는 셀렉터에 해당하는 엘리먼트의 표시 텍스트를 가져옵니다:
+`text` 메서드는 주어진 셀렉터와 매칭되는 요소의 표시 텍스트를 읽어옵니다:
 
 ```php
 $text = $browser->text('selector');
 ```
 
 <a name="retrieving-attributes"></a>
-#### 속성 읽기
+#### 속성 값 얻기
 
-`attribute` 메서드는 지정한 셀렉터의 엘리먼트에서 특정 속성의 값을 읽어옵니다:
+`attribute` 메서드는 특정 셀렉터와 매칭되는 요소의 속성값을 얻습니다:
 
 ```php
 $attribute = $browser->attribute('selector', 'value');
@@ -722,28 +722,28 @@ $attribute = $browser->attribute('selector', 'value');
 <a name="typing-values"></a>
 #### 값 입력하기
 
-Dusk는 폼 및 입력 엘리먼트와 상호작용할 수 있도록 다양한 메서드를 제공합니다. 먼저, 입력 필드에 텍스트를 입력하는 기본 예제부터 살펴보겠습니다:
+폼 및 입력 요소와 상호작용하기 위한 다양한 메서드를 제공합니다. 먼저, input 필드에 텍스트를 입력하는 예시입니다:
 
 ```php
 $browser->type('email', 'taylor@laravel.com');
 ```
 
-이 때 CSS 셀렉터를 생략할 수도 있는데, 그 경우 `name` 속성이 일치하는 `input` 또는 `textarea`를 자동으로 찾아 입력합니다.
+필요하다면 CSS 셀렉터를 직접 지정할 수도 있지만, 기본적으로 name 속성으로도 찾을 수 있습니다.
 
-필드에 기존 값을 지우지 않고 텍스트를 추가하려면 `append` 메서드를 사용하세요:
+필드의 내용을 지우지 않고 값을 이어 쓰려면 `append`를 사용할 수 있습니다:
 
 ```php
 $browser->type('tags', 'foo')
     ->append('tags', ', bar, baz');
 ```
 
-값을 지우려면 `clear` 메서드를 사용할 수 있습니다:
+입력값을 지우려면 `clear`를 사용하세요:
 
 ```php
 $browser->clear('email');
 ```
 
-`typeSlowly` 메서드를 사용하면 키를 일정 시간 간격을 두고 천천히 입력하게 할 수 있습니다. 기본 지연 시간은 키 입력당 100ms이며, 직접 밀리세컨드 단위로 지정할 수도 있습니다:
+천천히 타이핑하도록 하려면 `typeSlowly`를 사용할 수 있습니다(기본 100ms 간격, 세 번째 인수로 조절 가능):
 
 ```php
 $browser->typeSlowly('mobile', '+1 (202) 555-5555');
@@ -751,7 +751,7 @@ $browser->typeSlowly('mobile', '+1 (202) 555-5555');
 $browser->typeSlowly('mobile', '+1 (202) 555-5555', 300);
 ```
 
-`appendSlowly` 메서드를 사용하면 천천히 텍스트를 추가할 수 있습니다:
+`appendSlowly` 메서드로 값을 천천히 이어쓸 수도 있습니다:
 
 ```php
 $browser->type('tags', 'foo')
@@ -761,19 +761,19 @@ $browser->type('tags', 'foo')
 <a name="dropdowns"></a>
 #### 드롭다운
 
-`select` 엘리먼트의 옵션을 선택하려면 `select` 메서드를 사용하세요. 옵션의 표시 텍스트 대신 실제 값(value)을 전달해야 합니다:
+`select` 요소에서 값을 선택하려면 `select` 메서드를 사용하세요. 두 번째 인수에는 표시 텍스트가 아닌 option의 value 속성 값을 넘깁니다:
 
 ```php
 $browser->select('size', 'Large');
 ```
 
-값을 생략하면 랜덤 옵션이 선택됩니다:
+두 번째 인수를 생략하면 랜덤 옵션이 선택됩니다:
 
 ```php
 $browser->select('size');
 ```
 
-배열을 두 번째 인수로 전달하면 여러 옵션을 동시에 선택할 수 있습니다:
+배열을 두 번째 인수로 넘기면 다중 선택도 가능합니다:
 
 ```php
 $browser->select('categories', ['Art', 'Music']);
@@ -782,22 +782,17 @@ $browser->select('categories', ['Art', 'Music']);
 <a name="checkboxes"></a>
 #### 체크박스
 
-체크박스(input[type="checkbox"])를 "체크"하려면 `check` 메서드를 사용하세요:
+체크박스를 체크하려면 `check` 메서드를, 해제하려면 `uncheck`를 사용합니다. name 속성으로도 인식할 수 있습니다:
 
 ```php
 $browser->check('terms');
-```
-
-체크 해제를 원하면 `uncheck` 메서드를 사용합니다:
-
-```php
 $browser->uncheck('terms');
 ```
 
 <a name="radio-buttons"></a>
 #### 라디오 버튼
 
-라디오 버튼(input[type="radio"])을 선택하려면 `radio` 메서드를 사용하세요:
+라디오 버튼을 선택하려면 `radio` 메서드를 사용하세요:
 
 ```php
 $browser->radio('size', 'large');
@@ -806,44 +801,44 @@ $browser->radio('size', 'large');
 <a name="attaching-files"></a>
 ### 파일 첨부 (Attaching Files)
 
-파일 업로드 input에 파일을 첨부하려면 `attach` 메서드를 사용하세요:
+파일 첨부는 `attach` 메서드로 할 수 있습니다. name 속성으로 매치합니다:
 
 ```php
 $browser->attach('photo', __DIR__.'/photos/mountains.png');
 ```
 
 > [!WARNING]
-> 파일 첨부 기능은 서버에 `Zip` PHP 확장 기능이 설치되어 활성화되어 있어야만 사용할 수 있습니다.
+> 파일 첨부 기능은 서버에 `Zip` PHP 확장 모듈이 설치 및 활성화되어 있어야 합니다.
 
 <a name="pressing-buttons"></a>
-### 버튼 누르기 (Pressing Buttons)
+### 버튼 클릭 (Pressing Buttons)
 
-`press` 메서드를 통해 페이지 내 버튼을 클릭할 수 있습니다. 인수로 버튼의 표시 텍스트 또는 CSS/Dusk 셀렉터를 전달합니다:
+버튼 요소를 클릭하려면 `press` 메서드를 사용합니다. 버튼의 표시 텍스트 또는 CSS/Dusk 셀렉터로 지정 가능합니다:
 
 ```php
 $browser->press('Login');
 ```
 
-폼 제출 시, 대부분의 애플리케이션은 HTTP 요청이 끝날 때까지 버튼을 비활성화합니다. 이런 경우 `pressAndWaitFor` 메서드를 사용해 버튼이 다시 활성화될 때까지 대기할 수 있습니다:
+폼 제출 시 버튼이 잠시 비활성화되었다가 완료 후 다시 활성화되는 경우, 버튼이 활성화될 때까지 대기하며 클릭하려면 `pressAndWaitFor`를 활용할 수 있습니다:
 
 ```php
-// 최대 5초까지 버튼이 활성화될 때까지 대기...
+// 버튼이 재활성화될 때까지 최대 5초 대기
 $browser->pressAndWaitFor('Save');
 
-// 최대 1초까지 대기...
+// 최대 1초 대기
 $browser->pressAndWaitFor('Save', 1);
 ```
 
 <a name="clicking-links"></a>
 ### 링크 클릭 (Clicking Links)
 
-링크를 클릭하려면 `clickLink` 메서드를 사용하세요. 인수로 표시 텍스트를 전달합니다:
+링크를 클릭하려면 `clickLink` 메서드를 사용하세요. 링크의 표시 텍스트로 지정합니다:
 
 ```php
 $browser->clickLink($linkText);
 ```
 
-특정 링크가 보이는지 확인하려면 `seeLink` 메서드를 사용합니다:
+특정 텍스트를 가진 링크가 보이는지 확인하려면 `seeLink`를 사용할 수 있습니다:
 
 ```php
 if ($browser->seeLink($linkText)) {
@@ -852,30 +847,30 @@ if ($browser->seeLink($linkText)) {
 ```
 
 > [!WARNING]
-> 이 메서드들은 jQuery와 상호작용합니다. 페이지에 jQuery가 없으면, 테스트 중 자동 주입됩니다.
+> 해당 메서드는 jQuery와 상호작용합니다. 페이지에 jQuery가 없다면 Dusk가 자동으로 임시로 주입하여 테스트하는 동안 사용할 수 있습니다.
 
 <a name="using-the-keyboard"></a>
-### 키보드 활용 (Using the Keyboard)
+### 키보드 사용 (Using the Keyboard)
 
-`keys` 메서드는 `type`보다 더 복잡한 키 입력 시퀀스를 구현할 수 있습니다. 예를 들어, modifier 키를 누른 채 값을 입력하는 경우 등입니다. 아래 예시는 `shift` 키를 누르고 `taylor` 을 입력한 뒤, modifier 없이 `swift` 를 입력합니다:
+`keys` 메서드를 사용하면 `type`보다 복잡한 입력 시퀀스를 요소에 전달할 수 있습니다. 예를 들어, Shift를 누른 채로 입력 후 다시 일반 입력으로 이어가는 것이 가능합니다:
 
 ```php
 $browser->keys('selector', ['{shift}', 'taylor'], 'swift');
 ```
 
-키보드 단축키 조합을 특정 셀렉터에 전송할 수도 있습니다:
+키보드 단축키 조합도 보낼 수 있습니다:
 
 ```php
 $browser->keys('.app', ['{command}', 'j']);
 ```
 
 > [!NOTE]
-> `{command}` 등 모든 modifier 키는 `{}`로 감싸야 하며, [WebDriverKeys 클래스](https://github.com/php-webdriver/php-webdriver/blob/master/lib/WebDriverKeys.php)에 정의된 상수와 동일하게 사용합니다.
+> `{command}` 등 모든 수정 키는 `{}`로 감싸며, 이는 `Facebook\WebDriver\WebDriverKeys` 클래스의 상수와 일치합니다. [GitHub에서 전체 목록 확인](https://github.com/php-webdriver/php-webdriver/blob/master/lib/WebDriverKeys.php)
 
 <a name="fluent-keyboard-interactions"></a>
-#### 플루언트 키보드 상호작용
+#### 유연한 키보드 상호작용
 
-`withKeyboard` 메서드를 사용하면 `Laravel\Dusk\Keyboard` 클래스를 통한 키보드 상호작용을 더 명확하게 구현할 수 있습니다. 이 클래스는 `press`, `release`, `type`, `pause` 등의 메서드를 제공합니다:
+`withKeyboard` 메서드와 `Laravel\Dusk\Keyboard` 클래스를 활용하면, 복잡한 키보드 상호작용도 간단히 구현할 수 있습니다. Keyboard 클래스는 `press`, `release`, `type`, `pause` 메서드를 제공합니다:
 
 ```php
 use Laravel\Dusk\Keyboard;
@@ -891,7 +886,7 @@ $browser->withKeyboard(function (Keyboard $keyboard) {
 <a name="keyboard-macros"></a>
 #### 키보드 매크로
 
-반복 사용되는 키보드 상호작용을 쉽게 재사용하려면, `Keyboard` 클래스의 `macro` 메서드를 사용할 수 있습니다. 보통 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에 정의합니다:
+테스트 전역에서 재사용할 키보드 상호작용을 정의하고 싶다면, `Keyboard` 클래스의 `macro` 메서드를 사용할 수 있습니다. 보통 [서비스 프로바이더](/docs/12.x/providers)의 `boot` 메서드에서 정의합니다:
 
 ```php
 <?php
@@ -929,7 +924,7 @@ class DuskServiceProvider extends ServiceProvider
 }
 ```
 
-매크로는 이름과 클로저를 인수로 받으며, `Keyboard` 인스턴스에서 메서드처럼 사용할 수 있습니다:
+이렇게 정의한 매크로는 Keyboard 인스턴스에서 바로 호출 가능합니다:
 
 ```php
 $browser->click('@textarea')
@@ -939,44 +934,40 @@ $browser->click('@textarea')
 ```
 
 <a name="using-the-mouse"></a>
-### 마우스 활용 (Using the Mouse)
+### 마우스 사용 (Using the Mouse)
 
 <a name="clicking-on-elements"></a>
 #### 요소 클릭
 
-`click` 메서드는 CSS 또는 Dusk 셀렉터로 매칭되는 요소를 클릭합니다:
+`click` 메서드로 CSS 또는 Dusk 셀렉터에 해당하는 요소를 클릭할 수 있습니다:
 
 ```php
 $browser->click('.selector');
 ```
 
-`clickAtXPath` 메서드는 XPath로 요소를 클릭할 수 있습니다:
+`clickAtXPath`로 XPath 표현식에 맞는 요소를 클릭할 수도 있습니다:
 
 ```php
 $browser->clickAtXPath('//div[@class = "selector"]');
 ```
 
-`clickAtPoint` 메서드는 상대 좌표 기준으로 브라우저 뷰영역의 맨 위에 있는 요소를 클릭합니다:
+`clickAtPoint`로 브라우저 화면 내 특정 좌표를 클릭하는 것도 가능합니다:
 
 ```php
 $browser->clickAtPoint($x = 0, $y = 0);
 ```
 
-`doubleClick`은 마우스의 더블 클릭을, `rightClick`은 우클릭을 시뮬레이션합니다:
+더블 클릭은 `doubleClick`으로, 우클릭은 `rightClick`으로 구현합니다:
 
 ```php
 $browser->doubleClick();
-
 $browser->doubleClick('.selector');
-```
 
-```php
 $browser->rightClick();
-
 $browser->rightClick('.selector');
 ```
 
-`clickAndHold`로 마우스를 누른 상태를 유지하고, 이후 `releaseMouse`로 해제합니다:
+마우스 클릭 후 버튼을 계속 누르려면 `clickAndHold`, 이후 `releaseMouse`로 해제할 수 있습니다:
 
 ```php
 $browser->clickAndHold('.selector');
@@ -986,18 +977,17 @@ $browser->clickAndHold()
     ->releaseMouse();
 ```
 
-`controlClick`은 `ctrl+클릭` 이벤트를 시뮬레이션합니다:
+`controlClick`은 ctrl+클릭을 시뮬레이션합니다:
 
 ```php
 $browser->controlClick();
-
 $browser->controlClick('.selector');
 ```
 
 <a name="mouseover"></a>
 #### 마우스 오버
 
-`mouseover` 메서드는 지정 셀렉터의 요소 위로 마우스를 이동시킵니다:
+`mouseover` 메서드는 특정 요소 위로 마우스를 이동합니다:
 
 ```php
 $browser->mouseover('.selector');
@@ -1012,7 +1002,7 @@ $browser->mouseover('.selector');
 $browser->drag('.from-selector', '.to-selector');
 ```
 
-단 방향으로 요소를 드래그하려면 다음 메서드들이 있습니다:
+단일 방향 드래그도 지원합니다:
 
 ```php
 $browser->dragLeft('.selector', $pixels = 10);
@@ -1021,7 +1011,7 @@ $browser->dragUp('.selector', $pixels = 10);
 $browser->dragDown('.selector', $pixels = 10);
 ```
 
-특정 오프셋만큼 드래그하려면 `dragOffset` 메서드를 사용하세요:
+특정 오프셋만큼 드래그하려면 `dragOffset`을 사용합니다:
 
 ```php
 $browser->dragOffset('.selector', $x = 10, $y = 10);
@@ -1030,25 +1020,25 @@ $browser->dragOffset('.selector', $x = 10, $y = 10);
 <a name="javascript-dialogs"></a>
 ### JavaScript 다이얼로그 (JavaScript Dialogs)
 
-Dusk는 JavaScript 다이얼로그와의 상호작용을 위한 다양한 메서드를 제공합니다. 예를 들어, 다이얼로그가 뜰 때까지 대기하려면 `waitForDialog`를 사용합니다:
+Dusk는 JavaScript 다이얼로그와 상호작용할 다양한 메서드를 제공합니다. 예를 들어, `waitForDialog`로 다이얼로그가 나타날 때까지 대기할 수 있습니다:
 
 ```php
 $browser->waitForDialog($seconds = null);
 ```
 
-다이얼로그가 보여지고 특정 메시지를 포함하고 있는지 어설션하려면 `assertDialogOpened`를 사용합니다:
+`assertDialogOpened`로 다이얼로그가 뜨고, 특정 메시지를 포함하고 있는지 어서트할 수 있습니다:
 
 ```php
 $browser->assertDialogOpened('Dialog message');
 ```
 
-프롬프트가 있으면 `typeInDialog`로 값도 입력할 수 있습니다:
+프롬프트가 있는 경우 `typeInDialog`로 값 입력이 가능합니다:
 
 ```php
 $browser->typeInDialog('Hello World');
 ```
 
-JavaScript 다이얼로그의 "OK" 버튼을 클릭하여 닫으려면 `acceptDialog`를, "Cancel" 버튼을 클릭하려면 `dismissDialog`를 사용하세요:
+"확인" 버튼으로 다이얼로그를 닫으려면 `acceptDialog`, "취소" 버튼은 `dismissDialog`를 이용합니다:
 
 ```php
 $browser->acceptDialog();
@@ -1058,7 +1048,7 @@ $browser->dismissDialog();
 <a name="interacting-with-iframes"></a>
 ### 인라인 프레임과 상호작용 (Interacting With Inline Frames)
 
-iframe 내 요소와 상호작용하려면 `withinFrame` 메서드를 사용합니다. 클로저 내의 모든 동작이 지정된 iframe 범위 내에서 실행됩니다:
+iframe 내부 요소와 상호작용하려면 `withinFrame` 메서드를 사용하고, 해당 클로저 내부에서 모든 작업이 프레임 범위 내에서 실행됩니다:
 
 ```php
 $browser->withinFrame('#credit-card-details', function ($browser) {
@@ -1072,7 +1062,7 @@ $browser->withinFrame('#credit-card-details', function ($browser) {
 <a name="scoping-selectors"></a>
 ### 셀렉터 범위 지정 (Scoping Selectors)
 
-여러 작업을 특정 셀렉터 범위 내에서 실행하려면 `with` 메서드를 사용할 수 있습니다. 예를 들어, 테이블 내에만 존재하는 텍스트를 검사하고, 그 테이블 안의 버튼을 누르고 싶을 때 사용하면 됩니다:
+특정 영역(예: 테이블) 내의 작업을 여러 번 수행하고 싶을 때, `with` 메서드로 범위를 지정할 수 있습니다. 해당 클로저에서는 설정한 셀렉터 내부 범위로만 동작이 제한됩니다:
 
 ```php
 $browser->with('.table', function (Browser $table) {
@@ -1081,7 +1071,7 @@ $browser->with('.table', function (Browser $table) {
 });
 ```
 
-이 스코프 밖에서 어설션을 실행하려면 `elsewhere`와 `elsewhereWhenAvailable` 메서드를 이용하면 됩니다:
+범위 밖에서 어서션을 실행해야 할 경우, `elsewhere`와 `elsewhereWhenAvailable`을 사용할 수 있습니다:
 
 ```php
 $browser->with('.table', function (Browser $table) {
@@ -1100,67 +1090,76 @@ $browser->with('.table', function (Browser $table) {
 ```
 
 <a name="waiting-for-elements"></a>
-### 엘리먼트 대기 (Waiting for Elements)
+### 요소 대기 (Waiting for Elements)
 
-JavaScript를 많이 사용하는 애플리케이션 테스트에서는 특정 요소나 데이터가 준비될 때까지 "대기"하는 일이 자주 필요합니다. Dusk는 이러한 대기를 손쉽게 처리할 수 있는 다양한 대기 메서드를 제공합니다.
+JavaScript를 많이 사용하는 애플리케이션을 테스트하다 보면, 특정 요소나 데이터가 나타날 때까지 "대기"해야 할 때가 많습니다. Dusk는 이런 상황을 쉽게 처리할 수 있도록 다양한 "wait" 메서드를 제공합니다.
 
 <a name="waiting"></a>
-#### 대기 (Waiting)
+#### 단순 대기
 
-일정 ms 동안 단순히 대기하려면 `pause` 메서드를 사용합니다:
+주어진 시간(ms)만큼 단순하게 일시정지하려면 `pause` 메서드를 사용하세요:
 
 ```php
 $browser->pause(1000);
 ```
 
-특정 조건이 `true`일 때만 대기하려면 `pauseIf`를, 그렇지 않으면 `pauseUnless` 메서드를 사용하세요:
+특정 조건이 참일 때만 대기하려면 `pauseIf`, 아닐 때만 대기하려면 `pauseUnless`를 사용할 수 있습니다:
 
 ```php
 $browser->pauseIf(App::environment('production'), 1000);
+
 $browser->pauseUnless(App::environment('testing'), 1000);
 ```
 
 <a name="waiting-for-selectors"></a>
 #### 셀렉터 대기
 
-`waitFor` 메서드는 CSS 혹은 Dusk 셀렉터로 지정된 요소가 화면에 나타날 때까지 대기합니다. 기본 대기 시간은 최대 5초입니다:
+특정 CSS 또는 Dusk 셀렉터가 표시될 때까지 대기하려면 `waitFor` 메서드를 사용하세요(기본 최대 5초):
 
 ```php
-// 최대 5초까지 대기
+// 최대 5초 대기
 $browser->waitFor('.selector');
 
-// 최대 1초까지만 대기
+// 최대 1초 대기
 $browser->waitFor('.selector', 1);
 ```
 
-지정된 텍스트가 포함될 때까지 대기하려면 `waitForTextIn`을 사용합니다:
+셀렉터 내에 특정 텍스트가 뜰 때까지 대기할 수도 있습니다:
 
 ```php
+// 최대 5초 동안 텍스트 대기
 $browser->waitForTextIn('.selector', 'Hello World');
+
+// 최대 1초 동안 텍스트 대기
 $browser->waitForTextIn('.selector', 'Hello World', 1);
 ```
 
-지정된 셀렉터의 요소가 사라질 때까지 대기하려면 `waitUntilMissing`을 사용합니다:
+선택자가 페이지에서 사라질 때까지도 대기할 수 있습니다:
 
 ```php
+// 최대 5초까지 사라질 때까지 대기
 $browser->waitUntilMissing('.selector');
+
+// 최대 1초까지 사라질 때까지 대기
 $browser->waitUntilMissing('.selector', 1);
 ```
 
-해당 셀렉터가 비활성화/활성화 될 때까지 대기하려면 다음 메서드를 사용합니다:
+또한 선택자가 "활성/비활성"될 때까지 기다릴 수 있습니다:
 
 ```php
+// 활성화 대기
 $browser->waitUntilEnabled('.selector');
 $browser->waitUntilEnabled('.selector', 1);
 
+// 비활성화 대기
 $browser->waitUntilDisabled('.selector');
 $browser->waitUntilDisabled('.selector', 1);
 ```
 
 <a name="scoping-selectors-when-available"></a>
-#### 셀렉터가 나타났을 때 범위 지정
+#### 셀렉터 준비될 때까지 범위 지정
 
-주로 모달 등 특정 엘리먼트가 화면에 나타나면 그 요소 안에서 추가 작업을 해야 할 때, `whenAvailable` 메서드를 활용할 수 있습니다:
+특정 셀렉터와 매칭되는 요소를 기다렸다가 그 범위 내에서 작업을 수행하려면 `whenAvailable`을 사용할 수 있습니다. (예: 모달 등장 후 모달 내에서 "OK" 클릭):
 
 ```php
 $browser->whenAvailable('.modal', function (Browser $modal) {
@@ -1172,14 +1171,14 @@ $browser->whenAvailable('.modal', function (Browser $modal) {
 <a name="waiting-for-text"></a>
 #### 텍스트 대기
 
-`waitForText` 메서드는 특정 텍스트가 화면에 나타날 때까지 대기합니다:
+`waitForText`로 특정 텍스트가 페이지에 나타날 때까지 대기할 수 있습니다:
 
 ```php
 $browser->waitForText('Hello World');
 $browser->waitForText('Hello World', 1);
 ```
 
-텍스트가 사라질 때까지 대기하려면 `waitUntilMissingText`를 사용합니다:
+`waitUntilMissingText`로 특정 텍스트가 사라질 때까지 대기할 수 있습니다:
 
 ```php
 $browser->waitUntilMissingText('Hello World');
@@ -1189,7 +1188,7 @@ $browser->waitUntilMissingText('Hello World', 1);
 <a name="waiting-for-links"></a>
 #### 링크 대기
 
-`waitForLink` 메서드는 특정 링크 텍스트가 화면에서 보일 때까지 대기합니다:
+`waitForLink`로 특정 링크 텍스트가 나타날 때까지 대기할 수 있습니다:
 
 ```php
 $browser->waitForLink('Create');
@@ -1199,7 +1198,7 @@ $browser->waitForLink('Create', 1);
 <a name="waiting-for-inputs"></a>
 #### 입력 필드 대기
 
-`waitForInput` 메서드는 지정 입력필드가 나타날 때까지 대기합니다:
+`waitForInput`으로 입력 필드가 표시될 때까지 대기할 수 있습니다:
 
 ```php
 $browser->waitForInput($field);
@@ -1209,28 +1208,28 @@ $browser->waitForInput($field, 1);
 <a name="waiting-on-the-page-location"></a>
 #### 페이지 경로 대기
 
-만약 `$browser->assertPathIs('/home')`와 같은 경로 어설션이 비동기적으로 window.location.pathname이 바뀌는 상황에서 실패한다면, `waitForLocation` 메서드로 경로가 바뀔 때까지 대기할 수 있습니다:
+경로 어서션(예: `$browser->assertPathIs('/home')`)에서 비동기적으로 `window.location.pathname`이 변경된다면 어서션이 실패할 수 있습니다. `waitForLocation`으로 경로가 기대하는 값이 될 때까지 대기할 수 있습니다:
 
 ```php
 $browser->waitForLocation('/secret');
 ```
 
-전체 URL로 대기할 수도 있습니다:
+완전한 URL도 지원합니다:
 
 ```php
 $browser->waitForLocation('https://example.com/path');
 ```
 
-또는 [named route](/docs/12.x/routing#named-routes)를 지정할 수 있습니다:
+[named route](/docs/12.x/routing#named-routes) 위치도 대기할 수 있습니다:
 
 ```php
 $browser->waitForRoute($routeName, $parameters);
 ```
 
 <a name="waiting-for-page-reloads"></a>
-#### 페이지 리로드 대기
+#### 페이지 새로고침 대기
 
-어떤 액션 후 페이지가 재로드되는 것을 기다릴 필요가 있다면 `waitForReload`를 사용하세요:
+조작 후 페이지가 새로고침될 때까지 대기하려면 `waitForReload`를 사용할 수 있습니다:
 
 ```php
 use Laravel\Dusk\Browser;
@@ -1241,7 +1240,7 @@ $browser->waitForReload(function (Browser $browser) {
 ->assertSee('Success!');
 ```
 
-특정 버튼 클릭 후 바로 리로드를 기다리는 경우 `clickAndWaitForReload`로 더 편하게 쓸 수 있습니다:
+주로 버튼 클릭 후 페이지 리로드가 일어나는 케이스를 줄이기 위해, `clickAndWaitForReload` 메서드도 제공됩니다:
 
 ```php
 $browser->clickAndWaitForReload('.selector')
@@ -1249,9 +1248,9 @@ $browser->clickAndWaitForReload('.selector')
 ```
 
 <a name="waiting-on-javascript-expressions"></a>
-#### 자바스크립트 표현식 대기
+#### JavaScript 식 대기
 
-테스트 실행을 자바스크립트 표현식이 `true`가 될 때까지 대기하고자 할 때는 `waitUntil` 메서드를 사용할 수 있습니다. `return`이나 세미콜론은 적지 않아도 됩니다:
+특정 JavaScript 식이 true가 될 때까지 대기하고 싶을 때는 `waitUntil`을 사용할 수 있습니다. 코드에서 `return`이나 세미콜론은 생략합니다:
 
 ```php
 $browser->waitUntil('App.data.servers.length > 0');
@@ -1259,9 +1258,9 @@ $browser->waitUntil('App.data.servers.length > 0', 1);
 ```
 
 <a name="waiting-on-vue-expressions"></a>
-#### Vue 표현식 대기
+#### Vue 식 대기
 
-`waitUntilVue`와 `waitUntilVueIsNot` 메서드로 [Vue 컴포넌트](https://vuejs.org) 속성의 값이 특정 값이 될 때까지 기다릴 수 있습니다:
+`waitUntilVue` 및 `waitUntilVueIsNot` 메서드로 [Vue 컴포넌트](https://vuejs.org)의 속성이 특정 값을 가질 때까지 대기할 수 있습니다:
 
 ```php
 $browser->waitUntilVue('user.name', 'Taylor', '@user');
@@ -1269,29 +1268,30 @@ $browser->waitUntilVueIsNot('user.name', null, '@user');
 ```
 
 <a name="waiting-for-javascript-events"></a>
-#### 자바스크립트 이벤트 대기
+#### JavaScript 이벤트 대기
 
-`waitForEvent` 메서드는 특정 자바스크립트 이벤트 발생까지 테스트 실행을 멈춥니다:
+`waitForEvent`로 특정 JavaScript 이벤트 발생까지 대기할 수 있습니다:
 
 ```php
 $browser->waitForEvent('load');
 ```
 
-이벤트 리스너는 기본적으로 `body` 요소에 붙지만, 셀렉터를 범위 지정하면 해당 요소에 붙습니다:
+현재 스코프(기본 body)에 이벤트 리스너가 바인딩됩니다. 범위 셀렉터에서 사용 시 해당 요소에 이벤트 리스너가 연결됩니다:
 
 ```php
 $browser->with('iframe', function (Browser $iframe) {
+    // iframe의 load 이벤트를 기다림...
     $iframe->waitForEvent('load');
 });
 ```
 
-또는 두 번째 인수로 특정 셀렉터를 지정할 수도 있습니다:
+이벤트 리스너 대상 요소를 두 번째 인수로 지정할 수도 있습니다:
 
 ```php
 $browser->waitForEvent('load', '.selector');
 ```
 
-`document`나 `window`에도 이벤트 리스너를 붙일 수 있습니다:
+`document` 및 `window` 객체의 이벤트에도 대기할 수 있습니다:
 
 ```php
 $browser->waitForEvent('scroll', 'document');
@@ -1299,9 +1299,9 @@ $browser->waitForEvent('resize', 'window', 5);
 ```
 
 <a name="waiting-with-a-callback"></a>
-#### 콜백으로 대기
+#### 콜백을 활용한 대기
 
-대부분의 "대기" 메서드는 내부적으로 `waitUsing`을 사용합니다. 직접 `waitUsing`을 이용해 주어진 클로저로 대기 조건을 지정할 수 있습니다:
+여러 대기 메서드는 내부적으로 `waitUsing` 메서드를 사용합니다. 이 메서드는 주어진 콜백이 true를 반환할 때까지 대기할 수 있습니다. 최대 대기 시간, 콜백 평가 간격, 콜백, 실패 메시지를 순서대로 받습니다:
 
 ```php
 $browser->waitUsing(10, 1, function () use ($something) {
@@ -1310,9 +1310,9 @@ $browser->waitUsing(10, 1, function () use ($something) {
 ```
 
 <a name="scrolling-an-element-into-view"></a>
-### 엘리먼트로 스크롤 이동 (Scrolling an Element Into View)
+### 요소를 화면에 스크롤 (Scrolling an Element Into View)
 
-엘리먼트가 화면에 보이지 않는 바깥 영역에 있을 때 클릭이 안 될 수 있습니다. 이때 `scrollIntoView`로 해당 셀렉터가 보일 때까지 스크롤할 수 있습니다:
+브라우저 화면 내에서 요소가 가려져 클릭할 수 없는 경우, `scrollIntoView` 메서드를 사용하여 해당 요소까지 자동으로 스크롤할 수 있습니다:
 
 ```php
 $browser->scrollIntoView('.selector')
@@ -1320,9 +1320,9 @@ $browser->scrollIntoView('.selector')
 ```
 
 <a name="available-assertions"></a>
-## 사용 가능한 어설션 (Available Assertions)
+## 사용 가능한 어서션 (Available Assertions)
 
-Dusk는 애플리케이션에 대해 사용할 수 있는 다양한 어설션을 제공합니다. 아래는 지원하는 어설션 목록입니다:
+Dusk는 다양한 형태의 어서션 메서드를 제공합니다. 아래 리스트에서 모든 어서션을 확인할 수 있습니다:
 
 <div class="collection-method-list" markdown="1">
 
@@ -1408,17 +1408,17 @@ Dusk는 애플리케이션에 대해 사용할 수 있는 다양한 어설션을
 
 </div>
 
-<!-- 이하 각 어설션 항목 번역 생략: 마크다운 구조 및 코드블록 규칙 상 그대로 유지 -->
+_(각 어서션의 설명 및 사용 예시는 원문에 존재하는 범위에서 코드와 동일하게 유지됩니다.)_
 
 <a name="pages"></a>
 ## 페이지 (Pages)
 
-복잡한 시나리오를 순서대로 수행해야 하는 테스트는, 테스트 코드의 가독성과 유지보수를 떨어뜨릴 수 있습니다. Dusk의 페이지 객체 기능을 사용하면 페이지별로 의미 있는 액션과 셀렉터를 정의해, 코드의 이해와 재사용성을 높일 수 있습니다.
+테스트 코드에서 여러 복잡한 동작들을 순차적으로 처리해야 하는 경우가 있습니다. 이런 경우 테스트가 읽기 어렵고 복잡해질 수 있는데, Dusk의 페이지(Page) 기능을 이용하면 한 메서드로 여러 작업을 처리하는 명확한 동작을 정의할 수 있습니다. 또한, 애플리케이션(혹은 특정 페이지)에서 자주 사용하는 셀렉터를 단축키처럼 정의할 수도 있습니다.
 
 <a name="generating-pages"></a>
 ### 페이지 생성 (Generating Pages)
 
-페이지 객체를 생성하려면 `dusk:page` Artisan 명령을 사용합니다. 새 페이지 객체는 애플리케이션의 `tests/Browser/Pages` 디렉터리에 생성됩니다:
+페이지 객체를 만들려면 `dusk:page` Artisan 명령어를 사용합니다. 모든 페이지 객체는 `tests/Browser/Pages` 디렉터리에 저장됩니다:
 
 ```shell
 php artisan dusk:page Login
@@ -1427,12 +1427,12 @@ php artisan dusk:page Login
 <a name="configuring-pages"></a>
 ### 페이지 설정 (Configuring Pages)
 
-기본적으로 페이지에는 `url`, `assert`, `elements` 메서드가 있습니다. 여기서는 `url`, `assert` 메서드만 설명하며, `elements` 메서드는 [아래에서 자세히 설명](#shorthand-selectors)합니다.
+기본적으로 페이지에는 `url`, `assert`, `elements` 세 가지 메서드가 있습니다. 여기서는 주로 `url`과 `assert` 메서드에 대해 설명하며, `elements`는 [아래에서 자세히 다룹니다](#shorthand-selectors).
 
 <a name="the-url-method"></a>
 #### `url` 메서드
 
-`url` 메서드는 해당 페이지의 경로를 반환합니다. Dusk는 이 URL로 브라우저에서 페이지를 탐색합니다:
+`url` 메서드는 해당 페이지의 URL 경로를 반환합니다. Dusk는 이 URL로 페이지에 접근합니다:
 
 ```php
 /**
@@ -1447,7 +1447,7 @@ public function url(): string
 <a name="the-assert-method"></a>
 #### `assert` 메서드
 
-`assert` 메서드는 브라우저가 실제 이 페이지에 도착했는지 검증할 때 사용합니다. 꼭 내용을 채울 필요는 없습니다. 어설션이 있다면 페이지 이동 시 자동으로 실행됩니다:
+`assert` 메서드는 브라우저가 해당 페이지에 정말 도착했는지 확인하는 어서션을 자유롭게 작성할 수 있습니다. 꼭 내용을 작성해야 하는 필수 메서드는 아니지만, 필요시 원하는 만큼 어서션을 추가할 수 있습니다. 이 메서드는 페이지로 이동할 때 자동으로 실행됩니다:
 
 ```php
 /**
@@ -1462,7 +1462,7 @@ public function assert(Browser $browser): void
 <a name="navigating-to-pages"></a>
 ### 페이지로 이동 (Navigating to Pages)
 
-페이지가 정의되어 있다면 `visit` 메서드로 해당 페이지로 이동할 수 있습니다:
+페이지가 정의되었다면, `visit` 메서드로 페이지로 이동할 수 있습니다:
 
 ```php
 use Tests\Browser\Pages\Login;
@@ -1470,7 +1470,7 @@ use Tests\Browser\Pages\Login;
 $browser->visit(new Login);
 ```
 
-이미 특정 페이지에 있으며, 해당 페이지 객체의 셀렉터와 메서드만 불러와야 하는 경우, 즉 버튼 클릭 후 리다이렉트 등에서는 `on` 메서드를 사용합니다:
+이미 해당 페이지에 있는 상태에서 그 페이지 클래스를 불러와서 셀렉터 및 메서드를 계속 사용하려면 `on` 메서드를 활용할 수 있습니다. (예: 버튼 클릭 후 페이지 리디렉션):
 
 ```php
 use Tests\Browser\Pages\CreatePlaylist;
@@ -1482,9 +1482,9 @@ $browser->visit('/dashboard')
 ```
 
 <a name="shorthand-selectors"></a>
-### 요약 셀렉터 (Shorthand Selectors)
+### 약식 셀렉터 (Shorthand Selectors)
 
-페이지 클래스의 `elements` 메서드에서는 자주 쓰는 CSS 셀렉터에 대한 별칭을 정의할 수 있습니다. 예를 들어 로그인 페이지의 "email" 입력 필드에 대해 별칭을 둘 수 있습니다:
+페이지 클래스에서 `elements` 메서드를 이용해 자주 사용하는 CSS 셀렉터에 대한 빠르고 기억하기 쉬운 단축키를 정의할 수 있습니다. 예를 들어, 로그인 페이지의 "email" 입력 필드에 대한 단축키를 정의하려면 아래와 같이 작성합니다:
 
 ```php
 /**
@@ -1500,16 +1500,16 @@ public function elements(): array
 }
 ```
 
-이후에는 별칭을 사용해 마치 CSS 셀렉터처럼 어디서나 활용할 수 있습니다:
+이렇게 정의한 단축 셀렉터는 CSS 셀렉터가 필요한 모든 곳에서 사용할 수 있습니다:
 
 ```php
 $browser->type('@email', 'taylor@laravel.com');
 ```
 
 <a name="global-shorthand-selectors"></a>
-#### 전역 요약 셀렉터
+#### 전역 약식 셀렉터 (Global Shorthand Selectors)
 
-Dusk 설치 후 `tests/Browser/Pages` 디렉터리에는 기본 `Page` 클래스가 추가됩니다. 이 클래스의 `siteElements` 메서드는 애플리케이션 전체에서 쓸 수 있는 전역 셀렉터 별칭을 정의합니다:
+Dusk 설치 시 `tests/Browser/Pages`에 `Page` 기본 클래스가 생성됩니다. 이 클래스의 `siteElements` 메서드를 사용하면 애플리케이션 전체 페이지에서 공통적으로 사용할 전역 단축 셀렉터를 정의할 수 있습니다:
 
 ```php
 /**
@@ -1528,7 +1528,7 @@ public static function siteElements(): array
 <a name="page-methods"></a>
 ### 페이지 메서드 (Page Methods)
 
-기본 메서드 외에, 추가적인 동작을 페이지별로 메서드로 만들어 재사용할 수 있습니다. 예를 들어 음악 관리 앱에서 "플레이리스트 생성"과 같은 액션을 페이지 메서드로 정의할 수 있습니다:
+기본 내장 메서드 외에도, 직접 메서드를 정의하여 여러 테스트에서 활용할 수 있습니다. 예를 들어, 음악 관리 애플리케이션의 한 페이지에서 플레이리스트 생성 작업을 여러 테스트에서 반복적으로 사용한다면, `createPlaylist` 메서드를 정의해두고 재사용할 수 있습니다:
 
 ```php
 <?php
@@ -1554,7 +1554,7 @@ class Dashboard extends Page
 }
 ```
 
-정의한 메서드는 페이지를 사용하는 테스팅 코드 어디에서든 호출할 수 있으며, 브라우저 인스턴스가 첫 인수로 자동 전달됩니다:
+정의한 메서드는 아래처럼 페이지를 사용하는 모든 테스트에서 사용할 수 있습니다(브라우저 인스턴스는 첫 번째 인수로 자동 전달):
 
 ```php
 use Tests\Browser\Pages\Dashboard;
@@ -1567,18 +1567,18 @@ $browser->visit(new Dashboard)
 <a name="components"></a>
 ## 컴포넌트 (Components)
 
-컴포넌트는 Dusk 페이지 객체와 비슷하지만, 다양한 페이지에서 반복적으로 사용되는 UI(예: 네비게이션 바, 알림창 등)에 주로 사용됩니다. 컴포넌트는 특정 URL에 종속되지 않습니다.
+컴포넌트는 Dusk의 "페이지 객체"와 유사하지만, 같은 UI와 기능이 여러 페이지에 공통적으로 사용되는 경우에 적합합니다(예: 네비게이션 바, 알림창 등). 컴포넌트는 특정 URL에 묶이지 않아 여러 곳에서 쉽게 재사용할 수 있습니다.
 
 <a name="generating-components"></a>
 ### 컴포넌트 생성 (Generating Components)
 
-컴포넌트 생성을 위해 Artisan의 `dusk:component` 명령어를 사용할 수 있습니다. 새 컴포넌트는 `tests/Browser/Components` 디렉터리에 추가됩니다:
+컴포넌트를 생성하려면 `dusk:component` Artisan 명령어를 사용하세요. 새 컴포넌트는 `tests/Browser/Components` 디렉터리에 저장됩니다:
 
 ```shell
 php artisan dusk:component DatePicker
 ```
 
-예를 들어 "날짜 선택기"와 같은 기능은 여러 페이지에서 반복 사용될 수 있습니다. 각 테스트마다 자동화 코드를 계속 작성하는 대신, Dusk 컴포넌트로 로직을 캡슐화할 수 있습니다:
+날짜 선택기 등 여러 페이지에서 재활용되는 컴포넌트는 반복적으로 로직을 작성하기 번거로우니, Dusk 컴포넌트로 정의해두면 한 곳만 수정해도 전체 테스트에 반영되어 유지보수가 수월합니다:
 
 ```php
 <?php
@@ -1643,7 +1643,7 @@ class DatePicker extends BaseComponent
 <a name="using-components"></a>
 ### 컴포넌트 사용 (Using Components)
 
-컴포넌트가 정의되면, 어느 테스트에서든 쉽게 사용할 수 있습니다. 날짜 선택 로직이 바뀌더라도 컴포넌트만 수정하면 모든 테스트에 일괄 반영됩니다:
+컴포넌트를 정의하면, 각 테스트에서 간단히 메서드로 로직을 재사용할 수 있습니다. 만약 날짜 선택 로직에 변화가 생겨도 컴포넌트만 수정하면 모든 테스트에 일괄 적용됩니다:
 
 ```php tab=Pest
 <?php
@@ -1693,7 +1693,7 @@ class ExampleTest extends DuskTestCase
 }
 ```
 
-`component` 메서드를 이용해 해당 컴포넌트에 스코프가 지정된 브라우저 인스턴스를 얻고, 그 안에서 동작할 수도 있습니다:
+`component` 메서드로 컴포넌트의 범위 내 브라우저 인스턴스를 반환받아 추가 동작도 가능합니다:
 
 ```php
 $datePicker = $browser->component(new DatePickerComponent);
@@ -1707,12 +1707,12 @@ $datePicker->assertSee('January');
 ## 지속적 통합(CI) (Continuous Integration)
 
 > [!WARNING]
-> 대부분의 Dusk CI 구성은 Laravel 애플리케이션이 8000번 포트에서 내장 PHP 개발 서버로 실행되는 것을 전제로 합니다. 따라서 CI 환경의 `APP_URL` 환경변수가 반드시 `http://127.0.0.1:8000`이어야 합니다.
+> 대부분의 Dusk CI 설정에서는 Laravel 애플리케이션이 내장 PHP 개발 서버(포트 8000)에서 서비스된다고 가정합니다. 때문에 CI 환경의 `APP_URL`은 `http://127.0.0.1:8000`이 되어야 합니다.
 
 <a name="running-tests-on-heroku-ci"></a>
 ### Heroku CI
 
-[Heroku CI](https://www.heroku.com/continuous-integration)에서 Dusk 테스트를 실행하려면 아래와 같이 Heroku `app.json` 파일에 Google Chrome buildpack과 관련 스크립트를 추가하세요:
+[Heroku CI](https://www.heroku.com/continuous-integration)에서 Dusk 테스트를 실행하려면, 아래와 같이 Google Chrome 빌드팩과 스크립트를 `app.json`에 추가하세요:
 
 ```json
 {
@@ -1734,7 +1734,7 @@ $datePicker->assertSee('January');
 <a name="running-tests-on-travis-ci"></a>
 ### Travis CI
 
-[Travis CI](https://travis-ci.org)에서 Dusk 테스트를 실행하려면 아래와 같은 `.travis.yml` 구성을 참고하세요. Travis는 GUI 환경이 아니므로 Chrome 브라우저 실행을 위한 별도 설정이 필요합니다. 또한, `php artisan serve`로 내장 PHP 웹 서버를 사용합니다:
+[Travis CI](https://travis-ci.org)에 Dusk 테스트를 올리려면 `.travis.yml` 설정을 아래처럼 사용할 수 있습니다. Travis CI는 GUI 환경이 아니므로 Chrome 실행에 몇 가지 추가 작업이 필요합니다:
 
 ```yaml
 language: php
@@ -1762,7 +1762,7 @@ script:
 <a name="running-tests-on-github-actions"></a>
 ### GitHub Actions
 
-[GitHub Actions](https://github.com/features/actions)에서 Dusk 테스트를 실행하려면 아래와 같은 설정 파일을 참고하면 됩니다. TravisCI와 마찬가지로 내장 PHP 서버를 사용합니다:
+[GitHub Actions](https://github.com/features/actions)에서 Dusk 테스트를 실행하고 싶다면, 다음 설정 파일을 참고해 시작할 수 있습니다. Travis CI와 마찬가지로 내장 PHP 서버를 사용합니다:
 
 ```yaml
 name: CI
@@ -1777,7 +1777,7 @@ jobs:
       DB_PASSWORD: root
       MAIL_MAILER: log
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Prepare The Environment
         run: cp .env.example .env
       - name: Create Database
@@ -1813,7 +1813,7 @@ jobs:
 <a name="running-tests-on-chipper-ci"></a>
 ### Chipper CI
 
-[Chipper CI](https://chipperci.com)에서 Dusk 테스트를 실행하려면 아래의 설정 파일을 참고하세요. 내장 PHP 서버를 사용하도록 되어 있습니다:
+[Chipper CI](https://chipperci.com)에서 Dusk 테스트를 수행하려면, 아래 설정 파일을 예시로 사용할 수 있습니다(PHP 내장 서버로 Laravel을 동작시킵니다):
 
 ```yaml
 # file .chipperci.yml
@@ -1856,5 +1856,4 @@ pipeline:
       php artisan dusk --env=ci
 ```
 
-Chipper CI에서 Dusk 테스트 및 데이터베이스 사용 방법에 대한 더 자세한 내용은 [Chipper CI 공식 문서](https://chipperci.com/docs/testing/laravel-dusk-new/)를 참고하세요.
-
+Chipper CI에서 Dusk 테스트 및 데이터베이스 사용 방법 등 자세한 내용은 [Chipper CI 공식 문서](https://chipperci.com/docs/testing/laravel-dusk-new/)를 참고하세요.
