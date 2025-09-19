@@ -83,12 +83,27 @@ use Laravel\Mcp\Server;
 class WeatherServer extends Server
 {
     /**
+     * The MCP server's name.
+     */
+    protected string $name = 'Weather Server';
+
+    /**
+     * The MCP server's version.
+     */
+    protected string $version = '1.0.0';
+
+    /**
+     * The MCP server's instructions for the LLM.
+     */
+    protected string $instructions = 'This server provides weather information and forecasts.';
+
+    /**
      * The tools registered with this MCP server.
      *
      * @var array<int, class-string<\Laravel\Mcp\Server\Tool>>
      */
     protected array $tools = [
-        // ExampleTool::class,
+        // GetCurrentWeatherTool::class,
     ];
 
     /**
@@ -97,7 +112,7 @@ class WeatherServer extends Server
      * @var array<int, class-string<\Laravel\Mcp\Server\Resource>>
      */
     protected array $resources = [
-        // ExampleResource::class,
+        // WeatherGuidelinesResource::class,
     ];
 
     /**
@@ -106,7 +121,7 @@ class WeatherServer extends Server
      * @var array<int, class-string<\Laravel\Mcp\Server\Prompt>>
      */
     protected array $prompts = [
-        // ExamplePrompt::class,
+        // DescribeWeatherPrompt::class,
     ];
 }
 ```
@@ -1222,11 +1237,11 @@ The [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) is an 
 You may run the inspector for any registered server:
 
 ```shell
-# Local server named "weather"...
-php artisan mcp:inspector weather
-
 # Web server...
 php artisan mcp:inspector /mcp/weather
+
+# Local server named "weather"...
+php artisan mcp:inspector weather
 ```
 
 This command launches the MCP Inspector and provides the client settings that you may copy into your MCP client to ensure everything is configured correctly. If your web server is protected by an authentication middleware, make sure to include the required headers, such as an `Authorization` bearer token, when connecting.
