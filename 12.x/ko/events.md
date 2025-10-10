@@ -3,38 +3,38 @@
 - [소개](#introduction)
 - [이벤트 및 리스너 생성](#generating-events-and-listeners)
 - [이벤트 및 리스너 등록](#registering-events-and-listeners)
-    - [이벤트 자동 탐지](#event-discovery)
+    - [이벤트 자동 감지](#event-discovery)
     - [이벤트 수동 등록](#manually-registering-events)
     - [클로저 리스너](#closure-listeners)
 - [이벤트 정의](#defining-events)
 - [리스너 정의](#defining-listeners)
-- [큐를 사용하는 이벤트 리스너](#queued-event-listeners)
+- [큐잉된 이벤트 리스너](#queued-event-listeners)
     - [큐 직접 다루기](#manually-interacting-with-the-queue)
-    - [큐 리스너와 데이터베이스 트랜잭션](#queued-event-listeners-and-database-transactions)
-    - [큐 리스너 미들웨어](#queued-listener-middleware)
-    - [암호화된 큐 리스너](#encrypted-queued-listeners)
-    - [실패한 작업 처리](#handling-failed-jobs)
+    - [큐잉된 이벤트 리스너와 데이터베이스 트랜잭션](#queued-event-listeners-and-database-transactions)
+    - [큐잉 리스너 미들웨어](#queued-listener-middleware)
+    - [암호화된 큐잉 리스너](#encrypted-queued-listeners)
+    - [실패한 작업 처리하기](#handling-failed-jobs)
 - [이벤트 디스패치](#dispatching-events)
-    - [데이터베이스 트랜잭션 이후의 이벤트 디스패치](#dispatching-events-after-database-transactions)
-    - [이벤트 연기(Defer)](#deferring-events)
+    - [데이터베이스 트랜잭션 이후 이벤트 디스패치](#dispatching-events-after-database-transactions)
+    - [이벤트 디퍼(지연) 처리](#deferring-events)
 - [이벤트 구독자](#event-subscribers)
     - [이벤트 구독자 작성](#writing-event-subscribers)
     - [이벤트 구독자 등록](#registering-event-subscribers)
 - [테스트](#testing)
-    - [특정 이벤트만 가짜로 처리](#faking-a-subset-of-events)
-    - [스코프 이벤트 가짜 처리](#scoped-event-fakes)
+    - [일부 이벤트만 페이크하기](#faking-a-subset-of-events)
+    - [스코프별 이벤트 페이크](#scoped-event-fakes)
 
 <a name="introduction"></a>
 ## 소개
 
-Laravel의 이벤트는 간단한 옵저버 패턴을 제공합니다. 이를 통해 애플리케이션에서 발생하는 다양한 이벤트를 구독하고 감지할 수 있습니다. 이벤트 클래스는 보통 `app/Events` 디렉터리에 저장되며, 해당 이벤트를 처리하는 리스너는 `app/Listeners` 디렉터리에 저장됩니다. 만약 애플리케이션에 이 디렉터리가 없다면 Artisan 콘솔 명령어를 통해 이벤트와 리스너를 생성할 때 자동으로 만들어집니다.
+Laravel의 이벤트는 간단한 옵저버 패턴(observer pattern) 구현체를 제공하여 애플리케이션 내에서 발생하는 다양한 이벤트를 구독 및 리스닝할 수 있습니다. 이벤트 클래스는 일반적으로 `app/Events` 디렉터리에 위치하며, 해당 이벤트의 리스너들은 `app/Listeners`에 저장됩니다. 만약 이 디렉터리들이 현재 프로젝트에 없다면, Artisan 콘솔 명령어로 이벤트와 리스너를 생성할 때 자동으로 만들어집니다.
 
-이벤트는 애플리케이션의 여러 기능을 느슨하게 결합할 수 있는 훌륭한 방법입니다. 하나의 이벤트에 여러 리스너가 연결될 수 있으며, 각 리스너는 서로에게 의존하지 않습니다. 예를 들어, 주문이 발송될 때마다 사용자에게 Slack 알림을 보내고 싶다고 가정합시다. 이럴 때 주문 처리 코드와 Slack 알림 코드를 직접 연결하지 않고 `App\Events\OrderShipped` 이벤트를 발생시키고, 이 이벤트를 감지하여 Slack 알림을 보내는 리스너를 구현할 수 있습니다.
+이벤트는 애플리케이션의 다양한 부분을 느슨하게 결합(loose coupling)할 수 있게 해줍니다. 하나의 이벤트에 복수의 리스너가 존재할 수 있으며, 이 리스너들은 서로에게 의존하지 않습니다. 예를 들어, 주문이 발송될 때마다 사용자에게 Slack 알림을 보내고 싶다고 가정해보겠습니다. 주문 처리 코드와 Slack 알림 코드를 강하게 결합하는 대신, `App\Events\OrderShipped` 이벤트를 발생시켜서, 별도의 리스너에서 이 이벤트를 받고 Slack 알림을 보낼 수 있습니다.
 
 <a name="generating-events-and-listeners"></a>
 ## 이벤트 및 리스너 생성
 
-이벤트와 리스너를 빠르게 생성하려면 `make:event` 및 `make:listener` Artisan 명령어를 사용할 수 있습니다:
+이벤트와 리스너를 빠르게 생성하려면 `make:event` 및 `make:listener` Artisan 명령어를 사용할 수 있습니다.
 
 ```shell
 php artisan make:event PodcastProcessed
@@ -42,7 +42,7 @@ php artisan make:event PodcastProcessed
 php artisan make:listener SendPodcastNotification --event=PodcastProcessed
 ```
 
-또한, 인수를 추가하지 않고 `make:event` 및 `make:listener` Artisan 명령어를 실행하면, Laravel이 클래스명을 입력하라는 프롬프트를 표시하며, 리스너를 생성할 때는 어떤 이벤트를 감지할지 추가로 질문합니다:
+또한, 편의를 위해 추가 인수 없이 `make:event`나 `make:listener` 명령어를 실행하면, Laravel이 클래스 이름(및 리스너 생성 시 리스닝할 이벤트)을 자동으로 질문합니다.
 
 ```shell
 php artisan make:event
@@ -54,9 +54,9 @@ php artisan make:listener
 ## 이벤트 및 리스너 등록
 
 <a name="event-discovery"></a>
-### 이벤트 자동 탐지
+### 이벤트 자동 감지
 
-기본적으로 Laravel은 애플리케이션의 `Listeners` 디렉터리를 스캔하여 이벤트 리스너를 자동으로 찾고 등록합니다. 리스너 클래스 내에 `handle` 또는 `__invoke`로 시작하는 메서드를 발견하면, 해당 메서드에 타입힌트된 이벤트를 자동으로 리스너로 등록합니다:
+기본적으로 Laravel은 애플리케이션의 `Listeners` 디렉터리를 스캔하여 이벤트 리스너를 자동으로 찾아 등록합니다. Laravel은 메서드 시그니처에 타입힌트된 이벤트를 기준으로, `handle` 또는 `__invoke`로 시작하는 메서드를 가진 클래스의 해당 메서드를 이벤트 리스너로 등록합니다:
 
 ```php
 use App\Events\PodcastProcessed;
@@ -73,7 +73,7 @@ class SendPodcastNotification
 }
 ```
 
-PHP의 유니언 타입(union type)를 사용하면 여러 이벤트를 동시에 감지할 수도 있습니다:
+PHP의 유니언 타입을 활용해 여러 이벤트를 동시에 수신할 수도 있습니다:
 
 ```php
 /**
@@ -85,7 +85,7 @@ public function handle(PodcastProcessed|PodcastPublished $event): void
 }
 ```
 
-리스너를 여러 디렉터리나 다른 위치에 저장하고 싶다면, 애플리케이션의 `bootstrap/app.php` 파일에서 `withEvents` 메서드를 사용하여 Laravel이 해당 디렉터리를 스캔하도록 지정할 수 있습니다:
+리스너를 다른 디렉터리나 여러 디렉터리 내에 저장하려는 경우, 애플리케이션의 `bootstrap/app.php` 파일에서 `withEvents` 메서드를 사용해 Laravel이 해당 디렉터리를 추가로 스캔하도록 지정할 수 있습니다:
 
 ```php
 ->withEvents(discover: [
@@ -93,7 +93,7 @@ public function handle(PodcastProcessed|PodcastPublished $event): void
 ])
 ```
 
-`*` 와일드카드 문자를 사용하면 여러 비슷한 디렉터리를 한 번에 스캔할 수 있습니다:
+와일드카드(`*`) 문자를 활용하여 비슷한 구조의 여러 디렉터리를 한 번에 스캔할 수도 있습니다:
 
 ```php
 ->withEvents(discover: [
@@ -101,21 +101,21 @@ public function handle(PodcastProcessed|PodcastPublished $event): void
 ])
 ```
 
-`event:list` 명령어를 사용하면 애플리케이션에 등록된 모든 리스너를 확인할 수 있습니다:
+애플리케이션에 등록된 모든 리스너 목록을 확인하려면 `event:list` 명령어를 사용하세요:
 
 ```shell
 php artisan event:list
 ```
 
 <a name="event-discovery-in-production"></a>
-#### 프로덕션 환경에서의 이벤트 자동 탐지
+#### 프로덕션 환경에서의 이벤트 자동 감지
 
-애플리케이션의 성능을 높이기 위해 `optimize` 또는 `event:cache` Artisan 명령어로 리스너 목록을 캐싱해야 합니다. 일반적으로 이 명령은 [배포 과정](/docs/12.x/deployment#optimization)의 일부로 실행합니다. 이 매니페스트 파일을 프레임워크가 사용하여 이벤트 등록 속도를 높입니다. 이벤트 캐시를 삭제하려면 `event:clear` 명령어를 사용할 수 있습니다.
+애플리케이션 성능을 높이기 위해, `optimize` 또는 `event:cache` Artisan 명령어를 사용해 전체 리스너의 매니페스트를 캐싱해두는 것이 좋습니다. 이 명령은 보통 [배포 프로세스](/docs/12.x/deployment#optimization)에서 수행합니다. 매니페스트 캐시는 프레임워크가 이벤트 등록 절차를 더 빠르게 처리할 수 있도록 도와줍니다. `event:clear` 명령어로 이벤트 캐시를 삭제할 수 있습니다.
 
 <a name="manually-registering-events"></a>
 ### 이벤트 수동 등록
 
-`Event` 파사드를 사용하여 애플리케이션의 `AppServiceProvider`의 `boot` 메서드에서 이벤트와 해당 리스너를 직접 등록할 수 있습니다:
+`Event` 파사드를 사용하면 애플리케이션의 `AppServiceProvider`의 `boot` 메서드 내에서 이벤트 및 대응 리스너를 직접 수동으로 등록할 수 있습니다:
 
 ```php
 use App\Domain\Orders\Events\PodcastProcessed;
@@ -134,7 +134,7 @@ public function boot(): void
 }
 ```
 
-`event:list` 명령어로 등록된 모든 리스너를 확인할 수 있습니다:
+등록된 모든 리스너 목록은 다음과 같이 확인할 수 있습니다:
 
 ```shell
 php artisan event:list
@@ -143,7 +143,7 @@ php artisan event:list
 <a name="closure-listeners"></a>
 ### 클로저 리스너
 
-일반적으로 리스너는 클래스로 정의하지만, 애플리케이션의 `AppServiceProvider`의 `boot` 메서드에서 클로저(익명 함수)로 이벤트 리스너를 직접 등록할 수도 있습니다:
+리스너는 보통 클래스로 정의하지만, `AppServiceProvider`의 `boot` 메서드 내에서 클로저(익명 함수) 기반으로도 수동 등록이 가능합니다:
 
 ```php
 use App\Events\PodcastProcessed;
@@ -161,9 +161,9 @@ public function boot(): void
 ```
 
 <a name="queuable-anonymous-event-listeners"></a>
-#### 큐를 지원하는 익명 이벤트 리스너
+#### 큐잉 가능한 익명 이벤트 리스너
 
-클로저 기반의 이벤트 리스너를 등록할 때, `Illuminate\Events\queueable` 함수를 사용하여 리스너를 [큐](/docs/12.x/queues)로 실행하도록 지정할 수 있습니다:
+클로저 기반의 이벤트 리스너를 등록할 때, `Illuminate\Events\queueable` 함수를 사용하여 리스너 클로저를 감싸면, 해당 리스너를 [큐](/docs/12.x/queues)로 실행하도록 지정할 수 있습니다:
 
 ```php
 use App\Events\PodcastProcessed;
@@ -181,7 +181,7 @@ public function boot(): void
 }
 ```
 
-큐 작업과 마찬가지로 `onConnection`, `onQueue`, `delay` 메서드를 활용하여 큐 리스너의 실행 방식을 세부적으로 제어할 수 있습니다:
+큐잉된 작업과 마찬가지로, `onConnection`, `onQueue`, `delay` 메서드로 큐, 커넥션 또는 지연 시간을 지정할 수 있습니다:
 
 ```php
 Event::listen(queueable(function (PodcastProcessed $event) {
@@ -189,7 +189,7 @@ Event::listen(queueable(function (PodcastProcessed $event) {
 })->onConnection('redis')->onQueue('podcasts')->delay(now()->addSeconds(10)));
 ```
 
-익명 큐 리스너에서 실패 상황을 처리하려면, `queueable` 리스너를 정의할 때 `catch` 메서드에 클로저를 전달하세요. 이 클로저는 이벤트 인스턴스와 해당 리스너의 실패를 일으킨 `Throwable` 인스턴스를 인자로 받습니다:
+익명 큐잉 리스너의 실패를 처리하고 싶다면, `queueable` 리스너를 정의할 때 `catch` 메서드에 실패 처리 클로저를 넘기면 됩니다. 이 클로저는 이벤트 인스턴스 및 실패의 원인인 `Throwable` 인스턴스를 인자로 받습니다:
 
 ```php
 use App\Events\PodcastProcessed;
@@ -200,14 +200,14 @@ use Throwable;
 Event::listen(queueable(function (PodcastProcessed $event) {
     // ...
 })->catch(function (PodcastProcessed $event, Throwable $e) {
-    // 큐 리스너가 실패했을 때 처리...
+    // The queued listener failed...
 }));
 ```
 
 <a name="wildcard-event-listeners"></a>
 #### 와일드카드 이벤트 리스너
 
-`*` 문자를 와일드카드 파라미터로 사용하여 여러 이벤트를 한 리스너에서 감지할 수도 있습니다. 와일드카드 리스너는 첫 번째 인수로 이벤트 이름을, 두 번째 인수로 전체 이벤트 데이터 배열을 받습니다:
+`*` 문자를 와일드카드 파라미터로 사용해 여러 이벤트를 같은 리스너에서 수신할 수도 있습니다. 와일드카드 리스너는 이벤트 이름을 첫 번째 인자로, 전체 이벤트 데이터 배열을 두 번째 인자로 받습니다:
 
 ```php
 Event::listen('event.*', function (string $eventName, array $data) {
@@ -218,7 +218,7 @@ Event::listen('event.*', function (string $eventName, array $data) {
 <a name="defining-events"></a>
 ## 이벤트 정의
 
-이벤트 클래스는 단순히 해당 이벤트와 관련된 데이터를 담는 데이터 컨테이너입니다. 예를 들어, `App\Events\OrderShipped` 이벤트가 [Eloquent ORM](/docs/12.x/eloquent) 객체를 받는다고 가정해 봅니다:
+이벤트 클래스는 이벤트와 관련된 정보를 담는 데이터 컨테이너 역할을 합니다. 예를 들어, `App\Events\OrderShipped` 이벤트가 [Eloquent ORM](/docs/12.x/eloquent) 객체를 전달받도록 설계할 수 있습니다:
 
 ```php
 <?php
@@ -243,12 +243,12 @@ class OrderShipped
 }
 ```
 
-위와 같이, 이 이벤트 클래스는 별도의 로직이 없으며, 구매된 `App\Models\Order` 인스턴스를 담는 역할만 합니다. 이벤트에 사용된 `SerializesModels` 트레이트는 PHP의 `serialize` 함수로 이벤트 객체를 직렬화할 때 Eloquent 모델을 안전하게 직렬화해줍니다. 이는 [큐 리스너](#queued-event-listeners) 사용 시에 유용합니다.
+이벤트 클래스에는 별도의 로직이 없으며, 단지 `App\Models\Order` 인스턴스를 담기 위한 그릇입니다. 이벤트에서 사용된 `SerializesModels` 트레이트는 만약 이벤트 객체를 PHP의 `serialize` 함수로 직렬화해야 할 경우([큐잉된 리스너](#queued-event-listeners)에서 주로 발생), Eloquent 모델을 적절히 직렬화/복원하도록 처리해줍니다.
 
 <a name="defining-listeners"></a>
 ## 리스너 정의
 
-예시 이벤트를 처리할 리스너를 살펴보겠습니다. 이벤트 리스너는 `handle` 메서드에서 이벤트 인스턴스를 전달받습니다. `make:listener` Artisan 명령을 사용할 때 `--event` 옵션을 지정하면, 올바른 이벤트 클래스를 자동으로 import하고, `handle` 메서드에 타입힌트를 추가해줍니다. `handle` 메서드에서는 이벤트에 응답하기 위한 필요한 작업을 수행할 수 있습니다:
+이제 예시 이벤트에 대한 리스너를 살펴보겠습니다. 이벤트 리스너는 `handle` 메서드 내에서 이벤트 인스턴스를 전달받습니다. `make:listener` Artisan 명령어를 `--event` 옵션과 함께 사용하면, 관련 이벤트 클래스가 자동으로 import되고 타입힌트가 적용된 상태로 리스너가 생성됩니다. `handle` 메서드 내에서 이벤트에 따른 원하는 작업을 수행할 수 있습니다:
 
 ```php
 <?php
@@ -269,25 +269,25 @@ class SendShipmentNotification
      */
     public function handle(OrderShipped $event): void
     {
-        // $event->order를 사용하여 주문 정보를 접근할 수 있습니다...
+        // Access the order using $event->order...
     }
 }
 ```
 
 > [!NOTE]
-> 리스너 클래스의 생성자에서 필요한 의존성을 타입힌트로 선언하면, Laravel [서비스 컨테이너](/docs/12.x/container)를 통해 자동으로 의존성이 주입됩니다.
+> 이벤트 리스너의 생성자에서 필요로 하는 의존성이 있다면, 생성자에서 타입힌트할 수 있습니다. 모든 이벤트 리스너는 Laravel의 [서비스 컨테이너](/docs/12.x/container)로부터 자동으로 주입받으므로 별도로 인스턴스화하지 않아도 됩니다.
 
 <a name="stopping-the-propagation-of-an-event"></a>
-#### 이벤트 전달 중단
+#### 이벤트 전파 중단
 
-때때로 이벤트가 추가 리스너로 전달되는 것을 막고 싶을 수도 있습니다. 이 경우, 리스너의 `handle` 메서드에서 `false`를 반환하면 이벤트가 더 이상 다른 리스너로 전달되지 않습니다.
+특정 상황에서 이벤트가 다른 리스너로 전파되는 것을 중지하고 싶을 수 있습니다. 이 경우, 리스너의 `handle` 메서드에서 `false`를 반환하면 전파가 중단됩니다.
 
 <a name="queued-event-listeners"></a>
-## 큐를 사용하는 이벤트 리스너
+## 큐잉된 이벤트 리스너
 
-이메일 전송이나 HTTP 요청과 같이 느린 작업을 처리해야 하는 리스너는 큐에 넣는 것이 좋습니다. 큐 리스너를 사용하기 전에 [큐 설정](/docs/12.x/queues)과 서버 또는 로컬 개발 환경에서 큐 워커를 실행하시기 바랍니다.
+리스너가 이메일 전송이나 HTTP 요청 등 느린 작업을 수행해야 하는 경우 큐잉하여 실행하면 유용합니다. 큐잉된 리스너를 사용하기 전에, 반드시 [큐 설정](/docs/12.x/queues)을 마치고 실제 서버 혹은 개발 환경에서 큐 워커(worker)를 실행해야 합니다.
 
-리스너를 큐에 넣으려면, 리스너 클래스에 `ShouldQueue` 인터페이스를 추가하세요. `make:listener` Artisan 명령어로 생성된 리스너는 이미 이 인터페이스가 네임스페이스에 import되어 있으므로 바로 사용할 수 있습니다:
+리스너를 큐잉 대상으로 지정하려면, 해당 클래스에 `ShouldQueue` 인터페이스를 구현하세요. `make:listener` 명령어로 생성된 리스너 클래스에는 이미 이 인터페이스가 import되어 있어 바로 활용할 수 있습니다:
 
 ```php
 <?php
@@ -303,12 +303,12 @@ class SendShipmentNotification implements ShouldQueue
 }
 ```
 
-이제 해당 리스너가 처리하는 이벤트가 발생하면, Laravel의 [큐 시스템](/docs/12.x/queues)이 자동으로 리스너를 큐에 추가하고, 큐에서 처리됩니다. 리스너가 예외 없이 실행되면, 작업 완료 후 큐 작업은 자동으로 삭제됩니다.
+이제 해당 리스너가 이벤트에 의해 호출될 때, 이벤트 디스패처가 Laravel의 [큐 시스템](/docs/12.x/queues)을 통해 자동으로 리스너를 큐잉하게 됩니다. 리스너 실행 중 예외가 발생하지 않으면, 처리 완료 후 큐 작업은 자동으로 삭제됩니다.
 
 <a name="customizing-the-queue-connection-queue-name"></a>
-#### 큐 연결, 큐 이름, 지연 시간 설정
+#### 큐 커넥션, 큐 이름, 지연 시간 커스터마이징
 
-이벤트 리스너의 큐 연결, 큐 이름, 큐 지연 시간을 커스터마이징하고 싶다면 리스너 클래스에 `$connection`, `$queue`, `$delay` 속성을 정의하세요:
+리스너가 사용할 큐 커넥션, 큐 이름, 지연 시간(delay)을 명시적으로 지정하려면 리스너 클래스에 `$connection`, `$queue`, `$delay` 속성을 선언하면 됩니다:
 
 ```php
 <?php
@@ -321,21 +321,21 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class SendShipmentNotification implements ShouldQueue
 {
     /**
-     * 작업이 전송되어야 하는 연결 이름
+     * The name of the connection the job should be sent to.
      *
      * @var string|null
      */
     public $connection = 'sqs';
 
     /**
-     * 작업이 전송되어야 하는 큐 이름
+     * The name of the queue the job should be sent to.
      *
      * @var string|null
      */
     public $queue = 'listeners';
 
     /**
-     * 작업이 처리되기 전까지 대기할 시간(초)
+     * The time (seconds) before the job should be processed.
      *
      * @var int
      */
@@ -343,11 +343,11 @@ class SendShipmentNotification implements ShouldQueue
 }
 ```
 
-런타임에 큐 연결, 큐 이름, 지연 시간을 동적으로 지정하려면 `viaConnection`, `viaQueue`, `withDelay` 메서드를 정의할 수 있습니다:
+실행 시점에 동적으로 커넥션, 큐, 지연 시간 등을 결정하려면, `viaConnection`, `viaQueue`, `withDelay` 메서드를 구현하면 됩니다:
 
 ```php
 /**
- * 리스너의 큐 연결 이름 반환
+ * Get the name of the listener's queue connection.
  */
 public function viaConnection(): string
 {
@@ -355,7 +355,7 @@ public function viaConnection(): string
 }
 
 /**
- * 리스너가 사용할 큐 이름 반환
+ * Get the name of the listener's queue.
  */
 public function viaQueue(): string
 {
@@ -363,7 +363,7 @@ public function viaQueue(): string
 }
 
 /**
- * 작업 처리 전까지 대기할 시간(초) 반환
+ * Get the number of seconds before the job should be processed.
  */
 public function withDelay(OrderShipped $event): int
 {
@@ -372,9 +372,9 @@ public function withDelay(OrderShipped $event): int
 ```
 
 <a name="conditionally-queueing-listeners"></a>
-#### 리스너 큐 작업 조건부 처리
+#### 조건부 큐잉
 
-러닝타임에서의 데이터에 따라 리스너를 큐에 넣을지 판단해야 할 때가 있습니다. 이럴 때, 리스너에 `shouldQueue` 메서드를 추가하여 큐 대기 여부를 결정할 수 있습니다. `shouldQueue`가 `false`를 반환하면 리스너가 큐에 등록되지 않습니다:
+특정 조건에 따라 리스너를 큐잉할지 여부를 결정해야 할 경우, `shouldQueue` 메서드를 추가하면 됩니다. 이 메서드가 `false`를 반환하면 해당 리스너는 큐에 추가되지 않습니다:
 
 ```php
 <?php
@@ -387,7 +387,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class RewardGiftCard implements ShouldQueue
 {
     /**
-     * 고객에게 기프트 카드를 지급
+     * Reward a gift card to the customer.
      */
     public function handle(OrderCreated $event): void
     {
@@ -395,7 +395,7 @@ class RewardGiftCard implements ShouldQueue
     }
 
     /**
-     * 리스너가 큐에 등록될지 여부를 판단
+     * Determine whether the listener should be queued.
      */
     public function shouldQueue(OrderCreated $event): bool
     {
@@ -407,7 +407,7 @@ class RewardGiftCard implements ShouldQueue
 <a name="manually-interacting-with-the-queue"></a>
 ### 큐 직접 다루기
 
-리스너의 기본 큐 작업에서 `delete` 및 `release` 메서드를 직접 호출하려면 `Illuminate\Queue\InteractsWithQueue` 트레이트를 사용할 수 있습니다. 이 트레이트는 리스너 생성 시 기본으로 import되어 있으며 큐 작업의 제어 기능을 제공합니다:
+리스너의 underlying 큐 작업 객체의 `delete` 및 `release` 메서드에 직접 접근해야 하는 경우, `Illuminate\Queue\InteractsWithQueue` 트레이트를 사용할 수 있습니다. 이 트레이트는 생성된 리스너에 기본적으로 포함되며, 관련 메서드를 제공합니다:
 
 ```php
 <?php
@@ -427,7 +427,7 @@ class SendShipmentNotification implements ShouldQueue
      */
     public function handle(OrderShipped $event): void
     {
-        if (true) {
+        if ($condition) {
             $this->release(30);
         }
     }
@@ -435,11 +435,11 @@ class SendShipmentNotification implements ShouldQueue
 ```
 
 <a name="queued-event-listeners-and-database-transactions"></a>
-### 큐 리스너와 데이터베이스 트랜잭션
+### 큐잉된 이벤트 리스너와 데이터베이스 트랜잭션
 
-큐 리스너가 데이터베이스 트랜잭션 내에서 디스패치될 때, 경우에 따라 트랜잭션이 커밋되기 전에 큐에서 작업이 실행될 수도 있습니다. 이럴 경우, 트랜잭션 중 변경된 모델 데이터 또는 레코드가 아직 데이터베이스에 반영되지 않아 리스너 내에서 예기치 않은 에러가 발생할 수 있습니다.
+큐잉 리스너가 데이터베이스 트랜잭션 내에서 디스패치될 때, 해당 트랜잭션이 커밋되기 전에 리스너가 큐에서 실행될 수 있습니다. 이 경우 트랜잭션 중 변경한 모델이나 데이터가 아직 DB에 반영되지 않았을 수 있습니다. 또한 트랜잭션에서 생성된 레코드는 DB에 존재하지 않을 수 있습니다. 리스너가 이미 커밋된 모델에 의존한다면, 큐에서 예상치 않은 오류가 날 수 있습니다.
 
-큐 연결의 `after_commit` 설정이 `false`여도, 특정 큐 리스너에서 트랜잭션이 모두 커밋된 후에만 작업이 실행되게 하려면 리스너 클래스에 `ShouldQueueAfterCommit` 인터페이스를 구현하세요:
+큐 연결의 `after_commit` 설정이 `false`여도, 특정 큐잉 리스너만 모든 트랜잭션이 커밋된 뒤 실행되도록 하려면, 리스너 클래스에 `ShouldQueueAfterCommit` 인터페이스를 구현하면 됩니다:
 
 ```php
 <?php
@@ -456,12 +456,12 @@ class SendShipmentNotification implements ShouldQueueAfterCommit
 ```
 
 > [!NOTE]
-> 이와 관련된 추가 정보는 [큐 작업과 데이터베이스 트랜잭션](/docs/12.x/queues#jobs-and-database-transactions) 문서를 참고하세요.
+> 이 이슈에 대한 자세한 내용은 [큐잉 작업과 데이터베이스 트랜잭션](/docs/12.x/queues#jobs-and-database-transactions) 문서를 참고하세요.
 
 <a name="queued-listener-middleware"></a>
-### 큐 리스너 미들웨어
+### 큐잉 리스너 미들웨어
 
-큐로 처리되는 리스너 역시 [잡 미들웨어](/docs/12.x/queues#job-middleware)를 사용할 수 있습니다. 잡 미들웨어는 큐 리스너의 실행 과정을 커스텀 로직으로 감싸 반복 코드를 줄여줍니다. 잡 미들웨어 작성 후, 리스너의 `middleware` 메서드에서 반환하여 미들웨어를 리스너에 연결하세요:
+큐잉 리스너는 [작업 미들웨어](/docs/12.x/queues#job-middleware)도 사용할 수 있습니다. 작업 미들웨어를 활용하면, 큐잉 리스너 실행에 커스텀 로직을 감쌀 수 있어, 각 리스너 내부의 보일러플레이트 코드를 줄일 수 있습니다. 미들웨어를 만들어 리스너의 `middleware` 메서드에서 반환하면 자동으로 적용됩니다:
 
 ```php
 <?php
@@ -479,11 +479,11 @@ class SendShipmentNotification implements ShouldQueue
      */
     public function handle(OrderShipped $event): void
     {
-        // 이벤트 처리...
+        // Process the event...
     }
 
     /**
-     * 리스너가 통과해야 할 미들웨어 반환
+     * Get the middleware the listener should pass through.
      *
      * @return array<int, object>
      */
@@ -495,9 +495,9 @@ class SendShipmentNotification implements ShouldQueue
 ```
 
 <a name="encrypted-queued-listeners"></a>
-#### 암호화된 큐 리스너
+#### 암호화된 큐잉 리스너
 
-Laravel은 [암호화](/docs/12.x/encryption)를 통해 큐 리스너 데이터의 기밀성과 무결성을 보장할 수 있습니다. 시작하려면 리스너 클래스에 `ShouldBeEncrypted` 인터페이스를 추가하세요. 이 인터페이스가 추가되면, Laravel은 해당 리스너를 큐에 넣기 전에 자동으로 암호화합니다:
+Laravel은 [암호화](/docs/12.x/encryption)를 통해 큐잉 리스너의 데이터 보호 및 무결성을 보장할 수 있도록 지원합니다. 리스너 클래스에 `ShouldBeEncrypted` 인터페이스를 추가하기만 하면, 해당 리스너의 인스턴스는 큐에 집어넣기 전에 자동으로 암호화됩니다:
 
 ```php
 <?php
@@ -515,9 +515,9 @@ class SendShipmentNotification implements ShouldQueue, ShouldBeEncrypted
 ```
 
 <a name="handling-failed-jobs"></a>
-### 실패한 작업 처리
+### 실패한 작업 처리하기
 
-큐로 처리되는 이벤트 리스너가 실패하는 경우가 있습니다. 이 때, 큐 리스너가 설정한 최대 시도 횟수를 초과하면, 리스너의 `failed` 메서드가 호출됩니다. 이 메서드는 이벤트 인스턴스와 실패를 유발한 `Throwable`을 인자로 받습니다:
+큐잉된 이벤트 리스너가 실패할 수도 있습니다. 지정된 큐 워커의 최대 시도 횟수를 초과하면, 해당 리스너의 `failed` 메서드가 호출됩니다. `failed` 메서드는 이벤트 인스턴스와 실패 원인인 `Throwable` 인스턴스를 인자로 받습니다:
 
 ```php
 <?php
@@ -542,7 +542,7 @@ class SendShipmentNotification implements ShouldQueue
     }
 
     /**
-     * 작업 실패 처리 로직
+     * Handle a job failure.
      */
     public function failed(OrderShipped $event, Throwable $exception): void
     {
@@ -552,11 +552,11 @@ class SendShipmentNotification implements ShouldQueue
 ```
 
 <a name="specifying-queued-listener-maximum-attempts"></a>
-#### 큐 리스너 최대 시도 횟수 지정
+#### 큐잉 리스너 최대 시도 횟수 지정
 
-큐 리스너에서 에러가 발생할 경우 무한 반복으로 계속 재시도를 하지 않도록, 리스너의 시도 가능 횟수(최대 시도 횟수)를 여러 방법으로 지정할 수 있습니다.
+큐잉 리스너에서 에러가 발생하면, 무한 재시도를 방지하기 위해 시도 횟수나 시간 제한을 설정할 수 있습니다.
 
-리스너 클래스에 `tries` 속성이나 메서드를 정의하여, 실패로 간주되기 전까지 시도할 최대 횟수를 지정할 수 있습니다:
+시도 횟수 제한은 클래스의 `tries` 속성이나 메서드로, 시간 제한은 `retryUntil` 메서드(반환값: `DateTime` 객체)로 지정할 수 있습니다:
 
 ```php
 <?php
@@ -572,7 +572,7 @@ class SendShipmentNotification implements ShouldQueue
     use InteractsWithQueue;
 
     /**
-     * 큐 리스너의 최대 시도 횟수
+     * The number of times the queued listener may be attempted.
      *
      * @var int
      */
@@ -580,13 +580,13 @@ class SendShipmentNotification implements ShouldQueue
 }
 ```
 
-실패 전에 몇 번 시도하는지를 지정하는 대신, 리스너가 더 이상 시도되지 않을 시각을 지정할 수도 있습니다. 이는 주어진 시간 내에 얼마나 많은 재시도가 있어도 무방하게 만듭니다. 이를 위해 리스너 클래스에 `retryUntil` 메서드를 추가하세요. 이 메서드는 `DateTime` 인스턴스를 반환해야 합니다:
+시도 횟수 대신, 지정된 시간까지 무한히 재시도를 허용하려면 다음과 같이 설정할 수 있습니다:
 
 ```php
 use DateTime;
 
 /**
- * 리스너가 타임아웃될 시각 지정
+ * Determine the time at which the listener should timeout.
  */
 public function retryUntil(): DateTime
 {
@@ -594,27 +594,27 @@ public function retryUntil(): DateTime
 }
 ```
 
-`retryUntil`과 `tries` 모두 정의되어 있다면, Laravel은 `retryUntil` 메서드를 우선적으로 적용합니다.
+`retryUntil`과 `tries`가 모두 정의된 경우, `retryUntil`이 우선 적용됩니다.
 
 <a name="specifying-queued-listener-backoff"></a>
-#### 큐 리스너 백오프(대기) 시간 지정
+#### 큐잉 리스너 백오프(재시도 간격) 지정
 
-예외가 발생해 리스너를 다시 시도할 때 Laravel이 기다릴 시간을 지정하려면 리스너 클래스에 `backoff` 속성을 추가하세요:
+에러 발생 시 재시도까지 대기할 시간을 조절하려면, 리스너 클래스에 `backoff` 속성 또는 메서드를 선언하세요:
 
 ```php
 /**
- * 큐 리스너 재시도 전 대기할 시간(초)
+ * The number of seconds to wait before retrying the queued listener.
  *
  * @var int
  */
 public $backoff = 3;
 ```
 
-더 복잡한 로직으로 백오프 시간을 계산하려면 `backoff` 메서드를 정의할 수 있습니다:
+더 복잡한 로직이 필요하다면, 메서드를 통해 동적으로 반환할 수 있습니다:
 
 ```php
 /**
- * 큐 리스너 재시도 전 대기할 시간(초) 계산
+ * Calculate the number of seconds to wait before retrying the queued listener.
  */
 public function backoff(OrderShipped $event): int
 {
@@ -622,11 +622,11 @@ public function backoff(OrderShipped $event): int
 }
 ```
 
-"지수 백오프(exponential backoff)" 방식을 쉽게 구성하려면, `backoff` 메서드에서 배열로 값을 반환하세요. 아래 예시는 첫 번째 재시도는 1초, 두 번째는 5초, 세 번째는 10초, 이후 모든 재시도는 10초 대기합니다:
+"지수 백오프"처럼 점진적으로 재시도 대기시간을 늘리고 싶으면 배열을 반환하세요.
 
 ```php
 /**
- * 큐 리스너 재시도 전 대기할 시간(초) 계산
+ * Calculate the number of seconds to wait before retrying the queued listener.
  *
  * @return list<int>
  */
@@ -636,10 +636,12 @@ public function backoff(OrderShipped $event): array
 }
 ```
 
-<a name="specifying-queued-listener-max-exceptions"></a>
-#### 큐 리스너 최대 예외 횟수 설정
+위 예시에서는 첫 번째 재시도는 1초 후, 두 번째는 5초, 세 번째는 10초 후에 실행되며 이후에도 10초 간격을 유지합니다.
 
-경우에 따라, 리스너가 여러 번 재시도는 되지만 미처리 예외가 정해진 횟수만큼 연속 발생하면 곧바로 실패 처리하고 싶을 수 있습니다. 이럴 때, 리스너 클래스에 `maxExceptions` 속성을 지정하세요:
+<a name="specifying-queued-listener-max-exceptions"></a>
+#### 큐잉 리스너 최대 예외 횟수 지정
+
+리스너가 여러 번 재시도를 허용하되, 무조건 리스너 해제(`release`)로 인한 재시도가 아니라, 처리되지 않은 예외로 인해 설정된 횟수만큼만 시도하고 그 이상은 실패시키고 싶을 수 있습니다. `maxExceptions` 속성을 활용하세요:
 
 ```php
 <?php
@@ -655,14 +657,14 @@ class SendShipmentNotification implements ShouldQueue
     use InteractsWithQueue;
 
     /**
-     * 큐 리스너 최대 시도 횟수
+     * The number of times the queued listener may be attempted.
      *
      * @var int
      */
     public $tries = 25;
 
     /**
-     * 실패 처리 전 허용되는 최대 미처리 예외 개수
+     * The maximum number of unhandled exceptions to allow before failing.
      *
      * @var int
      */
@@ -673,17 +675,17 @@ class SendShipmentNotification implements ShouldQueue
      */
     public function handle(OrderShipped $event): void
     {
-        // 이벤트 처리...
+        // Process the event...
     }
 }
 ```
 
-이 예제에서는 리스너가 최대 25회까지 재시도될 수 있지만, 3회 미처리 예외가 발생하면 즉시 실패 처리됩니다.
+이 예시에서는, 최대 25회까지 재시도 가능하지만, 처리되지 않은 예외가 3회 발생하면 리스너가 실패로 처리됩니다.
 
 <a name="specifying-queued-listener-timeout"></a>
-#### 큐 리스너 타임아웃 지정
+#### 큐잉 리스너 타임아웃 지정
 
-통상 큐 리스너가 얼마나 걸릴지 예상할 수 있다면, 타임아웃(timeout) 값을 지정할 수 있습니다. 리스너가 설정된 시간을 초과하여 실행되면, 워커가 에러와 함께 해당 작업을 종료합니다. 리스너 클래스에 `timeout` 속성을 지정하여 최대 실행 가능 시간을 정의하세요:
+큐잉 리스너가 얼마만큼의 시간 동안 실행될 수 있는지 미리 알고 있다면, "타임아웃" 값을 지정할 수 있습니다. 리스너가 타임아웃 설정(초 단위) 이상 실행되면, 해당 리스너를 처리중인 워커는 에러와 함께 종료됩니다. 클래스의 `timeout` 속성으로 타임아웃 제한을 지정하세요:
 
 ```php
 <?php
@@ -696,7 +698,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class SendShipmentNotification implements ShouldQueue
 {
     /**
-     * 타임아웃(초)까지 리스너 실행 허용
+     * The number of seconds the listener can run before timing out.
      *
      * @var int
      */
@@ -704,7 +706,7 @@ class SendShipmentNotification implements ShouldQueue
 }
 ```
 
-타임아웃 이후에 리스너가 실패한 것으로 간주되게 하려면, 리스너 클래스에 `failOnTimeout` 속성을 정의하세요:
+타임아웃 발생 시, 해당 리스너를 즉시 실패 상태로 표시하려면, `failOnTimeout` 속성을 `true`로 설정하면 됩니다:
 
 ```php
 <?php
@@ -717,7 +719,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class SendShipmentNotification implements ShouldQueue
 {
     /**
-     * 타임아웃 시에 리스너 실패 처리 여부
+     * Indicate if the listener should be marked as failed on timeout.
      *
      * @var bool
      */
@@ -728,7 +730,7 @@ class SendShipmentNotification implements ShouldQueue
 <a name="dispatching-events"></a>
 ## 이벤트 디스패치
 
-이벤트를 발생시키려면, 이벤트 클래스의 정적 `dispatch` 메서드를 호출하면 됩니다. 이 메서드는 `Illuminate\Foundation\Events\Dispatchable` 트레이트에 의해 제공됩니다. `dispatch` 메서드에 전달된 인수는 이벤트 생성자에 전달됩니다:
+이벤트를 발생시키기(디스패치) 위해서는, 해당 이벤트 클래스의 static `dispatch` 메서드를 호출하세요. 이 메서드는 `Illuminate\Foundation\Events\Dispatchable` 트레이트 덕분에 사용 가능합니다. `dispatch`로 전달된 인수들은 이벤트의 생성자에 그대로 전달됩니다:
 
 ```php
 <?php
@@ -749,7 +751,7 @@ class OrderShipmentController extends Controller
     {
         $order = Order::findOrFail($request->order_id);
 
-        // 주문 발송 로직...
+        // Order shipment logic...
 
         OrderShipped::dispatch($order);
 
@@ -758,7 +760,7 @@ class OrderShipmentController extends Controller
 }
 ```
 
-이벤트를 조건부로 디스패치하고 싶다면 `dispatchIf` 및 `dispatchUnless` 메서드를 사용할 수 있습니다:
+이벤트를 조건부로 디스패치하고 싶다면, `dispatchIf`와 `dispatchUnless` 메서드를 사용하면 됩니다:
 
 ```php
 OrderShipped::dispatchIf($condition, $order);
@@ -767,14 +769,12 @@ OrderShipped::dispatchUnless($condition, $order);
 ```
 
 > [!NOTE]
-> 테스트를 할 때, 실제로 리스너가 동작하지 않아도 이벤트가 발생되었는지 쉽게 검증할 수 있습니다. Laravel의 [테스트 도구](#testing)를 활용해 보세요.
+> 테스트에서는, 실제로 리스너를 실행시키지 않으면서 이벤트가 디스패치 되었는지만 확인하고 싶을 수 있습니다. Laravel의 [내장 테스트 헬퍼](#testing)를 이용하면 매우 간단합니다.
 
 <a name="dispatching-events-after-database-transactions"></a>
-### 데이터베이스 트랜잭션 이후의 이벤트 디스패치
+### 데이터베이스 트랜잭션 이후 이벤트 디스패치
 
-경우에 따라 데이터베이스 트랜잭션이 커밋된 후에만 이벤트가 디스패치되도록 하고 싶을 수 있습니다. 이럴 때 이벤트 클래스에 `ShouldDispatchAfterCommit` 인터페이스를 구현하면 됩니다.
-
-이 인터페이스가 구현된 이벤트는 트랜잭션 커밋 전까지 디스패치되지 않고, 트랜잭션이 실패하면 이벤트도 폐기됩니다. 만약 이벤트가 발생할 때 트랜잭션 중이 아니라면 즉시 디스패치됩니다:
+활성화된 데이터베이스 트랜잭션이 커밋된 후에만 이벤트를 발송하고 싶을 수도 있습니다. 이 경우 이벤트 클래스에 `ShouldDispatchAfterCommit` 인터페이스를 구현하면, 현재 트랜잭션이 커밋될 때까지 이벤트는 보류됩니다. 트랜잭션에 실패하면 이벤트는 자동으로 폐기됩니다. 트랜잭션이 없으면 즉시 이벤트가 디스패치됩니다:
 
 ```php
 <?php
@@ -801,15 +801,15 @@ class OrderShipped implements ShouldDispatchAfterCommit
 ```
 
 <a name="deferring-events"></a>
-### 이벤트 연기(Defer)
+### 이벤트 디퍼(지연) 처리
 
-이벤트 연기 기능을 사용하면 특정 코드 블록 내에서 발생하는 모델 이벤트와 이벤트 리스너의 실행을 블록 종료 이후로 미룰 수 있습니다. 이는 관련 레코드가 모두 생성된 후에 이벤트 리스너가 동작해야 할 때 유용합니다.
+디퍼 이벤트(Deferred events)를 사용하면, 특정 코드 블록의 실행이 끝난 후에만 모델 이벤트와 리스너 실행이 이루어지도록 할 수 있습니다. 이 방식은 관련 레코드들이 모두 생성된 다음에 이벤트 리스너가 실행되도록 보장해야 하는 경우에 특히 유용합니다.
 
-이벤트를 연기하려면 `Event::defer()` 메서드에 클로저를 전달하세요:
+이벤트를 디퍼처리하려면, `Event::defer()` 메서드에 클로저를 전달하세요:
 
 ```php
 use App\Models\User;
-use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades/Event;
 
 Event::defer(function () {
     $user = User::create(['name' => 'Victoria Otwell']);
@@ -818,13 +818,13 @@ Event::defer(function () {
 });
 ```
 
-클로저 내부에서 발생한 모든 이벤트는 클로저 실행 이후에 디스패치됩니다. 이는 이벤트 리스너가 연관된 모든 레코드에 접근할 수 있도록 보장합니다. 클로저에서 예외가 발생하면, 연기된 이벤트는 디스패치되지 않습니다.
+위 클로저 내부에서 발생한 모든 이벤트는, 클로저 실행이 끝난 뒤에 디스패치됩니다. 이 덕분에 이벤트 리스너에서 위에서 생성된 모든 관련 레코드에 접근할 수 있습니다. 만약 클로저 내부에서 예외가 발생하면, 그 안에서 트리거된 이벤트들은 디스패치되지 않습니다.
 
-특정 이벤트만 연기하고 싶다면 두 번째 인수로 이벤트 배열을 전달하세요:
+특정 이벤트만 디퍼하고 싶으면, 두 번째 인자로 이벤트 배열을 전달하세요:
 
 ```php
 use App\Models\User;
-use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades/Event;
 
 Event::defer(function () {
     $user = User::create(['name' => 'Victoria Otwell']);
@@ -839,7 +839,7 @@ Event::defer(function () {
 <a name="writing-event-subscribers"></a>
 ### 이벤트 구독자 작성
 
-이벤트 구독자는 하나의 클래스에서 여러 이벤트를 구독할 수 있는 클래스입니다. 이를 통해 여러 이벤트 핸들러를 한 클래스 내부에 정의할 수 있습니다. 구독자 클래스에는 반드시 `subscribe` 메서드를 정의해야 하며, 이 메서드는 이벤트 디스패처 인스턴스를 전달받습니다. 제공된 디스패처를 활용해 리스너를 등록할 수 있습니다:
+이벤트 구독자(Subscriber)는 하나의 클래스 내에서 여러 이벤트를 구독할 수 있도록 해주는 클래스입니다. 즉, 여러 이벤트의 핸들러를 한 클래스에 정의할 수 있습니다. 구독자는 반드시 `subscribe` 메서드를 정의해야 하며, 이 메서드는 이벤트 디스패처 인스턴스를 인자로 받습니다. 넘겨받은 디스패처의 `listen` 메서드를 사용하여, 이벤트 리스너를 등록합니다:
 
 ```php
 <?php
@@ -853,17 +853,17 @@ use Illuminate\Events\Dispatcher;
 class UserEventSubscriber
 {
     /**
-     * 사용자 로그인 이벤트 처리
+     * Handle user login events.
      */
     public function handleUserLogin(Login $event): void {}
 
     /**
-     * 사용자 로그아웃 이벤트 처리
+     * Handle user logout events.
      */
     public function handleUserLogout(Logout $event): void {}
 
     /**
-     * 구독자에 대한 리스너 등록
+     * Register the listeners for the subscriber.
      */
     public function subscribe(Dispatcher $events): void
     {
@@ -880,7 +880,7 @@ class UserEventSubscriber
 }
 ```
 
-구독자에 이벤트 리스너 메서드가 정의되어 있다면, `subscribe` 메서드에서 메서드 이름과 이벤트를 배열 형태로 반환하는 것이 편리할 수 있습니다. Laravel은 이벤트를 등록할 때 구독자의 클래스명을 자동으로 결정합니다:
+구독자 내부에 정의된 메서드가 많아진다면, `subscribe` 메서드에서 이벤트와 메서드명을 배열로 반환하여 좀 더 간편하게 여러 리스너를 등록할 수도 있습니다:
 
 ```php
 <?php
@@ -894,17 +894,17 @@ use Illuminate\Events\Dispatcher;
 class UserEventSubscriber
 {
     /**
-     * 사용자 로그인 이벤트 처리
+     * Handle user login events.
      */
     public function handleUserLogin(Login $event): void {}
 
     /**
-     * 사용자 로그아웃 이벤트 처리
+     * Handle user logout events.
      */
     public function handleUserLogout(Logout $event): void {}
 
     /**
-     * 구독자에 대한 리스너 등록
+     * Register the listeners for the subscriber.
      *
      * @return array<string, string>
      */
@@ -921,7 +921,7 @@ class UserEventSubscriber
 <a name="registering-event-subscribers"></a>
 ### 이벤트 구독자 등록
 
-구독자를 작성한 뒤, 해당 구독자의 핸들러 메서드가 Laravel의 [이벤트 자동 탐지 규칙](#event-discovery)을 따른다면 자동으로 등록됩니다. 그렇지 않은 경우, `Event` 파사드의 `subscribe` 메서드를 사용하여 수동으로 등록할 수 있습니다. 일반적으로 이 작업은 애플리케이션의 `AppServiceProvider`의 `boot` 메서드에서 수행합니다:
+구독자를 작성했다면, 해당 구독자의 핸들러 메서드가 Laravel의 [이벤트 감지 규약](#event-discovery)을 따른다면 Laravel이 자동으로 등록합니다. 만약 자동 감지되지 않는다면, `Event` 파사드의 `subscribe` 메서드로 수동 등록할 수 있습니다. 보통 이것은 애플리케이션의 `AppServiceProvider`의 `boot` 메서드에서 수행합니다:
 
 ```php
 <?php
@@ -947,35 +947,35 @@ class AppServiceProvider extends ServiceProvider
 <a name="testing"></a>
 ## 테스트
 
-이벤트를 디스패치하는 코드를 테스트할 때, 이벤트 리스너의 실제 실행은 건너뛰고자 할 수 있습니다. 리스너 코드는 직접적으로 별도의 테스트에서 검증할 수 있기 때문입니다. 리스너 그 자체를 테스트하려면, 테스트에서 리스너 인스턴스를 생성하고 `handle` 메서드를 직접 호출하면 됩니다.
+이벤트를 디스패치하는 코드를 테스트할 때, 실제로 리스너의 코드가 실행되는 것은 원하지 않을 수 있습니다. 이는 리스너의 코드는 독립적으로 별도의 테스트를 통해 검증할 수 있고, 이벤트 디스패치 코드만 따로 테스트할 수 있기 때문입니다. 리스너 자체를 테스트하려면, 테스트 코드에서 리스너 인스턴스를 만들어 `handle` 메서드를 직접 호출하면 됩니다.
 
-`Event` 파사드의 `fake` 메서드를 활용하면 리스너 실행 없이 테스트 코드를 실행하고, `assertDispatched`, `assertNotDispatched`, `assertNothingDispatched` 등의 메서드로 어떤 이벤트가 디스패치되었는지 검증할 수 있습니다:
+`Event` 파사드의 `fake` 메서드를 사용하면, 이벤트 리스너 실행을 방지한 채로 테스트 코드를 실행하고, 어떤 이벤트들이 디스패치되었는지를 `assertDispatched`, `assertNotDispatched`, `assertNothingDispatched` 메서드로 검증할 수 있습니다:
 
 ```php tab=Pest
 <?php
 
 use App\Events\OrderFailedToShip;
 use App\Events\OrderShipped;
-use Illuminate\Support\Facades/Event;
+use Illuminate\Support\Facades\Event;
 
 test('orders can be shipped', function () {
     Event::fake();
 
-    // 주문 발송 실행...
+    // Perform order shipping...
 
-    // 이벤트가 디스패치되었는지 검증...
+    // Assert that an event was dispatched...
     Event::assertDispatched(OrderShipped::class);
 
-    // 이벤트가 2번 디스패치되었는지 검증...
+    // Assert an event was dispatched twice...
     Event::assertDispatched(OrderShipped::class, 2);
 
-    // 이벤트가 한번만 디스패치되었는지 검증...
+    // Assert an event was dispatched once...
     Event::assertDispatchedOnce(OrderShipped::class);
 
-    // 디스패치되지 않은 이벤트 검증...
+    // Assert an event was not dispatched...
     Event::assertNotDispatched(OrderFailedToShip::class);
 
-    // 어떠한 이벤트도 디스패치되지 않았는지 검증...
+    // Assert that no events were dispatched...
     Event::assertNothingDispatched();
 });
 ```
@@ -993,33 +993,33 @@ use Tests\TestCase;
 class ExampleTest extends TestCase
 {
     /**
-     * 주문 발송 테스트
+     * Test order shipping.
      */
     public function test_orders_can_be_shipped(): void
     {
         Event::fake();
 
-        // 주문 발송 실행...
+        // Perform order shipping...
 
-        // 이벤트가 디스패치되었는지 검증...
+        // Assert that an event was dispatched...
         Event::assertDispatched(OrderShipped::class);
 
-        // 이벤트가 2번 디스패치되었는지 검증...
+        // Assert an event was dispatched twice...
         Event::assertDispatched(OrderShipped::class, 2);
 
-        // 이벤트가 한번만 디스패치되었는지 검증...
+        // Assert an event was dispatched once...
         Event::assertDispatchedOnce(OrderShipped::class);
 
-        // 디스패치되지 않은 이벤트 검증...
+        // Assert an event was not dispatched...
         Event::assertNotDispatched(OrderFailedToShip::class);
 
-        // 어떠한 이벤트도 디스패치되지 않았는지 검증...
+        // Assert that no events were dispatched...
         Event::assertNothingDispatched();
     }
 }
 ```
 
-특정 조건에 부합하는 이벤트가 디스패치되었는지 검증하고 싶으면, `assertDispatched`나 `assertNotDispatched` 메서드에 클로저를 전달하세요. 클로저의 반환값이 `true`인 이벤트가 최소 하나라도 있으면 검증에 성공합니다:
+또한 `assertDispatched`, `assertNotDispatched`에 클로저를 전달하면, 이벤트가 특정 조건(진위 테스트)을 충족하여 디스패치되었는지의 여부도 검증할 수 있습니다. 주어진 조건을 만족하는 이벤트가 단 하나라도 있으면 assertion이 통과합니다:
 
 ```php
 Event::assertDispatched(function (OrderShipped $event) use ($order) {
@@ -1027,7 +1027,7 @@ Event::assertDispatched(function (OrderShipped $event) use ($order) {
 });
 ```
 
-특정 이벤트에 대해 리스너가 등록되어 있는지만 검증하고 싶다면, `assertListening` 메서드를 사용할 수 있습니다:
+특정 이벤트에 리스너가 등록되어 있는지만 검증하고 싶으면 `assertListening` 메서드를 사용하세요:
 
 ```php
 Event::assertListening(
@@ -1037,12 +1037,12 @@ Event::assertListening(
 ```
 
 > [!WARNING]
-> `Event::fake()` 호출 이후에는 이벤트 리스너가 실행되지 않습니다. 따라서, 모델의 `creating` 이벤트에서 UUID를 생성하는 등 이벤트에 의존하는 팩토리를 사용하는 경우, 팩토리 사용 후에 `Event::fake()`를 호출해야 합니다.
+> `Event::fake()`를 호출하면 이후부터 모든 이벤트 리스너가 실행되지 않습니다. 따라서, 생성 이벤트(예: UUID 자동 생성 등)에 의존하는 모델 팩토리를 사용할 때는 팩토리 사용 이후에 `Event::fake()`를 호출해야 합니다.
 
 <a name="faking-a-subset-of-events"></a>
-### 특정 이벤트만 가짜로 처리
+### 일부 이벤트만 페이크하기
 
-특정 이벤트에 대해서만 리스너 실행을 가짜로 처리하고 싶다면, `fake` 또는 `fakeFor` 메서드에 이벤트 목록을 전달하세요:
+특정 이벤트 리스너만 페이크하고 싶으면, 해당 이벤트를 `fake` 또는 `fakeFor` 메서드에 배열로 넘기면 됩니다:
 
 ```php tab=Pest
 test('orders can be processed', function () {
@@ -1054,7 +1054,7 @@ test('orders can be processed', function () {
 
     Event::assertDispatched(OrderCreated::class);
 
-    // 다른 이벤트들은 평소처럼 디스패치됨...
+    // Other events are dispatched as normal...
     $order->update([
         // ...
     ]);
@@ -1063,7 +1063,7 @@ test('orders can be processed', function () {
 
 ```php tab=PHPUnit
 /**
- * 주문 처리 테스트
+ * Test order process.
  */
 public function test_orders_can_be_processed(): void
 {
@@ -1075,14 +1075,14 @@ public function test_orders_can_be_processed(): void
 
     Event::assertDispatched(OrderCreated::class);
 
-    // 다른 이벤트들은 평소처럼 디스패치됨...
+    // Other events are dispatched as normal...
     $order->update([
         // ...
     ]);
 }
 ```
 
-일부 이벤트를 제외한 전체 이벤트를 가짜 처리하려면 `except` 메서드를 사용하세요:
+페이크에서 특정 이벤트만 제외하고 싶으면 `except` 메서드를 이용할 수 있습니다:
 
 ```php
 Event::fake()->except([
@@ -1091,9 +1091,9 @@ Event::fake()->except([
 ```
 
 <a name="scoped-event-fakes"></a>
-### 스코프 이벤트 가짜 처리
+### 스코프별 이벤트 페이크
 
-테스트의 특정 구간에서만 이벤트 리스너 실행을 가짜 처리하고 싶을 때는 `fakeFor` 메서드를 사용하세요:
+테스트의 특정 구간에서만 이벤트 리스너를 페이크하고 싶으면, `fakeFor` 메서드를 사용하세요:
 
 ```php tab=Pest
 <?php
@@ -1111,7 +1111,7 @@ test('orders can be processed', function () {
         return $order;
     });
 
-    // 이후에는 이벤트가 정상적으로 디스패치되고, 옵저버도 동작함...
+    // Events are dispatched as normal and observers will run...
     $order->update([
         // ...
     ]);
@@ -1131,7 +1131,7 @@ use Tests\TestCase;
 class ExampleTest extends TestCase
 {
     /**
-     * 주문 처리 테스트
+     * Test order process.
      */
     public function test_orders_can_be_processed(): void
     {
@@ -1143,7 +1143,7 @@ class ExampleTest extends TestCase
             return $order;
         });
 
-        // 이후에는 이벤트가 정상적으로 디스패치되고, 옵저버도 동작함...
+        // Events are dispatched as normal and observers will run...
         $order->update([
             // ...
         ]);
