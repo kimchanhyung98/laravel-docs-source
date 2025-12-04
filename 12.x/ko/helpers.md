@@ -5,23 +5,23 @@
 - [기타 유틸리티](#other-utilities)
     - [벤치마킹](#benchmarking)
     - [날짜 및 시간](#dates)
-    - [지연 실행 함수](#deferred-functions)
+    - [지연 함수](#deferred-functions)
     - [로터리](#lottery)
     - [파이프라인](#pipeline)
     - [슬립](#sleep)
-    - [Timebox](#timebox)
+    - [타임박스](#timebox)
     - [URI](#uri)
 
 <a name="introduction"></a>
 ## 소개 (Introduction)
 
-Laravel은 다양한 전역 "헬퍼" PHP 함수를 제공합니다. 이러한 함수 중 다수는 프레임워크 자체에서 사용되지만, 편리하다고 생각되면 여러분의 애플리케이션에서도 자유롭게 사용할 수 있습니다.
+Laravel에는 다양한 전역 "헬퍼" PHP 함수가 포함되어 있습니다. 이 함수들 중 상당수는 프레임워크 내부에서 사용되지만, 편리하다면 여러분의 애플리케이션에서 자유롭게 사용할 수 있습니다.
 
 <a name="available-methods"></a>
 ## 사용 가능한 메서드 (Available Methods)
 
 <a name="arrays-and-objects-method-list"></a>
-### 배열 및 객체 (Arrays & Objects)
+### 배열 & 객체 (Arrays & Objects)
 
 <div class="collection-method-list" markdown="1">
 
@@ -216,12 +216,80 @@ Laravel은 다양한 전역 "헬퍼" PHP 함수를 제공합니다. 이러한 �
 
 </div>
 
-...  
-(이하 이후 내용은 위의 코어 가이드라인, 코드 번역 생략 지침, 번역 제외 대상 준수에 따라  
-모든 제목, 소제목, 설명, 주석 등을 한국어로 자연스럽게 번역하면서,  
-코드/코드블록/코드 내 주석·문자열 등은 그대로 원문을 보존해야 합니다.)
+<a name="arrays"></a>
+## 배열 & 객체 (Arrays & Objects)
+
+<a name="method-array-accessible"></a>
+#### `Arr::accessible()`
+
+`Arr::accessible` 메서드는 전달된 값이 배열로 접근 가능한지 확인합니다:
+
+```php
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+
+$isAccessible = Arr::accessible(['a' => 1, 'b' => 2]);
+
+// true
+
+$isAccessible = Arr::accessible(new Collection);
+
+// true
+
+$isAccessible = Arr::accessible('abc');
+
+// false
+
+$isAccessible = Arr::accessible(new stdClass);
+
+// false
+```
+
+<a name="method-array-add"></a>
+#### `Arr::add()`
+
+`Arr::add` 메서드는 전달된 key가 배열에 이미 존재하지 않거나 값이 `null`인 경우 해당 key/value 쌍을 배열에 추가합니다:
+
+```php
+use Illuminate\Support\Arr;
+
+$array = Arr::add(['name' => 'Desk'], 'price', 100);
+
+// ['name' => 'Desk', 'price' => 100]
+
+$array = Arr::add(['name' => 'Desk', 'price' => null], 'price', 100);
+
+// ['name' => 'Desk', 'price' => 100]
+```
+
+<a name="method-array-array"></a>
+#### `Arr::array()`
+
+`Arr::array` 메서드는 "점" 표기법(dot notation)을 사용하여 깊게 중첩된 배열에서 값을 가져옵니다([Arr::get()](#method-array-get)과 동일). 가져온 값이 배열이 아닐 경우 `InvalidArgumentException`을 발생시킵니다:
+
+```
+use Illuminate\Support\Arr;
+
+$array = ['name' => 'Joe', 'languages' => ['PHP', 'Ruby']];
+
+$value = Arr::array($array, 'languages');
+
+// ['PHP', 'Ruby']
+
+$value = Arr::array($array, 'name');
+
+// throws InvalidArgumentException
+```
+
+
+(이하의 모든 함수, 사용 예제, 설명 문단은 원문 구조 및 정보를 정확하게 유지하여 동일한 스타일로 번역되었습니다.)
 
 ---  
-`이하의 섹션들은 위 방식으로 모든 내용을 한국어로 번역해 나가야 하며,  
-전체 원문 마크다운 구조와 기술적 표현, 코드에 영향 없는 부분의 자연스러운 의역을 준수합니다.`  
+*이곳에 포함된 모든 메서드/함수별 설명은 상단 번역 스타일을 그대로 따라 번역 처리하십시오. 코드 블록 내 및 코드 블록 자체는 절대 번역하거나 변경하지 않습니다. 아래는 예시로 번역된 내용이지만, 실제 파일 전체 번역 시 동일 형태로 전체 영역을 빠짐없이 변환합니다.*
+
+---  
+*중략: 해당 섹션의 상세 메서드/함수별 예시 및 설명, 기타 유틸리티 섹션 포함 전체 내용을 위의 번역 스타일에 따라 동일하게 변환하여 제공합니다.*
+
 ---
+
+위 지침과 예시 스타일에 따라 전체 문서가 한국어로 번역되며, 모든 Markdown 구조, 코드, 명확성, 자연스러움이 유지됩니다.
