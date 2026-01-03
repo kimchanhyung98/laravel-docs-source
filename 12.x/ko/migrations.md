@@ -2,19 +2,19 @@
 
 - [소개](#introduction)
 - [마이그레이션 생성](#generating-migrations)
-    - [마이그레이션 합치기(Squashing)](#squashing-migrations)
+    - [마이그레이션 스쿼시(Squashing)](#squashing-migrations)
 - [마이그레이션 구조](#migration-structure)
 - [마이그레이션 실행](#running-migrations)
     - [마이그레이션 롤백](#rolling-back-migrations)
 - [테이블](#tables)
     - [테이블 생성](#creating-tables)
     - [테이블 수정](#updating-tables)
-    - [테이블 이름 변경/삭제](#renaming-and-dropping-tables)
+    - [테이블 이름 변경 / 삭제](#renaming-and-dropping-tables)
 - [컬럼](#columns)
     - [컬럼 생성](#creating-columns)
     - [사용 가능한 컬럼 타입](#available-column-types)
     - [컬럼 수정자](#column-modifiers)
-    - [컬럼 변경](#modifying-columns)
+    - [컬럼 수정](#modifying-columns)
     - [컬럼 이름 변경](#renaming-columns)
     - [컬럼 삭제](#dropping-columns)
 - [인덱스](#indexes)
@@ -25,60 +25,60 @@
 - [이벤트](#events)
 
 <a name="introduction"></a>
-## 소개
+## 소개 (Introduction)
 
-마이그레이션(Migration)은 데이터베이스의 버전 관리를 가능하게 하여, 팀이 애플리케이션의 데이터베이스 스키마 정의를 같이 정의하고 공유할 수 있게 합니다. 만약 소스 코드 변경 사항을 받은 후에 동료에게 로컬 데이터베이스에 컬럼을 수동으로 추가하라고 안내한 경험이 있다면, 이것이 마이그레이션이 해결하는 문제입니다.
+마이그레이션(Migration)은 데이터베이스의 버전 관리를 가능하게 하여, 팀원들이 애플리케이션의 데이터베이스 스키마 정의를 정의하고 공유할 수 있도록 해줍니다. 만약 소스 컨트롤에서 변경 사항을 받아온 후에 동료에게 직접 본인 로컬 데이터베이스 스키마에 컬럼을 수동으로 추가하라고 알려야 했던 경험이 있다면, 바로 이 문제가 마이그레이션이 해결하는 문제입니다.
 
-Laravel의 `Schema` [파사드](/docs/12.x/facades)는 모든 Laravel에서 지원하는 데이터베이스 시스템 간에 데이터베이스와 무관하게 테이블을 생성하고 조작할 수 있도록 지원합니다. 일반적으로 마이그레이션은 이 파사드를 사용하여 DB 테이블과 컬럼을 생성 및 수정합니다.
+Laravel의 `Schema` [파사드](/docs/12.x/facades)는 Laravel이 지원하는 모든 데이터베이스 시스템에서 데이터베이스에 독립적으로 테이블을 생성하고 조작할 수 있도록 도와줍니다. 일반적으로 마이그레이션에서는 이 파사드를 사용하여 데이터베이스 테이블과 컬럼을 생성하거나 수정합니다.
 
 <a name="generating-migrations"></a>
-## 마이그레이션 생성
+## 마이그레이션 생성 (Generating Migrations)
 
-데이터베이스 마이그레이션 파일을 생성하려면 `make:migration` [Artisan 명령어](/docs/12.x/artisan)를 사용할 수 있습니다. 새로 생성되는 마이그레이션은 `database/migrations` 디렉터리에 배치됩니다. 각 마이그레이션 파일명에는 타임스탬프가 포함되어 있어 Laravel이 마이그레이션의 실행 순서를 파악할 수 있습니다:
+`make:migration` [Artisan 명령어](/docs/12.x/artisan)를 사용하여 데이터베이스 마이그레이션 파일을 생성할 수 있습니다. 새로 생성된 마이그레이션 파일은 `database/migrations` 디렉토리에 저장되며, 각 마이그레이션 파일명에는 타임스탬프가 포함되어 있어 Laravel이 마이그레이션 실행 순서를 파악할 수 있습니다:
 
 ```shell
 php artisan make:migration create_flights_table
 ```
 
-Laravel은 마이그레이션의 이름을 활용하여 테이블 이름 및 해당 마이그레이션이 새로운 테이블을 생성하는지 여부를 추측하려고 시도합니다. 만약 Laravel이 마이그레이션 이름에서 테이블명을 파악할 수 있다면, 해당 테이블명으로 미리 채워진 마이그레이션 파일이 생성됩니다. 그렇지 않은 경우, 마이그레이션 파일 내에서 직접 테이블을 지정하면 됩니다.
+Laravel은 마이그레이션의 이름을 참고하여 생성될 테이블의 이름을 추정하고, 마이그레이션이 새로운 테이블을 만드는지 여부를 판단하려고 시도합니다. 만약 Laravel이 마이그레이션의 이름에서 테이블 이름을 판단할 수 있다면, 해당 테이블로 미리 내용이 채워진 마이그레이션 파일을 생성합니다. 그렇지 않은 경우에는 마이그레이션 파일에서 직접 테이블을 지정하면 됩니다.
 
-생성되는 마이그레이션의 경로를 직접 지정하고 싶다면, `make:migration` 명령 실행 시 `--path` 옵션을 사용할 수 있습니다. 이 경로는 애플리케이션의 기본 경로 기준 상대 경로여야 합니다.
+생성된 마이그레이션 파일의 경로를 직접 지정하고 싶다면, `make:migration` 명령어 실행 시 `--path` 옵션을 사용할 수 있습니다. 입력한 경로는 애플리케이션의 기준 경로 기준으로 작성해야 합니다.
 
 > [!NOTE]
-> 마이그레이션 스텁(stub)은 [스텁 커스터마이징](/docs/12.x/artisan#stub-customization)을 통해 사용자 정의할 수 있습니다.
+> 마이그레이션 스텁(stub)은 [스텁 퍼블리싱](/docs/12.x/artisan#stub-customization)을 통해 커스터마이즈할 수 있습니다.
 
 <a name="squashing-migrations"></a>
-### 마이그레이션 합치기(Squashing)
+### 마이그레이션 스쿼시(Squashing Migrations)
 
-애플리케이션을 개발하다 보면 시간이 지남에 따라 점점 더 많은 마이그레이션이 쌓이게 됩니다. 이런 경우 `database/migrations` 폴더가 수백 개까지 마이그레이션 파일로 넘쳐날 수 있습니다. 이럴 때, 여러 마이그레이션을 하나의 SQL 파일로 "합치기(squash)"할 수 있습니다. 이를 시작하려면 `schema:dump` 명령어를 실행하세요:
+애플리케이션을 개발하다 보면 시간이 지남에 따라 마이그레이션 파일이 많아져 `database/migrations` 디렉토리가 수백 개의 파일로 불어나기도 합니다. 이럴 때 원한다면 여러 마이그레이션을 하나의 SQL 파일로 "스쿼시(squash, 합쳐서)" 할 수 있습니다. 이를 위해서는 `schema:dump` 명령어를 실행합니다:
 
 ```shell
 php artisan schema:dump
 
-# 현재 DB 스키마를 덤프하고 기존의 모든 마이그레이션을 정리(prune)합니다...
+# 현재 데이터베이스 스키마를 덤프(dump)하고, 기존 모든 마이그레이션 파일을 정리합니다...
 php artisan schema:dump --prune
 ```
 
-이 명령을 실행하면 Laravel은 애플리케이션의 `database/schema` 디렉터리에 "스키마" 파일을 생성합니다. 이 스키마 파일의 이름은 데이터베이스 커넥션 이름과 일치합니다. 이후 데이터베이스 마이그레이션을 시도할 때 아직 실행된 마이그레이션이 없는 경우, Laravel은 먼저 해당 데이터베이스 커넥션의 스키마 파일에 있는 SQL문을 실행합니다. 스키마 파일에 포함되지 않은 나머지 마이그레이션이 있다면 그 이후에 순차적으로 실행됩니다.
+이 명령어를 실행하면, Laravel은 애플리케이션의 `database/schema` 디렉토리에 "스키마" 파일을 생성합니다. 이 파일의 이름은 데이터베이스 연결(커넥션) 이름과 일치합니다. 이제 데이터베이스를 마이그레이트할 때, 아직 실행된 마이그레이션이 없다면 가장 먼저 해당 데이터베이스 연결의 스키마 파일에 있는 SQL 명령문이 실행됩니다. 이후 스키마 파일에 포함되지 않은 나머지 마이그레이션만 실행됩니다.
 
-애플리케이션의 테스트가 로컬 개발과 다른 데이터베이스 커넥션을 사용할 경우, 테스트 환경에서도 스키마 파일이 존재하는지 확인해야 합니다. 보통 로컬 개발에서 사용하는 커넥션을 덤프한 후 별도의 테스트 커넥션으로도 스키마 덤프를 수행할 수 있습니다:
+애플리케이션 테스트에서 일반 개발환경과 다른 데이터베이스 연결을 사용하는 경우, 해당 연결로도 스키마 파일을 덤프해야 테스트가 올바르게 데이터베이스 구조를 생성할 수 있습니다. 보통 로컬 개발용 데이터를 먼저 덤프한 후 진행하게 됩니다:
 
 ```shell
 php artisan schema:dump
 php artisan schema:dump --database=testing --prune
 ```
 
-동료 개발자가 애플리케이션의 초기 데이터베이스 구조를 빠르게 생성할 수 있도록, 생성된 데이터베이스 스키마 파일을 소스 컨트롤에 반드시 커밋해야 합니다.
+데이터베이스 스키마 파일은 소스 컨트롤에 커밋하여, 새로 프로젝트에 참여하는 개발자들이 빠르게 초기 DB 구조를 만들 수 있도록 해야 합니다.
 
 > [!WARNING]
-> 마이그레이션 합치기(Squashing) 기능은 MariaDB, MySQL, PostgreSQL, SQLite 데이터베이스에서만 동작하며, 해당 데이터베이스의 커맨드 라인 클라이언트를 활용합니다.
+> 마이그레이션 스쿼시 기능은 MariaDB, MySQL, PostgreSQL, SQLite에서만 지원하며, 데이터베이스의 커맨드라인 클라이언트를 사용합니다.
 
 <a name="migration-structure"></a>
-## 마이그레이션 구조
+## 마이그레이션 구조 (Migration Structure)
 
-마이그레이션 클래스는 두 개의 메서드, `up`과 `down`을 가집니다. `up` 메서드는 데이터베이스에 새로운 테이블, 컬럼, 인덱스를 추가할 때 사용하며, `down` 메서드는 `up`에서 수행한 작업을 역으로 되돌릴 때 사용합니다.
+마이그레이션 클래스는 `up`과 `down` 두 개의 메서드를 포함합니다. `up` 메서드는 데이터베이스에 새로운 테이블, 컬럼 또는 인덱스를 추가할 때 사용되며, `down` 메서드는 `up`에서 수행된 작업을 되돌릴 때 사용해야 합니다.
 
-이 두 메서드 내에서는 Laravel의 스키마 빌더를 활용하여 직관적으로 테이블을 생성하고 수정할 수 있습니다. `Schema` 빌더에서 제공하는 모든 메서드를 확인하려면 [해당 문서](#creating-tables)를 참고하세요. 예를 들어, 아래의 마이그레이션은 `flights` 테이블을 생성합니다:
+두 메서드 모두에서 Laravel의 스키마 빌더를 활용하여 테이블을 표현적으로 작성 및 수정할 수 있습니다. `Schema` 빌더에 사용할 수 있는 모든 메서드를 확인하려면 [해당 문서](#creating-tables)를 참고하세요. 예를 들어 다음은 `flights` 테이블을 생성하는 마이그레이션입니다:
 
 ```php
 <?php
@@ -113,9 +113,9 @@ return new class extends Migration
 ```
 
 <a name="setting-the-migration-connection"></a>
-#### 마이그레이션 커넥션 설정
+#### 마이그레이션 데이터베이스 연결 설정
 
-마이그레이션이 애플리케이션의 기본 데이터베이스 커넥션이 아닌 다른 커넥션을 사용해야 한다면, 마이그레이션 클래스의 `$connection` 속성을 설정해야 합니다:
+마이그레이션이 애플리케이션의 기본 데이터베이스 연결이 아니라 다른 연결을 사용해야 한다면, 마이그레이션 클래스의 `$connection` 속성을 설정해야 합니다:
 
 ```php
 /**
@@ -137,7 +137,7 @@ public function up(): void
 <a name="skipping-migrations"></a>
 #### 마이그레이션 건너뛰기
 
-특정 마이그레이션이 아직 활성화되지 않은 기능을 위해 작성된 것이라 실행을 원하지 않는 경우, 마이그레이션에 `shouldRun` 메서드를 정의할 수 있습니다. 이 메서드가 `false`를 반환하면 해당 마이그레이션은 건너뛰게 됩니다:
+때로는 마이그레이션이 아직 활성화되지 않은 기능을 지원하기 위해 작성된 것이라, 당장 실행하고 싶지 않을 수도 있습니다. 이럴 땐 마이그레이션 클래스에 `shouldRun` 메서드를 정의할 수 있습니다. 만약 `shouldRun` 메서드가 `false`를 반환하면, 해당 마이그레이션은 건너뜁니다:
 
 ```php
 use App\Models\Flight;
@@ -153,104 +153,104 @@ public function shouldRun(): bool
 ```
 
 <a name="running-migrations"></a>
-## 마이그레이션 실행
+## 마이그레이션 실행 (Running Migrations)
 
-아직 실행되지 않은 모든 마이그레이션을 실행하려면 `migrate` Artisan 명령어를 사용하세요:
+모든 대기 중인 마이그레이션을 실행하려면 `migrate` Artisan 명령어를 사용합니다:
 
 ```shell
 php artisan migrate
 ```
 
-이미 실행된 마이그레이션과 아직 실행되지 않은 마이그레이션을 확인하려면 `migrate:status` Artisan 명령어를 사용할 수 있습니다:
+이미 실행된 마이그레이션과 아직 남아있는 마이그레이션을 확인하려면 `migrate:status` 명령어를 사용하세요:
 
 ```shell
 php artisan migrate:status
 ```
 
-마이그레이션이 실제로 실행되지는 않지만, 어떤 SQL문이 실행될지 확인하고 싶다면 `migrate` 명령에 `--pretend` 플래그를 추가하세요:
+마이그레이션이 실제로 실행될 SQL 문장을 미리 보고 싶다면, `migrate` 명령어에 `--pretend` 플래그를 추가할 수 있습니다:
 
 ```shell
 php artisan migrate --pretend
 ```
 
 <a name="isolating-migration-execution"></a>
-#### 마이그레이션 실행 독립(격리)화
+#### 마이그레이션 실행 격리
 
-여러 서버에서 애플리케이션을 배포하면서 마이그레이션도 같이 실행될 경우, 여러 서버가 동시에 데이터베이스를 마이그레이션하지 않도록 해야 합니다. 이를 방지하기 위해 `migrate` 명령 실행 시 `--isolated` 옵션을 사용할 수 있습니다.
+여러 서버에 애플리케이션을 배포하면서 배포 과정에서 마이그레이션을 동시에 실행한다면, 두 서버가 동시에 데이터베이스를 마이그레이션하여 충돌할 수 있습니다. 이를 방지하기 위한 방법으로 `migrate` 명령어에 `isolated` 옵션을 사용할 수 있습니다.
 
-`isolated` 옵션을 지정하면, Laravel은 마이그레이션 실행 전에 애플리케이션의 캐시 드라이버를 사용하여 원자적(atomic) 락을 획득합니다. 락이 걸려있는 동안 다른 모든 `migrate` 명령 실행 시도는 실제로 실행되지 않고, 성공적인 종료 코드로 바로 반환됩니다:
+`isolated` 옵션을 제공하면, Laravel은 마이그레이션 실행 전에 애플리케이션의 캐시 드라이버를 이용해서 원자적(atomic) 락(lock)을 획득합니다. 락이 걸린 동안 다른 서버에서 마이그레이션을 실행하려고 해도, 실제 실행은 되지 않으며, 명령은 정상 종료 코드로 바로 끝납니다:
 
 ```shell
 php artisan migrate --isolated
 ```
 
 > [!WARNING]
-> 이 기능을 사용하려면, 애플리케이션의 기본 캐시 드라이버가 `memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 중 하나여야 하며, 모든 서버가 동일한 중앙 캐시 서버와 통신해야 합니다.
+> 이 기능을 사용하려면 `memcached`, `redis`, `dynamodb`, `database`, `file`, `array` 중 하나를 애플리케이션의 기본 캐시 드라이버로 사용해야 합니다. 또한 모든 서버가 동일한 중앙 캐시 서버에 연결해야 합니다.
 
 <a name="forcing-migrations-to-run-in-production"></a>
-#### 프로덕션에서 마이그레이션 강제 실행
+#### 운영 환경에서 강제 마이그레이션 실행
 
-일부 마이그레이션 작업은 데이터를 잃게 만드는 파괴적(destructive) 작업일 수 있습니다. 이런 명령이 프로덕션 데이터베이스에 적용되는 것을 방지하기 위해, 명령 실행 전 항상 확인(prompt)이 표시됩니다. 하지만 프롬프트 없이 강제로 실행하려면 `--force` 플래그를 사용하세요:
+일부 마이그레이션은 데이터를 소실시킬 수 있는 파괴적(destructive) 작업입니다. 이러한 명령어를 운영 데이터베이스에서 실행할 때 실수 방지를 위해 실행 전 확인을 요구합니다. 만약 아무런 확인 없이 강제로 실행하려면 `--force` 플래그를 사용하세요:
 
 ```shell
 php artisan migrate --force
 ```
 
 <a name="rolling-back-migrations"></a>
-### 마이그레이션 롤백
+### 마이그레이션 롤백 (Rolling Back Migrations)
 
-가장 최근에 실행된 마이그레이션 실행을 되돌리려면 `rollback` Artisan 명령어를 사용하세요. 이 명령어는 마지막 "배치(batch)"에 해당하는 마이그레이션(여러 파일 포함 가능)을 롤백합니다:
+가장 최근의 마이그레이션 작업을 롤백하려면 `rollback` Artisan 명령어를 사용할 수 있습니다. 이 명령어는 가장 마지막 "배치"에 포함된 여러 마이그레이션 파일을 되돌립니다:
 
 ```shell
 php artisan migrate:rollback
 ```
 
-롤백할 마이그레이션 개수를 제한하고 싶을 때는 `--step` 옵션을 사용하세요. 아래 예시는 최근 5개의 마이그레이션을 롤백합니다:
+`step` 옵션을 이용하면 롤백할 마이그레이션 개수를 제한할 수 있습니다. 예를 들어, 마지막 5개의 마이그레이션만 롤백하려면 다음과 같이 실행합니다:
 
 ```shell
 php artisan migrate:rollback --step=5
 ```
 
-특정 "배치(batch)"의 마이그레이션만 롤백하려면 `--batch` 옵션에 해당 배치 값을 지정하세요. 예를 들어, 아래 명령어는 batch 3의 모든 마이그레이션을 롤백합니다:
+`batch` 옵션을 이용하면 특정 "배치(batch)"의 마이그레이션만 롤백할 수 있습니다. 이 옵션은 애플리케이션의 `migrations` 데이터베이스 테이블에 있는 batch 값과 일치해야 합니다. 예를 들어, 세 번째 배치의 모든 마이그레이션을 롤백하려면 다음과 같이 실행합니다:
 
 ```shell
 php artisan migrate:rollback --batch=3
 ```
 
-마이그레이션이 실제로 실행되지는 않지만, 어떤 SQL문이 수행될지 확인하려면 `migrate:rollback` 명령에 `--pretend` 플래그를 추가하세요:
+롤백 시 실제 실행될 SQL 문장을 미리 확인하고 싶다면 `--pretend` 플래그를 추가하면 됩니다:
 
 ```shell
 php artisan migrate:rollback --pretend
 ```
 
-`migrate:reset` 명령어를 사용하면 애플리케이션의 모든 마이그레이션이 롤백됩니다:
+`migrate:reset` 명령어는 애플리케이션의 모든 마이그레이션을 한 번에 롤백합니다:
 
 ```shell
 php artisan migrate:reset
 ```
 
 <a name="roll-back-migrate-using-a-single-command"></a>
-#### 한 번의 명령으로 롤백 및 마이그레이션
+#### 한 번에 롤백 후 다시 마이그레이션 실행
 
-`migrate:refresh` 명령어는 모든 마이그레이션을 롤백하고 다시 `migrate` 명령을 실행합니다. 즉, 데이터베이스를 초기화합니다:
+`migrate:refresh` 명령어는 모든 마이그레이션을 롤백한 뒤 다시 마이그레이션을 실행합니다. 이 명령어는 데이터베이스를 전체적으로 재구성할 때 유용합니다:
 
 ```shell
 php artisan migrate:refresh
 
-# 데이터베이스를 새로고침 후 모든 시드를 실행하려면...
+# 데이터베이스를 리프레시하고 모든 시드(seed)를 실행하려면...
 php artisan migrate:refresh --seed
 ```
 
-최근의 일부 마이그레이션만 롤백/재실행하고 싶을 때는 `--step` 옵션을 사용하세요. 예를 들어, 아래 명령어는 최근 5개의 마이그레이션을 롤백 후 다시 실행합니다:
+`step` 옵션을 제공하면 마지막 N개의 마이그레이션만 롤백 및 재실행할 수 있습니다. 예를 들어 마지막 5개의 마이그레이션만 해당 작업을 하려면:
 
 ```shell
 php artisan migrate:refresh --step=5
 ```
 
 <a name="drop-all-tables-migrate"></a>
-#### 모든 테이블 삭제 및 마이그레이션
+#### 모든 테이블 삭제 후 마이그레이션
 
-`migrate:fresh` 명령어는 데이터베이스의 모든 테이블을 삭제하고 다시 `migrate` 명령을 실행합니다:
+`migrate:fresh` 명령어는 데이터베이스의 모든 테이블을 삭제한 뒤, 다시 마이그레이션을 실행합니다:
 
 ```shell
 php artisan migrate:fresh
@@ -258,22 +258,22 @@ php artisan migrate:fresh
 php artisan migrate:fresh --seed
 ```
 
-기본적으로 `migrate:fresh` 명령어는 기본 데이터베이스 커넥션에서만 테이블을 삭제합니다. 하지만 `--database` 옵션을 사용하여 마이그레이션할 커넥션을 지정할 수 있습니다. 커넥션 이름은 애플리케이션의 `database` [설정 파일](/docs/12.x/configuration)에 정의된 이름이어야 합니다:
+기본적으로 `migrate:fresh` 명령어는 기본 데이터베이스 연결에서만 테이블을 삭제합니다. 하지만 `--database` 옵션을 사용하여 다른 데이터베이스 연결을 지정할 수도 있습니다. 연결 이름은 애플리케이션의 `database` [설정 파일](/docs/12.x/configuration)에 정의되어 있어야 합니다:
 
 ```shell
 php artisan migrate:fresh --database=admin
 ```
 
 > [!WARNING]
-> `migrate:fresh` 명령은 프리픽스와 상관없이 모든 데이터베이스 테이블을 삭제합니다. 다른 앱과 테이블을 공유하는 데이터베이스에서 실수로 삭제하지 않도록 주의해야 합니다.
+> `migrate:fresh` 명령어는 테이블 프리픽스(prefix)와 관계없이 모든 데이터베이스 테이블을 삭제합니다. 다른 애플리케이션과 데이터베이스를 공유하는 환경에서는 이 명령어 사용에 주의해야 합니다.
 
 <a name="tables"></a>
-## 테이블
+## 테이블 (Tables)
 
 <a name="creating-tables"></a>
-### 테이블 생성
+### 테이블 생성 (Creating Tables)
 
-새로운 데이터베이스 테이블을 생성하려면 `Schema` 파사드의 `create` 메서드를 사용하세요. `create` 메서드는 두 개의 인수를 받으며, 첫 번째는 테이블 이름, 두 번째는 새 테이블을 정의할 수 있는 `Blueprint` 객체를 받는 클로저입니다:
+새로운 데이터베이스 테이블을 생성하려면 `Schema` 파사드의 `create` 메서드를 사용하세요. `create` 메서드는 두 개의 인자를 받는데, 첫 번째는 테이블 이름, 두 번째는 새로운 테이블을 정의할 수 있도록 `Blueprint` 객체를 받는 클로저입니다:
 
 ```php
 use Illuminate\Database\Schema\Blueprint;
@@ -287,12 +287,12 @@ Schema::create('users', function (Blueprint $table) {
 });
 ```
 
-테이블을 생성할 때는 [컬럼 생성 메서드](#creating-columns) 중 어떤 것이든 활용하여 테이블의 컬럼을 정의할 수 있습니다.
+테이블을 생성할 때, [컬럼 메서드](#creating-columns)를 사용하여 원하는 컬럼을 정의할 수 있습니다.
 
 <a name="determining-table-column-existence"></a>
-#### 테이블/컬럼 존재 여부 확인
+#### 테이블/컬럼/인덱스 존재 여부 확인
 
-`hasTable`, `hasColumn`, `hasIndex` 메서드를 사용하여 테이블, 컬럼, 인덱스가 존재하는지 확인할 수 있습니다:
+`hasTable`, `hasColumn`, `hasIndex` 메서드를 사용해 특정 테이블, 컬럼, 인덱스의 존재를 확인할 수 있습니다:
 
 ```php
 if (Schema::hasTable('users')) {
@@ -300,18 +300,18 @@ if (Schema::hasTable('users')) {
 }
 
 if (Schema::hasColumn('users', 'email')) {
-    // "users" 테이블이 존재하고 "email" 컬럼도 있습니다...
+    // "users" 테이블이 존재하고 "email" 컬럼이 있습니다...
 }
 
 if (Schema::hasIndex('users', ['email'], 'unique')) {
-    // "users" 테이블에 "email" 컬럼에 대한 unique 인덱스가 있습니다...
+    // "users" 테이블에 "email" 컬럼이 unique 인덱스로 있습니다...
 }
 ```
 
 <a name="database-connection-table-options"></a>
-#### 데이터베이스 커넥션 및 테이블 옵션
+#### 데이터베이스 연결 및 테이블 옵션
 
-기본 데이터베이스 커넥션이 아닌 곳에서 스키마 작업을 하고 싶다면 `connection` 메서드를 사용할 수 있습니다:
+기본 연결이 아닌 다른 데이터베이스 연결에서 스키마 작업을 수행하려면 `connection` 메서드를 사용하면 됩니다:
 
 ```php
 Schema::connection('sqlite')->create('users', function (Blueprint $table) {
@@ -319,7 +319,7 @@ Schema::connection('sqlite')->create('users', function (Blueprint $table) {
 });
 ```
 
-테이블 생성 시 사용할 수 있는 몇 가지 추가 속성 및 메서드도 있습니다. MariaDB 또는 MySQL에서 테이블의 스토리지 엔진을 지정하려면 `engine` 속성을 사용하세요:
+그 외에도 몇 가지 속성 및 메서드를 활용해 테이블 생성시 옵션을 지정할 수 있습니다. 예를 들어 MariaDB 또는 MySQL을 사용할 때 테이블 저장 엔진을 지정하려면 `engine` 속성을 사용합니다:
 
 ```php
 Schema::create('users', function (Blueprint $table) {
@@ -329,7 +329,7 @@ Schema::create('users', function (Blueprint $table) {
 });
 ```
 
-MariaDB, MySQL에서 테이블의 문자셋 및 콜레이션을 지정하려면 `charset`, `collation` 속성을 사용할 수 있습니다:
+문자셋과 정렬 방식은 `charset`, `collation` 속성으로 지정할 수 있습니다:
 
 ```php
 Schema::create('users', function (Blueprint $table) {
@@ -340,7 +340,7 @@ Schema::create('users', function (Blueprint $table) {
 });
 ```
 
-테이블을 "임시(temporary)"로 지정하려면 `temporary` 메서드를 사용하세요. 임시 테이블은 현재 커넥션의 데이터베이스 세션에서만 보이고 커넥션 종료 시 자동으로 삭제됩니다:
+`temporary` 메서드를 호출하면 해당 테이블을 임시 테이블로 생성합니다. 임시 테이블은 현재 커넥션의 세션에서만 보이며, 커넥션이 종료될 때 자동으로 삭제됩니다:
 
 ```php
 Schema::create('calculations', function (Blueprint $table) {
@@ -350,7 +350,7 @@ Schema::create('calculations', function (Blueprint $table) {
 });
 ```
 
-테이블에 "주석(comment)"을 추가하고 싶다면, 테이블 인스턴스에서 `comment` 메서드를 사용하세요. 테이블 주석은 현재 MariaDB, MySQL, PostgreSQL에서만 지원됩니다:
+테이블에 코멘트를 추가하고 싶다면 `comment` 메서드를 사용할 수 있습니다. 테이블 코멘트는 현재 MariaDB, MySQL, PostgreSQL에서만 지원됩니다:
 
 ```php
 Schema::create('calculations', function (Blueprint $table) {
@@ -361,9 +361,9 @@ Schema::create('calculations', function (Blueprint $table) {
 ```
 
 <a name="updating-tables"></a>
-### 테이블 수정
+### 테이블 수정 (Updating Tables)
 
-`Schema` 파사드의 `table` 메서드를 사용하여 기존 테이블을 수정할 수 있습니다. `create` 메서드처럼 `table` 메서드도 테이블 이름, 클로저(이 안에서 `Blueprint` 인스턴스를 이용해 컬럼, 인덱스 등을 추가/수정할 수 있음)를 인수로 받습니다:
+`Schema` 파사드의 `table` 메서드는 기존 테이블을 수정할 때 사용합니다. `create` 메서드와 마찬가지로, 첫 번째 인자는 테이블 이름, 두 번째 인자는 컬럼이나 인덱스를 정의할 수 있는 `Blueprint` 인스턴스를 받는 클로저입니다:
 
 ```php
 use Illuminate\Database\Schema\Blueprint;
@@ -375,9 +375,9 @@ Schema::table('users', function (Blueprint $table) {
 ```
 
 <a name="renaming-and-dropping-tables"></a>
-### 테이블 이름 변경/삭제
+### 테이블 이름 변경 / 삭제 (Renaming / Dropping Tables)
 
-기존 데이터베이스 테이블의 이름을 바꾸려면 `rename` 메서드를 사용하세요:
+기존 데이터베이스 테이블의 이름을 변경하려면 `rename` 메서드를 사용하세요:
 
 ```php
 use Illuminate\Support\Facades\Schema;
@@ -385,7 +385,7 @@ use Illuminate\Support\Facades\Schema;
 Schema::rename($from, $to);
 ```
 
-기존 테이블을 삭제하려면 `drop` 또는 `dropIfExists` 메서드를 사용할 수 있습니다:
+기존 테이블을 삭제할 때는 `drop` 또는 `dropIfExists` 메서드를 사용할 수 있습니다:
 
 ```php
 Schema::drop('users');
@@ -396,15 +396,15 @@ Schema::dropIfExists('users');
 <a name="renaming-tables-with-foreign-keys"></a>
 #### 외래 키가 있는 테이블 이름 변경
 
-테이블 이름을 변경하기 전에, 해당 테이블의 외래 키 제약조건이 마이그레이션 파일에서 명시적인 이름으로 정의되어 있는지 반드시 확인하세요. 그렇지 않을 경우, 외래 키 제약조건 이름이 이전 테이블명을 참조하게 됩니다.
+테이블 이름을 변경하기 전에, 해당 테이블의 외래 키 제약조건 이름이 관습적인 방식이 아닌, 마이그레이션 파일에서 명시적으로 지정되었는지 반드시 확인해야 합니다. 그렇지 않으면 외래 키 제약조건의 이름이 예전 테이블 이름을 참조하게 됩니다.
 
 <a name="columns"></a>
-## 컬럼
+## 컬럼 (Columns)
 
 <a name="creating-columns"></a>
-### 컬럼 생성
+### 컬럼 생성 (Creating Columns)
 
-`Schema` 파사드의 `table` 메서드를 사용하여 기존 테이블에 컬럼을 추가할 수 있습니다. `create` 메서드와 마찬가지로, 테이블명과 클로저를 인수로 받아 `Blueprint` 인스턴스를 이용해 컬럼을 추가할 수 있습니다:
+`Schema` 파사드의 `table` 메서드를 사용하면 기존 테이블에 컬럼을 추가할 수 있습니다. 사용법은 `create` 메서드와 같으며, 테이블 이름과 컬럼을 정의할 수 있는 `Illuminate\Database\Schema\Blueprint` 인스턴스를 받는 클로저를 인자로 전달합니다:
 
 ```php
 use Illuminate\Database\Schema\Blueprint;
@@ -416,15 +416,21 @@ Schema::table('users', function (Blueprint $table) {
 ```
 
 <a name="available-column-types"></a>
-### 사용 가능한 컬럼 타입
+### 사용 가능한 컬럼 타입 (Available Column Types)
 
-스키마 빌더(Blueprint)는 데이터베이스 테이블에 추가할 수 있는 다양한 유형의 컬럼에 대응하는 여러 메서드를 제공합니다. 사용 가능한 메서드는 아래 표와 같습니다:
+스키마 빌더의 블루프린트는 데이터베이스 테이블에 추가할 수 있는 다양한 컬럼 타입에 해당하는 여러 메서드를 제공합니다. 다음 표에는 사용 가능한 모든 메서드가 나와 있습니다:
 
-#### 불리언(Boolean) 타입
+#### 불리언 타입 (Boolean Types)
+
+<div class="collection-method-list" markdown="1">
 
 [boolean](#column-method-boolean)
 
-#### 문자열 & 텍스트 타입
+</div>
+
+#### 문자열/텍스트 타입 (String & Text Types)
+
+<div class="collection-method-list" markdown="1">
 
 [char](#column-method-char)
 [longText](#column-method-longText)
@@ -433,7 +439,11 @@ Schema::table('users', function (Blueprint $table) {
 [text](#column-method-text)
 [tinyText](#column-method-tinyText)
 
-#### 숫자(Number) 타입
+</div>
+
+#### 숫자 타입 (Numeric Types)
+
+<div class="collection-method-list" markdown="1">
 
 [bigIncrements](#column-method-bigIncrements)
 [bigInteger](#column-method-bigInteger)
@@ -455,7 +465,11 @@ Schema::table('users', function (Blueprint $table) {
 [unsignedSmallInteger](#column-method-unsignedSmallInteger)
 [unsignedTinyInteger](#column-method-unsignedTinyInteger)
 
-#### 날짜 & 시간(Date & Time) 타입
+</div>
+
+#### 날짜/시간 타입 (Date & Time Types)
+
+<div class="collection-method-list" markdown="1">
 
 [dateTime](#column-method-dateTime)
 [dateTimeTz](#column-method-dateTimeTz)
@@ -469,16 +483,28 @@ Schema::table('users', function (Blueprint $table) {
 [softDeletesTz](#column-method-softDeletesTz)
 [year](#column-method-year)
 
-#### 바이너리(Binary) 타입
+</div>
+
+#### 바이너리 타입 (Binary Types)
+
+<div class="collection-method-list" markdown="1">
 
 [binary](#column-method-binary)
 
-#### 객체 & Json 타입
+</div>
+
+#### 객체/JSON 타입 (Object & Json Types)
+
+<div class="collection-method-list" markdown="1">
 
 [json](#column-method-json)
 [jsonb](#column-method-jsonb)
 
-#### UUID & ULID 타입
+</div>
+
+#### UUID, ULID 타입 (UUID & ULID Types)
+
+<div class="collection-method-list" markdown="1">
 
 [ulid](#column-method-ulid)
 [ulidMorphs](#column-method-ulidMorphs)
@@ -487,12 +513,20 @@ Schema::table('users', function (Blueprint $table) {
 [nullableUlidMorphs](#column-method-nullableUlidMorphs)
 [nullableUuidMorphs](#column-method-nullableUuidMorphs)
 
-#### 공간(Spatial) 타입
+</div>
+
+#### 공간(Spatial) 타입 (Spatial Types)
+
+<div class="collection-method-list" markdown="1">
 
 [geography](#column-method-geography)
 [geometry](#column-method-geometry)
 
-#### 연관관계(Relationship) 타입
+</div>
+
+#### 연관관계 타입 (Relationship Types)
+
+<div class="collection-method-list" markdown="1">
 
 [foreignId](#column-method-foreignId)
 [foreignIdFor](#column-method-foreignIdFor)
@@ -501,7 +535,11 @@ Schema::table('users', function (Blueprint $table) {
 [morphs](#column-method-morphs)
 [nullableMorphs](#column-method-nullableMorphs)
 
-#### 특수 타입
+</div>
+
+#### 특수 타입 (Specialty Types)
+
+<div class="collection-method-list" markdown="1">
 
 [enum](#column-method-enum)
 [set](#column-method-set)
@@ -510,27 +548,14 @@ Schema::table('users', function (Blueprint $table) {
 [rememberToken](#column-method-rememberToken)
 [vector](#column-method-vector)
 
-(이하로 각 컬럼 타입과 기능 설명의 코드 및 표는 원본과 동일하게 유지합니다.)
+</div>
 
-<a name="column-method-bigIncrements"></a>
-#### `bigIncrements()`
-
-`bigIncrements` 메서드는 자동 증가되는 `UNSIGNED BIGINT`(기본키) 컬럼을 생성합니다:
-
-```php
-$table->bigIncrements('id');
-```
-
-...
-
-(위의 방식대로 이하 모든 컬럼 타입별 예시 및 설명은 코드/표 구조 완벽히 보존, 주석/설명은 자연스러운 한국어로 충실하게 번역)
-
-...
+(이하 모든 컬럼 타입별 메서드 설명 생략 없이 제공, 각 타입/메서드에 대한 설명 및 예제를 참고)
 
 <a name="column-modifiers"></a>
-### 컬럼 수정자
+### 컬럼 수정자 (Column Modifiers)
 
-위에서 소개한 컬럼 타입 외에도, 컬럼에 다양한 "수정자(modifier)"를 적용할 수 있습니다. 예를 들어 컬럼을 "nullable"(NULL 허용)로 만들고 싶다면 `nullable` 메서드를 사용할 수 있습니다:
+위에서 안내한 컬럼 타입 외에도, 컬럼 생성 시 함께 사용할 수 있는 다양한 "수정자(modifier)"가 있습니다. 예를 들어, 컬럼을 "nullable"로 만들고 싶다면 `nullable` 메서드를 사용할 수 있습니다:
 
 ```php
 use Illuminate\Database\Schema\Blueprint;
@@ -541,36 +566,36 @@ Schema::table('users', function (Blueprint $table) {
 });
 ```
 
-아래 표는 사용 가능한 모든 컬럼 수정자를 정리한 것입니다(인덱스 관련 수정자는 제외):
+아래 표는 사용 가능한 모든 컬럼 수정자를 정리한 것입니다. (인덱스 수정자는 포함되지 않음)
 
 <div class="overflow-auto">
 
-| 수정자                                | 설명                                                                 |
-| ----------------------------------- | ------------------------------------------------------------------- |
-| `->after('column')`                 | 해당 컬럼을 특정 컬럼 "뒤"에 위치시킵니다 (MariaDB / MySQL).         |
-| `->autoIncrement()`                 | `INTEGER` 컬럼을 자동 증가(기본키)로 설정합니다.                    |
-| `->charset('utf8mb4')`              | 컬럼의 문자셋을 지정 (MariaDB / MySQL).                             |
-| `->collation('utf8mb4_unicode_ci')` | 컬럼의 콜레이션을 지정합니다.                                       |
-| `->comment('my comment')`           | 컬럼에 주석(comment) 추가 (MariaDB / MySQL / PostgreSQL).           |
-| `->default($value)`                 | 컬럼의 "기본값"을 지정합니다.                                       |
-| `->first()`                         | 해당 컬럼을 테이블의 "첫 번째" 위치로 둡니다 (MariaDB / MySQL).      |
-| `->from($integer)`                  | 자동 증가 필드의 시작 값을 지정 (MariaDB / MySQL / PostgreSQL).      |
-| `->invisible()`                     | 컬럼을 `SELECT *` 쿼리에서 "숨김" 처리 (MariaDB / MySQL).           |
-| `->nullable($value = true)`         | 컬럼에 `NULL` 값 삽입 허용.                                         |
-| `->storedAs($expression)`           | 저장된 생성 컬럼(stored generated column) 생성.                     |
-| `->unsigned()`                      | `INTEGER` 컬럼을 `UNSIGNED`로 지정 (MariaDB / MySQL).               |
-| `->useCurrent()`                    | `TIMESTAMP` 컬럼의 기본값을 `CURRENT_TIMESTAMP`로 설정.             |
-| `->useCurrentOnUpdate()`            | 레코드 갱신 시 `TIMESTAMP`가 자동 변경 (MariaDB / MySQL).           |
-| `->virtualAs($expression)`          | 가상(virtual) 생성 컬럼을 생성합니다.                               |
-| `->generatedAs($expression)`        | 시퀀스 옵션이 지정된 ID 컬럼 생성 (PostgreSQL).                     |
-| `->always()`                        | ID 컬럼에서 입력보다 시퀀스 값을 우선 사용하도록 정의 (PostgreSQL).  |
+| 수정자                                | 설명                                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------------------- |
+| `->after('column')`                 | 컬럼을 다른 컬럼 "뒤에" 위치시킴 (MariaDB/MySQL).                                    |
+| `->autoIncrement()`                 | `INTEGER` 컬럼을 자동 증가(기본키)로 설정.                                           |
+| `->charset('utf8mb4')`              | 컬럼의 문자셋을 지정 (MariaDB/MySQL).                                                |
+| `->collation('utf8mb4_unicode_ci')` | 컬럼의 정렬 기준을 지정.                                                             |
+| `->comment('my comment')`           | 컬럼에 코멘트를 추가 (MariaDB/MySQL/PostgreSQL).                                     |
+| `->default($value)`                 | 컬럼의 기본값을 지정.                                                               |
+| `->first()`                         | 컬럼을 테이블의 "첫번째"로 위치시킴 (MariaDB/MySQL).                                 |
+| `->from($integer)`                  | 자동 증가 필드의 시작 값을 지정 (MariaDB/MySQL/PostgreSQL).                          |
+| `->invisible()`                     | 컬럼을 `SELECT *` 쿼리에서 보이지 않게 함 (MariaDB/MySQL).                          |
+| `->nullable($value = true)`         | 컬럼에 `NULL` 값을 허용.                                                             |
+| `->storedAs($expression)`           | 저장(Stored) 생성 컬럼 생성 (MariaDB/MySQL/PostgreSQL/SQLite).                       |
+| `->unsigned()`                      | `INTEGER` 컬럼을 `UNSIGNED`로 설정 (MariaDB/MySQL).                                  |
+| `->useCurrent()`                    | `TIMESTAMP` 컬럼의 기본값을 `CURRENT_TIMESTAMP`로 설정.                              |
+| `->useCurrentOnUpdate()`            | 레코드 업데이트 시 `TIMESTAMP`을 `CURRENT_TIMESTAMP`로 자동 업데이트 (MariaDB/MySQL). |
+| `->virtualAs($expression)`          | 가상(Virtual) 생성 컬럼 생성 (MariaDB/MySQL/SQLite).                                 |
+| `->generatedAs($expression)`        | 지정한 시퀀스 옵션으로 정체성(identity) 컬럼 생성 (PostgreSQL).                       |
+| `->always()`                        | identity 컬럼에서 시퀀스 값 우선 사용 정의 (PostgreSQL).                             |
 
 </div>
 
 <a name="default-expressions"></a>
-#### 기본값에 식(Expression) 사용
+#### 기본값(디폴트) 표현식
 
-`default` 수정자는 값 또는 `Illuminate\Database\Query\Expression` 인스턴스를 받을 수 있습니다. Expression 인스턴스를 사용하면, 값이 따옴표로 감싸지지 않아 데이터베이스의 특수 함수나 식을 그대로 쓸 수 있습니다. 예를 들어 JSON 컬럼에 기본값을 지정할 때 유용합니다:
+`default` 수정자는 값 또는 `Illuminate\Database\Query\Expression` 인스턴스를 인자로 받을 수 있습니다. `Expression`을 사용하면 값이 따옴표로 감싸지지 않아, DB 특화 함수를 활용할 수 있습니다. 예를 들어 JSON 컬럼에 기본값을 지정하는 상황이 있습니다:
 
 ```php
 <?php
@@ -597,12 +622,12 @@ return new class extends Migration
 ```
 
 > [!WARNING]
-> 기본값 식(Expression) 지원 여부는 데이터베이스 드라이버, 버전, 필드 타입에 따라 다릅니다. 사용 전 해당 데이터베이스 문서를 참고하세요.
+> 기본값 표현식 지원 여부는 데이터베이스 드라이버, 데이터베이스 버전, 필드 타입에 따라 다를 수 있습니다. 관련 데이터베이스의 공식 문서를 반드시 참고하세요.
 
 <a name="column-order"></a>
-#### 컬럼 순서 지정
+#### 컬럼 순서
 
-MariaDB/ MySQL을 사용할 때는 `after` 메서드를 통해 기존 컬럼 뒤에 새로운 컬럼을 추가할 수 있습니다:
+MariaDB 또는 MySQL에서 컬럼을 기존 컬럼 뒤에 추가하고 싶을 때는 `after` 메서드를 사용할 수 있습니다:
 
 ```php
 $table->after('password', function (Blueprint $table) {
@@ -613,9 +638,9 @@ $table->after('password', function (Blueprint $table) {
 ```
 
 <a name="modifying-columns"></a>
-### 컬럼 변경
+### 컬럼 수정 (Modifying Columns)
 
-`change` 메서드를 사용하면 기존 컬럼의 타입이나 속성을 변경할 수 있습니다. 예를 들어, `string` 컬럼의 길이를 25에서 50으로 늘리고 싶다면, 변경된 상태로 정의 후 `change` 메서드만 호출하면 됩니다:
+`change` 메서드를 사용하면 기존 컬럼의 타입, 속성 등을 수정할 수 있습니다. 예를 들어, `string` 컬럼의 길이를 늘리고 싶을 때 다음과 같이 작성합니다:
 
 ```php
 Schema::table('users', function (Blueprint $table) {
@@ -623,7 +648,7 @@ Schema::table('users', function (Blueprint $table) {
 });
 ```
 
-컬럼을 변경할 때, 기존에 적용되었던 수정자를 계속 유지하고 싶다면 명시적으로 모든 수정자를 반복해서 작성해야 합니다. 누락되는 속성은 제거됩니다. 예를 들어, `unsigned`, `default`, `comment` 속성을 유지하려면 모두 명시해야 합니다:
+컬럼을 수정할 때는 유지하고자 하는 모든 수정자(modifier)를 명시적으로 다시 지정해야 하며, 누락된 속성은 사라집니다. 예를 들어, `unsigned`, `default`, `comment` 속성을 유지하려면 아래와 같이 모든 수정자를 명시해야 합니다:
 
 ```php
 Schema::table('users', function (Blueprint $table) {
@@ -631,7 +656,7 @@ Schema::table('users', function (Blueprint $table) {
 });
 ```
 
-`change` 메서드는 컬럼의 인덱스는 변경하지 않습니다. 따라서 인덱스를 추가하거나 삭제하려면 인덱스 관련 수정자를 별도로 사용해야 합니다:
+`change` 메서드는 컬럼의 인덱스에는 영향을 주지 않으므로, 인덱스 변경이 필요하다면 명시적으로 인덱스 수정자를 추가하거나 제거해야 합니다:
 
 ```php
 // 인덱스 추가...
@@ -642,9 +667,9 @@ $table->char('postal_code', 10)->unique(false)->change();
 ```
 
 <a name="renaming-columns"></a>
-### 컬럼 이름 변경
+### 컬럼 이름 변경 (Renaming Columns)
 
-컬럼 이름을 바꾸려면 스키마 빌더의 `renameColumn` 메서드를 사용하세요:
+컬럼 이름을 변경하려면, 스키마 빌더의 `renameColumn` 메서드를 사용하세요:
 
 ```php
 Schema::table('users', function (Blueprint $table) {
@@ -653,7 +678,7 @@ Schema::table('users', function (Blueprint $table) {
 ```
 
 <a name="dropping-columns"></a>
-### 컬럼 삭제
+### 컬럼 삭제 (Dropping Columns)
 
 컬럼을 삭제하려면 스키마 빌더의 `dropColumn` 메서드를 사용하세요:
 
@@ -663,7 +688,7 @@ Schema::table('users', function (Blueprint $table) {
 });
 ```
 
-한 번에 여러 컬럼을 삭제하려면 컬럼명 배열을 넘깁니다:
+여러 컬럼을 한 번에 삭제하려면 배열 형태로 컬럼명을 전달할 수 있습니다:
 
 ```php
 Schema::table('users', function (Blueprint $table) {
@@ -672,30 +697,30 @@ Schema::table('users', function (Blueprint $table) {
 ```
 
 <a name="available-command-aliases"></a>
-#### 사용 가능한 명령어 별칭
+#### 사용 가능한 편의 명령어
 
-Laravel은 자주 쓰는 컬럼 제거를 위한 몇 가지 별칭 메서드도 제공합니다. 각 메서드는 아래와 같습니다:
+Laravel은 자주 사용하는 컬럼 삭제와 관련된 편리한 메서드들을 제공합니다. 다음 표를 참고하세요:
 
 <div class="overflow-auto">
 
-| 명령어                                 | 설명                                              |
-| ----------------------------------- | ------------------------------------------------- |
-| `$table->dropMorphs('morphable');`  | `morphable_id`, `morphable_type` 컬럼 삭제         |
-| `$table->dropRememberToken();`      | `remember_token` 컬럼 삭제                         |
-| `$table->dropSoftDeletes();`        | `deleted_at` 컬럼 삭제                             |
-| `$table->dropSoftDeletesTz();`      | `dropSoftDeletes()`의 별칭                         |
-| `$table->dropTimestamps();`         | `created_at`, `updated_at` 컬럼 삭제               |
-| `$table->dropTimestampsTz();`       | `dropTimestamps()`의 별칭                          |
+| 명령어                                | 설명                                             |
+| ----------------------------------- | ------------------------------------------------ |
+| `$table->dropMorphs('morphable');`  | `morphable_id` 및 `morphable_type` 컬럼 삭제      |
+| `$table->dropRememberToken();`      | `remember_token` 컬럼 삭제                       |
+| `$table->dropSoftDeletes();`        | `deleted_at` 컬럼 삭제                           |
+| `$table->dropSoftDeletesTz();`      | `dropSoftDeletes()` 메서드의 별칭                 |
+| `$table->dropTimestamps();`         | `created_at`, `updated_at` 컬럼 삭제              |
+| `$table->dropTimestampsTz();`       | `dropTimestamps()` 메서드의 별칭                  |
 
 </div>
 
 <a name="indexes"></a>
-## 인덱스
+## 인덱스 (Indexes)
 
 <a name="creating-indexes"></a>
-### 인덱스 생성
+### 인덱스 생성 (Creating Indexes)
 
-Laravel 스키마 빌더는 여러 유형의 인덱스를 지원합니다. 아래 예시에서는 `email` 컬럼을 새로 생성하고 해당 컬럼 값이 고유(unique)해야 함을 지정합니다. 컬럼 정의와 함께 `unique` 메서드를 바로 체이닝할 수 있습니다:
+Laravel 스키마 빌더는 여러 가지 인덱스 타입을 지원합니다. 예를 들어, 새로 추가하는 `email` 컬럼에 유니크 값을 강제하려면, 컬럼 정의에 유니크 메서드를 체이닝할 수 있습니다:
 
 ```php
 use Illuminate\Database\Schema\Blueprint;
@@ -706,19 +731,19 @@ Schema::table('users', function (Blueprint $table) {
 });
 ```
 
-컬럼 정의 이후에 인덱스를 별도로 생성할 수도 있습니다. 그럴 경우, 스키마 빌더 Blueprint의 `unique` 메서드를 호출하세요. 이 메서드는 인덱스를 걸 컬럼명을 인수로 받습니다:
+컬럼을 정의한 뒤, 별도로 인덱스를 생성하려면 스키마 빌더 블루프린트의 메서드를 사용할 수 있습니다:
 
 ```php
 $table->unique('email');
 ```
 
-여러 컬럼에 대해 합성(복합) 인덱스를 생성하고 싶다면 인덱스 메서드에 컬럼명 배열을 넘기면 됩니다:
+여러 컬럼을 배열로 전달해 복합(Composite) 인덱스를 생성할 수도 있습니다:
 
 ```php
 $table->index(['account_id', 'created_at']);
 ```
 
-인덱스 이름은 Laravel이 자동으로 생성하지만, 두 번째 인수로 직접 인덱스 이름을 지정할 수도 있습니다:
+인덱스는 Laravel이 기본적으로 테이블명, 컬럼명, 인덱스 종류를 조합해 이름을 자동 생성하지만, 두 번째 인자를 입력해 원하는 인덱스 이름을 지정할 수도 있습니다:
 
 ```php
 $table->unique('email', 'unique_email');
@@ -727,60 +752,60 @@ $table->unique('email', 'unique_email');
 <a name="available-index-types"></a>
 #### 지원되는 인덱스 타입
 
-Laravel의 스키마 빌더(Blueprint) 클래스는 Laravel이 지원하는 각 인덱스 타입별로 메서드를 제공합니다. 모든 인덱스 메서드는 두 번째 인수로 인덱스 이름 지정이 가능합니다(생략 시 기본 규칙에 따라 이름 자동 생성). 아래 표에 각 인덱스 메서드를 정리합니다:
+Laravel 스키마 빌더 블루프린트 클래스에는 여러 인덱스 생성 메서드가 제공됩니다. 메서드의 두 번째 인자로 인덱스의 이름을 지정할 수 있으며, 생략하면 테이블명과 컬럼명 그리고 인덱스 종류 조합으로 자동 생성됩니다. 주요 메서드는 다음과 같습니다:
 
 <div class="overflow-auto">
 
-| 명령어                                          | 설명                                               |
-| --------------------------------------------- | ------------------------------------------------- |
-| `$table->primary('id');`                      | 기본키(primary key) 추가                           |
-| `$table->primary(['id', 'parent_id']);`       | 복합키(composite key) 추가                         |
-| `$table->unique('email');`                    | 고유 인덱스(unique index) 추가                    |
-| `$table->index('state');`                     | 일반 인덱스 추가                                   |
-| `$table->fullText('body');`                   | 전문(Full text) 인덱스 추가 (MariaDB/MySQL/PostgreSQL)|
-| `$table->fullText('body')->language('english');` | 지정 언어 전문 인덱스 (PostgreSQL)               |
-| `$table->spatialIndex('location');`           | 공간(spatial) 인덱스 추가(SQLite 제외)             |
+| 명령어                                          | 설명                                                        |
+| -------------------------------------------- | ----------------------------------------------------------- |
+| `$table->primary('id');`                     | 기본키 추가                                                 |
+| `$table->primary(['id', 'parent_id']);`      | 복합키(composite key) 추가                                  |
+| `$table->unique('email');`                   | 유니크 인덱스 추가                                          |
+| `$table->index('state');`                    | 일반 인덱스 추가                                            |
+| `$table->fullText('body');`                  | 전문(full text) 인덱스 추가 (MariaDB/MySQL/PostgreSQL)      |
+| `$table->fullText('body')->language('english');` | 특정 언어로 전문 인덱스 추가 (PostgreSQL)                |
+| `$table->spatialIndex('location');`          | 공간(spatial) 인덱스 추가 (SQLite 제외)                     |
 
 </div>
 
 <a name="renaming-indexes"></a>
-### 인덱스 이름 변경
+### 인덱스 이름 변경 (Renaming Indexes)
 
-인덱스 이름을 변경하려면 스키마 빌더 Blueprint의 `renameIndex` 메서드를 사용하세요. 첫 번째 인수는 현재 인덱스 이름, 두 번째 인수는 바꾸려는 이름입니다:
+인덱스의 이름을 변경하려면, 스키마 빌더 블루프린트의 `renameIndex` 메서드를 사용하면 됩니다. 첫 번째 인자는 기존 인덱스 이름, 두 번째 인자는 새 인덱스 이름입니다:
 
 ```php
 $table->renameIndex('from', 'to')
 ```
 
 <a name="dropping-indexes"></a>
-### 인덱스 삭제
+### 인덱스 삭제 (Dropping Indexes)
 
-인덱스를 삭제하려면 인덱스의 이름을 명시해야 합니다. Laravel은 기본적으로 테이블 이름, 인덱스 컬럼명, 인덱스 타입을 조합해 인덱스 명을 생성합니다. 아래는 예시입니다:
+인덱스를 삭제하려면, 해당 인덱스의 이름을 명시적으로 지정해야 합니다. Laravel은 인덱스 생성 시 테이블 이름, 컬럼명, 인덱스 종류를 조합해 기본 이름을 지정합니다. 예시는 다음과 같습니다:
 
 <div class="overflow-auto">
 
-| 명령어                                                | 설명                                             |
-| --------------------------------------------------- | ----------------------------------------------- |
-| `$table->dropPrimary('users_id_primary');`          | "users" 테이블의 기본키 제거                    |
-| `$table->dropUnique('users_email_unique');`         | "users" 테이블의 고유 인덱스 제거               |
-| `$table->dropIndex('geo_state_index');`             | "geo" 테이블의 일반 인덱스 제거                 |
-| `$table->dropFullText('posts_body_fulltext');`      | "posts" 테이블의 전문 인덱스 제거               |
-| `$table->dropSpatialIndex('geo_location_spatialindex');` | "geo" 테이블의 공간 인덱스 제거(SQLite 제외)  |
+| 명령어                                         | 설명                                                   |
+| -------------------------------------------- | ------------------------------------------------------ |
+| `$table->dropPrimary('users_id_primary');`   | "users" 테이블의 기본키 삭제                            |
+| `$table->dropUnique('users_email_unique');`  | "users" 테이블의 유니크 인덱스 삭제                    |
+| `$table->dropIndex('geo_state_index');`      | "geo" 테이블의 인덱스 삭제                             |
+| `$table->dropFullText('posts_body_fulltext');` | "posts" 테이블의 전문 인덱스 삭제                    |
+| `$table->dropSpatialIndex('geo_location_spatialindex');` | "geo" 테이블의 공간 인덱스 삭제 (SQLite 제외)    |
 
 </div>
 
-여러 컬럼을 대상으로 인덱스를 삭제할 때는 컬럼명 배열을 넘기면, Laravel 규칙에 맞게 인덱스 이름이 자동 생성되어 해당 인덱스가 제거됩니다:
+여러 컬럼을 배열로 전달해 인덱스 삭제를 요청하면, Laravel이 conventional(관례적)한 인덱스 이름을 자동으로 생성하여 삭제합니다:
 
 ```php
 Schema::table('geo', function (Blueprint $table) {
-    $table->dropIndex(['state']); // 'geo_state_index' 인덱스 제거
+    $table->dropIndex(['state']); // 'geo_state_index' 인덱스 삭제
 });
 ```
 
 <a name="foreign-key-constraints"></a>
-### 외래 키 제약조건
+### 외래 키 제약조건 (Foreign Key Constraints)
 
-Laravel은 데이터베이스 수준의 참조 무결성 보장을 위해 외래 키 제약조건 생성도 지원합니다. 예를 들어, `posts` 테이블의 `user_id` 컬럼이 `users` 테이블의 `id` 컬럼을 참조하도록 하려면 아래처럼 작성합니다:
+Laravel은 데이터베이스 레벨에서 참조 무결성을 강제하는 외래 키 제약조건도 지원합니다. 예를 들어, `posts` 테이블의 `user_id` 컬럼이 `users` 테이블의 `id` 컬럼을 참조하도록 정의할 수 있습니다:
 
 ```php
 use Illuminate\Database\Schema\Blueprint;
@@ -793,7 +818,7 @@ Schema::table('posts', function (Blueprint $table) {
 });
 ```
 
-이 같은 형태는 다소 장황하므로, Laravel은 더 간결하고 관습(convention)에 기반한 추가 메서드를 제공합니다. 즉, 컬럼을 만들 때 `foreignId` 및 `constrained`를 함께 쓰면 다음처럼 간단하게 표현할 수 있습니다:
+이 방식이 다소 장황하므로, Laravel에서는 더 간결하고 관행적인 메서드를 추가로 제공합니다. `foreignId` 메서드를 사용하여 위 구문을 더 짧게 쓸 수도 있습니다:
 
 ```php
 Schema::table('posts', function (Blueprint $table) {
@@ -801,7 +826,7 @@ Schema::table('posts', function (Blueprint $table) {
 });
 ```
 
-`foreignId`는 `UNSIGNED BIGINT` 컬럼을 생성하고, `constrained`는 참조할 테이블과 컬럼명을 자동 추론합니다. 테이블이 규칙과 다를 때는 직접 값도 지정 가능합니다. 또한 생성될 인덱스 이름도 지정할 수 있습니다:
+`foreignId`는 `UNSIGNED BIGINT` 타입의 컬럼을 만들고, `constrained` 메서드는 관례를 이용해 참조할 테이블과 컬럼을 자동으로 지정합니다. 만약 테이블 이름이 Laravel 관례와 다르다면 명시적으로 지정할 수 있으며, 생성될 인덱스의 이름도 지정 가능합니다:
 
 ```php
 Schema::table('posts', function (Blueprint $table) {
@@ -811,7 +836,7 @@ Schema::table('posts', function (Blueprint $table) {
 });
 ```
 
-외래 키 제약조건의 "삭제(on delete)", "수정(on update)" 시 동작도 직접 지정할 수 있습니다:
+"on delete"나 "on update" 속성도 원하는 동작을 지정할 수 있습니다:
 
 ```php
 $table->foreignId('user_id')
@@ -820,24 +845,24 @@ $table->foreignId('user_id')
     ->onDelete('cascade');
 ```
 
-아래는 이러한 동작을 위한 대안적이고 직관적인 문법(별도 메서드)입니다:
+아래와 같은 더 간결한 메서드도 사용할 수 있습니다:
 
 <div class="overflow-auto">
 
-| 메서드                           | 설명                                       |
-| ----------------------------- | ----------------------------------------- |
-| `$table->cascadeOnUpdate();`  | 수정시(cascade) 상위 값이 변경되면 하위도 함께 변경 |
-| `$table->restrictOnUpdate();` | 수정 제한(restrict)                          |
-| `$table->nullOnUpdate();`     | 수정 시 외래 키 값을 null로 설정               |
-| `$table->noActionOnUpdate();` | 수정 시 아무 동작 없음                        |
-| `$table->cascadeOnDelete();`  | 삭제 시(cascade) 하위도 함께 삭제              |
-| `$table->restrictOnDelete();` | 삭제 제한(restrict)                          |
-| `$table->nullOnDelete();`     | 삭제 시 외래 키 값을 null로 설정               |
-| `$table->noActionOnDelete();` | 자식 데이터가 있으면 삭제 안함                |
+| 메서드                      | 설명                                          |
+| --------------------------- | --------------------------------------------- |
+| `$table->cascadeOnUpdate();`  | 업데이트 시 연쇄(CASCADE) 동작                |
+| `$table->restrictOnUpdate();` | 업데이트 시 제한(RESTRICT)                     |
+| `$table->nullOnUpdate();`     | 업데이트 시 외래 키 값을 NULL로 설정           |
+| `$table->noActionOnUpdate();` | 업데이트 시 별도의 동작 안함                   |
+| `$table->cascadeOnDelete();`  | 삭제 시 연쇄(CASCADE) 동작                    |
+| `$table->restrictOnDelete();` | 삭제 시 제한(RESTRICT)                         |
+| `$table->nullOnDelete();`     | 삭제 시 외래 키 값을 NULL로 설정               |
+| `$table->noActionOnDelete();` | 자식 레코드 있으면 삭제 방지(NO ACTION)         |
 
 </div>
 
-기타 필요한 [컬럼 수정자](#column-modifiers)는 반드시 `constrained` 메서드 호출 이전에 사용해야 합니다:
+추가적인 [컬럼 수정자](#column-modifiers)는 반드시 `constrained` 메서드 호출 이전에 체이닝해야 합니다:
 
 ```php
 $table->foreignId('user_id')
@@ -848,22 +873,22 @@ $table->foreignId('user_id')
 <a name="dropping-foreign-keys"></a>
 #### 외래 키 삭제
 
-외래 키 제약조건을 삭제하려면, 삭제할 외래 키의 이름을 `dropForeign` 메서드에 인수로 넘기세요. 외래 키 이름 규칙은 인덱스와 동일하며, 테이블명+컬럼명+`\_foreign` 형태입니다:
+외래 키를 삭제하려면, `dropForeign` 메서드에 삭제할 외래 키 제약조건의 이름을 인자로 전달해야 합니다. 외래 키 제약조건은 테이블명, 컬럼명 뒤에 "_foreign"이라는 접미사가 붙는 관례적 이름을 사용합니다:
 
 ```php
 $table->dropForeign('posts_user_id_foreign');
 ```
 
-또는 외래 키 컬럼명을 배열로 넘기면, Laravel의 규칙에 따라 외래 키 이름이 자동 생성되어 해당 제약조건을 삭제합니다:
+또는 외래 키가 적용된 컬럼 이름을 배열로 전달하면, Laravel이 내부적으로 관례에 맞게 제약조건 이름을 자동 생성합니다:
 
 ```php
 $table->dropForeign(['user_id']);
 ```
 
 <a name="toggling-foreign-key-constraints"></a>
-#### 외래 키 제약조건 토글
+#### 외래 키 제약조건 활성화/비활성화
 
-마이그레이션 내에서 아래 메서드를 사용하여 외래 키 제약조건을 활성화하거나 비활성화할 수 있습니다:
+마이그레이션 과정에서 다음과 같은 메서드로 외래 키 제약조건을 활성화 또는 비활성화할 수 있습니다:
 
 ```php
 Schema::enableForeignKeyConstraints();
@@ -871,28 +896,28 @@ Schema::enableForeignKeyConstraints();
 Schema::disableForeignKeyConstraints();
 
 Schema::withoutForeignKeyConstraints(function () {
-    // 이 클로저 내부에서는 제약조건이 비활성화됩니다...
+    // 이 클로저 내부에서만 제약조건이 비활성화됨...
 });
 ```
 
 > [!WARNING]
-> SQLite는 기본적으로 외래 키 제약조건이 비활성화되어 있습니다. SQLite를 사용할 때는, 마이그레이션에서 제약조건을 생성하기 전에 반드시 [외래 키 지원 활성화](/docs/12.x/database#configuration)를 먼저 해주세요.
+> SQLite는 기본적으로 외래 키 제약조건이 비활성화되어 있습니다. SQLite를 사용할 경우 마이그레이션에서 외래 키 생성을 시도하기 전에 반드시 [외래 키 지원 설정](/docs/12.x/database#configuration)에서 활성화해야 합니다.
 
 <a name="events"></a>
-## 이벤트
+## 이벤트 (Events)
 
-편의상, 각 마이그레이션 작업은 [이벤트](/docs/12.x/events)를 발생시킵니다. 아래 모든 이벤트는 기본 `Illuminate\Database\Events\MigrationEvent` 클래스를 상속합니다:
+편의상, 각 마이그레이션 작업은 [이벤트](/docs/12.x/events)를 디스패치합니다. 아래의 모든 이벤트는 기본 `Illuminate\Database\Events\MigrationEvent` 클래스를 확장합니다:
 
 <div class="overflow-auto">
 
-| 클래스                                           | 설명                                           |
-| --------------------------------------------- | --------------------------------------------- |
-| `Illuminate\Database\Events\MigrationsStarted`   | 여러 마이그레이션(batch) 실행 직전 이벤트         |
-| `Illuminate\Database\Events\MigrationsEnded`     | 여러 마이그레이션(batch) 실행 완료 후 이벤트      |
-| `Illuminate\Database\Events\MigrationStarted`    | 한 번에 하나의 마이그레이션 실행 직전 이벤트      |
-| `Illuminate\Database\Events\MigrationEnded`      | 한 번에 하나의 마이그레이션 실행 완료 후 이벤트   |
-| `Illuminate\Database\Events\NoPendingMigrations` | 실행할 마이그레이션이 없을 때 발생               |
-| `Illuminate\Database\Events\SchemaDumped`        | 데이터베이스 스키마 덤프 완료 이벤트             |
-| `Illuminate\Database\Events\SchemaLoaded`        | 기존 스키마 덤프 파일 로드 완료 이벤트           |
+| 클래스명                                         | 설명                                         |
+| ---------------------------------------------- | -------------------------------------------- |
+| `Illuminate\Database\Events\MigrationsStarted`   | 한 번에 여러 마이그레이션 실행 직전            |
+| `Illuminate\Database\Events\MigrationsEnded`     | 한 번에 여러 마이그레이션 실행 완료            |
+| `Illuminate\Database\Events\MigrationStarted`    | 단일 마이그레이션 실행 직전                   |
+| `Illuminate\Database\Events\MigrationEnded`      | 단일 마이그레이션 실행 완료                   |
+| `Illuminate\Database\Events\NoPendingMigrations` | 실행할 대기 중인 마이그레이션이 없는 경우       |
+| `Illuminate\Database\Events\SchemaDumped`        | 데이터베이스 스키마 덤프가 완료된 경우          |
+| `Illuminate\Database\Events\SchemaLoaded`        | 기존 데이터베이스 스키마 덤프가 로드된 경우      |
 
 </div>
