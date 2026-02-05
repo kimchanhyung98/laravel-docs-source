@@ -1,4 +1,4 @@
-# Laravel Pint
+# Laravel Pint (Laravel Pint)
 
 - [소개](#introduction)
 - [설치](#installation)
@@ -7,35 +7,47 @@
     - [프리셋](#presets)
     - [규칙](#rules)
     - [파일 / 폴더 제외하기](#excluding-files-or-folders)
-- [지속적 통합](#continuous-integration)
+- [지속적 통합(CI)](#continuous-integration)
     - [GitHub Actions](#running-tests-on-github-actions)
 
 <a name="introduction"></a>
-## 소개 (Introduction)
+## 소개
 
-[Laravel Pint](https://github.com/laravel/pint)는 미니멀리스트를 위한 의견 있는 PHP 코드 스타일 고정기입니다. Pint는 [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer)를 기반으로 만들어졌으며, 코드 스타일을 깔끔하고 일관되게 유지하는 작업을 간단하게 만들어 줍니다.
+[Laravel Pint](https://github.com/laravel/pint)는 미니멀리스트를 위한 독단적인(의견이 강하게 반영된) PHP 코드 스타일 수정 도구입니다. Pint는 [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer)를 기반으로 하며, 코드 스타일을 깨끗하고 일관되게 유지하는 작업을 아주 간단하게 만들어줍니다.
 
-Pint는 모든 새 Laravel 애플리케이션에 자동으로 설치되어 즉시 사용할 수 있습니다. 기본적으로 Pint는 별도의 설정 없이 Laravel의 의견 있는 코딩 스타일을 따르며 코드 스타일 문제를 자동으로 수정합니다.
+Pint는 모든 새로운 Laravel 애플리케이션에 자동으로 설치되어 있으므로 바로 사용할 수 있습니다. 기본적으로 Pint는 별도의 설정이 필요 없으며, Laravel의 독단적인(의견이 반영된) 코딩 스타일을 따라 코드 스타일 문제를 고쳐줍니다.
 
 <a name="installation"></a>
-## 설치 (Installation)
+## 설치
 
-Pint는 최근 Laravel 프레임워크 버전에 기본 포함되어 있어 대개 별도 설치가 필요하지 않습니다. 다만, 이전 버전의 애플리케이션에서는 Composer를 사용해 Laravel Pint를 설치할 수 있습니다:
+Pint는 최근에 릴리스된 Laravel 프레임워크에 기본 포함되어 있으므로, 일반적으로 별도의 설치가 필요하지 않습니다. 하지만 이전 애플리케이션의 경우, Composer를 통해 Laravel Pint를 설치할 수 있습니다:
 
 ```shell
 composer require laravel/pint --dev
 ```
 
 <a name="running-pint"></a>
-## Pint 실행하기 (Running Pint)
+## Pint 실행하기
 
-프로젝트의 `vendor/bin` 디렉터리에 있는 `pint` 실행 파일을 호출해서 Pint로 코드 스타일 문제를 고칠 수 있습니다:
+Pint로 코드 스타일 문제를 고치려면, 프로젝트의 `vendor/bin` 디렉터리에 위치한 `pint` 실행 파일을 사용하면 됩니다:
 
 ```shell
 ./vendor/bin/pint
 ```
 
-특정 파일이나 디렉터리에 대해서만 Pint를 실행할 수도 있습니다:
+성능 향상을 위해 Pint를 병렬 모드(실험적)로 실행하고 싶다면, `--parallel` 옵션을 사용할 수 있습니다:
+
+```shell
+./vendor/bin/pint --parallel
+```
+
+병렬 모드에서는 `--max-processes` 옵션으로 동시에 실행할 최대 프로세스 수를 지정할 수 있습니다. 이 옵션을 생략하면, Pint는 컴퓨터의 모든 사용 가능한 코어를 사용합니다:
+
+```shell
+./vendor/bin/pint --parallel --max-processes=4
+```
+
+특정 파일이나 디렉터리만 대상으로 Pint를 실행할 수도 있습니다:
 
 ```shell
 ./vendor/bin/pint app/Models
@@ -43,40 +55,40 @@ composer require laravel/pint --dev
 ./vendor/bin/pint app/Models/User.php
 ```
 
-Pint는 수정한 모든 파일 목록을 자세히 출력합니다. `-v` 옵션을 추가해 실행하면 변경사항에 대해 더 상세한 정보를 볼 수 있습니다:
+Pint는 업데이트한 모든 파일의 자세한 목록을 출력해줍니다. Pint의 변경 내역을 더 자세히 보고 싶으면, `-v` 옵션을 추가해 실행할 수 있습니다:
 
 ```shell
 ./vendor/bin/pint -v
 ```
 
-코드를 실제로 변경하지 않고 스타일 오류만 검사하고 싶다면 `--test` 옵션을 사용하세요. 코드 스타일 오류가 발견되면 Pint는 0이 아닌 종료 코드를 반환합니다:
+파일을 실제로 변경하지 않고 코드 스타일 오류만 점검하려면, `--test` 옵션을 사용하세요. 코드 스타일 오류가 발견되면 Pint는 0이 아닌 종료 코드를 반환합니다:
 
 ```shell
 ./vendor/bin/pint --test
 ```
 
-Git의 특정 브랜치와 다른 파일만 수정하고 싶다면 `--diff=[branch]` 옵션을 사용할 수 있습니다. 이는 GitHub Actions 같은 CI 환경에서 새로 추가되거나 변경된 파일만 검사해 시간을 절약하는 데 유용합니다:
+Git 기준으로 제공된 브랜치와 비교해 차이가 있는 파일만 Pint가 수정하도록 하려면, `--diff=[branch]` 옵션을 사용할 수 있습니다. 이 방법은 CI 환경(예: GitHub Actions)에서 새롭게 추가되거나 수정된 파일만 검사할 때 효과적입니다:
 
 ```shell
 ./vendor/bin/pint --diff=main
 ```
 
-커밋되지 않은 변경 사항이 있는 파일만 검사하려면 `--dirty` 옵션을 사용하세요:
+Git에 커밋되지 않은 변경사항이 있는 파일만 Pint가 수정하게 하려면, `--dirty` 옵션을 사용할 수 있습니다:
 
 ```shell
 ./vendor/bin/pint --dirty
 ```
 
-코드 스타일 오류가 있는 파일을 수정하되, 오류가 수정되었다면 0이 아닌 종료 코드로 종료하도록 하려면 `--repair` 옵션을 사용하세요:
+코드 스타일 오류가 있는 파일을 고치면서 동시에 오류가 한 건이라도 고쳐졌다면 0이 아닌 종료 코드로 종료하게 하려면, `--repair` 옵션을 사용합니다:
 
 ```shell
 ./vendor/bin/pint --repair
 ```
 
 <a name="configuring-pint"></a>
-## Pint 설정하기 (Configuring Pint)
+## Pint 설정하기
 
-앞서 언급했듯이 Pint는 기본적으로 설정이 필요 없습니다. 하지만 프리셋, 규칙, 검사할 폴더 등을 직접 제어하고 싶다면 프로젝트 루트에 `pint.json` 파일을 생성하여 설정할 수 있습니다:
+앞서 언급한 것처럼, Pint는 별도의 설정이 필요하지 않습니다. 하지만 프리셋, 규칙 또는 검사할 폴더를 커스터마이즈하고 싶다면, 프로젝트의 루트 디렉터리에 `pint.json` 파일을 생성해 설정할 수 있습니다:
 
 ```json
 {
@@ -84,22 +96,22 @@ Git의 특정 브랜치와 다른 파일만 수정하고 싶다면 `--diff=[bran
 }
 ```
 
-또한, 특정 디렉터리의 `pint.json` 설정 파일을 사용하고 싶을 경우, Pint 실행 시 `--config` 옵션을 지정할 수 있습니다:
+또한, 특정 디렉터리에 있는 `pint.json` 설정 파일을 사용하고 싶을 때는, Pint를 실행할 때 `--config` 옵션으로 해당 파일 경로를 지정할 수 있습니다:
 
 ```shell
 ./vendor/bin/pint --config vendor/my-company/coding-style/pint.json
 ```
 
 <a name="presets"></a>
-### 프리셋 (Presets)
+### 프리셋
 
-프리셋은 코드 스타일 문제를 고치는 데 사용할 규칙 집합입니다. 기본적으로 Pint는 `laravel` 프리셋을 사용하며, Laravel의 의견 있는 코딩 스타일을 따릅니다. 그러나 필요에 따라 `--preset` 옵션으로 다른 프리셋을 지정할 수도 있습니다:
+프리셋(preset)은 코드 스타일 문제를 해결하기 위해 사용할 규칙 모음입니다. 기본적으로 Pint는 `laravel` 프리셋을 사용하여, Laravel의 독단적인 코딩 스타일에 따라 문제를 고칩니다. 하지만 원한다면 `--preset` 옵션으로 다른 프리셋을 지정할 수 있습니다:
 
 ```shell
 ./vendor/bin/pint --preset psr12
 ```
 
-원하는 경우 프로젝트의 `pint.json` 파일에서도 프리셋을 설정할 수 있습니다:
+또는 프로젝트의 `pint.json` 파일에 프리셋을 지정할 수도 있습니다:
 
 ```json
 {
@@ -107,14 +119,14 @@ Git의 특정 브랜치와 다른 파일만 수정하고 싶다면 `--diff=[bran
 }
 ```
 
-Pint에서 현재 지원하는 프리셋은 `laravel`, `per`, `psr12`, `symfony`, `empty`입니다.
+Pint에서 현재 지원하는 프리셋은 다음과 같습니다: `laravel`, `per`, `psr12`, `symfony`, `empty`.
 
 <a name="rules"></a>
-### 규칙 (Rules)
+### 규칙
 
-규칙은 Pint가 코드 스타일 문제를 고칠 때 따르는 스타일 가이드라인입니다. 앞서 설명했듯이, 프리셋은 대부분 PHP 프로젝트에 적합한 규칙 그룹을 미리 정해둔 것이므로 보통은 개별 규칙을 걱정할 필요가 없습니다.
+규칙(rule)은 Pint가 코드 스타일 문제를 고칠 때 따르는 세부 스타일 지침입니다. 앞서 설명한 대로, 프리셋은 대부분의 PHP 프로젝트에 적합하도록 미리 정의된 규칙 그룹이기 때문에, 보통 개별 규칙을 신경 쓸 필요는 없습니다.
 
-다만, 원한다면 `pint.json` 파일에서 특정 규칙을 활성화하거나 비활성화할 수 있으며, `empty` 프리셋을 선택하고 직접 규칙을 처음부터 정의할 수도 있습니다:
+하지만 필요하다면, `pint.json` 파일에서 특정 규칙을 개별적으로 활성화(Enable)하거나 비활성화(Disable)할 수 있고, `empty` 프리셋을 활용해 처음부터 직접 규칙을 설정할 수도 있습니다:
 
 ```json
 {
@@ -130,12 +142,12 @@ Pint에서 현재 지원하는 프리셋은 `laravel`, `per`, `psr12`, `symfony`
 }
 ```
 
-Pint는 [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer)를 기반으로 만들어졌습니다. 따라서 [PHP CS Fixer Configurator](https://mlocati.github.io/php-cs-fixer-configurator)에서 제공하는 모든 규칙을 활용하여 코드 스타일 문제를 수정할 수 있습니다.
+Pint는 [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer)를 기반으로 만들어졌으므로, 여기에 정의된 모든 규칙을 사용할 수 있습니다: [PHP CS Fixer Configurator](https://mlocati.github.io/php-cs-fixer-configurator).
 
 <a name="excluding-files-or-folders"></a>
-### 파일 / 폴더 제외하기 (Excluding Files / Folders)
+### 파일 / 폴더 제외하기
 
-기본적으로 Pint는 프로젝트 내 모든 `.php` 파일을 검사하지만 `vendor` 디렉터리 내 파일은 제외합니다. 추가로 제외하고 싶은 폴더가 있다면 `exclude` 설정 옵션을 사용하세요:
+기본적으로 Pint는 `vendor` 디렉터리를 제외한 프로젝트의 모든 `.php` 파일을 검사합니다. 만약 추가로 제외하고 싶은 폴더가 있다면, `exclude` 옵션으로 설정할 수 있습니다:
 
 ```json
 {
@@ -145,7 +157,7 @@ Pint는 [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer)를 기반�
 }
 ```
 
-특정 이름 패턴을 포함하는 모든 파일을 제외하려면 `notName` 설정 옵션을 사용할 수 있습니다:
+특정 이름 패턴을 포함하는 모든 파일을 제외하고 싶다면, `notName` 옵션을 사용할 수 있습니다:
 
 ```json
 {
@@ -155,7 +167,7 @@ Pint는 [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer)를 기반�
 }
 ```
 
-특정 파일을 정확한 경로로 지정해 제외하려면 `notPath` 설정 옵션을 이용하세요:
+정확한 파일 경로를 지정하여 파일을 제외하고 싶다면, `notPath` 옵션을 사용할 수 있습니다:
 
 ```json
 {
@@ -166,12 +178,12 @@ Pint는 [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer)를 기반�
 ```
 
 <a name="continuous-integration"></a>
-## 지속적 통합 (Continuous Integration)
+## 지속적 통합(CI)
 
 <a name="running-tests-on-github-actions"></a>
 ### GitHub Actions
 
-Laravel Pint로 프로젝트의 린트를 자동화하려면, 새로운 코드가 GitHub에 푸시될 때 Pint가 실행되도록 [GitHub Actions](https://github.com/features/actions)를 설정할 수 있습니다. 먼저 GitHub에서 **Settings > Actions > General > Workflow permissions** 메뉴로 가서 워크플로에 "읽기 및 쓰기 권한(Read and write permissions)"을 부여하세요. 그런 다음 `.github/workflows/lint.yml` 파일을 다음 내용으로 생성합니다:
+Laravel Pint로 프로젝트 린트(lint)를 자동화하려면, [GitHub Actions](https://github.com/features/actions)를 설정해 새로운 코드가 GitHub에 푸시될 때마다 Pint가 실행되도록 할 수 있습니다. 먼저, GitHub 내 **Settings > Actions > General > Workflow permissions**에서 워크플로우에 "Read and write permissions(읽기 및 쓰기 권한)"을 부여해야 합니다. 그 다음, 아래와 같이 `.github/workflows/lint.yml` 파일을 만들어주세요:
 
 ```yaml
 name: Fix Code Style
@@ -188,21 +200,17 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json, dom, curl, libxml, mbstring
-          coverage: none
-
-      - name: Install Pint
-        run: composer global require laravel/pint
+          tools: pint
 
       - name: Run Pint
         run: pint
 
       - name: Commit linted files
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
 ```
