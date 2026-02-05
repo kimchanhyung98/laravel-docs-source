@@ -10,7 +10,6 @@ from src.application.ports.translation_service import TranslationService
 from src.domain.entities.document import Document
 from src.domain.services.markdown_filter import MarkdownFilterService
 from src.domain.value_objects.branch import Branch
-from src.domain.value_objects.file_path import FilePath
 from src.domain.value_objects.language import Language
 
 # 경로 구조 상수
