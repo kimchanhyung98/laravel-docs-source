@@ -30,6 +30,8 @@ def main():
     excluded_files = ["license.md", "readme.md"]
     try:
         translation_delay = int(os.environ.get("TRANSLATION_DELAY", "10"))
+        if translation_delay <= 0:
+            raise ValueError("TRANSLATION_DELAY must be positive")
     except ValueError:
         print("TRANSLATION_DELAY 환경 변수 값이 유효하지 않음. 기본값 10초 사용.")
         translation_delay = 10
