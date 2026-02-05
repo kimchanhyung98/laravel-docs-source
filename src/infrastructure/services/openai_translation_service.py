@@ -37,39 +37,15 @@ def retry(max_attempts: int = 3, delay: int = 3, backoff: int = 2, exceptions: t
     return decorator
 
 
-def timeout(seconds: int = 600):
-    """타임아웃 데코레이터"""
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            import signal
-
-            def handler(signum, frame):
-                raise TimeoutError(f"함수 실행이 {seconds}초를 초과했습니다.")
-
-            signal.signal(signal.SIGALRM, handler)
-            signal.alarm(seconds)
-
-            try:
-                result = func(*args, **kwargs)
-                signal.alarm(0)
-                return result
-            except TimeoutError:
-                raise
-            finally:
-                signal.alarm(0)
-
-        return wrapper
-    return decorator
-
-
 class OpenAITranslationService(TranslationService):
     """OpenAI API 기반 번역 서비스 구현체"""
+
+    DEFAULT_TIMEOUT_SECONDS = 1000
 
     def __init__(
         self,
         prompt_file: str = "prompt.md",
-        timeout_seconds: int = 1000
+        timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS
     ):
         self._prompt_file = prompt_file
         self._timeout_seconds = timeout_seconds
@@ -114,14 +90,17 @@ class OpenAITranslationService(TranslationService):
         return template.format(source_lang=str(source_lang), target_lang=str(target_lang))
 
     @retry(max_attempts=3, delay=3, backoff=2, exceptions=(Exception,))
-    @timeout(seconds=1000)
     def translate(
         self,
         content: str,
         source_lang: Language,
         target_lang: Language
     ) -> str:
-        """텍스트 번역"""
+        """텍스트 번역
+
+        Note: OpenAI API는 자체적으로 timeout을 지원하며,
+        self._timeout_seconds를 통해 설정 가능합니다.
+        """
         try:
             system_prompt = self._get_system_prompt(source_lang, target_lang)
 
@@ -130,7 +109,8 @@ class OpenAITranslationService(TranslationService):
 
             response = self._client.chat.completions.create(
                 model=self._model,
-                messages=[system_message, user_message]
+                messages=[system_message, user_message],
+                timeout=self._timeout_seconds
             )
 
             return response.choices[0].message.content or ""

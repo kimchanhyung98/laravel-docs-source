@@ -13,6 +13,13 @@ from src.domain.value_objects.branch import Branch
 from src.domain.value_objects.file_path import FilePath
 from src.domain.value_objects.language import Language
 
+# 경로 구조 상수
+ORIGIN_DIR_NAME = "origin"
+MIN_PATH_PARTS = 3  # branch/origin/filename.md
+BRANCH_INDEX = 0
+ORIGIN_INDEX = 1
+FILENAME_INDEX = 2
+
 
 @dataclass
 class TranslateDocumentsResult:
@@ -104,11 +111,12 @@ class TranslateDocumentUseCase:
         norm_path = os.path.normpath(file_path)
         path_parts = norm_path.split(os.sep)
 
-        if len(path_parts) < 3 or path_parts[1] != 'origin':
+        # 경로 구조 검증: branch/origin/filename.md
+        if len(path_parts) < MIN_PATH_PARTS or path_parts[ORIGIN_INDEX] != ORIGIN_DIR_NAME:
             return "skipped"
 
-        branch_name = path_parts[0]
-        filename = path_parts[2]
+        branch_name = path_parts[BRANCH_INDEX]
+        filename = path_parts[FILENAME_INDEX]
 
         # 유효한 브랜치인지 확인
         try:
