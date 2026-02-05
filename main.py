@@ -19,7 +19,7 @@ def main():
     3. Updates documentation for each specified branch, excluding certain files.
     4. Removes the temporary directory after processing.
     5. Identifies changed documentation files using Git.
-    6. Translates changed files (excluding specified files) from the original to the target language directory, waiting 30 seconds between translations.
+    6. Translates changed files (excluding specified files) from the original to the target language directory, waiting between translations.
     7. Stages all changes in Git and prints a completion message.
     """
     load_dotenv()
@@ -27,6 +27,7 @@ def main():
     temp_dir = "temp"
     branches = ["master", "12.x", "11.x", "10.x", "9.x", "8.x"]
     excluded_files = ["license.md", "readme.md"]
+    translation_delay = int(os.environ.get("TRANSLATION_DELAY", "10"))
 
     if not clone_laravel_docs(temp_dir, original_repo):
         print("git clone 오류")
@@ -76,7 +77,7 @@ def main():
 
                 # 번역 실행
                 translate_file(source_path, target_path)
-                time.sleep(10)
+                time.sleep(translation_delay)
 
     add_files_to_git()
     print("\n갱신 완료")
