@@ -1,48 +1,48 @@
-# 스타터 킷 (Starter Kits)
+# 스타터 키트 (Starter Kits)
 
 - [소개](#introduction)
-- [스타터 킷을 사용한 애플리케이션 생성](#creating-an-application)
-- [사용 가능한 스타터 킷](#available-starter-kits)
+- [스타터 키트를 이용한 애플리케이션 생성](#creating-an-application)
+- [사용 가능한 스타터 키트](#available-starter-kits)
     - [React](#react)
     - [Vue](#vue)
     - [Livewire](#livewire)
-- [스타터 킷 커스터마이징](#starter-kit-customization)
+- [스타터 키트 커스터마이징](#starter-kit-customization)
     - [React](#react-customization)
     - [Vue](#vue-customization)
     - [Livewire](#livewire-customization)
 - [인증](#authentication)
     - [기능 활성화 및 비활성화](#enabling-and-disabling-features)
-    - [사용자 생성 및 비밀번호 재설정 커스터마이즈](#customizing-actions)
-    - [이중 인증(2FA)](#two-factor-authentication)
-    - [속도 제한(Rate Limiting)](#rate-limiting)
+    - [사용자 생성 및 비밀번호 재설정 커스터마이징](#customizing-actions)
+    - [2단계 인증](#two-factor-authentication)
+    - [요청 제한(Rate Limiting)](#rate-limiting)
 - [WorkOS AuthKit 인증](#workos)
 - [Inertia SSR](#inertia-ssr)
-- [커뮤니티 유지 스타터 킷](#community-maintained-starter-kits)
-- [자주 묻는 질문(FAQ)](#faqs)
+- [커뮤니티 유지 스타터 키트](#community-maintained-starter-kits)
+- [자주 묻는 질문](#faqs)
 
 <a name="introduction"></a>
 ## 소개 (Introduction)
 
-새로운 Laravel 애플리케이션 개발을 더 빠르게 시작할 수 있도록 [애플리케이션 스타터 킷](https://laravel.com/starter-kits)을 제공합니다. 이 스타터 킷은 회원가입 및 인증에 필요한 라우트, 컨트롤러, 뷰를 포함하고 있어, Laravel 애플리케이션 구축에 빠르게 돌입할 수 있게 해줍니다. 스타터 킷은 인증 기능 구현을 위해 [Laravel Fortify](/docs/master/fortify)를 사용합니다.
+새로운 Laravel 애플리케이션 개발을 빠르게 시작할 수 있도록 [애플리케이션 스타터 키트](https://laravel.com/starter-kits)를 제공합니다. 이 스타터 키트는 회원가입 및 인증 기능에 필요한 라우트(routes), 컨트롤러(controllers), 뷰(views)를 모두 포함하고 있어 여러분의 Laravel 프로젝트를 빠르게 구축할 수 있게 도와줍니다. 스타터 키트는 인증 기능을 제공하기 위해 [Laravel Fortify](/docs/master/fortify)를 사용합니다.
 
-이 스타터 킷을 반드시 사용해야 하는 것은 아닙니다. 원한다면 Laravel을 새로 설치하여 처음부터 직접 애플리케이션을 개발할 수도 있습니다. 어떤 방법을 택하든 여러분의 멋진 개발을 기대합니다!
+이 스타터 키트를 사용하는 것은 필수가 아니며, 원한다면 Laravel의 빈 프로젝트만 설치해 직접 모든 구성을 할 수도 있습니다. 어떤 방법을 선택하시든, 여러분은 멋진 애플리케이션을 만들 수 있을 것입니다!
 
 <a name="creating-an-application"></a>
-## 스타터 킷을 사용한 애플리케이션 생성 (Creating an Application Using a Starter Kit)
+## 스타터 키트를 이용한 애플리케이션 생성 (Creating an Application Using a Starter Kit)
 
-스타터 킷을 활용해 새로운 Laravel 애플리케이션을 생성하려면, 우선 [PHP와 Laravel CLI 툴을 설치](/docs/master/installation#installing-php)해야 합니다. 이미 PHP와 Composer가 설치되어 있다면, 다음 명령어로 Laravel 설치기 CLI 툴을 Composer로 설치할 수 있습니다:
+스타터 키트로 새로운 Laravel 애플리케이션을 만들려면, 먼저 [PHP 및 Laravel CLI 도구 설치](/docs/master/installation#installing-php)가 필요합니다. 이미 PHP와 Composer가 설치되어 있다면, Composer를 이용해 Laravel 인스톨러 CLI 도구를 설치하세요.
 
 ```shell
 composer global require laravel/installer
 ```
 
-그 다음, Laravel 설치기 CLI를 이용해 애플리케이션을 만드세요. 설치기는 선호하는 스타터 킷을 선택하도록 안내합니다:
+그 다음, Laravel 인스톨러 CLI를 사용해 새 Laravel 애플리케이션을 생성할 수 있습니다. 애플리케이션 생성 시, 적용할 스타터 키트를 선택하라는 안내가 나옵니다.
 
 ```shell
 laravel new my-app
 ```
 
-애플리케이션을 생성한 후, NPM을 이용해 프런트엔드 의존성을 설치하고 Laravel 개발 서버를 시작하세요:
+애플리케이션을 생성한 후에는, NPM으로 프런트엔드 의존성을 설치하고 개발 서버를 실행하면 됩니다.
 
 ```shell
 cd my-app
@@ -50,65 +50,65 @@ npm install && npm run build
 composer run dev
 ```
 
-개발 서버를 시작하고 나면, 여러분의 애플리케이션은 [http://localhost:8000](http://localhost:8000)에서 접근할 수 있습니다.
+Laravel 개발 서버가 실행되면, [http://localhost:8000](http://localhost:8000)에서 브라우저로 접속할 수 있습니다.
 
 <a name="available-starter-kits"></a>
-## 사용 가능한 스타터 킷 (Available Starter Kits)
+## 사용 가능한 스타터 키트 (Available Starter Kits)
 
 <a name="react"></a>
 ### React
 
-React 스타터 킷은 [Inertia](https://inertiajs.com)를 활용한, React 프런트엔드와 함께 현대적인 Laravel 애플리케이션을 만들 수 있는 강력한 출발점을 제공합니다.
+React 스타터 키트는 [Inertia](https://inertiajs.com)를 활용해 React 프런트엔드와 함께 Laravel 애플리케이션을 구축하기 위한 견고하고 현대적인 시작점을 제공합니다.
 
-Inertia를 통해 서버 사이드 라우팅과 컨트롤러 구조를 그대로 이용하면서도, React 기반의 최신 싱글 페이지 애플리케이션을 만들 수 있습니다. React의 프론트엔드 유연성과 Laravel의 강력한 백엔드 생산성, 그리고 매우 빠른 Vite 빌드를 모두 경험할 수 있습니다.
+Inertia를 사용하면 서버 사이드 라우팅 및 컨트롤러 방식을 그대로 유지하면서, React의 현대적인 싱글 페이지 애플리케이션을 만들 수 있습니다. 즉, React의 강력한 프런트엔드 기능은 물론 Laravel의 뛰어난 백엔드 생산성과 초고속 Vite 빌드까지 모두 경험할 수 있습니다.
 
-React 스타터 킷은 React 19, TypeScript, Tailwind, 그리고 [shadcn/ui](https://ui.shadcn.com) 컴포넌트 라이브러리를 사용합니다.
+React 스타터 키트는 React 19, TypeScript, Tailwind, 그리고 [shadcn/ui](https://ui.shadcn.com) 컴포넌트 라이브러리를 사용합니다.
 
 <a name="vue"></a>
 ### Vue
 
-Vue 스타터 킷은 [Inertia](https://inertiajs.com)를 활용한, Vue 프론트엔드와 함께 Laravel 애플리케이션을 쉽게 시작할 수 있는 좋은 출발점을 제공합니다.
+Vue 스타터 키트는 [Inertia](https://inertiajs.com)를 기반으로 Vue 프런트엔드와 함께 Laravel 애플리케이션을 빠르게 시작할 수 있도록 설계되었습니다.
 
-Inertia를 통해 서버 사이드 라우팅과 컨트롤러 구조를 그대로 유지하면서, 최신 싱글 페이지 Vue 애플리케이션을 만들 수 있습니다. Vue의 강력한 프론트엔드와 Laravel의 생산성, Vite의 번개같은 컴파일 속도를 모두 누릴 수 있습니다.
+Inertia를 사용하면 서버 사이드 라우팅과 컨트롤러를 유지하고, Vue 기반의 현대적인 싱글 페이지 애플리케이션을 제작할 수 있습니다. Vue의 강력한 프런트엔드 기능, Laravel의 생산성, 그리고 Vite의 초고속 빌드를 모두 누릴 수 있습니다.
 
-Vue 스타터 킷은 Vue Composition API, TypeScript, Tailwind, 그리고 [shadcn-vue](https://www.shadcn-vue.com/) 컴포넌트 라이브러리를 사용합니다.
+Vue 스타터 키트는 Vue Composition API, TypeScript, Tailwind, 그리고 [shadcn-vue](https://www.shadcn-vue.com/) 컴포넌트 라이브러리를 활용합니다.
 
 <a name="livewire"></a>
 ### Livewire
 
-Livewire 스타터 킷은 [Laravel Livewire](https://livewire.laravel.com)를 활용한 프런트엔드와 함께, Laravel 애플리케이션을 시작하는 데 최적의 선택지입니다.
+Livewire 스타터 키트는 [Laravel Livewire](https://livewire.laravel.com) 프런트엔드를 사용해 Laravel 애플리케이션을 개발하는 데 완벽한 시작점을 제공합니다.
 
-Livewire는 오직 PHP만으로도 동적이고 반응적인 프런트엔드 UI를 만들 수 있게 해주는 강력한 도구입니다. 주로 Blade 템플릿을 사용하고, React나 Vue 기반의 SPA를 대체할 보다 단순한 대안을 원하는 팀에 적합합니다.
+Livewire는 복잡한 자바스크립트 SPAs(싱글 페이지 애플리케이션) 프레임워크 없이, PHP만으로도 동적이고 반응적인 프런트엔드 UI를 제작할 수 있는 강력한 방식입니다. Blade 템플릿을 주로 사용하는 팀에게 쉽고 단순한 대안이 될 수 있습니다.
 
-Livewire 스타터 킷은 Livewire, Tailwind, 그리고 [Flux UI](https://fluxui.dev) 컴포넌트 라이브러리를 함께 사용합니다.
+Livewire 스타터 키트는 Livewire, Tailwind, 그리고 [Flux UI](https://fluxui.dev) 컴포넌트 라이브러리를 사용합니다.
 
 <a name="starter-kit-customization"></a>
-## 스타터 킷 커스터마이징 (Starter Kit Customization)
+## 스타터 키트 커스터마이징 (Starter Kit Customization)
 
 <a name="react-customization"></a>
 ### React
 
-React 스타터 킷은 Inertia 2, React 19, Tailwind 4, 그리고 [shadcn/ui](https://ui.shadcn.com)로 구성되어 있습니다. 모든 스타터 킷과 마찬가지로 백엔드와 프런트엔드의 모든 소스코드는 여러분이 완전히 수정할 수 있도록 애플리케이션 내에 존재합니다.
+React 스타터 키트는 Inertia 2, React 19, Tailwind 4, [shadcn/ui](https://ui.shadcn.com) 기반으로 만들어졌습니다. 모든 스타터 키트와 마찬가지로, 백엔드와 프런트엔드 코드가 모두 프로젝트 내에 포함되어 있어 자유롭게 커스터마이징할 수 있습니다.
 
-프런트엔드 코드는 주로 `resources/js` 디렉토리에 위치합니다. 이 코드들은 모두 자유롭게 수정하여 애플리케이션의 외관과 동작을 원하는 대로 조정할 수 있습니다:
+프런트엔드 코드 대부분은 `resources/js` 디렉토리에 위치해 있습니다. 애플리케이션의 외관 및 동작을 원하는 대로 수정할 수 있습니다.
 
 ```text
 resources/js/
 ├── components/    # 재사용 가능한 React 컴포넌트
-├── hooks/         # React 훅
+├── hooks/         # React hooks
 ├── layouts/       # 애플리케이션 레이아웃
 ├── lib/           # 유틸리티 함수 및 설정
 ├── pages/         # 페이지 컴포넌트
 └── types/         # TypeScript 정의
 ```
 
-추가적으로 shadcn 컴포넌트를 활용하려면, 먼저 [원하는 컴포넌트를 찾은 뒤](https://ui.shadcn.com), 다음과 같이 `npx` 명령어로 컴포넌트를 퍼블리시하세요:
+추가 shadcn 컴포넌트를 사용하려면, [원하는 컴포넌트를 찾고](https://ui.shadcn.com), 아래 명령어로 컴포넌트를 발행(publish)합니다.
 
 ```shell
 npx shadcn@latest add switch
 ```
 
-이 예시에서는 Switch 컴포넌트가 `resources/js/components/ui/switch.tsx` 파일에 퍼블리시됩니다. 퍼블리시가 완료된 컴포넌트는 페이지 어디에서든 자유롭게 사용할 수 있습니다:
+위 예시에서는 Switch 컴포넌트가 `resources/js/components/ui/switch.tsx`에 생성됩니다. 컴포넌트가 발행되면, 원하는 페이지에서 바로 사용할 수 있습니다.
 
 ```jsx
 import { Switch } from "@/components/ui/switch"
@@ -124,29 +124,32 @@ const MyPage = () => {
 export default MyPage;
 ```
 
+<a name="react-available-layouts"></a>
 #### 사용 가능한 레이아웃
 
-React 스타터 킷은 기본 "사이드바" 레이아웃과 "헤더" 레이아웃, 두 가지 주요 레이아웃을 제공합니다. 기본값은 사이드바 레이아웃이지만, `resources/js/layouts/app-layout.tsx` 파일 상단에서 import되는 레이아웃을 수정하여 헤더 레이아웃으로 변경할 수 있습니다:
+React 스타터 키트에는 "sidebar" 레이아웃과 "header" 레이아웃, 두 가지 주 레이아웃이 포함되어 있습니다. 기본값은 sidebar 레이아웃이며, `resources/js/layouts/app-layout.tsx` 파일의 import 구문을 수정해 header 레이아웃으로 쉽게 변경할 수 있습니다.
 
 ```js
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout'; // [tl! remove]
 import AppLayoutTemplate from '@/layouts/app/app-header-layout'; // [tl! add]
 ```
 
-#### 사이드바 종류
+<a name="react-sidebar-variants"></a>
+#### 사이드바 변형
 
-사이드바 레이아웃에는 기본 사이드바, "inset" 타입, "floating" 타입 세 가지 종류가 있습니다. 원하는 스타일로 `resources/js/components/app-sidebar.tsx` 컴포넌트를 수정하여 선택할 수 있습니다:
+sidebar 레이아웃에는 기본 sidebar, "inset" 변형, "floating" 변형 등 세 가지 버전이 제공됩니다. `resources/js/components/app-sidebar.tsx` 파일에서 원하는 variant로 변경하면 됩니다.
 
 ```text
 <Sidebar collapsible="icon" variant="sidebar"> [tl! remove]
 <Sidebar collapsible="icon" variant="inset"> [tl! add]
 ```
 
-#### 인증 페이지 레이아웃 종류
+<a name="react-authentication-page-layout-variants"></a>
+#### 인증 페이지 레이아웃 변형
 
-React 스타터 킷에 포함된 로그인, 회원가입 등 인증 페이지는 "simple", "card", "split" 세 가지 레이아웃 유형을 제공합니다.
+React 스타터 키트에 포함된 로그인, 회원가입 등 인증 관련 페이지는 "simple", "card", "split" 3가지 레이아웃을 선택할 수 있습니다.
 
-사용하는 인증 레이아웃을 변경하려면, `resources/js/layouts/auth-layout.tsx` 파일 상단의 import를 원하는 레이아웃으로 수정하세요:
+인증 레이아웃을 변경하려면 `resources/js/layouts/auth-layout.tsx` 파일의 import 구문을 수정하세요.
 
 ```js
 import AuthLayoutTemplate from '@/layouts/auth/auth-simple-layout'; // [tl! remove]
@@ -156,31 +159,31 @@ import AuthLayoutTemplate from '@/layouts/auth/auth-split-layout'; // [tl! add]
 <a name="vue-customization"></a>
 ### Vue
 
-Vue 스타터 킷은 Inertia 2, Vue 3 Composition API, Tailwind, 그리고 [shadcn-vue](https://www.shadcn-vue.com/)로 구성되어 있습니다. 모든 스타터 킷과 마찬가지로 백엔드와 프런트엔드의 모든 소스코드는 여러분이 원하는 대로 완전히 수정할 수 있습니다.
+Vue 스타터 키트는 Inertia 2, Vue 3 Composition API, Tailwind, [shadcn-vue](https://www.shadcn-vue.com/) 기반으로 만들어졌습니다. 모든 스타터 키트와 동일하게, 백엔드와 프런트엔드 모든 코드를 완전히 커스터마이징할 수 있습니다.
 
-프런트엔드 코드는 주로 `resources/js` 디렉토리에 위치합니다. 자유롭게 이 코드들을 수정하여 애플리케이션의 디자인 및 동작을 커스터마이즈할 수 있습니다:
+프런트엔드 코드는 대부분 `resources/js` 디렉토리에 위치합니다. 원하는 대로 애플리케이션의 모습과 동작을 변경할 수 있습니다.
 
 ```text
 resources/js/
 ├── components/    # 재사용 가능한 Vue 컴포넌트
-├── composables/   # Vue composables / hooks
+├── composables/   # Vue 컴포저블 및 훅
 ├── layouts/       # 애플리케이션 레이아웃
 ├── lib/           # 유틸리티 함수 및 설정
 ├── pages/         # 페이지 컴포넌트
 └── types/         # TypeScript 정의
 ```
 
-shadcn-vue 컴포넌트를 추가로 활용하려면, [원하는 컴포넌트를 찾은 뒤](https://www.shadcn-vue.com), `npx`로 컴포넌트를 퍼블리시하세요:
+추가 shadcn-vue 컴포넌트가 필요하다면, [원하는 컴포넌트를 찾고](https://www.shadcn-vue.com), 아래 명령어로 컴포넌트를 발행하세요.
 
 ```shell
 npx shadcn-vue@latest add switch
 ```
 
-이 예에서는 Switch 컴포넌트가 `resources/js/components/ui/Switch.vue` 파일로 퍼블리시됩니다. 퍼블리시가 완료된 컴포넌트는 모든 페이지에서 자유롭게 사용할 수 있습니다:
+예를 들어, 위 명령어를 실행하면 Switch 컴포넌트가 `resources/js/components/ui/Switch.vue`에 생성됩니다. 생성된 컴포넌트는 아래처럼 바로 페이지에서 사용할 수 있습니다.
 
 ```vue
 <script setup lang="ts">
-import { Switch } from '@/Components/ui/switch'
+import { Switch } from '@/components/ui/switch'
 </script>
 
 <template>
@@ -190,29 +193,32 @@ import { Switch } from '@/Components/ui/switch'
 </template>
 ```
 
+<a name="vue-available-layouts"></a>
 #### 사용 가능한 레이아웃
 
-Vue 스타터 킷은 기본 "사이드바" 레이아웃과 "헤더" 레이아웃, 두 가지 주요 레이아웃을 제공합니다. 기본값은 사이드바 레이아웃이며, `resources/js/layouts/AppLayout.vue` 파일 상단의 import를 수정해 헤더 레이아웃으로 변경할 수 있습니다:
+Vue 스타터 키트 역시 "sidebar" 레이아웃, "header" 레이아웃 두 가지가 있습니다. 기본값은 sidebar 레이아웃이며, `resources/js/layouts/AppLayout.vue` 파일에서 import 구문을 수정하면 header 레이아웃으로 변경할 수 있습니다.
 
 ```js
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue'; // [tl! remove]
 import AppLayout from '@/layouts/app/AppHeaderLayout.vue'; // [tl! add]
 ```
 
-#### 사이드바 종류
+<a name="vue-sidebar-variants"></a>
+#### 사이드바 변형
 
-사이드바 레이아웃에는 기본 사이드바, "inset" 타입, "floating" 타입 세 가지 종류가 있습니다. `resources/js/components/AppSidebar.vue` 컴포넌트의 variant를 변경해 원하는 스타일로 설정하세요:
+sidebar 레이아웃에는 기본 sidebar, "inset" 변형, "floating" 변형 등 세 가지가 있습니다. `resources/js/components/AppSidebar.vue` 파일에서 variant 속성 값을 수정할 수 있습니다.
 
 ```text
 <Sidebar collapsible="icon" variant="sidebar"> [tl! remove]
 <Sidebar collapsible="icon" variant="inset"> [tl! add]
 ```
 
-#### 인증 페이지 레이아웃 종류
+<a name="vue-authentication-page-layout-variants"></a>
+#### 인증 페이지 레이아웃 변형
 
-Vue 스타터 킷의 인증 관련 페이지(로그인, 회원가입 등)는 "simple", "card", "split" 세 가지 레이아웃을 지원합니다.
+Vue 스타터 키트의 로그인, 회원가입 등 인증 관련 페이지 역시 "simple", "card", "split" 3가지 레이아웃 중 선택할 수 있습니다.
 
-인증 레이아웃을 변경하려면, `resources/js/layouts/AuthLayout.vue` 파일 상단 import 라인을 원하는 레이아웃으로 수정하세요:
+이를 변경하려면, `resources/js/layouts/AuthLayout.vue` 파일의 import 구문을 수정하세요.
 
 ```js
 import AuthLayout from '@/layouts/auth/AuthSimpleLayout.vue'; // [tl! remove]
@@ -222,24 +228,25 @@ import AuthLayout from '@/layouts/auth/AuthSplitLayout.vue'; // [tl! add]
 <a name="livewire-customization"></a>
 ### Livewire
 
-Livewire 스타터 킷은 Livewire 4, Tailwind, 그리고 [Flux UI](https://fluxui.dev/)로 구성되어 있습니다. 다른 스타터 킷들과 마찬가지로, 백엔드와 프런트엔드 코드 모두 여러분의 애플리케이션 내에 존재해 완전한 커스터마이징이 가능합니다.
+Livewire 스타터 키트는 Livewire 4, Tailwind, [Flux UI](https://fluxui.dev/)를 기반으로 합니다. 모든 스타터 키트와 동일하게, 백엔드와 프런트엔드 코드를 자유롭게 커스터마이징할 수 있습니다.
 
-프런트엔드 코드는 주로 `resources/views` 디렉토리에 있습니다. 원하는 외관과 동작으로 자유롭게 수정할 수 있습니다:
+프런트엔드 코드는 대부분 `resources/views` 디렉토리에 있습니다. 본인의 애플리케이션에 맞게 모든 코드를 수정할 수 있습니다.
 
 ```text
 resources/views
-├── components            # 재사용 컴포넌트
-├── flux                  # 커스터마이즈된 Flux 컴포넌트
+├── components            # 재사용 가능한 컴포넌트
+├── flux                  # 커스터마이징된 Flux 컴포넌트
 ├── layouts               # 애플리케이션 레이아웃
 ├── pages                 # Livewire 페이지
-├── partials              # 재사용 Blade 파셜
+├── partials              # 재사용 가능한 Blade partials
 ├── dashboard.blade.php   # 인증된 사용자 대시보드
-├── welcome.blade.php     # 비회원사용자 환영 페이지
+├── welcome.blade.php     # 게스트(비회원)용 환영 페이지
 ```
 
+<a name="livewire-available-layouts"></a>
 #### 사용 가능한 레이아웃
 
-Livewire 스타터 킷은 "사이드바"와 "헤더" 두 가지 주요 레이아웃을 제공합니다. 기본값은 사이드바 레이아웃이며, `resources/views/layouts/app.blade.php` 파일에서 사용되는 레이아웃을 헤더로 변경할 수 있습니다. 아울러, 메인 Flux 컴포넌트에 `container` 속성을 추가해야 합니다:
+Livewire 스타터 키트 역시 "sidebar" 레이아웃, "header" 레이아웃 두 가지를 제공합니다. 기본값은 sidebar이며, `resources/views/layouts/app.blade.php`에서 사용되는 레이아웃을 변경할 수 있습니다. 추가로, main Flux 컴포넌트에 `container` 속성을 추가해야 레이아웃이 정상적으로 적용됩니다.
 
 ```blade
 <x-layouts::app.header>
@@ -249,11 +256,12 @@ Livewire 스타터 킷은 "사이드바"와 "헤더" 두 가지 주요 레이아
 </x-layouts::app.header>
 ```
 
-#### 인증 페이지 레이아웃 종류
+<a name="livewire-authentication-page-layout-variants"></a>
+#### 인증 페이지 레이아웃 변형
 
-Livewire 스타터 킷의 인증 관련 페이지(로그인, 회원가입 등) 역시 "simple", "card", "split" 세 가지 레이아웃이 있습니다.
+Livewire 스타터 키트의 로그인, 회원가입 등 인증 관련 페이지에도 "simple", "card", "split" 3가지 레이아웃이 제공됩니다.
 
-레이아웃을 변경하려면, `resources/views/layouts/auth.blade.php` 파일에서 사용되는 레이아웃을 원하는 것으로 수정하세요:
+인증 레이아웃을 변경하려면 `resources/views/layouts/auth.blade.php` 파일에서 레이아웃 컴포넌트를 변경하세요.
 
 ```blade
 <x-layouts::auth.split>
@@ -264,35 +272,35 @@ Livewire 스타터 킷의 인증 관련 페이지(로그인, 회원가입 등) �
 <a name="authentication"></a>
 ## 인증 (Authentication)
 
-모든 스타터 킷은 인증 처리를 위해 [Laravel Fortify](/docs/master/fortify)를 사용합니다. Fortify는 로그인, 회원가입, 비밀번호 재설정, 이메일 인증 등 다양한 인증 관련 라우트, 컨트롤러, 로직을 제공합니다.
+모든 스타터 키트는 인증을 처리하기 위해 [Laravel Fortify](/docs/master/fortify)를 사용합니다. Fortify는 로그인, 회원가입, 비밀번호 재설정, 이메일 인증 등 인증에 필요한 라우트, 컨트롤러, 로직을 제공합니다.
 
-Fortify는 애플리케이션의 `config/fortify.php` 설정 파일에서 활성화된 기능에 따라 다음 인증 라우트들을 자동으로 등록합니다:
+Fortify는 애플리케이션의 `config/fortify.php` 설정 파일에서 활성화한 기능에 따라 아래와 같은 인증 라우트를 자동으로 등록합니다.
 
-| Route                              | Method | 설명                                   |
-| ---------------------------------- | ------ | -------------------------------------- |
-| `/login`                           | `GET`    | 로그인 폼 표시                         |
-| `/login`                           | `POST`   | 사용자 인증 처리                       |
-| `/logout`                          | `POST`   | 로그아웃                               |
-| `/register`                        | `GET`    | 회원가입 폼 표시                       |
-| `/register`                        | `POST`   | 신규 사용자 생성                       |
-| `/forgot-password`                 | `GET`    | 비밀번호 재설정 요청 폼 표시           |
-| `/forgot-password`                 | `POST`   | 비밀번호 재설정 링크 전송              |
-| `/reset-password/{token}`          | `GET`    | 비밀번호 재설정 폼 표시                |
-| `/reset-password`                  | `POST`   | 비밀번호 갱신                          |
-| `/email/verify`                    | `GET`    | 이메일 인증 안내 표시                  |
-| `/email/verify/{id}/{hash}`        | `GET`    | 이메일 주소 인증                       |
-| `/email/verification-notification` | `POST`   | 인증 메일 재전송                       |
-| `/user/confirm-password`           | `GET`    | 비밀번호 확인 폼 표시                  |
-| `/user/confirm-password`           | `POST`   | 비밀번호 확인 처리                     |
-| `/two-factor-challenge`            | `GET`    | 2차 인증(2FA) 입력 폼 표시             |
-| `/two-factor-challenge`            | `POST`   | 2FA 코드 검증                          |
+| 라우트                              | 메서드  | 설명                                 |
+| ---------------------------------- | ------ | ----------------------------------- |
+| `/login`                           | `GET`    | 로그인 양식 표시                    |
+| `/login`                           | `POST`   | 사용자 인증                         |
+| `/logout`                          | `POST`   | 로그아웃                            |
+| `/register`                        | `GET`    | 회원가입 양식 표시                  |
+| `/register`                        | `POST`   | 새로운 사용자 등록                  |
+| `/forgot-password`                 | `GET`    | 비밀번호 재설정 요청 양식 표시      |
+| `/forgot-password`                 | `POST`   | 비밀번호 재설정 링크 전송           |
+| `/reset-password/{token}`          | `GET`    | 비밀번호 재설정 양식 표시           |
+| `/reset-password`                  | `POST`   | 비밀번호 갱신                       |
+| `/email/verify`                    | `GET`    | 이메일 인증 안내 표시               |
+| `/email/verify/{id}/{hash}`        | `GET`    | 이메일 주소 인증                    |
+| `/email/verification-notification` | `POST`   | 인증 이메일 재발송                  |
+| `/user/confirm-password`           | `GET`    | 비밀번호 확인 양식 표시             |
+| `/user/confirm-password`           | `POST`   | 비밀번호 확인                       |
+| `/two-factor-challenge`            | `GET`    | 2FA(2단계 인증) 도전 양식 표시      |
+| `/two-factor-challenge`            | `POST`   | 2FA 코드 인증                       |
 
-`php artisan route:list` Artisan 명령어를 통해 모든 라우트 목록을 확인할 수 있습니다.
+애플리케이션의 모든 라우트는 `php artisan route:list` Artisan 명령어로 출력해볼 수 있습니다.
 
 <a name="enabling-and-disabling-features"></a>
 ### 기능 활성화 및 비활성화 (Enabling and Disabling Features)
 
-애플리케이션의 `config/fortify.php` 설정 파일에서 Fortify의 각 기능을 활성화/비활성화할 수 있습니다:
+어떤 Fortify 기능을 활성화할지는 `config/fortify.php` 설정 파일의 'features' 배열에서 관리할 수 있습니다.
 
 ```php
 use Laravel\Fortify\Features;
@@ -308,22 +316,22 @@ use Laravel\Fortify\Features;
 ],
 ```
 
-어떤 기능을 비활성화하려면, `features` 배열에서 해당 항목을 주석 처리하거나 삭제하세요. 예를 들어, 공개 회원가입을 막으려면 `Features::registration()`을 제거하면 됩니다.
+특정 기능을 비활성화하려면 해당 항목을 주석 처리하거나 배열에서 삭제하세요. 예를 들어, 공개 회원가입을 비활성화하고 싶다면 `Features::registration()`을 제거하면 됩니다.
 
-[React](#react) 또는 [Vue](#vue) 스타터 킷을 사용하는 경우, 프런트엔드 코드에서도 비활성화된 기능과 관련된 라우트 참조를 제거해야 합니다. 예를 들어, 이메일 인증을 비활성화한 경우 Vue/React 컴포넌트 내에서 `verification` 라우트에 대한 import 및 참조를 지우세요. 이는 해당 스타터 킷이 타입 안전 라우팅을 위해 Wayfinder를 사용하여 빌드 시점에 라우트 정의를 생성하기 때문입니다. 더 이상 존재하지 않는 라우트가 참조되면 애플리케이션 빌드가 실패합니다.
+[React](#react) 또는 [Vue](#vue) 스타터 키트 사용 시에는, 프런트엔드 코드 내에서도 비활성화한 기능의 라우트 관련 코드(임포트, 링크 등)를 반드시 함께 제거해야 합니다. 이런 스타터 키트들은 타입 안전 라우팅을 위해 Wayfinder를 사용하며, 빌드 시점에 라우트 정의를 생성합니다. 존재하지 않는 라우트가 참조되면 빌드 실패가 발생하니 주의하세요.
 
 <a name="customizing-actions"></a>
-### 사용자 생성 및 비밀번호 재설정 커스터마이즈 (Customizing User Creation and Password Reset)
+### 사용자 생성 및 비밀번호 재설정 커스터마이징 (Customizing User Creation and Password Reset)
 
-사용자가 회원가입하거나 비밀번호를 재설정할 때, Fortify는 애플리케이션의 `app/Actions/Fortify` 디렉토리에 위치한 액션 클래스들을 호출합니다:
+사용자가 회원가입하거나 비밀번호를 재설정할 때, Fortify는 애플리케이션의 `app/Actions/Fortify` 디렉토리 내 액션 클래스를 호출합니다.
 
-| 파일                            | 설명                            |
-| ------------------------------- | ------------------------------ |
-| `CreateNewUser.php`             | 신규 사용자 검증 및 생성        |
-| `ResetUserPassword.php`         | 비밀번호 검증 및 업데이트       |
-| `PasswordValidationRules.php`   | 비밀번호 유효성 규칙 정의      |
+| 파일                          | 설명                                |
+| ----------------------------- | ----------------------------------- |
+| `CreateNewUser.php`           | 신규 사용자 유효성 검증 및 생성     |
+| `ResetUserPassword.php`       | 비밀번호 유효성 검증 및 업데이트    |
+| `PasswordValidationRules.php` | 비밀번호 유효성 검증 규칙 정의      |
 
-예를 들어, 회원가입 로직을 커스터마이즈하려면 `CreateNewUser` 액션을 수정하면 됩니다:
+예를 들어, 회원가입 로직을 커스터마이즈하려면 `CreateNewUser` 액션을 수정하면 됩니다.
 
 ```php
 public function create(array $input): User
@@ -345,16 +353,16 @@ public function create(array $input): User
 ```
 
 <a name="two-factor-authentication"></a>
-### 이중 인증(2FA) (Two-Factor Authentication)
+### 2단계 인증 (Two-Factor Authentication)
 
-스타터 킷에는 이중 인증(2FA) 기능이 기본 탑재되어 있어, TOTP 호환 인증 앱을 이용해 계정의 보안을 강화할 수 있습니다. `config/fortify.php` 내의 `Features::twoFactorAuthentication()`로 기본 활성화되어 있습니다.
+스타터 키트에는 2단계 인증(2FA) 기능이 내장되어 있어, 사용자가 TOTP 호환 인증 앱을 통해 계정 보안을 강화할 수 있습니다. 2FA는 기본적으로 `config/fortify.php`의 `Features::twoFactorAuthentication()`를 통해 활성화되어 있습니다.
 
-`confirm` 옵션은 사용자가 2FA를 완전히 활성화하기 전에 코드를 통해 검증하도록 하고, `confirmPassword` 옵션은 2FA 활성화/비활성화 시 비밀번호 확인을 요구합니다. 자세한 사항은 [Fortify의 2차 인증 문서](/docs/master/fortify#two-factor-authentication)를 참고하세요.
+`confirm` 옵션은 2FA 활성화 전 인증 코드를 한 번 더 확인하도록 하며, `confirmPassword` 옵션은 2FA 활성화/비활성화 시 비밀번호 재확인을 요구합니다. 세부 내용은 [Fortify의 2단계 인증 문서](/docs/master/fortify#two-factor-authentication)를 참고하세요.
 
 <a name="rate-limiting"></a>
-### 속도 제한(Rate Limiting) (Rate Limiting)
+### 요청 제한(Rate Limiting)
 
-속도 제한은 브루트포스 공격 등 반복된 로그인 시도로 인증 엔드포인트가 과부하 되는 일을 막아줍니다. Fortify의 속도 제한 정책은 애플리케이션의 `FortifyServiceProvider`에서 커스터마이즈할 수 있습니다:
+요청 제한(Rate Limiting)을 통해 무차별 대입 공격이나 반복 로그인 시도를 방지할 수 있습니다. Fortify의 요청 제한 동작은 `FortifyServiceProvider`에서 아래와 같이 커스터마이즈할 수 있습니다.
 
 ```php
 use Illuminate\Support\Facades\RateLimiter;
@@ -368,24 +376,24 @@ RateLimiter::for('login', function ($request) {
 <a name="workos"></a>
 ## WorkOS AuthKit 인증 (WorkOS AuthKit Authentication)
 
-기본적으로 React, Vue, Livewire 스타터 킷 모두 Laravel 내장 인증 시스템을 활용해 로그인, 회원가입, 비밀번호 재설정, 이메일 인증 등 다양한 기능을 제공합니다. 또한, 각각의 스타터 킷에는 [WorkOS AuthKit](https://authkit.com) 기반 버전도 제공되며, 다음과 같은 기능을 추가합니다:
+기본적으로 React, Vue, Livewire 스타터 키트에서는 Laravel의 내장 인증 시스템을 사용하여 로그인, 회원가입, 비밀번호 재설정, 이메일 인증 등 다양한 기능을 제공합니다. 추가로, 각 스타터 키트별로 [WorkOS AuthKit](https://authkit.com) 기반 버전도 제공하고 있습니다. WorkOS 버전에서는 다음과 같은 인증 기능을 제공합니다:
 
 <div class="content-list" markdown="1">
 
-- 소셜 인증(구글, 마이크로소프트, Github, 애플)
-- 패스키 인증
-- 이메일 기반 "매직 인증(Magic Auth)"
-- SSO(싱글 사인온)
+- 소셜 인증(Google, Microsoft, GitHub, Apple)
+- 패스키(생체/디바이스 기반) 인증
+- 이메일 기반 "Magic Auth"
+- SSO(기업용 싱글 사인온)
 
 </div>
 
-WorkOS를 인증 제공자로 사용하려면 [WorkOS 계정](https://workos.com)이 필요합니다. WorkOS는 월 100만 명까지 무료 인증 서비스를 제공합니다.
+WorkOS를 인증 공급자로 사용하려면 [WorkOS 계정](https://workos.com)이 필요합니다. WorkOS는 월간 액티브 유저 100만명까지 무료로 인증 서비스를 제공합니다.
 
-WorkOS AuthKit을 인증 제공자로 사용하려면, `laravel new`로 새로운 스타터 킷 기반 애플리케이션을 만들 때 WorkOS 옵션을 선택하세요.
+WorkOS AuthKit을 인증 시스템으로 사용하려면, `laravel new` 실행 시 WorkOS 옵션을 선택하세요.
 
-### WorkOS 스타터 킷 설정
+### WorkOS 스타터 키트 설정
 
-WorkOS 기반 스타터 킷으로 애플리케이션을 만든 뒤, `.env` 파일에 `WORKOS_CLIENT_ID`, `WORKOS_API_KEY`, `WORKOS_REDIRECT_URL` 환경변수를 설정해야 합니다. 이 값들은 WorkOS 대시보드에서 애플리케이션별로 제공된 값을 입력해야 합니다:
+WorkOS 기반 스타터 키트로 애플리케이션을 생성 후, `.env` 파일에 `WORKOS_CLIENT_ID`, `WORKOS_API_KEY`, `WORKOS_REDIRECT_URL` 환경 변수를 아래와 같이 설정해야 합니다. 각 값은 WorkOS 대시보드에서 제공받은 정보를 사용합니다.
 
 ```ini
 WORKOS_CLIENT_ID=your-client-id
@@ -393,56 +401,59 @@ WORKOS_API_KEY=your-api-key
 WORKOS_REDIRECT_URL="${APP_URL}/authenticate"
 ```
 
-또한, WorkOS 대시보드 내 애플리케이션의 홈페이지 URL도 설정해야 합니다. 이 URL은 사용자가 로그아웃 한 뒤 리디렉션될 주소입니다.
+또한, WorkOS 대시보드에서 애플리케이션 홈페이지 URL도 등록해야 합니다. 이 주소는 사용자가 로그아웃 성공 시 리디렉션되는 URL입니다.
 
+<a name="configuring-authkit-authentication-methods"></a>
 #### AuthKit 인증 방식 설정
 
-WorkOS 기반 스타터 킷을 사용할 때는, WorkOS AuthKit 설정에서 "Email + Password" 인증을 비활성화하고, 소셜 인증/패스키/매직 인증/SSO 방식만 허용하는 것이 권장됩니다. 이렇게 하면 애플리케이션이 사용자 비밀번호를 직접 관리하지 않아도 됩니다.
+WorkOS 기반 스타터 키트에서는, 애플리케이션의 WorkOS AuthKit 설정에서 "이메일+비밀번호" 인증 방식을 비활성화하고, 소셜 인증, 패스키, Magic Auth, SSO만 허용하는 것을 권장합니다. 이렇게 하면 서버에서 비밀번호를 아예 다루지 않게 되어 보안을 강화할 수 있습니다.
 
-#### AuthKit 세션 시간 초과 설정
+<a name="configuring-authkit-session-timeouts"></a>
+#### AuthKit 세션 타임아웃 설정
 
-추가적으로, 애플리케이션의 세션 시간 제한(예: 2시간)과 WorkOS AuthKit 세션 비활성화(타임아웃) 설정을 동일하게 맞추는 것이 좋습니다.
+WorkOS AuthKit의 세션 비활성화(사용자 미사용) 타임아웃도 Laravel 애플리케이션의 세션 만료 시간(일반적으로 2시간)과 일치하도록 설정하는 것을 권장합니다.
 
 <a name="inertia-ssr"></a>
 ### Inertia SSR
 
-React 및 Vue 스타터 킷은 Inertia의 [서버 사이드 렌더링(SSR)](https://inertiajs.com/server-side-rendering) 기능과 호환됩니다. SSR용 번들을 빌드하려면 다음 명령어를 실행하세요:
+React, Vue 스타터 키트는 Inertia의 [서버사이드 렌더링(Server-Side Rendering)](https://inertiajs.com/server-side-rendering) 기능과 호환됩니다. Inertia SSR과 호환되는 번들을 빌드하려면 아래와 같이 실행하세요.
 
 ```shell
 npm run build:ssr
 ```
 
-편리하게 사용할 수 있는 `composer dev:ssr` 명령어도 제공됩니다. 이 명령어는 SSR 빌드 완료 후, Laravel 개발서버와 Inertia SSR 서버를 한 번에 실행하여, Inertia의 서버 사이드 렌더링 엔진을 통해 로컬에서 바로 테스트할 수 있도록 해줍니다:
+또한, `composer dev:ssr` 명령어를 통해 SSR 번들 빌드 후 곧바로 Laravel 개발 서버와 Inertia SSR 서버를 동시에 띄울 수 있습니다. 덕분에 로컬 환경에서 서버사이드 렌더링 동작을 편하게 테스트할 수 있습니다.
 
 ```shell
 composer dev:ssr
 ```
 
 <a name="community-maintained-starter-kits"></a>
-### 커뮤니티 유지 스타터 킷 (Community Maintained Starter Kits)
+### 커뮤니티 유지 스타터 키트 (Community Maintained Starter Kits)
 
-Laravel 설치기를 이용해 애플리케이션을 새로 만들 때, Packagist에 공개된 커뮤니티 유지 스타터 킷을 `--using` 플래그로 지정할 수 있습니다:
+Laravel 인스톨러로 새 애플리케이션 생성 시, `--using` 플래그에 Packagist에 공개된 커뮤니티 유지 스타터 키트의 이름을 지정하여 설치할 수 있습니다.
 
 ```shell
 laravel new my-app --using=example/starter-kit
 ```
 
-#### 스타터 킷 제작 및 공개
+<a name="creating-starter-kits"></a>
+#### 스타터 키트 제작 및 배포
 
-여러분이 만든 스타터 킷을 다른 사람들이 쓸 수 있도록 하려면, [Packagist](https://packagist.org)에 배포해야 합니다. 스타터 킷은 필요한 환경 변수들을 `.env.example` 파일에 정의해야 하며, 추가 설치 명령어가 있다면 `composer.json`의 `post-create-project-cmd` 배열에 명시해야 합니다.
+직접 제작한 스타터 키트를 다른 사람도 사용할 수 있게 하려면, [Packagist](https://packagist.org)에 패키지를 등록하세요. 스타터 키트의 `.env.example` 파일에 필요한 환경 변수들을 명시하고, 필요한 post-install 명령어가 있다면 `composer.json`의 `post-create-project-cmd` 배열에도 추가하면 됩니다.
 
 <a name="faqs"></a>
-### 자주 묻는 질문(FAQ) (Frequently Asked Questions)
+### 자주 묻는 질문 (Frequently Asked Questions)
 
 <a name="faq-upgrade"></a>
-#### 어떻게 업그레이드 하나요?
+#### 업그레이드는 어떻게 하나요?
 
-각 스타터 킷은 새 애플리케이션 개발을 위한 견고한 출발점을 제공합니다. 소스코드의 전체 소유권을 갖게 되므로, 원하는 대로 자유롭게 수정 및 확장할 수 있습니다. 이미 코드 전체를 직접 관리함으로써, 별도의 스타터 킷 업그레이드는 필요하지 않습니다.
+모든 스타터 키트는 새로운 프로젝트를 시작하기에 아주 좋은 기초 구조를 제공합니다. 모든 코드를 여러분이 직접 소유하고 있으므로, 원하는 만큼 자유롭게 수정·확장할 수 있습니다. 별도로 스타터 키트 자체를 따로 업데이트할 필요는 없습니다.
 
 <a name="faq-enable-email-verification"></a>
-#### 이메일 인증 기능은 어떻게 활성화하나요?
+#### 이메일 인증은 어떻게 활성화하나요?
 
-`App/Models/User.php` 모델에서 `MustVerifyEmail` import 구문을 주석 해제하고, 해당 모델이 `MustVerifyEmail` 인터페이스를 구현하도록 해주세요:
+이메일 인증 기능을 추가하려면, `App/Models/User.php` 모델에서 `MustVerifyEmail` import 주석을 해제하고, 모델이 `MustVerifyEmail` 인터페이스를 구현하게 만드세요.
 
 ```php
 <?php
@@ -458,7 +469,7 @@ class User extends Authenticatable implements MustVerifyEmail
 }
 ```
 
-이렇게 하면 회원가입 후, 사용자는 인증 메일을 받게 됩니다. 특정 라우트는 사용자의 이메일이 인증됐을 때만 접근 가능하도록 하려면 `verified` 미들웨어를 아래와 같이 라우트에 추가하세요:
+이제 가입한 사용자에게 인증 이메일이 발송됩니다. 사용자의 이메일 인증 여부에 따라 일부 라우트 접근을 제한하려면, 해당 라우트에 `verified` 미들웨어를 추가하세요.
 
 ```php
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -469,15 +480,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 ```
 
 > [!NOTE]
-> [WorkOS](#workos) 버전의 스타터 킷을 사용할 경우 이메일 인증은 필수가 아닙니다.
+> [WorkOS](#workos) 기반 스타터 키트에서는 이메일 인증이 필요하지 않습니다.
 
 <a name="faq-modify-email-template"></a>
 #### 기본 이메일 템플릿을 어떻게 수정하나요?
 
-애플리케이션 브랜드에 맞춰 이메일 템플릿을 커스터마이즈할 수 있습니다. 템플릿 수정을 원하면, 다음 명령어로 이메일 뷰를 퍼블리시하세요:
+애플리케이션 브랜딩에 맞게 기본 이메일 템플릿을 커스터마이징하고 싶을 수 있습니다. 아래 명령어로 이메일 뷰를 애플리케이션에 발행해 보세요.
 
 ```
 php artisan vendor:publish --tag=laravel-mail
 ```
 
-이 명령어를 실행하면 `resources/views/vendor/mail` 내에 여러 파일이 생성됩니다. 또한, `resources/views/vendor/mail/themes/default.css`도 함께 수정해 기본 이메일 템플릿의 디자인을 바꿀 수 있습니다.
+`resources/views/vendor/mail` 디렉터리에 다양한 파일이 생성되며, 이 파일들과 `resources/views/vendor/mail/themes/default.css` 파일을 직접 수정해 이메일 템플릿의 디자인을 원하는 대로 바꿀 수 있습니다.
