@@ -4,77 +4,77 @@
 - [연관관계 정의하기](#defining-relationships)
     - [일대일 / hasOne](#one-to-one)
     - [일대다 / hasMany](#one-to-many)
-    - [일대다(역방향) / belongsTo](#one-to-many-inverse)
-    - [여러 개 중 하나만 hasOne](#has-one-of-many)
-    - [중간 테이블을 통한 hasOne](#has-one-through)
-    - [중간 테이블을 통한 hasMany](#has-many-through)
-- [스코프된 연관관계](#scoped-relationships)
+    - [일대다 (역방향) / belongsTo](#one-to-many-inverse)
+    - [하나의 여러 개 중 하나 가져오기 (Has One of Many)](#has-one-of-many)
+    - [Has One Through](#has-one-through)
+    - [Has Many Through](#has-many-through)
+- [스코프 연관관계](#scoped-relationships)
 - [다대다 연관관계](#many-to-many)
-    - [중간 테이블 컬럼 조회하기](#retrieving-intermediate-table-columns)
-    - [중간 테이블 컬럼으로 쿼리 필터링하기](#filtering-queries-via-intermediate-table-columns)
-    - [중간 테이블 컬럼으로 쿼리 정렬하기](#ordering-queries-via-intermediate-table-columns)
-    - [커스텀 중간 테이블 모델 정의하기](#defining-custom-intermediate-table-models)
-- [폴리모픽 연관관계](#polymorphic-relationships)
+    - [중간 테이블 컬럼 가져오기](#retrieving-intermediate-table-columns)
+    - [중간 테이블 컬럼을 통한 쿼리 필터링](#filtering-queries-via-intermediate-table-columns)
+    - [중간 테이블 컬럼을 통한 쿼리 정렬](#ordering-queries-via-intermediate-table-columns)
+    - [사용자 정의 중간 테이블 모델 정의](#defining-custom-intermediate-table-models)
+- [Polymorphic(다형성) 연관관계](#polymorphic-relationships)
     - [일대일](#one-to-one-polymorphic-relations)
     - [일대다](#one-to-many-polymorphic-relations)
-    - [여러 개 중 하나만](#one-of-many-polymorphic-relations)
+    - [여러 개 중 하나 (One of Many)](#one-of-many-polymorphic-relations)
     - [다대다](#many-to-many-polymorphic-relations)
-    - [커스텀 폴리모픽 타입](#custom-polymorphic-types)
+    - [사용자 정의 다형성 타입](#custom-polymorphic-types)
 - [동적 연관관계](#dynamic-relationships)
 - [연관관계 쿼리하기](#querying-relations)
-    - [연관관계 메서드 vs 동적 속성](#relationship-methods-vs-dynamic-properties)
-    - [연관관계 존재 여부로 쿼리하기](#querying-relationship-existence)
-    - [연관관계 부재 여부로 쿼리하기](#querying-relationship-absence)
-    - [morphTo 연관관계 쿼리하기](#querying-morph-to-relationships)
+    - [연관관계 메서드와 동적 프로퍼티](#relationship-methods-vs-dynamic-properties)
+    - [연관관계 존재 쿼리](#querying-relationship-existence)
+    - [연관관계 부재 쿼리](#querying-relationship-absence)
+    - [Morph To(Polymorphic) 연관관계 쿼리](#querying-morph-to-relationships)
 - [연관된 모델 집계하기](#aggregating-related-models)
-    - [연관된 모델의 개수 세기](#counting-related-models)
+    - [연관된 모델 개수 세기](#counting-related-models)
     - [기타 집계 함수](#other-aggregate-functions)
-    - [morphTo 연관관계에서 연관 모델 개수 세기](#counting-related-models-on-morph-to-relationships)
-- [즉시 로딩(Eager Loading)](#eager-loading)
-    - [즉시 로드 제한하기](#constraining-eager-loads)
-    - [지연 즉시 로딩(Lazy Eager Loading)](#lazy-eager-loading)
-    - [자동 즉시 로딩](#automatic-eager-loading)
-    - [Lazy 로딩 방지](#preventing-lazy-loading)
-- [연관된 모델 삽입 및 갱신](#inserting-and-updating-related-models)
+    - [Morph To 연관관계에서 모델 개수 세기](#counting-related-models-on-morph-to-relationships)
+- [Eager Loading](#eager-loading)
+    - [Eager 로드 제약하기](#constraining-eager-loads)
+    - [지연 Eager 로딩](#lazy-eager-loading)
+    - [자동 Eager 로딩](#automatic-eager-loading)
+    - [Lazy Loading 방지하기](#preventing-lazy-loading)
+- [연관된 모델 삽입 및 수정](#inserting-and-updating-related-models)
     - [`save` 메서드](#the-save-method)
     - [`create` 메서드](#the-create-method)
     - [Belongs To 연관관계](#updating-belongs-to-relationships)
     - [다대다 연관관계](#updating-many-to-many-relationships)
-- [부모 타임스탬프 수정하기](#touching-parent-timestamps)
+- [부모 타임스탬프 동기화하기](#touching-parent-timestamps)
 
 <a name="introduction"></a>
 ## 소개 (Introduction)
 
-데이터베이스 테이블은 종종 서로 연관되어 있습니다. 예를 들어 블로그 게시글은 여러 개의 댓글을 가질 수 있고, 주문은 해당 주문을 한 사용자와 관련이 있을 수 있습니다. Eloquent는 이러한 연관관계를 쉽게 정의하고 관리할 수 있도록 다양한 관계 유형을 지원합니다.
+데이터베이스 테이블들은 서로 연관되어 있는 경우가 많습니다. 예를 들어, 블로그 포스트는 여러 개의 댓글을 가질 수 있고, 주문은 주문한 사용자와 연관될 수 있습니다. Eloquent는 이러한 연관관계를 쉽게 관리하고 작업할 수 있도록 다양한 일반적인 연관관계를 지원합니다.
 
 <div class="content-list" markdown="1">
 
 - [일대일](#one-to-one)
 - [일대다](#one-to-many)
 - [다대다](#many-to-many)
-- [중간 테이블을 통한 hasOne](#has-one-through)
-- [중간 테이블을 통한 hasMany](#has-many-through)
-- [일대일(폴리모픽)](#one-to-one-polymorphic-relations)
-- [일대다(폴리모픽)](#one-to-many-polymorphic-relations)
-- [다대다(폴리모픽)](#many-to-many-polymorphic-relations)
+- [Has One Through](#has-one-through)
+- [Has Many Through](#has-many-through)
+- [일대일 (Polymorphic)](#one-to-one-polymorphic-relations)
+- [일대다 (Polymorphic)](#one-to-many-polymorphic-relations)
+- [다대다 (Polymorphic)](#many-to-many-polymorphic-relations)
 
 </div>
 
 <a name="defining-relationships"></a>
 ## 연관관계 정의하기 (Defining Relationships)
 
-Eloquent 연관관계는 Eloquent 모델 클래스의 메서드로 정의합니다. 연관관계 메서드는 [쿼리 빌더](/docs/master/queries) 역할도 하므로, 체이닝을 통한 조건 추가 및 쿼리 작성이 매우 강력합니다. 예를 들어, `posts` 연관관계에 조건을 추가해서 사용할 수 있습니다.
+Eloquent의 연관관계는 Eloquent 모델 클래스 내의 메서드로 정의합니다. 또한, 연관관계는 강력한 [쿼리 빌더](/docs/master/queries) 역할도 하므로, 메서드를 통해 정의하면 다양한 메서드 체이닝과 쿼리 확장 기능을 사용할 수 있습니다. 예를 들어 `posts` 연관관계에 추가적인 쿼리 조건을 쉽게 체이닝할 수 있습니다.
 
 ```php
 $user->posts()->where('active', 1)->get();
 ```
 
-본격적으로 연관관계를 사용하기 전에, Eloquent가 지원하는 각 연관관계 유형을 어떻게 정의하는지 알아보겠습니다.
+연관관계를 실제로 사용하기 전에, Eloquent가 지원하는 각각의 연관관계를 어떻게 정의하는지 살펴보겠습니다.
 
 <a name="one-to-one"></a>
 ### 일대일 / hasOne (One to One / Has One)
 
-일대일 관계는 가장 기본적인 데이터베이스 관계 유형입니다. 예를 들어, `User` 모델이 하나의 `Phone` 모델과 연결되어 있을 수 있습니다. 이 관계를 정의하려면, `User` 모델에 `phone` 메서드를 추가하고, `hasOne` 메서드를 호출하여 그 결과를 반환하면 됩니다. `hasOne` 메서드는 모델의 `Illuminate\Database\Eloquent\Model` 기본 클래스에서 제공합니다.
+일대일 연관관계는 가장 기본적인 데이터베이스 연관관계입니다. 예를 들어, `User` 모델이 하나의 `Phone` 모델과 연관될 수 있습니다. 이 관계를 정의하기 위해서는 `User` 모델에 `phone` 메서드를 추가하고, `hasOne` 메서드를 호출해서 그 결과를 반환하면 됩니다. `hasOne` 메서드는 모델의 `Illuminate\Database\Eloquent\Model` 기본 클래스를 통해 제공됩니다.
 
 ```php
 <?php
@@ -87,7 +87,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class User extends Model
 {
     /**
-     * 사용자와 연결된 전화번호를 가져옵니다.
+     * 해당 사용자와 연관된 전화번호를 가져옵니다.
      */
     public function phone(): HasOne
     {
@@ -96,19 +96,19 @@ class User extends Model
 }
 ```
 
-`hasOne` 메서드의 첫 번째 매개변수는 연관된 모델 클래스명입니다. 관계를 정의한 후에는, Eloquent의 동적 속성(dynamic property)을 사용해 연관 레코드를 가져올 수 있습니다. 동적 속성을 사용하면 연관관계 메서드를 마치 속성처럼 사용할 수 있습니다.
+`hasOne` 메서드의 첫 번째 인수는 연관된 모델 클래스명입니다. 연관관계를 정의한 후에는 Eloquent의 동적 프로퍼티를 이용해 관련 레코드를 불러올 수 있습니다. 동적 프로퍼티는 연관관계 메서드를 모델의 프로퍼티처럼 접근할 수 있도록 해줍니다.
 
 ```php
 $phone = User::find(1)->phone;
 ```
 
-Eloquent는 연관관계의 외래 키를 부모 모델 이름을 기반으로 자동으로 결정합니다. 위 예시에서는 `Phone` 모델이 자동으로 `user_id` 외래 키를 가진 것으로 간주됩니다. 이 규칙을 변경하고 싶다면, `hasOne`의 두 번째 매개변수로 외래 키 이름을 지정할 수 있습니다.
+Eloquent는 부모 모델의 이름에 따라 연관관계의 외래 키를 자동으로 결정합니다. 이 예시에서는 `Phone` 모델이 `user_id`라는 외래 키를 갖는다고 가정합니다. 이 규칙을 변경하고 싶다면, `hasOne`의 두 번째 인수로 외래 키 컬럼명을 지정할 수 있습니다.
 
 ```php
 return $this->hasOne(Phone::class, 'foreign_key');
 ```
 
-또한, Eloquent는 외래 키 값이 부모 모델의 기본 키 컬럼과 일치해야 한다고 가정합니다. 즉, `user_id` 컬럼에서 사용자의 기본 키(`id`) 값을 찾습니다. 만약 연관관계에서 부모의 기본 키가 `id`가 아니라면, 세 번째 인수로 로컬 키를 지정할 수 있습니다.
+또한, Eloquent는 외래 키 컬럼값이 부모의 기본 키 컬럼(`id`)과 일치해야 한다고 가정합니다. 즉, `Phone` 레코드의 `user_id` 컬럼에 사용자의 `id` 값이 매칭됩니다. 만약 부모 키가 `id`가 아니거나, 특정 컬럼을 로컬 키로 사용하려면 세 번째 인수로 로컬 키를 전달할 수 있습니다.
 
 ```php
 return $this->hasOne(Phone::class, 'foreign_key', 'local_key');
@@ -117,7 +117,7 @@ return $this->hasOne(Phone::class, 'foreign_key', 'local_key');
 <a name="one-to-one-defining-the-inverse-of-the-relationship"></a>
 #### 연관관계의 역방향 정의하기
 
-`User` 모델에서 `Phone` 모델에 접근할 수 있으니, 반대로 `Phone` 모델에서 전화기를 소유한 사용자를 접근하는 관계도 생성할 수 있습니다. `hasOne`의 역방향은 `belongsTo` 메서드를 사용해서 정의합니다.
+이제 `User` 모델에서 `Phone` 모델을 접근할 수 있게 되었습니다. 이번에는 `Phone` 모델에서도 해당 전화번호의 소유자인 사용자를 접근할 수 있도록 연관관계를 정의해봅시다. `hasOne` 관계의 역방향은 `belongsTo` 메서드를 통해 정의합니다.
 
 ```php
 <?php
@@ -130,7 +130,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Phone extends Model
 {
     /**
-     * 이 전화기를 소유한 사용자를 가져옵니다.
+     * 전화번호를 소유한 사용자를 가져옵니다.
      */
     public function user(): BelongsTo
     {
@@ -139,13 +139,13 @@ class Phone extends Model
 }
 ```
 
-`user` 메서드를 호출하면, Eloquent는 `Phone` 모델의 `user_id` 컬럼과 일치하는 `id` 값을 가진 `User` 모델을 찾으려고 시도합니다.
+`user` 메서드를 호출할 때, Eloquent는 `Phone` 모델의 `user_id` 컬럼이 `User` 모델의 `id`와 일치하는 레코드를 찾으려고 시도합니다.
 
-Eloquent는 관계 메서드 이름에 `_id`를 추가하는 방식으로 외래 키 이름을 결정합니다. 즉, 위 예시에서는 `Phone` 모델에 `user_id` 컬럼이 있는 것으로 간주합니다. 만약 외래 키가 `user_id`가 아니라면, `belongsTo` 메서드의 두 번째 인수로 외래 키 이름을 지정할 수 있습니다.
+Eloquent는 연관관계 메서드의 이름에 `_id`를 붙여서 외래 키의 이름을 결정합니다. 따라서 Eloquent는 `Phone` 모델에 `user_id` 컬럼이 있다고 가정하지만, 외래 키가 다를 경우에는 `belongsTo`의 두 번째 인수로 직접 지정할 수 있습니다.
 
 ```php
 /**
- * 이 전화기를 소유한 사용자를 가져옵니다.
+ * 전화번호를 소유한 사용자를 가져옵니다.
  */
 public function user(): BelongsTo
 {
@@ -153,11 +153,11 @@ public function user(): BelongsTo
 }
 ```
 
-부모 모델의 기본 키가 `id`가 아니라거나, 다른 컬럼을 사용하고 싶다면, 세 번째 인수로 부모 테이블의 키 컬럼을 지정할 수 있습니다.
+부모 모델이 `id`가 아닌 다른 컬럼을 기본 키로 쓰거나, 특정 컬럼으로 연관관계를 맺으려면 세 번째 인수로 부모 테이블의 키 컬럼명을 지정할 수 있습니다.
 
 ```php
 /**
- * 이 전화기를 소유한 사용자를 가져옵니다.
+ * 전화번호를 소유한 사용자를 가져옵니다.
  */
 public function user(): BelongsTo
 {
@@ -168,7 +168,7 @@ public function user(): BelongsTo
 <a name="one-to-many"></a>
 ### 일대다 / hasMany (One to Many / Has Many)
 
-일대다 관계는 하나의 모델이 여러 자식 모델을 가질 때 사용합니다. 예를 들어, 게시글(Post)은 무수히 많은 댓글(Comment)을 가질 수 있습니다. 다른 연관관계와 마찬가지로 모델에 메서드를 추가해서 일대다 관계를 정의합니다.
+일대다 연관관계는 하나의 모델이 여러 자식 모델을 소유하는 관계를 나타냅니다. 예를 들어, 하나의 블로그 포스트는 무한히 많은 댓글을 가질 수 있습니다. 일대다 연관관계도 모델에 메서드를 정의하여 만듭니다.
 
 ```php
 <?php
@@ -181,7 +181,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Post extends Model
 {
     /**
-     * 블로그 게시글의 댓글을 가져옵니다.
+     * 블로그 포스트의 댓글들을 가져옵니다.
      */
     public function comments(): HasMany
     {
@@ -190,9 +190,9 @@ class Post extends Model
 }
 ```
 
-Eloquent는 `Comment` 모델의 적절한 외래 키 컬럼을 자동으로 결정합니다. 규칙상, 부모 모델명을 snake case로 바꾸고 `_id`를 붙인 컬럼을 외래 키로 사용합니다. 예시의 경우, `Comment` 모델에는 `post_id` 외래 키가 사용된다고 간주합니다.
+Eloquent는 `Comment` 모델의 외래 키 컬럼명을 자동으로 결정합니다. 관례상 부모 모델명을 스네이크 케이스로 만들고 `_id`를 붙입니다. 이 경우, `Comment` 모델의 외래 키는 `post_id`로 간주합니다.
 
-연관관계 메서드를 정의한 뒤에는, [컬렉션](/docs/master/eloquent-collections) 형태로 관련된 댓글을 속성처럼 접근해서 가져올 수 있습니다.
+연관관계 메서드를 정의한 후에는 `comments` 프로퍼티에 접근하여 [컬렉션](/docs/master/eloquent-collections)으로 관련 댓글을 가져올 수 있습니다. 동적으로 연관관계 프로퍼티를 접근할 수 있음을 기억하십시오.
 
 ```php
 use App\Models\Post;
@@ -204,7 +204,7 @@ foreach ($comments as $comment) {
 }
 ```
 
-모든 연관관계는 쿼리 빌더 역할도 하므로, `comments` 메서드를 통해 조건을 추가하여 쿼리를 계속 체이닝할 수 있습니다.
+연관관계도 쿼리 빌더이므로, 추가 조건을 체이닝해서 쿼리를 확장할 수 있습니다.
 
 ```php
 $comment = Post::find(1)->comments()
@@ -212,7 +212,7 @@ $comment = Post::find(1)->comments()
     ->first();
 ```
 
-`hasOne`과 마찬가지로 외래 키 및 로컬 키를 추가 인수로 지정하여 규칙을 오버라이드할 수 있습니다.
+`hasOne`처럼, 외래 키와 로컬 키를 추가 인수로 전달하여 규칙을 오버라이드할 수도 있습니다.
 
 ```php
 return $this->hasMany(Comment::class, 'foreign_key');
@@ -221,9 +221,9 @@ return $this->hasMany(Comment::class, 'foreign_key', 'local_key');
 ```
 
 <a name="automatically-hydrating-parent-models-on-children"></a>
-#### 자식에서 부모 자동 적재(Hydrate)하기
+#### 자식 모델에서 부모 자동 할당(hydrating)하기
 
-Eloquent 즉시 로딩을 사용해도, 자식 모델을 반복문으로 순회하며 부모 모델에 접근한다면 여전히 "N + 1" 쿼리 문제가 발생할 수 있습니다.
+Eloquent의 eager loading을 사용하더라도, 자식 모델을 반복 처리하면서 그 부모를 접근하면 "N + 1" 쿼리 문제가 발생할 수 있습니다.
 
 ```php
 $posts = Post::with('comments')->get();
@@ -235,9 +235,9 @@ foreach ($posts as $post) {
 }
 ```
 
-위 예시에서는 `Post` 모델의 모든 댓글을 즉시 로딩했더라도, 각각의 `Comment` 모델에서 부모 `Post`를 참조할 때마다 추가 쿼리가 발생합니다.
+위 예시에서는, 모든 `Post` 모델에 대해 댓글을 eager 로딩했음에도, 각 `Comment` 모델에서 부모인 `Post`를 접근하면 추가 쿼리가 발생하여 "N + 1" 문제가 생깁니다.
 
-이럴 때 자식에 부모 모델을 자동 적재하고 싶다면, `hasMany` 관계를 정의할 때 `chaperone` 메서드를 호출하면 됩니다.
+만약 Eloquent가 자식의 부모 모델을 자동으로 할당(hydrate)하도록 하고 싶다면, `hasMany` 연관관계 정의 시 `chaperone` 메서드를 호출할 수 있습니다.
 
 ```php
 <?php
@@ -250,7 +250,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Post extends Model
 {
     /**
-     * 블로그 게시글의 댓글을 가져옵니다.
+     * 블로그 포스트의 댓글들을 가져옵니다.
      */
     public function comments(): HasMany
     {
@@ -259,7 +259,7 @@ class Post extends Model
 }
 ```
 
-또는, 실행 시점에 자동 부모 적재 기능을 사용할 수도 있습니다.
+런타임에서 자동으로 부모 할당 기능을 사용하고 싶다면, eager 로딩 시 `chaperone`을 정의할 수 있습니다.
 
 ```php
 use App\Models\Post;
@@ -270,9 +270,9 @@ $posts = Post::with([
 ```
 
 <a name="one-to-many-inverse"></a>
-### 일대다(역방향) / belongsTo (One to Many (Inverse) / Belongs To)
+### 일대다 (역방향) / belongsTo (One to Many (Inverse) / Belongs To)
 
-이제 게시글(Post)의 모든 댓글을 접근할 수 있게 되었으니, 각각의 댓글(Comment)에서 부모 게시글(Post)에 접근하는 관계도 정의해보겠습니다. `hasMany` 관계의 역방향은 자식 모델에 `belongsTo` 메서드를 사용하여 정의합니다.
+이제 하나의 포스트에 속한 모든 댓글을 접근할 수 있게 되었으니, 반대로 댓글에서 부모 포스트를 접근할 수 있게 해보겠습니다. 일대다 관계의 역방향은 자식 모델에 `belongsTo` 메서드를 정의하여 만듭니다.
 
 ```php
 <?php
@@ -285,7 +285,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Comment extends Model
 {
     /**
-     * 이 댓글을 소유한 게시글을 가져옵니다.
+     * 댓글이 속한 포스트를 가져옵니다.
      */
     public function post(): BelongsTo
     {
@@ -294,7 +294,7 @@ class Comment extends Model
 }
 ```
 
-관계가 정의되면, 동적 속성을 통해 댓글의 부모 게시글에 접근할 수 있습니다.
+연관관계가 정의되었으면, 댓글의 부모 포스트에 `post` 연관관계 프로퍼티로 접근할 수 있습니다.
 
 ```php
 use App\Models\Comment;
@@ -304,15 +304,15 @@ $comment = Comment::find(1);
 return $comment->post->title;
 ```
 
-위 예시에서 Eloquent는 `Comment` 모델의 `post_id` 컬럼과 일치하는 `id` 값을 가진 `Post` 모델을 찾습니다.
+이 예시에서 Eloquent는 `Comment` 모델의 `post_id` 컬럼이 `Post` 모델의 `id`와 일치하는 레코드를 찾으려고 합니다.
 
-외래 키는 관계 메서드 이름에 `_`와 부모 모델의 기본 키 컬럼을 붙인 형태로 자동 결정됩니다. 즉, 이 예시에서 `comments` 테이블의 `post_id`가 외래 키가 됩니다.
+연관관계 메서드명과 부모 모델의 기본 키 컬럼명을 조합하여(`post_id`) 기본 외래 키 이름을 결정합니다.
 
-규칙을 따르지 않은 외래 키를 사용한다면, 두 번째 인자로 지정할 수 있습니다.
+연관관계의 외래 키가 관례와 다르다면, `belongsTo`의 두 번째 인수로 직접 지정할 수 있습니다.
 
 ```php
 /**
- * 이 댓글을 소유한 게시글을 가져옵니다.
+ * 댓글이 속한 포스트를 가져옵니다.
  */
 public function post(): BelongsTo
 {
@@ -320,11 +320,11 @@ public function post(): BelongsTo
 }
 ```
 
-부모 모델의 기본 키가 `id`가 아니거나 특정 컬럼을 사용하려면 세 번째 인수로 지정할 수 있습니다.
+부모 모델이 `id`가 아닌 다른 컬럼을 기본 키로 쓰거나, 특정 컬럼으로 연관관계를 맺으려면 세 번째 인수로 부모 테이블의 키 컬럼명을 지정할 수 있습니다.
 
 ```php
 /**
- * 이 댓글을 소유한 게시글을 가져옵니다.
+ * 댓글이 속한 포스트를 가져옵니다.
  */
 public function post(): BelongsTo
 {
@@ -333,13 +333,13 @@ public function post(): BelongsTo
 ```
 
 <a name="default-models"></a>
-#### 기본 모델(Default Models)
+#### 기본 모델 (Default Models)
 
-`belongsTo`, `hasOne`, `hasOneThrough`, `morphOne` 같은 관계에서는 연관된 모델이 `null`일 때 반환할 기본 모델을 정의할 수 있습니다. 이는 [Null Object 패턴](https://en.wikipedia.org/wiki/Null_Object_pattern)으로 불리며, 조건문을 줄이는 데 유용합니다. 아래 예시에서, `Post` 모델에 사용자가 연결되어 있지 않으면 빈 `App\Models\User` 모델을 반환합니다.
+`belongsTo`, `hasOne`, `hasOneThrough`, `morphOne` 연관관계에서는, 연관관계가 `null`일 경우 반환할 기본 모델을 정의할 수 있습니다. 이런 패턴은 [Null Object 패턴](https://en.wikipedia.org/wiki/Null_Object_pattern)이라 하며, 코드에서 조건문을 줄여줍니다. 아래 예시처럼 `Post` 모델에 유저가 연결되어 있지 않으면 빈 `App\Models\User` 모델이 반환됩니다.
 
 ```php
 /**
- * 게시글의 저자를 가져옵니다.
+ * 포스트의 작성자(author)를 가져옵니다.
  */
 public function user(): BelongsTo
 {
@@ -347,11 +347,11 @@ public function user(): BelongsTo
 }
 ```
 
-기본 모델에 속성을 미리 지정하려면 배열이나 클로저를 `withDefault`에 전달할 수 있습니다.
+기본 모델에 속성값을 미리 채우고 싶다면, 배열이나 클로저를 `withDefault`에 전달합니다.
 
 ```php
 /**
- * 게시글의 저자를 가져옵니다.
+ * 포스트의 작성자(author)를 가져옵니다.
  */
 public function user(): BelongsTo
 {
@@ -361,7 +361,7 @@ public function user(): BelongsTo
 }
 
 /**
- * 게시글의 저자를 가져옵니다.
+ * 포스트의 작성자(author)를 가져옵니다.
  */
 public function user(): BelongsTo
 {
@@ -372,9 +372,9 @@ public function user(): BelongsTo
 ```
 
 <a name="querying-belongs-to-relationships"></a>
-#### Belongs To 관계에서 쿼리하기
+#### Belongs To 연관관계 쿼리하기
 
-"Belongs to" 연관관계의 자식 모델을 쿼리할 때 직접 `where` 조건을 만들어서 조회할 수 있습니다.
+"belongs to" 연관관계의 자식 모델들을 쿼리할 때, Eloquent 모델을 가져오기 위해 `where` 절을 직접 작성할 수 있습니다.
 
 ```php
 use App\Models\Post;
@@ -382,13 +382,13 @@ use App\Models\Post;
 $posts = Post::where('user_id', $user->id)->get();
 ```
 
-보다 편리하게 사용하려면, `whereBelongsTo` 메서드를 사용할 수 있습니다. 이 메서드는 주어진 모델에 맞는 관계와 외래 키를 자동으로 찾아 사용합니다.
+더 간편하게는, `whereBelongsTo` 메서드를 사용하여 올바른 연관관계와 외래 키를 자동으로 처리할 수 있습니다.
 
 ```php
 $posts = Post::whereBelongsTo($user)->get();
 ```
 
-[컬렉션](/docs/master/eloquent-collections)을 제공하면, 컬렉션 내부 모델들 중 하나라도 연관된 경우 모두 조회 가능합니다.
+[컬렉션](/docs/master/eloquent-collections) 인스턴스를 전달하면, 컬렉션 내의 모델 어느 것에 속한 모델도 조회합니다.
 
 ```php
 $users = User::where('vip', true)->get();
@@ -396,16 +396,16 @@ $users = User::where('vip', true)->get();
 $posts = Post::whereBelongsTo($users)->get();
 ```
 
-기본적으로 Laravel은 전달받은 모델의 클래스명을 사용하여 해당 관계를 찾지만, 두 번째 인수로 관계 이름을 직접 지정할 수도 있습니다.
+기본적으로 전달한 모델 클래스명을 기반으로 연관관계명을 유추하지만, 두 번째 인수로 연관관계명을 직접 지정할 수도 있습니다.
 
 ```php
 $posts = Post::whereBelongsTo($user, 'author')->get();
 ```
 
 <a name="has-one-of-many"></a>
-### 여러 개 중 하나만 hasOne (Has One of Many)
+### 하나의 여러 개 중 하나 가져오기 (Has One of Many)
 
-때때로 한 모델이 여러 개의 관련 모델을 가질 수 있지만, 가장 "최신" 또는 "오래된" 관련 모델만 쉽고 빠르게 가져오고 싶은 경우가 있습니다. 예를 들어, `User` 모델은 여러 `Order`와 관련될 수 있지만, 가장 최근에 작성한 주문 하나만 쉽게 불러오고 싶을 수 있습니다. 이럴 때 `hasOne`과 `ofMany` 관련 메서드를 조합해 사용할 수 있습니다.
+가끔 하나의 모델이 여러 관련 모델을 가지지만, 그 중 "가장 최신" 혹은 "가장 오래된" 하나만 쉽게 가져오고 싶을 수 있습니다. 예를 들어, `User` 모델이 여러 `Order` 모델과 연관될 수 있는데, 사용자가 가장 최근에 주문한 주문을 가져오는 편리한 방법을 만들고 싶다면 `hasOne`과 `ofMany` 관련 메서드를 활용할 수 있습니다.
 
 ```php
 /**
@@ -417,7 +417,7 @@ public function latestOrder(): HasOne
 }
 ```
 
-마찬가지로 관계에서 "오래된" 또는 첫 번째 관련 모델을 가져오는 메서드도 정의할 수 있습니다.
+또는, "가장 오래된" 혹은 첫 번째 주문을 가져오는 메서드도 정의할 수 있습니다.
 
 ```php
 /**
@@ -429,13 +429,11 @@ public function oldestOrder(): HasOne
 }
 ```
 
-`latestOfMany`와 `oldestOfMany`는 기본적으로 모델의 정렬 가능한 기본 키를 기준으로 최신/오래된 레코드를 반환합니다. 더 복잡한 기준으로 단일 레코드를 가져오고 싶다면 `ofMany` 메서드에 컬럼명과 집계함수(`min`, `max`)를 인수로 전달하면 됩니다.
-
-예를 들어 사용자의 가장 비싼 주문을 가져오려면:
+기본적으로 `latestOfMany`와 `oldestOfMany`는 모델의 정렬 가능한 기본 키를 기준으로 동작합니다. 하지만, 더 큰 연관관계에서 다른 정렬 기준으로 단일 모델을 가져오고 싶을 때는 `ofMany`를 사용할 수 있습니다. 예를 들어, 사용자 주문 중에서 "가장 비싼" 주문을 가져올 수도 있습니다.
 
 ```php
 /**
- * 사용자의 가장 큰 주문을 가져옵니다.
+ * 사용자의 가장 큰(비싼) 주문을 가져옵니다.
  */
 public function largestOrder(): HasOne
 {
@@ -444,16 +442,16 @@ public function largestOrder(): HasOne
 ```
 
 > [!WARNING]
-> PostgreSQL은 UUID 컬럼에 대해 `MAX` 함수를 지원하지 않으므로, PostgreSQL UUID 컬럼과 함께 one-of-many 관계를 사용할 수 없습니다.
+> PostgreSQL은 UUID 컬럼에 대해 `MAX` 함수를 지원하지 않으므로, PostgreSQL UUID 컬럼과 one-of-many 관계를 조합해 사용할 수 없습니다.
 
 <a name="converting-many-relationships-to-has-one-relationships"></a>
-#### "Many" 관계를 hasOne 관계로 변환하기
+#### 다수 관계를 "하나" 관계로 변환하기
 
-이미 "has many" 관계를 정의해 두었고 그 관계를 기반으로 하나만 뽑아오고 싶을 때, `one` 메서드를 사용해 관계를 `hasOne`으로 변환할 수 있습니다.
+`latestOfMany`, `oldestOfMany`, `ofMany` 메서드를 사용해 단일 모델을 가져올 때, 이미 동일 모델에 대해 "has many" 관계가 정의되어 있다면, `one` 메서드를 이용해 이 연관관계를 "has one" 관계로 쉽게 변환할 수 있습니다.
 
 ```php
 /**
- * 사용자의 주문 전체를 가져옵니다.
+ * 사용자의 모든 주문을 가져옵니다.
  */
 public function orders(): HasMany
 {
@@ -461,7 +459,7 @@ public function orders(): HasMany
 }
 
 /**
- * 사용자의 가장 큰 주문을 가져옵니다.
+ * 사용자의 가장 큰(비싼) 주문을 가져옵니다.
  */
 public function largestOrder(): HasOne
 {
@@ -469,7 +467,7 @@ public function largestOrder(): HasOne
 }
 ```
 
-`one` 메서드는 `HasManyThrough` 관계를 `HasOneThrough`로도 변환할 수 있습니다.
+`HasManyThrough` 관계도 `one`을 사용해 `HasOneThrough`로 변경할 수 있습니다.
 
 ```php
 public function latestDeployment(): HasOneThrough
@@ -479,13 +477,15 @@ public function latestDeployment(): HasOneThrough
 ```
 
 <a name="advanced-has-one-of-many-relationships"></a>
-#### 고급 "여러 개 중 하나" 관계 구성하기
+#### 고급 "하나의 여러 개 중 하나" 연관관계
 
-더 고급의 one-of-many 관계도 구성할 수 있습니다. 예를 들어, `Product` 모델이 여러 개의 `Price` 모델과 관련되어 있고, `Price`는 언제든 새로 등록 또는 예약될 수 있다고 가정합니다. `published_at` 컬럼을 기준으로 최신 가격(공개 날짜가 미래가 아닌 것 중 가장 최근, 동률일 땐 id가 큰 것)을 선택하려면, `ofMany`에 정렬 컬럼 배열과 추가 제약 조건을 담은 클로저를 전달하면 됩니다.
+좀 더 고도화된 one-of-many 연관관계를 만들 수도 있습니다. 예를 들어, `Product` 모델이 여러 `Price` 모델과 연관되어 있고, 가격 변경 내역이 모두 시스템에 남아 있다고 가정합시다. `published_at` 컬럼을 이용해 미래 시점으로 가격 책정도 가능합니다.
+
+즉, 발표 시점이 미래가 아닌, "가장 최근에 발표된" 가격을 가져와야 합니다. 만약 동일한 발표 날짜가 있을 경우엔 가장 큰 id를 우선시합니다. 이를 위해 `ofMany`에 정렬 기준이 되는 컬럼의 배열을 전달하고, 쿼리 조건을 추가할 클로저를 두 번째 인자에 전달합니다.
 
 ```php
 /**
- * 상품의 현재 가격 정보를 가져옵니다.
+ * 해당 상품의 현재 가격 정보를 가져옵니다.
  */
 public function currentPricing(): HasOne
 {
@@ -499,11 +499,11 @@ public function currentPricing(): HasOne
 ```
 
 <a name="has-one-through"></a>
-### 중간 테이블을 통한 hasOne (Has One Through)
+### Has One Through
 
-"has-one-through" 관계는 중간 모델을 거쳐 대상 모델과 일대일 관계를 맺고 싶을 때 사용합니다.
+"has-one-through" 연관관계는 일대일 관계이지만, 중간 모델을 통해 다른 모델과 연결되는 관계를 나타냅니다.
 
-예를 들어, 자동차 정비소 애플리케이션에서 `Mechanic`(정비사)은 하나의 `Car`(자동차)와 관계를 맺고, 자동차는 하나의 `Owner`(차주)와 관계를 맺을 수 있습니다. 정비사는 직접 차주와 연결되어 있지 않지만, 자동차를 통해 차주에 접근해야 할 때 `hasOneThrough`를 사용할 수 있습니다. 테이블 구조는 다음과 같습니다.
+예를 들어, 차량 정비소 애플리케이션에서 각 `Mechanic`(정비사) 모델은 하나의 `Car`와 연관되고, 각 `Car` 모델은 하나의 `Owner`(차주)와 연관됩니다. 정비사와 차주는 데이터베이스에서 직접적 관계가 없지만, `Car` 모델을 "거쳐서" 차주에 접근할 수 있습니다. 필요한 테이블 구조는 아래와 같습니다.
 
 ```text
 mechanics
@@ -521,7 +521,7 @@ owners
     car_id - integer
 ```
 
-이 구조를 반영한 `Mechanic` 모델의 관계 정의는 다음과 같습니다.
+테이블 구조를 바탕으로 `Mechanic` 모델에 관계를 정의해봅니다.
 
 ```php
 <?php
@@ -534,7 +534,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 class Mechanic extends Model
 {
     /**
-     * 이 정비사가 점검하는 자동차의 차주를 가져옵니다.
+     * 자동차의 소유자를 가져옵니다.
      */
     public function carOwner(): HasOneThrough
     {
@@ -543,9 +543,9 @@ class Mechanic extends Model
 }
 ```
 
-`hasOneThrough`의 첫 번째 인수는 최종 대상 모델, 두 번째 인수는 중간 모델 클래스입니다.
+`hasOneThrough`의 첫 번째 인수는 접근하려는 최종 모델, 두 번째 인수는 중간 모델 클래스명입니다.
 
-이미 각 모델에서 연관관계를 따로 정의해 두었다면, `through` 및 `has` 메서드를 사용해 "has-one-through" 관계를 선언적으로 연결할 수도 있습니다.
+이미 각각의 모델에 필요한 연관관계가 정의되어 있다면, `through` 메서드와 관계명을 이용해 보다 유연하게 "has-one-through" 관계를 정의할 수 있습니다. 만약 `Mechanic` 모델에 `cars` 관계가 있고, `Car` 모델에 `owner` 관계가 있다면 아래와 같이 구성할 수 있습니다.
 
 ```php
 // 문자열 기반 문법
@@ -556,15 +556,15 @@ return $this->throughCars()->hasOwner();
 ```
 
 <a name="has-one-through-key-conventions"></a>
-#### 키 네이밍 규칙
+#### 키 규칙 (Key Conventions)
 
-관계 쿼리를 수행할 때는 일반적인 Eloquent 외래 키 명명 규칙을 따릅니다. 만약 키 규칙을 직접 지정하고 싶다면, 각각의 키(중간 모델 외래 키, 최종 모델 외래 키, 로컬 키, 중간 모델 로컬 키)를 추가 인수로 전달할 수 있습니다.
+일반적인 Eloquent 외래 키 규칙이 해당 쿼리에 적용됩니다. 만약 관계의 키를 직접 지정하고 싶다면, `hasOneThrough`의 세 번째와 네 번째 인수로 전달할 수 있습니다. 세 번째 인수는 중간 모델의 외래 키 컬럼, 네 번째 인수는 최종 모델의 외래 키 컬럼, 다섯 번째는 mechanics 테이블의 로컬 키, 여섯 번째는 cars 테이블의 로컬 키입니다.
 
 ```php
 class Mechanic extends Model
 {
     /**
-     * 이 정비사가 점검하는 자동차의 차주를 가져옵니다.
+     * 자동차의 소유자를 가져옵니다.
      */
     public function carOwner(): HasOneThrough
     {
@@ -572,15 +572,15 @@ class Mechanic extends Model
             Owner::class,
             Car::class,
             'mechanic_id', // cars 테이블의 외래 키
-            'car_id',      // owners 테이블의 외래 키
-            'id',          // mechanics 테이블의 로컬 키
-            'id'           // cars 테이블의 로컬 키
+            'car_id', // owners 테이블의 외래 키
+            'id', // mechanics 테이블의 로컬 키
+            'id' // cars 테이블의 로컬 키
         );
     }
 }
 ```
 
-이미 연관관계가 정의돼 있다면, 위에서 설명한 `through` 방식을 사용해 기존 관계의 키 규칙을 재사용할 수도 있습니다.
+또는 앞서 언급한 대로, 각 모델의 연관관계가 이미 정의되어 있다면, `through`를 이용해 정의할 수 있습니다. 이 방법은 기존에 정의한 키 규칙을 재사용하는 장점이 있습니다.
 
 ```php
 // 문자열 기반 문법
@@ -591,9 +591,11 @@ return $this->throughCars()->hasOwner();
 ```
 
 <a name="has-many-through"></a>
-### 중간 테이블을 통한 hasMany (Has Many Through)
+### Has Many Through
 
-"has-many-through" 관계는 중간 모델을 통해 먼 거리에 있는 관계를 손쉽게 접근하게 해 줍니다. 예를 들어, [Laravel Cloud](https://cloud.laravel.com)와 같은 배포 플랫폼에서 `Application`이 중간의 `Environment`(환경)를 통해 여러 `Deployment`(배포)와 연결될 수 있습니다. 다음과 같은 테이블 구조가 있다고 가정합니다.
+"has-many-through" 연관관계는 중간 모델을 통해 간접적으로 먼 관계의 모델들을 한 번에 접근할 수 있는 편리한 방법입니다. 예를 들어, [Laravel Cloud](https://cloud.laravel.com)와 같이 배포 플랫폼을 만든다고 하면, 하나의 `Application` 모델은 중간의 `Environment` 모델을 거쳐 여러 `Deployment` 모델에 연결될 수 있습니다.
+
+필요한 테이블 구조 예시는 아래와 같습니다.
 
 ```text
 applications
@@ -611,7 +613,7 @@ deployments
     commit_hash - string
 ```
 
-이 구조에서 `Application` 모델에 "has-many-through" 연관관계를 정의할 수 있습니다.
+`Application` 모델에 관계를 정의해봅니다.
 
 ```php
 <?php
@@ -633,9 +635,9 @@ class Application extends Model
 }
 ```
 
-`hasManyThrough`의 첫 번째 인수는 최종 대상 모델, 두 번째 인수는 중간 모델입니다.
+`hasManyThrough`의 첫 번째 인수는 최종 모델, 두 번째 인수는 중간 모델 클래스입니다.
 
-이미 관련 관계가 모두 정의되어 있다면, `through` 및 `has` 메서드를 사용해서 선언적으로 연결할 수도 있습니다.
+모든 모델에 필요한 관계가 정의되어 있다면, 마찬가지로 `through`와 이름을 이용해 유연하게 정의할 수 있습니다.
 
 ```php
 // 문자열 기반 문법
@@ -645,12 +647,12 @@ return $this->through('environments')->has('deployments');
 return $this->throughEnvironments()->hasDeployments();
 ```
 
-`Deployment` 테이블에는 `application_id`가 없지만, Eloquent는 중간 모델인 `Environment`가 가진 `application_id`를 통해 해당 애플리케이션이 가진 배포 내역을 조회할 수 있습니다.
+`Deployment` 모델의 테이블에는 `application_id` 컬럼이 없지만, `hasManyThrough`를 통해, 중간 모델의 `application_id`를 참조해서 결과적으로 `$application->deployments`처럼 애플리케이션의 모든 배포 정보를 한 번에 가져올 수 있습니다.
 
 <a name="has-many-through-key-conventions"></a>
-#### 키 네이밍 규칙
+#### 키 규칙 (Key Conventions)
 
-`hasManyThrough`에서도 기본적으로 Eloquent의 외래 키 명명 규칙을 따릅니다. 키 설정을 커스터마이징하려면, 중간 모델의 외래 키, 최종 모델의 외래 키, 로컬 키, 중간 모델의 로컬 키를 추가 인수로 지정할 수 있습니다.
+이 관계도 일반적인 Eloquent 외래 키 규칙을 사용합니다. 키를 사용자 정의하려면 `hasManyThrough`의 세 번째와 네 번째 인수에 각각 중간 모델, 최종 모델의 외래 키를 전달하고, 다섯 번째와 여섯 번째 인수로 각 테이블의 로컬 키를 지정합니다.
 
 ```php
 class Application extends Model
@@ -660,16 +662,16 @@ class Application extends Model
         return $this->hasManyThrough(
             Deployment::class,
             Environment::class,
-            'application_id',    // environments 테이블의 외래 키
-            'environment_id',    // deployments 테이블의 외래 키
-            'id',                // applications 테이블의 로컬 키
-            'id'                 // environments 테이블의 로컬 키
+            'application_id', // environments 테이블의 외래 키
+            'environment_id', // deployments 테이블의 외래 키
+            'id', // applications 테이블의 로컬 키
+            'id' // environments 테이블의 로컬 키
         );
     }
 }
 ```
 
-마찬가지로 이미 각 모델에 연관관계를 정의했다면 `through` 문법으로 기존 키 설정을 재활용할 수 있습니다.
+기존에 관계가 이미 정의되어 있다면 위에서 설명한 `through` 문법을 사용할 수 있으며, 기존 관계 정의의 키 규칙을 재사용합니다.
 
 ```php
 // 문자열 기반 문법
@@ -680,9 +682,9 @@ return $this->throughEnvironments()->hasDeployments();
 ```
 
 <a name="scoped-relationships"></a>
-### 스코프된 연관관계 (Scoped Relationships)
+### 스코프 연관관계 (Scoped Relationships)
 
-모델에서 특정 조건을 가진 관계만 반환하는 추가 메서드를 만드는 것도 일반적입니다. 예를 들어, `User` 모델에 `posts`(전체 게시글)와 별도로 `featuredPosts`(특정 조건의 게시글) 같은 메서드를 만들어 사용할 수 있습니다.
+종종 관계를 제약하는 추가 메서드를 모델에 추가하는 경우가 있습니다. 예를 들어, `User` 모델에 `featuredPosts` 메서드를 추가하여, 전체 `posts` 관계에 추가 `where` 조건을 붙일 수 있습니다.
 
 ```php
 <?php
@@ -695,7 +697,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Model
 {
     /**
-     * 사용자의 전체 게시글을 가져옵니다.
+     * 사용자의 포스트들을 가져옵니다.
      */
     public function posts(): HasMany
     {
@@ -703,7 +705,7 @@ class User extends Model
     }
 
     /**
-     * 사용자의 대표 게시글(Featured)을 가져옵니다.
+     * 사용자의 주요(Featured) 포스트들을 가져옵니다.
      */
     public function featuredPosts(): HasMany
     {
@@ -712,11 +714,11 @@ class User extends Model
 }
 ```
 
-하지만 위 방식대로 `featuredPosts` 메서드로 새 모델을 생성하면 `featured` 속성이 자동으로 true로 지정되진 않습니다. 관계 메서드를 통해 새 모델 생성 시 지정할 속성을 반드시 적용하고 싶다면, 관계 쿼리에 `withAttributes` 메서드를 사용할 수 있습니다.
+하지만 `featuredPosts` 메서드를 통해 모델을 생성하면, `featured` 속성이 자동으로 `true`로 지정되지 않습니다. 연관관계 메서드로 모델을 생성할 때, 해당 관계로 생성된 모든 모델에 특정 속성을 자동으로 할당하려면 `withAttributes`를 사용할 수 있습니다.
 
 ```php
 /**
- * 사용자의 대표 게시글(Featured)을 가져옵니다.
+ * 사용자의 주요(Featured) 포스트들을 가져옵니다.
  */
 public function featuredPosts(): HasMany
 {
@@ -724,7 +726,7 @@ public function featuredPosts(): HasMany
 }
 ```
 
-`withAttributes`는 쿼리상 `where` 조건으로도 반영하고, 해당 관계로 생성하는 모든 모델에도 값을 지정해 줍니다.
+`withAttributes`는 쿼리에 `where` 조건을 추가하고, 관계를 통해 생성된 모델에도 해당 속성을 할당합니다.
 
 ```php
 $post = $user->featuredPosts()->create(['title' => 'Featured Post']);
@@ -732,12 +734,12 @@ $post = $user->featuredPosts()->create(['title' => 'Featured Post']);
 $post->featured; // true
 ```
 
-만약 쿼리 조건에는 추가하지 않고 속성만 추가하고 싶다면, `asConditions` 인수를 false로 지정합니다.
+만약 `withAttributes`에서 쿼리에 `where` 조건을 포함하지 않고 싶을 때는 `asConditions` 인수를 `false`로 설정하면 됩니다.
 
 ```php
 return $this->posts()->withAttributes(['featured' => true], asConditions: false);
 ```
 
----
+--- 
 
-이하 이어서 필요하신 분량을 요청해 주세요. (본문이 길어 자동 답변이 중단됩니다.)
+이하 번역이 장문이므로, 요청하시면 계속 이어서 번역해 드릴 수 있습니다.

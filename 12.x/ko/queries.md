@@ -2,58 +2,58 @@
 
 - [소개](#introduction)
 - [데이터베이스 쿼리 실행](#running-database-queries)
-    - [결과 조각 처리](#chunking-results)
-    - [지연 스트리밍 처리](#streaming-results-lazily)
+    - [결과를 청크 단위로 처리하기](#chunking-results)
+    - [결과를 게으르게 스트리밍하기](#streaming-results-lazily)
     - [집계 함수](#aggregates)
-- [Select 구문](#select-statements)
+- [SELECT 구문](#select-statements)
 - [Raw 표현식](#raw-expressions)
-- [조인](#joins)
-- [유니언](#unions)
-- [기본 Where 절](#basic-where-clauses)
-    - [Where 절](#where-clauses)
-    - [Or Where 절](#or-where-clauses)
-    - [Where Not 절](#where-not-clauses)
-    - [Where Any / All / None 절](#where-any-all-none-clauses)
-    - [JSON Where 절](#json-where-clauses)
-    - [추가 Where 절](#additional-where-clauses)
-    - [논리적 그룹화](#logical-grouping)
-- [고급 Where 절](#advanced-where-clauses)
-    - [Where Exists 절](#where-exists-clauses)
-    - [서브쿼리 Where 절](#subquery-where-clauses)
-    - [전체 텍스트 Where 절](#full-text-where-clauses)
-    - [벡터 유사성 절](#vector-similarity-clauses)
-- [정렬, 그룹화, 제한, 오프셋](#ordering-grouping-limit-and-offset)
-    - [정렬](#ordering)
-    - [그룹화](#grouping)
-    - [Limit 및 Offset](#limit-and-offset)
-- [조건부 절](#conditional-clauses)
-- [Insert 구문](#insert-statements)
-    - [Upsert](#upserts)
-- [Update 구문](#update-statements)
+- [조인(Joins)](#joins)
+- [유니언(Unions)](#unions)
+- [기본 WHERE 구문](#basic-where-clauses)
+    - [WHERE 구문](#where-clauses)
+    - [OR WHERE 구문](#or-where-clauses)
+    - [WHERE NOT 구문](#where-not-clauses)
+    - [WHERE ANY / ALL / NONE 구문](#where-any-all-none-clauses)
+    - [JSON WHERE 구문](#json-where-clauses)
+    - [추가 WHERE 구문](#additional-where-clauses)
+    - [논리 그룹화](#logical-grouping)
+- [고급 WHERE 구문](#advanced-where-clauses)
+    - [WHERE EXISTS 구문](#where-exists-clauses)
+    - [서브쿼리 WHERE 구문](#subquery-where-clauses)
+    - [전체 텍스트 WHERE 구문](#full-text-where-clauses)
+    - [벡터 유사도(VECTOR SIMILARITY) 구문](#vector-similarity-clauses)
+- [정렬, 그룹화, LIMIT, OFFSET](#ordering-grouping-limit-and-offset)
+    - [정렬하기](#ordering)
+    - [그룹화하기](#grouping)
+    - [LIMIT 및 OFFSET](#limit-and-offset)
+- [조건부 절(Conditional Clauses)](#conditional-clauses)
+- [INSERT 구문](#insert-statements)
+    - [UPSERT](#upserts)
+- [UPDATE 구문](#update-statements)
     - [JSON 컬럼 업데이트](#updating-json-columns)
-    - [증가 및 감소](#increment-and-decrement)
-- [Delete 구문](#delete-statements)
-- [비관적 잠금](#pessimistic-locking)
+    - [INCREMENT 및 DECREMENT](#increment-and-decrement)
+- [DELETE 구문](#delete-statements)
+- [비관적 잠금(Pessimistic Locking)](#pessimistic-locking)
 - [재사용 가능한 쿼리 컴포넌트](#reusable-query-components)
 - [디버깅](#debugging)
 
 <a name="introduction"></a>
 ## 소개 (Introduction)
 
-Laravel의 데이터베이스 쿼리 빌더는 데이터베이스 쿼리를 손쉽고 유연하게 작성하고 실행할 수 있는 인터페이스를 제공합니다. 이는 애플리케이션에서 대부분의 데이터베이스 작업을 처리하는 데 사용할 수 있으며, Laravel이 지원하는 모든 데이터베이스 시스템과 완벽히 호환됩니다.
+Laravel의 데이터베이스 쿼리 빌더는 데이터베이스 쿼리를 생성하고 실행할 수 있도록 편리하고 유연한 인터페이스를 제공합니다. 애플리케이션에서 대부분의 데이터베이스 작업을 처리할 수 있으며, Laravel에서 지원하는 모든 데이터베이스 시스템과 완벽하게 호환됩니다.
 
-Laravel 쿼리 빌더는 PDO 파라미터 바인딩을 사용하여 SQL 인젝션 공격으로부터 애플리케이션을 안전하게 보호합니다. 쿼리 빌더에 전달되는 문자열은 바인딩되어 전달되므로, 별도로 문자열을 정제하거나 이스케이프할 필요가 없습니다.
+Laravel 쿼리 빌더는 PDO 파라미터 바인딩(PHP Data Object의 바인딩)을 사용하여 SQL 인젝션 공격으로부터 애플리케이션을 보호합니다. 따라서 쿼리 빌더에 전달하는 문자열에 대해 별도로 정제(clean)하거나 필터링(sanitize)할 필요가 없습니다.
 
 > [!WARNING]
-> PDO는 컬럼명 바인딩을 지원하지 않습니다. 따라서 사용자 입력을 기반으로 쿼리에서 참조하는 컬럼명, 특히 "order by" 컬럼 등을 절대로 허용해서는 안 됩니다.
+> PDO는 컬럼명 바인딩을 지원하지 않습니다. 따라서 사용자 입력값이 쿼리에서 참조하는 컬럼명을 직접 결정하도록 해서는 절대 안 되며, "order by" 컬럼도 마찬가지입니다.
 
 <a name="running-database-queries"></a>
 ## 데이터베이스 쿼리 실행 (Running Database Queries)
 
 <a name="retrieving-all-rows-from-a-table"></a>
-#### 테이블의 모든 행 조회
+#### 테이블의 모든 행 조회하기
 
-`DB` 파사드에서 제공하는 `table` 메서드를 사용하여 쿼리를 시작할 수 있습니다. `table` 메서드는 지정한 테이블에 대한 유연한 쿼리 빌더 인스턴스를 반환하며, 추가적인 조건을 체이닝하고 마지막에 `get` 메서드로 결과를 조회할 수 있습니다:
+쿼리를 시작하려면 `DB` 파사드(Facade)에서 제공하는 `table` 메서드를 사용할 수 있습니다. `table` 메서드는 지정한 테이블에 대해 플루언트 쿼리 빌더 인스턴스를 반환하며, 다양한 제약 조건을 체이닝(연결)하고 최종적으로 `get` 메서드로 결과를 조회할 수 있습니다:
 
 ```php
 <?php
@@ -66,7 +66,7 @@ use Illuminate\View\View;
 class UserController extends Controller
 {
     /**
-     * 애플리케이션의 모든 사용자 목록을 표시합니다.
+     * 애플리케이션의 모든 사용자를 보여줍니다.
      */
     public function index(): View
     {
@@ -77,7 +77,7 @@ class UserController extends Controller
 }
 ```
 
-`get` 메서드는 쿼리 결과를 담은 `Illuminate\Support\Collection` 인스턴스를 반환하며, 각 결과는 PHP의 `stdClass` 객체입니다. 각 컬럼 값은 객체의 속성으로 접근할 수 있습니다:
+`get` 메서드는 쿼리의 결과를 담은 `Illuminate\Support\Collection` 인스턴스를 반환하며, 각각의 결과는 PHP의 `stdClass` 객체입니다. 각 컬럼의 값은 객체의 속성으로 접근할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -90,12 +90,12 @@ foreach ($users as $user) {
 ```
 
 > [!NOTE]
-> Laravel 컬렉션은 데이터를 변환하고 집계하기 위한 매우 강력한 메서드를 다양하게 제공합니다. Laravel 컬렉션에 대한 자세한 내용은 [컬렉션 문서](/docs/12.x/collections)를 참고하세요.
+> Laravel 컬렉션은 데이터 매핑(mapping) 및 리듀싱(reducing)에 매우 강력한 메서드를 제공합니다. Laravel 컬렉션에 대한 자세한 내용은 [컬렉션 문서](/docs/12.x/collections)를 참고하세요.
 
 <a name="retrieving-a-single-row-column-from-a-table"></a>
-#### 테이블에서 단일 행/컬럼 조회
+#### 테이블에서 단일 행 또는 컬럼 조회하기
 
-데이터베이스 테이블에서 한 행만 조회하려면 `DB` 파사드의 `first` 메서드를 사용할 수 있습니다. 이 메서드는 단일 `stdClass` 객체를 반환합니다:
+데이터베이스 테이블에서 하나의 행만 조회해야 한다면, `DB` 파사드의 `first` 메서드를 사용할 수 있습니다. 이 메서드는 단일 `stdClass` 객체를 반환합니다:
 
 ```php
 $user = DB::table('users')->where('name', 'John')->first();
@@ -103,31 +103,31 @@ $user = DB::table('users')->where('name', 'John')->first();
 return $user->email;
 ```
 
-조건에 맞는 행이 없을 경우 `Illuminate\Database\RecordNotFoundException`을 발생시키고 싶다면 `firstOrFail` 메서드를 사용할 수 있습니다. 예외가 잡히지 않으면 404 HTTP 응답이 자동으로 반환됩니다:
+만약 조회 조건에 맞는 행이 없을 경우 `Illuminate\Database\RecordNotFoundException` 예외를 발생시키고 싶다면 `firstOrFail` 메서드를 사용할 수 있습니다. 이 예외가 처리되지 않으면 404 HTTP 응답이 자동으로 클라이언트에 반환됩니다:
 
 ```php
 $user = DB::table('users')->where('name', 'John')->firstOrFail();
 ```
 
-전체 행이 필요 없다면, `value` 메서드로 특정 컬럼의 값만 바로 추출할 수 있습니다. 이 메서드는 해당 컬럼 값을 직접 반환합니다:
+전체 행이 필요하지 않고, 특정 컬럼 값만 추출하려면 `value` 메서드를 사용할 수 있습니다. 이 메서드는 해당 컬럼의 값을 직접 반환합니다:
 
 ```php
 $email = DB::table('users')->where('name', 'John')->value('email');
 ```
 
-또한, `id` 컬럼 값으로 특정 행을 조회하려면 `find` 메서드를 사용할 수 있습니다:
+`id` 컬럼 값으로 단일 행을 조회하고 싶다면 `find` 메서드를 사용하세요:
 
 ```php
 $user = DB::table('users')->find(3);
 ```
 
 <a name="retrieving-a-list-of-column-values"></a>
-#### 컬럼 값 목록 조회
+#### 컬럼 값 리스트 조회하기
 
-특정 컬럼값만 모은 `Illuminate\Support\Collection` 인스턴스를 얻고 싶다면 `pluck` 메서드를 사용할 수 있습니다. 아래 예시는 사용자들의 직함 컬렉션을 조회하는 예시입니다:
+특정 컬럼의 값들만 모아서 `Illuminate\Support\Collection` 형태로 가져오고 싶다면, `pluck` 메서드를 사용할 수 있습니다. 아래 예시에서는 사용자 타이틀을 컬렉션으로 조회합니다:
 
 ```php
-use Illuminate\Support\Facades.DB;
+use Illuminate\Support\Facades\DB;
 
 $titles = DB::table('users')->pluck('title');
 
@@ -136,7 +136,7 @@ foreach ($titles as $title) {
 }
 ```
 
-`pluck` 메서드의 두 번째 인자로 결과 컬렉션의 키가 될 컬럼을 지정할 수도 있습니다:
+`pluck` 메서드의 두 번째 인수로 결과 컬렉션의 키로 사용할 컬럼을 지정할 수 있습니다:
 
 ```php
 $titles = DB::table('users')->pluck('title', 'name');
@@ -147,13 +147,13 @@ foreach ($titles as $name => $title) {
 ```
 
 <a name="chunking-results"></a>
-### 결과 조각 처리 (Chunking Results)
+### 결과를 청크 단위로 처리하기 (Chunking Results)
 
-수천 건의 데이터베이스 레코드를 다루어야 할 때는 `DB` 파사드의 `chunk` 메서드를 사용하는 것이 좋습니다. 이 메서드는 한번에 소량의 결과만 조회해서 콜백으로 전달합니다. 예를 들어, `users` 테이블 전체를 한 번에 100개씩 처리하려면 다음과 같이 할 수 있습니다:
+수천 건에 달하는 데이터베이스 레코드를 다뤄야 한다면 `DB` 파사드의 `chunk` 메서드를 사용하는 것이 좋습니다. 이 메서드는 결과를 한 번에 작은 청크 단위로 조회하며, 각 청크를 클로저(익명 함수)에 전달하여 처리할 수 있습니다. 예를 들어, `users` 테이블의 전체 데이터를 100개씩 청크로 나누어 처리할 수 있습니다:
 
 ```php
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades.DB;
+use Illuminate\Support\Facades\DB;
 
 DB::table('users')->orderBy('id')->chunk(100, function (Collection $users) {
     foreach ($users as $user) {
@@ -162,7 +162,7 @@ DB::table('users')->orderBy('id')->chunk(100, function (Collection $users) {
 });
 ```
 
-콜백에서 `false`를 반환하면 추가로 쿼리가 처리되지 않습니다:
+클로저에서 `false`를 반환하면 추가 청크 처리도 중단할 수 있습니다:
 
 ```php
 DB::table('users')->orderBy('id')->chunk(100, function (Collection $users) {
@@ -172,7 +172,7 @@ DB::table('users')->orderBy('id')->chunk(100, function (Collection $users) {
 });
 ```
 
-조각별로 레코드를 업데이트한다면 예상치 못한 방식으로 결과가 달라질 수 있습니다. 조각 처리 중에 레코드를 업데이트해야 한다면 `chunkById` 메서드를 사용하는 것이 가장 좋습니다. 이 메서드는 자동으로 주 키(primary key)를 기준으로 결과를 페이지네이션합니다:
+청크 단위로 결과를 조회하는 중에 레코드를 업데이트하는 경우, 결과가 예상치 못한 방식으로 변할 수 있습니다. 청크 중에 데이터를 업데이트할 계획이라면 `chunkById` 메서드를 사용하는 것이 가장 안전합니다. 이 메서드는 기본 키(Primary Key) 기준으로 자동으로 페이지네이션 처리하여 청크를 만듭니다:
 
 ```php
 DB::table('users')->where('active', false)
@@ -185,7 +185,7 @@ DB::table('users')->where('active', false)
     });
 ```
 
-`chunkById` 및 `lazyById` 메서드는 내부적으로 직접 "where" 조건을 추가하므로, 추가적인 조건이 있다면 [논리적 그룹화](#logical-grouping)를 위해 클로저로 감싸는 것이 좋습니다:
+`chunkById` 및 `lazyById` 메서드는 쿼리 실행 시 자체적으로 "where" 조건을 추가하므로, 직접 조건을 추가하고 싶을 때는 반드시 클로저 내에서 [논리 그룹화](#logical-grouping)를 사용하는 것이 좋습니다:
 
 ```php
 DB::table('users')->where(function ($query) {
@@ -200,12 +200,12 @@ DB::table('users')->where(function ($query) {
 ```
 
 > [!WARNING]
-> 조각 처리 콜백 안에서 레코드의 주키(primary key) 또는 외래키(foreign key)를 변경하면 쿼리 결과에 영향이 있을 수 있습니다. 일부 레코드가 결과에서 누락될 수 있으니 주의하세요.
+> 청크 콜백 내부에서 레코드의 기본 키나 외래 키를 변경하면서 업데이트 또는 삭제할 경우, 청크 쿼리에 영향이 있으므로 일부 레코드가 청크 결과에 포함되지 않을 수 있습니다.
 
 <a name="streaming-results-lazily"></a>
-### 지연 스트리밍 처리 (Streaming Results Lazily)
+### 결과를 게으르게 스트리밍하기 (Streaming Results Lazily)
 
-`lazy` 메서드는 [chunk 메서드](#chunking-results)처럼 쿼리를 조각별로 실행합니다. 그러나 각 조각을 콜백으로 전달하는 대신, `lazy()` 메서드는 [LazyCollection](/docs/12.x/collections#lazy-collections)을 반환하여 전체 결과를 스트림처럼 다룰 수 있도록 합니다:
+`lazy` 메서드는 [chunk 메서드](#chunking-results)와 유사하게 쿼리를 청크 단위로 실행하지만, 각 청크를 콜백에 전달하는 대신 하나의 [LazyCollection](/docs/12.x/collections#lazy-collections)으로 반환합니다. 이를 통해 전체 결과를 스트림처럼 다룰 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -215,7 +215,7 @@ DB::table('users')->orderBy('id')->lazy()->each(function (object $user) {
 });
 ```
 
-마찬가지로, 반복 처리 중에 레코드를 업데이트해야 한다면 `lazyById` 또는 `lazyByIdDesc` 메서드를 사용하는 것이 좋습니다. 이들은 주키를 기준으로 자동 페이징됩니다:
+조회한 레코드를 순회(iterate)하면서 업데이트할 계획이라면, `lazyById` 또는 `lazyByIdDesc` 메서드를 사용하는 것이 가장 안전합니다. 이 역시 기본 키를 기준으로 결과를 자동 페이지네이션합니다:
 
 ```php
 DB::table('users')->where('active', false)
@@ -227,12 +227,12 @@ DB::table('users')->where('active', false)
 ```
 
 > [!WARNING]
-> 반복 중에 레코드의 주키(primary key)나 외래키(foreign key) 값을 변경하면 쿼리의 결과가 달라질 수 있으며, 일부 레코드가 누락될 수 있습니다.
+> 반복문 안에서 레코드의 기본 키 또는 외래 키를 변경하여 업데이트/삭제하면 청크 쿼리에 영향이 있으므로, 일부 레코드가 결과에 포함되지 않을 수 있습니다.
 
 <a name="aggregates"></a>
 ### 집계 함수 (Aggregates)
 
-쿼리 빌더는 `count`, `max`, `min`, `avg`, `sum` 등의 다양한 집계 메서드를 제공합니다. 쿼리를 작성한 후 이러한 메서드를 호출할 수 있습니다:
+쿼리 빌더에는 `count`, `max`, `min`, `avg`, `sum` 등과 같은 다양한 집계 함수 메서드가 제공됩니다. 쿼리 생성 후 해당 메서드를 호출하여 집계 값을 구할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -242,7 +242,7 @@ $users = DB::table('users')->count();
 $price = DB::table('orders')->max('price');
 ```
 
-물론, 집계 메서드는 다른 조건과도 함께 사용할 수 있습니다:
+물론 집계 함수와 다른 구문을 조합하여 집계 값을 세밀하게 조정할 수도 있습니다:
 
 ```php
 $price = DB::table('orders')
@@ -251,9 +251,9 @@ $price = DB::table('orders')
 ```
 
 <a name="determining-if-records-exist"></a>
-#### 레코드 존재 여부 확인
+#### 레코드 존재 여부 확인하기
 
-쿼리 조건에 맞는 레코드가 존재하는지 `count` 대신 `exists`와 `doesntExist` 메서드를 사용할 수 있습니다:
+쿼리 결과가 존재하는지 단순히 확인하려면 `count` 대신 `exists` 또는 `doesntExist` 메서드를 사용할 수 있습니다:
 
 ```php
 if (DB::table('orders')->where('finalized', 1)->exists()) {
@@ -266,12 +266,12 @@ if (DB::table('orders')->where('finalized', 1)->doesntExist()) {
 ```
 
 <a name="select-statements"></a>
-## Select 구문 (Select Statements)
+## SELECT 구문 (Select Statements)
 
 <a name="specifying-a-select-clause"></a>
-#### Select 절 지정
+#### SELECT 구문 지정하기
 
-데이터베이스 테이블의 모든 컬럼을 조회하지 않고, 원하는 컬럼만 지정하고 싶을 때는 `select` 메서드를 사용할 수 있습니다:
+항상 테이블의 모든 컬럼을 조회할 필요는 없습니다. `select` 메서드를 사용하면 원하는 "select" 구문을 직접 지정할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -281,13 +281,13 @@ $users = DB::table('users')
     ->get();
 ```
 
-`distinct` 메서드는 쿼리 결과가 중복되지 않도록 강제할 수 있습니다:
+`distinct` 메서드를 사용하면 중복된 결과 없이 고유한 레코드만 반환하도록 강제할 수 있습니다:
 
 ```php
 $users = DB::table('users')->distinct()->get();
 ```
 
-이미 쿼리 빌더 인스턴스가 있을 때, 기존 select 절에 컬럼을 추가하려면 `addSelect` 메서드를 사용할 수 있습니다:
+이미 쿼리 빌더 인스턴스가 있고, 기존 select 구문에 컬럼을 추가하고 싶다면 `addSelect` 메서드를 사용하세요:
 
 ```php
 $query = DB::table('users')->select('name');
@@ -298,7 +298,7 @@ $users = $query->addSelect('age')->get();
 <a name="raw-expressions"></a>
 ## Raw 표현식 (Raw Expressions)
 
-쿼리에 임의의 SQL 문자열을 삽입해야 할 때가 있습니다. 이럴 때 `DB` 파사드의 `raw` 메서드로 Raw 문자열 표현식을 만들 수 있습니다:
+쿼리에 임의의 문자열을 삽입해야 할 때가 있습니다. 이때는 `DB` 파사드의 `raw` 메서드를 사용하여 Raw 문자열 표현식을 만들 수 있습니다:
 
 ```php
 $users = DB::table('users')
@@ -309,17 +309,17 @@ $users = DB::table('users')
 ```
 
 > [!WARNING]
-> Raw 구문은 쿼리에 문자열로 그대로 삽입되므로, SQL 인젝션 취약점에 노출되지 않도록 각별한 주의가 필요합니다.
+> Raw 구문은 그대로 문자열로 쿼리문에 삽입되므로 SQL 인젝션 취약점이 발생하지 않도록 매우 주의해야 합니다.
 
 <a name="raw-methods"></a>
-### Raw 메서드
+### Raw 관련 메서드
 
-`DB::raw` 대신 아래 메서드를 사용하여 쿼리의 다양한 부분에 raw 표현식을 삽입할 수도 있습니다. **Raw 표현식을 사용하는 쿼리는 Laravel이 SQL 인젝션으로부터 완전히 보호해줄 수 없습니다.**
+`DB::raw` 대신, 쿼리의 다양한 위치에 Raw 표현식을 삽입할 수 있는 여러 메서드도 제공됩니다. **Raw 표현식을 사용하는 쿼리는 SQL 인젝션으로부터 완전히 보호되지 않는다는 점을 반드시 유념하세요.**
 
 <a name="selectraw"></a>
 #### `selectRaw`
 
-`selectRaw` 메서드는 `addSelect(DB::raw(/* ... */))` 대신 사용할 수 있습니다. 두 번째 인자로 바인딩 배열을 전달할 수 있습니다:
+`selectRaw`는 `addSelect(DB::raw(/* ... */))` 대신 사용할 수 있으며, 두 번째 인수로 바인딩 배열을 받을 수 있습니다:
 
 ```php
 $orders = DB::table('orders')
@@ -330,7 +330,7 @@ $orders = DB::table('orders')
 <a name="whereraw-orwhereraw"></a>
 #### `whereRaw / orWhereRaw`
 
-`whereRaw`, `orWhereRaw` 메서드는 쿼리에 raw "where" 절을 삽입합니다. 두 번째 인자로 바인딩 배열을 전달할 수 있습니다:
+`whereRaw` 와 `orWhereRaw`는 쿼리에 Raw 형태의 WHERE 절을 삽입할 때 사용할 수 있습니다. 이들 역시 두 번째 인수로 바인딩 배열을 받을 수 있습니다:
 
 ```php
 $orders = DB::table('orders')
@@ -341,7 +341,7 @@ $orders = DB::table('orders')
 <a name="havingraw-orhavingraw"></a>
 #### `havingRaw / orHavingRaw`
 
-`havingRaw`, `orHavingRaw` 메서드는 "having" 절에 raw 문자열을 사용할 수 있게 합니다. 두 번째 인자로 바인딩 배열을 전달할 수 있습니다:
+`havingRaw` 와 `orHavingRaw`는 HAVING 절에 Raw 문자열을 값으로 지정할 때 사용할 수 있으며, 바인딩 배열도 받을 수 있습니다:
 
 ```php
 $orders = DB::table('orders')
@@ -354,7 +354,7 @@ $orders = DB::table('orders')
 <a name="orderbyraw"></a>
 #### `orderByRaw`
 
-`orderByRaw` 메서드는 "order by" 절에 raw 문자열을 사용할 수 있습니다:
+`orderByRaw`는 ORDER BY 절에 Raw 문자열을 사용할 때 유용합니다:
 
 ```php
 $orders = DB::table('orders')
@@ -365,7 +365,7 @@ $orders = DB::table('orders')
 <a name="groupbyraw"></a>
 ### `groupByRaw`
 
-`groupByRaw` 메서드는 `group by` 절에 raw 문자열을 사용할 수 있도록 합니다:
+`groupByRaw`는 GROUP BY 절에 Raw 문자열을 제공할 때 사용합니다:
 
 ```php
 $orders = DB::table('orders')
@@ -375,15 +375,15 @@ $orders = DB::table('orders')
 ```
 
 <a name="joins"></a>
-## 조인 (Joins)
+## 조인(Joins) (Joins)
 
 <a name="inner-join-clause"></a>
-#### Inner Join 절
+#### INNER JOIN 구문
 
-쿼리 빌더로 쿼리에 조인(join) 절을 추가할 수 있습니다. 기본 "inner join"을 하려면 `join` 메서드를 사용하세요. 첫 번째 인자는 조인할 테이블 이름이며, 나머지 인자로는 컬럼 제약조건을 지정합니다. 한번의 쿼리에서 여러 테이블을 조인할 수도 있습니다:
+쿼리 빌더에서는 조인 구문을 추가할 수 있습니다. 기본적인 "inner join"을 수행하려면 `join` 메서드를 사용합니다. 첫 번째 인수에는 조인할 테이블명을, 나머지 인수에는 조인을 위한 컬럼 조건을 지정합니다. 하나의 쿼리에서 여러 테이블을 조인할 수도 있습니다:
 
 ```php
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades.DB;
 
 $users = DB::table('users')
     ->join('contacts', 'users.id', '=', 'contacts.user_id')
@@ -393,9 +393,9 @@ $users = DB::table('users')
 ```
 
 <a name="left-join-right-join-clause"></a>
-#### Left Join / Right Join 절
+#### LEFT JOIN / RIGHT JOIN 구문
 
-"inner join" 대신 "left join" 또는 "right join"을 하고 싶다면, `leftJoin`이나 `rightJoin` 메서드를 사용하면 됩니다. 시그니처는 `join`과 동일합니다:
+"inner join" 대신 "left join" 혹은 "right join"을 하고 싶다면 `leftJoin`이나 `rightJoin` 메서드를 사용하면 됩니다. 이 메서드들도 `join`과 동일한 시그니처를 가집니다:
 
 ```php
 $users = DB::table('users')
@@ -408,9 +408,9 @@ $users = DB::table('users')
 ```
 
 <a name="cross-join-clause"></a>
-#### Cross Join 절
+#### CROSS JOIN 구문
 
-"cross join"을 하려면 `crossJoin` 메서드를 사용할 수 있습니다. cross join은 두 테이블 간의 데카르트 곱(cartesian product)을 생성합니다:
+"cross join"을 수행하려면 `crossJoin` 메서드를 사용할 수 있습니다. Cross join은 첫 번째 테이블과 조인하는 테이블의 데카르트 곱(Cartesian product)을 생성합니다:
 
 ```php
 $sizes = DB::table('sizes')
@@ -419,9 +419,9 @@ $sizes = DB::table('sizes')
 ```
 
 <a name="advanced-join-clauses"></a>
-#### 고급 조인 절
+#### 고급 조인(Advanced Join) 구문
 
-더 복잡한 조인 조건이 필요하다면, 두 번째 인수로 클로저를 전달하세요. 이 클로저에는 `Illuminate\Database\Query\JoinClause` 인스턴스가 전달되며, 이를 통해 다양한 조인 조건을 추가할 수 있습니다:
+더 복잡한 조인 구문도 지정할 수 있습니다. `join` 메서드의 두 번째 인수로 클로저를 전달하면, 이 클로저는 `Illuminate\Database\Query\JoinClause` 인스턴스를 받아 조인 절의 다양한 제약 조건을 적용할 수 있습니다:
 
 ```php
 DB::table('users')
@@ -431,7 +431,7 @@ DB::table('users')
     ->get();
 ```
 
-조인에서 "where" 절을 사용하려면, `JoinClause` 인스턴스의 `where`와 `orWhere` 메서드를 사용하면 됩니다. 이들은 두 컬럼이 아닌, 컬럼과 값을 비교합니다:
+조인에 "where" 절이 필요하다면, `JoinClause` 인스턴스의 `where`, `orWhere` 메서드를 사용하면 됩니다. 이때 두 컬럼이 아니라, 컬럼과 값을 비교합니다:
 
 ```php
 DB::table('users')
@@ -445,7 +445,7 @@ DB::table('users')
 <a name="subquery-joins"></a>
 #### 서브쿼리 조인
 
-`joinSub`, `leftJoinSub`, `rightJoinSub` 메서드를 사용하여 서브쿼리와 조인할 수 있습니다. 각 메서드는 세 개의 인자를 받으며, 서브쿼리, 별칭, 연결할 컬럼을 정의하는 클로저입니다. 아래 예시는 각 사용자마다 최근에 게시한 블로그 포스트의 `created_at` 타임스탬프를 포함하여 사용자 컬렉션을 조회하는 예시입니다:
+`joinSub`, `leftJoinSub`, `rightJoinSub` 메서드를 활용해 쿼리와 서브쿼리를 조인할 수 있습니다. 각 메서드는 세 개의 인수를 받으며, 순서대로 서브쿼리, 테이블 별칭, 관련 컬럼을 정의하는 클로저입니다. 아래 예시는 각 사용자별로 최근 게시글의 `created_at` 값을 함께 조회합니다:
 
 ```php
 $latestPosts = DB::table('posts')
@@ -463,11 +463,11 @@ $users = DB::table('users')
 #### Lateral 조인
 
 > [!WARNING]
-> Lateral 조인은 현재 PostgreSQL, MySQL >= 8.0.14, SQL Server에서 지원됩니다.
+> Lateral 조인은 PostgreSQL, MySQL 8.0.14 이상, SQL Server에서 지원됩니다.
 
-`joinLateral` 및 `leftJoinLateral` 메서드를 사용하여 서브쿼리와 "lateral join"을 수행할 수 있습니다. 각 메서드는 서브쿼리와 별칭 두 개의 인자를 받으며, 조인 조건은 해당 서브쿼리의 `where` 절에서 지정해야 합니다. Lateral 조인은 각 행별로 평가되며, 서브쿼리 외부의 컬럼을 참조할 수 있습니다.
+`joinLateral` 및 `leftJoinLateral` 메서드를 이용해 서브쿼리와 "lateral join"을 할 수 있습니다. 두 메서드는 서브쿼리와 별칭 두 개의 인수를 받으며, 조인 조건은 서브쿼리 내 `where` 절에서 지정해야 합니다. Lateral 조인은 각 행마다 평가되며, 서브쿼리 외부의 컬럼을 참조할 수 있습니다.
 
-아래 예시는 각 사용자와 해당 사용자의 최근 블로그 포스트 3개를 조회하는 예시입니다. 각 사용자는 최대 3개의 결과 행을 생성할 수 있습니다. 조인 조건은 서브쿼리 안에서 `whereColumn`을 사용하여 현재 사용자 행을 참조합니다:
+아래 예시는 각 사용자별로 최근 3개의 게시글을 함께 조회합니다. 서브쿼리 내에서 `whereColumn`을 이용해 조인 조건을 걸 수 있습니다:
 
 ```php
 $latestPosts = DB::table('posts')
@@ -482,9 +482,9 @@ $users = DB::table('users')
 ```
 
 <a name="unions"></a>
-## 유니언 (Unions)
+## 유니언(Unions) (Unions)
 
-쿼리 빌더는 여러 쿼리를 "union"으로 합치는 편리한 방법도 제공합니다. 예를 들어, 기본 쿼리를 만든 후 `union` 메서드를 호출해 더 많은 쿼리와 합칠 수 있습니다:
+쿼리 빌더는 두 개 이상의 쿼리를 "union"으로 결합할 수 있는 편리한 메서드도 제공합니다. 우선 하나의 쿼리를 만들고, `union` 메서드로 추가 쿼리를 결합할 수 있습니다:
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -498,17 +498,17 @@ $users = DB::table('users')
     ->get();
 ```
 
-`union` 이외에도, `unionAll` 메서드는 중복 결과를 제거하지 않고 그대로 합칩니다. 시그니처는 `union`과 동일합니다.
+`union` 외에, 결과 중복을 제거하지 않는 `unionAll` 메서드도 있습니다. `unionAll` 메서드는 `union`과 동일한 시그니처를 가집니다.
 
 <a name="basic-where-clauses"></a>
-## 기본 Where 절 (Basic Where Clauses)
+## 기본 WHERE 구문 (Basic Where Clauses)
 
 <a name="where-clauses"></a>
-### Where 절
+### WHERE 구문
 
-쿼리 빌더의 `where` 메서드를 사용해 "where" 절을 추가할 수 있습니다. 가장 기본적인 호출 방식은 세 개의 인자를 필요로 합니다. 첫 번째는 컬럼명, 두 번째는 데이터베이스에서 지원하는 연산자, 세 번째는 비교 값입니다.
+쿼리 빌더의 `where` 메서드를 사용해서 쿼리에 "WHERE" 구문을 추가할 수 있습니다. 가장 기본적인 `where` 호출은 세 개의 인수를 받습니다. 첫 번째는 컬럼명, 두 번째는 연산자(데이터베이스에서 지원하는 모든 연산자 사용 가능), 세 번째는 컬럼값과 비교할 값입니다.
 
-예를 들어 아래 쿼리는 `votes` 컬럼이 100이고, `age` 컬럼이 35보다 큰 사용자를 조회합니다:
+아래 쿼리는 `votes`가 100이고 `age`가 35보다 큰 사용자를 조회합니다:
 
 ```php
 $users = DB::table('users')
@@ -517,13 +517,13 @@ $users = DB::table('users')
     ->get();
 ```
 
-`=` 연산자를 사용할 때는 두 번째 인자로 바로 값을 넘겨도 되며, 이 경우 Laravel이 `=` 연산을 자동으로 적용합니다:
+편의를 위해, 컬럼값이 `=` 인지 확인할 경우에는 두 번째 인수만 생략하고 값을 바로 전달할 수 있습니다. Laravel은 자동으로 `=` 연산자를 사용합니다:
 
 ```php
 $users = DB::table('users')->where('votes', 100)->get();
 ```
 
-여러 컬럼을 한 번에 조건으로 조회하고 싶을 때는 연관 배열을 전달할 수 있습니다:
+여러 컬럼을 빠르게 조건으로 추가하고 싶으면, 연관 배열을 `where`에 전달하세요:
 
 ```php
 $users = DB::table('users')->where([
@@ -532,7 +532,7 @@ $users = DB::table('users')->where([
 ])->get();
 ```
 
-뿐만 아니라, 데이터베이스에서 지원하는 모든 연산자를 사용할 수 있습니다:
+앞서 설명한 대로, 데이터베이스에서 지원하는 모든 연산자를 사용할 수 있습니다:
 
 ```php
 $users = DB::table('users')
@@ -548,7 +548,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-세 개의 인자 배열을 요소로 하는 배열을 전달하면, 여러 조건을 한 번에 지정할 수도 있습니다:
+여러 개의 조건을 배열 형태로 전달할 수도 있습니다. 각 조건은 세 개의 인자를 갖는 배열로 전달합니다:
 
 ```php
 $users = DB::table('users')->where([
@@ -558,15 +558,15 @@ $users = DB::table('users')->where([
 ```
 
 > [!WARNING]
-> PDO는 컬럼명 바인딩을 지원하지 않습니다. 따라서 사용자 입력이 쿼리에서 참조되는 컬럼명에 영향을 주어서는 안 됩니다. "order by" 컬럼명에도 동일하게 적용됩니다.
+> PDO는 컬럼명 바인딩을 지원하지 않으므로, 사용자 입력으로 쿼리에서 참조할 컬럼명을 결정하는 방식(특히 "order by" 컬럼 지정)은 절대 금지해야 합니다.
 
 > [!WARNING]
-> MySQL과 MariaDB는 문자열-숫자 비교 시 문자열을 자동으로 정수로 변환합니다. 이 과정에서 숫자가 아닌 문자열은 `0`으로 변환되어 예상과 다른 결과가 발생할 수 있습니다. 예를 들어, 테이블에 `secret` 컬럼 값이 `aaa`인 레코드가 있고 `User::where('secret', 0)`을 실행하면 해당 행이 반환될 수 있습니다. 따라서 쿼리 사용 전 값의 타입을 반드시 명확히 지정하십시오.
+> MySQL 및 MariaDB는 문자열-숫자 비교 시 문자열을 자동으로 정수로 변환합니다. 이 과정에서 비숫자 문자열은 `0`으로 변환되므로, 예기치 않은 결과가 발생할 수 있습니다. 예를 들어, `secret` 컬럼 값이 `aaa`인 경우 `User::where('secret', 0)`을 실행하면 해당 행이 반환됩니다. 이를 방지하려면 쿼리값을 미리 타입캐스팅하세요.
 
 <a name="or-where-clauses"></a>
-### Or Where 절
+### OR WHERE 구문
 
-`where` 메서드 체이닝 시 기본적으로 `and`로 연결됩니다. 하지만, `or`로 조건을 연결하려면 `orWhere` 메서드를 사용하면 됩니다. `orWhere` 역시 `where`와 같은 인자를 받습니다:
+`where` 메서드는 체이닝 시 기본적으로 AND 연산자로 결합됩니다. 그러나 `orWhere` 메서드를 사용하면 OR 연산자를 사용할 수 있습니다. `orWhere`는 `where`와 동일한 인수를 받습니다:
 
 ```php
 $users = DB::table('users')
@@ -575,10 +575,10 @@ $users = DB::table('users')
     ->get();
 ```
 
-"or" 조건을 괄호로 그룹화하고 싶다면, 첫 번째 인자로 클로저를 전달하면 됩니다:
+괄호(())로 묶어 조건을 그룹화해야 할 때는, `orWhere` 첫 번째 인수에 클로저를 넘기면 됩니다:
 
 ```php
-use Illuminate\Database\Query\Builder; 
+use Illuminate\Database\Query\Builder;
 
 $users = DB::table('users')
     ->where('votes', '>', 100)
@@ -596,12 +596,12 @@ select * from users where votes > 100 or (name = 'Abigail' and votes > 50)
 ```
 
 > [!WARNING]
-> 전역 스코프 적용 시 의도치 않은 쿼리 동작을 피하기 위해 항상 `orWhere` 호출 그룹화를 권장합니다.
+> 전역 스코프가 적용되는 경우 예기치 않은 결과를 피하려면 항상 `orWhere` 호출을 그룹화해야 합니다.
 
 <a name="where-not-clauses"></a>
-### Where Not 절
+### WHERE NOT 구문
 
-`whereNot`과 `orWhereNot` 메서드는 쿼리 조건 그룹을 부정(negate, NOT)합니다. 다음 쿼리는 할인 중이거나 가격이 10 미만인 상품을 제외합니다:
+`whereNot`와 `orWhereNot` 메서드는 쿼리에서 제약 조건 그룹을 반전(부정)할 때 사용합니다. 아래 예시는 클리어런스 상품이거나 가격이 10보다 작은 상품을 제외합니다:
 
 ```php
 $products = DB::table('products')
@@ -613,9 +613,9 @@ $products = DB::table('products')
 ```
 
 <a name="where-any-all-none-clauses"></a>
-### Where Any / All / None 절
+### WHERE ANY / ALL / NONE 구문
 
-여러 컬럼에 동일한 조건을 적용해야 할 때가 있습니다. 예를 들어, 목록 중 하나라도 `LIKE` 패턴과 일치하는 모든 레코드를 조회하려면 `whereAny`를 사용할 수 있습니다:
+동일한 제약 조건을 여러 컬럼에 한꺼번에 적용해야 할 때가 있습니다. 예를 들어, 특정 값으로 LIKE 검색할 때, 여러 컬럼 중 하나라도 일치하는 레코드를 조회하려면 `whereAny` 메서드를 사용할 수 있습니다:
 
 ```php
 $users = DB::table('users')
@@ -628,7 +628,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-위 쿼리는 아래와 같은 SQL을 생성합니다:
+위 쿼리는 다음과 같은 SQL을 생성합니다:
 
 ```sql
 SELECT *
@@ -640,7 +640,7 @@ WHERE active = true AND (
 )
 ```
 
-마찬가지로, 모든 컬럼이 조건을 만족해야 할 때는 `whereAll`을 사용할 수 있습니다:
+`whereAll` 메서드는 모든 컬럼이 주어진 제약 조건을 만족하는 레코드를 조회합니다:
 
 ```php
 $posts = DB::table('posts')
@@ -652,7 +652,7 @@ $posts = DB::table('posts')
     ->get();
 ```
 
-이 쿼리는 다음과 같습니다:
+위 쿼리는 다음 SQL을 생성합니다:
 
 ```sql
 SELECT *
@@ -663,7 +663,7 @@ WHERE published = true AND (
 )
 ```
 
-어떤 컬럼도 조건을 만족하지 않아야 할 때 `whereNone`을 사용할 수 있습니다:
+`whereNone` 메서드는 지정한 제약 조건에 아무 컬럼도 만족하지 않는 레코드를 조회합니다:
 
 ```php
 $albums = DB::table('albums')
@@ -676,7 +676,7 @@ $albums = DB::table('albums')
     ->get();
 ```
 
-이 쿼리는 다음과 같습니다:
+위 쿼리는 다음 SQL을 생성합니다:
 
 ```sql
 SELECT *
@@ -689,9 +689,9 @@ WHERE published = true AND NOT (
 ```
 
 <a name="json-where-clauses"></a>
-### JSON Where 절
+### JSON WHERE 구문
 
-Laravel은 JSON 컬럼 타입을 지원하는 데이터베이스(MariaDB 10.3+, MySQL 8.0+, PostgreSQL 12.0+, SQL Server 2017+, SQLite 3.39.0+)에서 직접 JSON 컬럼을 대상으로 조회할 수 있습니다. JSON 컬럼 조회는 `->` 연산자를 사용합니다:
+Laravel은 JSON 컬럼 타입을 제공하는 데이터베이스(현재 MariaDB 10.3+, MySQL 8.0+, PostgreSQL 12+, SQL Server 2017+, SQLite 3.39.0+)에서 JSON 컬럼을 쉽게 쿼리할 수 있습니다. JSON 컬럼 조회에는 `->` 연산자를 사용하세요:
 
 ```php
 $users = DB::table('users')
@@ -703,7 +703,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-JSON 배열을 조건으로 처리하고 싶다면 `whereJsonContains`, `whereJsonDoesntContain` 메서드를 사용할 수 있습니다:
+JSON 배열을 쿼리하려면 `whereJsonContains`, `whereJsonDoesntContain` 메서드를 사용하세요:
 
 ```php
 $users = DB::table('users')
@@ -715,7 +715,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-MariaDB, MySQL, PostgreSQL을 사용하는 경우에는 값 배열을 전달할 수도 있습니다:
+MariaDB, MySQL, PostgreSQL에서는 값 배열을 `whereJsonContains`, `whereJsonDoesntContain` 두 번째 인수로 전달할 수 있습니다:
 
 ```php
 $users = DB::table('users')
@@ -727,7 +727,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-JSON 키의 포함 여부로 검색할 때는 `whereJsonContainsKey`, `whereJsonDoesntContainKey` 메서드를 사용할 수 있습니다:
+JSON 키의 존재 여부만 판별하려면 `whereJsonContainsKey` 또는 `whereJsonDoesntContainKey`를 사용하세요:
 
 ```php
 $users = DB::table('users')
@@ -739,7 +739,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-마지막으로, JSON 배열의 길이로 검색하려면 `whereJsonLength`를 사용할 수 있습니다:
+마지막으로, JSON 배열의 길이(요소 개수)로 조건을 만들고 싶다면 `whereJsonLength`를 사용할 수 있습니다:
 
 ```php
 $users = DB::table('users')
@@ -752,11 +752,11 @@ $users = DB::table('users')
 ```
 
 <a name="additional-where-clauses"></a>
-### 추가 Where 절
+### 추가 WHERE 구문
 
 **whereLike / orWhereLike / whereNotLike / orWhereNotLike**
 
-`whereLike` 메서드는 패턴 매칭을 위한 "LIKE" 절을 쿼리에 추가합니다. 이 메서드는 데이터베이스에 독립적인(agnostic) 방식으로 문자열 매칭 쿼리를 수행하며, 기본적으로 대소문자를 구분하지 않습니다:
+패턴 매칭을 위한 "LIKE" 조건은 `whereLike` 메서드로 간편하게 추가할 수 있습니다. 이 메서드는 데이터베이스에 독립적인(agnostic) 문자열 패턴 검색을 지원하며, 기본적으로 대소문자 구분 없이(케이스 인식 비활성) 동작합니다:
 
 ```php
 $users = DB::table('users')
@@ -764,7 +764,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`caseSensitive` 인자를 true로 지정하면 대소문자를 구분하는 검색도 가능합니다:
+`caseSensitive` 인수를 통해 대소문자 구분 검색을 활성화할 수 있습니다:
 
 ```php
 $users = DB::table('users')
@@ -772,7 +772,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`orWhereLike`는 "or" 절과 LIKE 조건을 함께 추가할 때 사용합니다:
+`orWhereLike`는 LIKE 조건을 OR 연산자로 추가할 때 사용합니다:
 
 ```php
 $users = DB::table('users')
@@ -781,15 +781,13 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereNotLike`는 "NOT LIKE" 절을 쿼리에 추가합니다:
+`whereNotLike`는 "NOT LIKE" 조건을 추가하고, `orWhereNotLike`는 OR NOT LIKE 조건을 추가합니다:
 
 ```php
 $users = DB::table('users')
     ->whereNotLike('name', '%John%')
     ->get();
 ```
-
-마찬가지로 `orWhereNotLike`를 사용하면 "or" + "NOT LIKE"가 결합된 조건을 추가할 수 있습니다:
 
 ```php
 $users = DB::table('users')
@@ -799,11 +797,11 @@ $users = DB::table('users')
 ```
 
 > [!WARNING]
-> `whereLike`의 대소문자 구분 검색 옵션은 현재 SQL Server에서는 지원되지 않습니다.
+> SQL Server에서는 `whereLike`의 대소문자 구분 옵션이 지원되지 않습니다.
 
 **whereIn / whereNotIn / orWhereIn / orWhereNotIn**
 
-`whereIn` 메서드는 컬럼 값이 주어진 배열에 포함되는지 확인합니다:
+`whereIn`은 지정한 배열 내에 컬럼값이 포함되어 있음을 확인합니다:
 
 ```php
 $users = DB::table('users')
@@ -811,7 +809,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereNotIn` 메서드는 주어진 배열에 포함되지 않는 값을 조회합니다:
+`whereNotIn`은 컬럼값이 배열에 포함되어 있지 않음을 확인합니다:
 
 ```php
 $users = DB::table('users')
@@ -819,7 +817,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-두 번째 인자로 쿼리 객체를 전달할 수도 있습니다:
+`whereIn` 두 번째 인수로 쿼리 빌더를 전달할 수도 있습니다:
 
 ```php
 $activeUsers = DB::table('users')->select('id')->where('is_active', 1);
@@ -829,7 +827,7 @@ $comments = DB::table('comments')
     ->get();
 ```
 
-위 예제는 다음과 같은 SQL을 생성합니다:
+위 예시는 다음과 같은 SQL을 생성합니다:
 
 ```sql
 select * from comments where user_id in (
@@ -840,11 +838,11 @@ select * from comments where user_id in (
 ```
 
 > [!WARNING]
-> 매우 많은 정수 배열을 바인딩해야 할 때는 `whereIntegerInRaw` 또는 `whereIntegerNotInRaw`를 사용하면 메모리 사용을 크게 줄일 수 있습니다.
+> 대량의 정수 배열을 바인딩할 경우 `whereIntegerInRaw` 또는 `whereIntegerNotInRaw`를 사용하면 메모리 사용량을 크게 줄일 수 있습니다.
 
 **whereBetween / orWhereBetween**
 
-`whereBetween` 메서드는 컬럼 값이 두 값 사이에 있는지 확인합니다:
+`whereBetween`은 컬럼값이 두 값 사이에 포함되는지 확인합니다:
 
 ```php
 $users = DB::table('users')
@@ -854,7 +852,7 @@ $users = DB::table('users')
 
 **whereNotBetween / orWhereNotBetween**
 
-`whereNotBetween`은 컬럼 값이 두 값 밖에 있는지 확인합니다:
+`whereNotBetween`은 컬럼값이 두 값 밖에 위치하는지를 확인합니다:
 
 ```php
 $users = DB::table('users')
@@ -864,7 +862,7 @@ $users = DB::table('users')
 
 **whereBetweenColumns / whereNotBetweenColumns / orWhereBetweenColumns / orWhereNotBetweenColumns**
 
-`whereBetweenColumns`는 하나의 컬럼 값이 같은 행의 두 컬럼 값 사이에 있는지 확인합니다:
+`whereBetweenColumns`는 한 컬럼이 같은 행의 두 컬럼 값 사이에 있는지 확인합니다:
 
 ```php
 $patients = DB::table('patients')
@@ -872,7 +870,7 @@ $patients = DB::table('patients')
     ->get();
 ```
 
-`whereNotBetweenColumns`는 컬럼 값이 두 컬럼 값의 범위 밖에 있는지 확인합니다:
+`whereNotBetweenColumns`는 하나의 값이 두 컬럼의 값 범위 밖에 있는지 확인합니다:
 
 ```php
 $patients = DB::table('patients')
@@ -882,25 +880,25 @@ $patients = DB::table('patients')
 
 **whereValueBetween / whereValueNotBetween / orWhereValueBetween / orWhereValueNotBetween**
 
-`whereValueBetween`는 특정 값이 같은 행의 두 컬럼 값 사이에 있는지 확인합니다:
+`whereValueBetween`은 특정 값이 행 내 두 컬럼 값 사이에 있는지 확인합니다:
 
 ```php
-$patients = DB::table('products')
+$products = DB::table('products')
     ->whereValueBetween(100, ['min_price', 'max_price'])
     ->get();
 ```
 
-`whereValueNotBetween`는 값이 두 컬럼 값의 범위 밖에 있는지 확인합니다:
+`whereValueNotBetween`은 해당 값이 컬럼 값 범위 밖에 있는지 확인합니다:
 
 ```php
-$patients = DB::table('products')
+$products = DB::table('products')
     ->whereValueNotBetween(100, ['min_price', 'max_price'])
     ->get();
 ```
 
 **whereNull / whereNotNull / orWhereNull / orWhereNotNull**
 
-`whereNull` 메서드는 해당 컬럼 값이 `NULL`인지 확인합니다:
+`whereNull`은 컬럼값이 `NULL`인지를 확인합니다:
 
 ```php
 $users = DB::table('users')
@@ -908,7 +906,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`whereNotNull`은 컬럼 값이 NULL이 아닌지 확인합니다:
+`whereNotNull`은 컬럼값이 `NULL`이 아닌지 확인합니다:
 
 ```php
 $users = DB::table('users')
@@ -918,41 +916,25 @@ $users = DB::table('users')
 
 **whereDate / whereMonth / whereDay / whereYear / whereTime**
 
-`whereDate`로 컬럼 값을 특정 날짜와 비교할 수 있습니다:
+날짜나 시간에 대한 비교가 필요할 때 각각 `whereDate`, `whereMonth`, `whereDay`, `whereYear`, `whereTime` 메서드를 사용할 수 있습니다:
 
 ```php
 $users = DB::table('users')
     ->whereDate('created_at', '2016-12-31')
     ->get();
-```
 
-`whereMonth`로는 컬럼 값을 특정 월과 비교합니다:
-
-```php
 $users = DB::table('users')
     ->whereMonth('created_at', '12')
     ->get();
-```
 
-`whereDay`는 컬럼 값을 특정 일(day of month)과 비교합니다:
-
-```php
 $users = DB::table('users')
     ->whereDay('created_at', '31')
     ->get();
-```
 
-`whereYear`는 컬럼 값을 특정 연도와 비교합니다:
-
-```php
 $users = DB::table('users')
     ->whereYear('created_at', '2016')
     ->get();
-```
 
-`whereTime`는 컬럼 값을 특정 시간과 비교합니다:
-
-```php
 $users = DB::table('users')
     ->whereTime('created_at', '=', '11:20:45')
     ->get();
@@ -960,7 +942,7 @@ $users = DB::table('users')
 
 **wherePast / whereFuture / whereToday / whereBeforeToday / whereAfterToday**
 
-`wherePast` 및 `whereFuture`는 컬럼 값이 과거/미래인지 확인합니다:
+`wherePast`와 `whereFuture`는 컬럼값이 과거 또는 미래인지 판별합니다:
 
 ```php
 $invoices = DB::table('invoices')
@@ -972,7 +954,7 @@ $invoices = DB::table('invoices')
     ->get();
 ```
 
-`whereNowOrPast`, `whereNowOrFuture`는 현재 시점 포함 여부까지 포함하여 과거/미래를 판별합니다:
+`whereNowOrPast`, `whereNowOrFuture`는 현재 날짜와 시간도 포함하여 비교합니다:
 
 ```php
 $invoices = DB::table('invoices')
@@ -984,7 +966,7 @@ $invoices = DB::table('invoices')
     ->get();
 ```
 
-`whereToday`, `whereBeforeToday`, `whereAfterToday`는 각각 오늘/오늘 이전/오늘 이후에 해당하는지 확인합니다:
+`whereToday`, `whereBeforeToday`, `whereAfterToday`는 오늘, 오늘 이전, 오늘 이후를 비교합니다:
 
 ```php
 $invoices = DB::table('invoices')
@@ -1000,7 +982,7 @@ $invoices = DB::table('invoices')
     ->get();
 ```
 
-`whereTodayOrBefore`, `whereTodayOrAfter`로 오늘 포함해 이전/이후 범위를 지정할 수 있습니다:
+`whereTodayOrBefore`, `whereTodayOrAfter`는 오늘을 포함하여 이전/이후를 비교합니다:
 
 ```php
 $invoices = DB::table('invoices')
@@ -1014,7 +996,7 @@ $invoices = DB::table('invoices')
 
 **whereColumn / orWhereColumn**
 
-`whereColumn`은 두 컬럼이 같은지, 혹은 비교 연산 결과를 판별합니다:
+`whereColumn`은 두 컬럼의 값이 같은지 확인합니다:
 
 ```php
 $users = DB::table('users')
@@ -1022,7 +1004,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-비교 연산자를 지정할 수도 있습니다:
+비교 연산자를 추가할 수도 있습니다:
 
 ```php
 $users = DB::table('users')
@@ -1030,7 +1012,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-컬럼 비교 배열을 전달하면 AND 조건으로 연결됩니다:
+여러 컬럼 쌍을 배열로 전달하여 and 조건으로 결합할 수 있습니다:
 
 ```php
 $users = DB::table('users')
@@ -1041,9 +1023,9 @@ $users = DB::table('users')
 ```
 
 <a name="logical-grouping"></a>
-### 논리적 그룹화 (Logical Grouping)
+### 논리 그룹화 (Logical Grouping)
 
-조건을 괄호로 그룹화해야 원하는 쿼리 결과를 만들 수 있습니다. 특히, `orWhere`는 항상 괄호로 묶는 것이 좋습니다. 클로저를 `where` 메서드에 전달하면 그룹화가 됩니다:
+여러 "where" 절을 소괄호로 묶어 논리적으로 그룹화할 필요가 있습니다. 특히 `orWhere` 연산을 사용할 때는 반드시 그룹화해야 예기치 않은 쿼리 결과를 방지할 수 있습니다. 클로저를 `where` 메서드에 전달하면 그룹이 생깁니다:
 
 ```php
 $users = DB::table('users')
@@ -1055,22 +1037,22 @@ $users = DB::table('users')
     ->get();
 ```
 
-위의 예시는 다음 SQL을 생성합니다:
+위 예시처럼 클로저에 쿼리 빌더 인스턴스가 전달되며, 소괄호로 그룹화된 제약 조건들을 설정할 수 있습니다. 위 쿼리는 다음 SQL을 만듭니다:
 
 ```sql
 select * from users where name = 'John' and (votes > 100 or title = 'Admin')
 ```
 
 > [!WARNING]
-> 전역 스코프가 적용될 때 의도치 않은 쿼리 동작을 방지하려면 항상 `orWhere` 그룹화를 하세요.
+> 전역 스코프 등이 적용될 때 예기치 않은 쿼리 결과를 방지하기 위해 항상 `orWhere`를 그룹화하는 것이 좋습니다.
 
 <a name="advanced-where-clauses"></a>
-## 고급 Where 절 (Advanced Where Clauses)
+## 고급 WHERE 구문 (Advanced Where Clauses)
 
 <a name="where-exists-clauses"></a>
-### Where Exists 절
+### WHERE EXISTS 구문
 
-`whereExists` 메서드는 "where exists" SQL 절을 작성할 수 있도록 해줍니다. 이 메서드는 클로저를 받아, 해당 클로저 안에서 쿼리 빌더를 사용해 exists 서브쿼리를 작성할 수 있습니다:
+`whereExists` 메서드는 "where exists" SQL 절을 작성할 때 사용할 수 있습니다. 이 메서드에 클로저를 전달하면 쿼리 빌더 인스턴스가 인수로 전달되며, 이 쿼리가 "exists" 절에 들어갑니다:
 
 ```php
 $users = DB::table('users')
@@ -1082,7 +1064,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-혹은 클로저 대신 쿼리 객체를 `whereExists`에 전달할 수 있습니다:
+클로저 대신 쿼리 오브젝트를 바로 전달할 수도 있습니다:
 
 ```php
 $orders = DB::table('orders')
@@ -1094,7 +1076,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-두 예시는 아래와 같은 SQL을 만듭니다:
+위 두 예시는 다음과 같은 SQL을 생성합니다:
 
 ```sql
 select * from users
@@ -1106,9 +1088,9 @@ where exists (
 ```
 
 <a name="subquery-where-clauses"></a>
-### 서브쿼리 Where 절
+### 서브쿼리 WHERE 구문
 
-서브쿼리 결과와 값을 비교하는 "where" 절이 필요하다면, `where`에 클로저와 값을 전달하면 됩니다. 다음 쿼리는 특정 타입의 최근 "membership"이 있는 사용자를 모두 조회합니다:
+때로는 "where" 절과 값 비교에 서브쿼리 결과를 사용해야 할 때가 있습니다. 이 경우 클로저와 값을 `where`에 전달하면 됩니다. 아래 예시는 특정 타입의 최근 "membership"을 가진 모든 사용자를 조회합니다:
 
 ```php
 use App\Models\User;
@@ -1123,7 +1105,7 @@ $users = User::where(function (Builder $query) {
 }, 'Pro')->get();
 ```
 
-또한, 서브쿼리 결과와 컬럼 값을 비교할 수도 있습니다. 예를 들어, 평균보다 금액이 작은 수입(income)을 조회하려면 다음과 같이 할 수 있습니다:
+또한, 컬럼과 서브쿼리 결과를 비교하는 WHERE 절을 작성하려면, 컬럼명, 연산자, 클로저를 차례대로 넘기면 됩니다. 아래 예시는 수입이 평균보다 작은 모든 레코드를 조회합니다:
 
 ```php
 use App\Models\Income;
@@ -1135,12 +1117,12 @@ $incomes = Income::where('amount', '<', function (Builder $query) {
 ```
 
 <a name="full-text-where-clauses"></a>
-### 전체 텍스트 Where 절
+### 전체 텍스트 WHERE 구문
 
 > [!WARNING]
-> 전체 텍스트 where 절은 MariaDB, MySQL, PostgreSQL에서만 지원됩니다.
+> 전체 텍스트 WHERE 구문은 현재 MariaDB, MySQL, PostgreSQL에서만 지원됩니다.
 
-`whereFullText`와 `orWhereFullText`로 [전체 텍스트 인덱스](/docs/12.x/migrations#available-index-types)가 생성된 컬럼에 전체 텍스트 "where" 절을 추가할 수 있습니다. 이 메서드는 사용 중인 데이터베이스에 따라 적합한 SQL(MariaDB/MySQL은 `MATCH AGAINST` 절 등)로 변환됩니다:
+`whereFullText`, `orWhereFullText` 메서드로 [전체 텍스트 인덱스](/docs/12.x/migrations#available-index-types)를 가진 컬럼에 대해 전체 텍스트 "WHERE" 절을 쉽게 추가할 수 있습니다. 각각의 데이터베이스에 맞게 쿼리가 자동 변환되며, MariaDB나 MySQL의 경우 `MATCH AGAINST` 구문이 생성됩니다.
 
 ```php
 $users = DB::table('users')
@@ -1149,12 +1131,12 @@ $users = DB::table('users')
 ```
 
 <a name="vector-similarity-clauses"></a>
-### 벡터 유사성 절
+### 벡터 유사도 구문 (Vector Similarity Clauses)
 
 > [!NOTE]
-> 벡터 유사성 절은 현재 PostgreSQL 커넥션의 `pgvector` 확장에서만 지원됩니다. 벡터 컬럼 및 인덱스 정의 관련 정보는 [마이그레이션 문서](/docs/12.x/migrations#available-column-types)를 참고하세요.
+> 벡터 유사도 WHERE 구문은 현재 PostgreSQL의 `pgvector` 확장에서만 지원됩니다. 벡터 컬럼 및 인덱스 정의는 [마이그레이션 문서](/docs/12.x/migrations#available-column-types)를 참고하세요.
 
-`whereVectorSimilarTo` 메서드는 대상 벡터와 주어진 벡터 간의 코사인 유사도를 기준으로 결과를 필터하고, 관련도 순으로 정렬합니다. `minSimilarity`는 0.0~1.0(1.0은 완전히 동일) 사이 값을 지정합니다:
+`whereVectorSimilarTo` 메서드는 지정한 벡터에 대한 코사인 유사도(cosine similarity)를 기준으로 결과를 필터링하고, 유사도가 높은 순서로 정렬합니다. `minSimilarity`는 0.0 ~ 1.0 사이의 값이며, 1.0은 완전 일치입니다:
 
 ```php
 $documents = DB::table('documents')
@@ -1163,7 +1145,7 @@ $documents = DB::table('documents')
     ->get();
 ```
 
-벡터 자리에 일반 문자열을 지정하면, Laravel이 [Laravel AI SDK](/docs/12.x/ai-sdk#embeddings)를 사용해 임베딩을 자동 생성합니다:
+벡터 자리에 일반 문자열을 전달하면, Laravel이 [Laravel AI SDK](/docs/12.x/ai-sdk#embeddings)를 사용하여 자동으로 임베딩 벡터를 생성합니다:
 
 ```php
 $documents = DB::table('documents')
@@ -1172,7 +1154,7 @@ $documents = DB::table('documents')
     ->get();
 ```
 
-기본적으로 이 메서드는 거리(유사도 기준) 순으로 정렬합니다. 정렬을 비활성화하려면 `order` 인자로 false를 전달하면 됩니다:
+`whereVectorSimilarTo`는 기본적으로 거리 기반 정렬(가장 유사한 것부터 우선)을 자동 적용합니다. 이 정렬을 비활성화하려면 `order` 인수를 `false`로 지정하세요:
 
 ```php
 $documents = DB::table('documents')
@@ -1182,7 +1164,7 @@ $documents = DB::table('documents')
     ->get();
 ```
 
-더 세밀하게 제어하려면 `selectVectorDistance`, `whereVectorDistanceLessThan`, `orderByVectorDistance` 메서드를 조합할 수 있습니다:
+더 세밀한 제어가 필요하다면, `selectVectorDistance`, `whereVectorDistanceLessThan`, `orderByVectorDistance` 메서드를 각각 사용할 수 있습니다:
 
 ```php
 $documents = DB::table('documents')
@@ -1195,15 +1177,15 @@ $documents = DB::table('documents')
 ```
 
 <a name="ordering-grouping-limit-and-offset"></a>
-## 정렬, 그룹화, 제한, 오프셋 (Ordering, Grouping, Limit and Offset)
+## 정렬, 그룹화, LIMIT, OFFSET (Ordering, Grouping, Limit and Offset)
 
 <a name="ordering"></a>
-### 정렬 (Ordering)
+### 정렬하기 (Ordering)
 
 <a name="orderby"></a>
 #### `orderBy` 메서드
 
-`orderBy` 메서드를 사용하면 쿼리 결과를 특정 컬럼 기준으로 정렬할 수 있습니다. 첫 번째 인자는 정렬할 컬럼명, 두 번째 인자는 정렬 방향(`asc` 또는 `desc`)입니다:
+`orderBy` 메서드는 쿼리 결과를 원하는 컬럼 기준으로 정렬할 수 있습니다. 첫 번째 인수는 정렬하고자 하는 컬럼명, 두 번째 인수는 정렬 방향(`asc` 또는 `desc`)입니다:
 
 ```php
 $users = DB::table('users')
@@ -1211,7 +1193,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-여러 컬럼으로 정렬하려면 `orderBy`를 여러 번 호출하면 됩니다:
+여러 컬럼으로 정렬하고 싶을 때는 `orderBy`를 여러 번 호출하세요:
 
 ```php
 $users = DB::table('users')
@@ -1220,7 +1202,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-정렬 방향은 기본적으로 오름차순이며, 내림차순은 두 번째 인자를 지정하거나, `orderByDesc`를 사용할 수 있습니다:
+두 번째 인수를 생략하면 기본값은 오름차순입니다. 내림차순 정렬을 원한다면 두 번째 인수로 명시하거나, `orderByDesc` 메서드를 사용해도 됩니다:
 
 ```php
 $users = DB::table('users')
@@ -1228,7 +1210,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-JSON 컬럼 내부 값을 정렬하려면 `->` 연산자를 사용할 수 있습니다:
+또한, `->` 연산자를 사용해 JSON 컬럼 내부 값으로도 정렬할 수 있습니다:
 
 ```php
 $corporations = DB::table('corporations')
@@ -1240,7 +1222,7 @@ $corporations = DB::table('corporations')
 <a name="latest-oldest"></a>
 #### `latest` 및 `oldest` 메서드
 
-`latest`, `oldest` 메서드는 쉽게 날짜 기준 정렬을 제공합니다. 기본적으로 테이블의 `created_at` 컬럼 기준으로 정렬됩니다. 원하는 컬럼명을 전달할 수도 있습니다:
+`latest`와 `oldest`는 날짜 기준으로 결과를 정렬하는데 사용됩니다. 기본적으로 `created_at` 컬럼으로 정렬하며, 정렬할 컬럼명을 인수로 지정할 수도 있습니다:
 
 ```php
 $user = DB::table('users')
@@ -1249,9 +1231,9 @@ $user = DB::table('users')
 ```
 
 <a name="random-ordering"></a>
-#### 무작위 정렬
+#### 랜덤(RANDOM) 정렬
 
-`inRandomOrder` 메서드를 사용하면 쿼리 결과를 무작위로 정렬할 수 있습니다. 예를 들어, 무작위 사용자를 조회할 때 사용할 수 있습니다:
+`inRandomOrder` 메서드를 사용하면 쿼리 결과를 무작위로 정렬할 수 있습니다. 예를 들어 랜덤 사용자 1명을 가져올 때 쓸 수 있습니다:
 
 ```php
 $randomUser = DB::table('users')
@@ -1260,9 +1242,9 @@ $randomUser = DB::table('users')
 ```
 
 <a name="removing-existing-orderings"></a>
-#### 기존 정렬 제거하기
+#### 기존 정렬 조건 제거
 
-`reorder` 메서드는 이미 추가된 모든 "order by" 절을 제거하고 정렬이 되지 않은 결과로 반환합니다:
+`reorder` 메서드는 기존 쿼리의 "order by" 절을 모두 제거합니다:
 
 ```php
 $query = DB::table('users')->orderBy('name');
@@ -1270,7 +1252,7 @@ $query = DB::table('users')->orderBy('name');
 $unorderedUsers = $query->reorder()->get();
 ```
 
-특정 컬럼과 방향으로 재정렬하려면 `reorder`에 인자를 전달할 수 있습니다. 즉, 기존 정렬 절을 모두 제거하고 새로운 정렬을 적용합니다:
+원하는 컬럼과 정렬 방향을 인수로 지정하면 기존 "order by" 절을 모두 제거한 뒤 새로운 정렬을 적용합니다:
 
 ```php
 $query = DB::table('users')->orderBy('name');
@@ -1278,7 +1260,7 @@ $query = DB::table('users')->orderBy('name');
 $usersOrderedByEmail = $query->reorder('email', 'desc')->get();
 ```
 
-내림차순 재정렬을 위해서는 `reorderDesc` 메서드도 사용할 수 있습니다:
+내림차순으로 정렬을 재설정하고 싶을 때는 `reorderDesc` 메서드를 사용할 수 있습니다:
 
 ```php
 $query = DB::table('users')->orderBy('name');
@@ -1287,12 +1269,12 @@ $usersOrderedByEmail = $query->reorderDesc('email')->get();
 ```
 
 <a name="grouping"></a>
-### 그룹화 (Grouping)
+### 그룹화하기 (Grouping)
 
 <a name="groupby-having"></a>
 #### `groupBy` 및 `having` 메서드
 
-`groupBy`, `having` 메서드로 결과 그룹화를 할 수 있습니다. `having` 메서드는 `where` 메서드와 유사한 시그니처를 가집니다:
+`groupBy`와 `having` 메서드는 결과를 그룹화할 때 사용합니다. `having`은 `where`와 사용법이 유사합니다:
 
 ```php
 $users = DB::table('users')
@@ -1301,7 +1283,7 @@ $users = DB::table('users')
     ->get();
 ```
 
-`havingBetween`을 사용하면 지정한 범위 내에서 결과를 필터링할 수 있습니다:
+`havingBetween` 메서드는 값의 범위로 결과를 필터링할 수 있습니다:
 
 ```php
 $report = DB::table('orders')
@@ -1311,7 +1293,7 @@ $report = DB::table('orders')
     ->get();
 ```
 
-다수 컬럼을 그룹화하려면 `groupBy`에 여러 인자를 전달하면 됩니다:
+`groupBy`에는 여러 컬럼을 인수로 전달해 다중 그룹화도 가능합니다:
 
 ```php
 $users = DB::table('users')
@@ -1320,12 +1302,12 @@ $users = DB::table('users')
     ->get();
 ```
 
-더 복잡한 having 구문 작성은 [havingRaw](#raw-methods) 메서드를 참고하세요.
+더 복잡한 having 쿼리를 만들려면 [havingRaw](#raw-methods)를 참고하세요.
 
 <a name="limit-and-offset"></a>
-### Limit 및 Offset
+### LIMIT 및 OFFSET
 
-`limit`, `offset` 메서드로 결과 범위를 제한 및 스킵할 수 있습니다:
+`limit`, `offset` 메서드로 결과 개수를 제한하거나 지정한 개수만큼 결과를 건너뛸 수 있습니다:
 
 ```php
 $users = DB::table('users')
@@ -1337,7 +1319,7 @@ $users = DB::table('users')
 <a name="conditional-clauses"></a>
 ## 조건부 절 (Conditional Clauses)
 
-애플리케이션의 다른 조건에 따라 특정 쿼리 절을 적용하고 싶을 때가 있습니다. 예를 들어, HTTP 요청에 특정 입력값이 있는 경우에만 `where` 구문을 적용하고 싶다면 `when` 메서드를 사용하면 됩니다:
+특정 상황에서만 쿼리 조건을 적용하고 싶다면, `when` 메서드를 사용할 수 있습니다. 예를 들어, HTTP 요청에 특정 입력 값이 있을 때만 `where` 조건을 추가하고 싶을 때 쓸 수 있습니다:
 
 ```php
 $role = $request->input('role');
@@ -1349,9 +1331,9 @@ $users = DB::table('users')
     ->get();
 ```
 
-`when` 메서드는 첫 번째 인자가 true일 때만 주어진 클로저를 실행합니다. 위 예시에서도 `role` 값이 존재하고 true로 평가되는 경우만 클로저가 실행됩니다.
+`when` 메서드는 첫 번째 인수가 `true`일 때만 클로저를 실행합니다. 위 예시에서는 `role` 필드가 요청에 존재하고, `true`로 평가될 때만 클로저가 실행됩니다.
 
-세 번째 인자로 또 다른 클로저를 전달할 수도 있는데, 이 클로저는 첫 번째 인자가 false일 때만 실행됩니다. 예를 들어, 쿼리의 기본 정렬을 조건에 따라 다르게 적용할 수 있습니다:
+세 번째 인수로 추가 클로저를 넘길 수도 있는데, 이 경우 첫 번째 인수가 `false`일 때만 해당 클로저가 실행됩니다. 이 기능을 활용해 쿼리의 기본 정렬 로직을 지정할 수 있습니다:
 
 ```php
 $sortByVotes = $request->boolean('sort_by_votes');
@@ -1366,9 +1348,9 @@ $users = DB::table('users')
 ```
 
 <a name="insert-statements"></a>
-## Insert 구문 (Insert Statements)
+## INSERT 구문 (Insert Statements)
 
-쿼리 빌더의 `insert` 메서드로 레코드를 데이터베이스에 삽입할 수 있습니다. `insert`는 컬럼명과 값 쌍의 배열을 인자로 받습니다:
+쿼리 빌더는 테이블에 레코드를 삽입하기 위한 `insert` 메서드도 제공합니다. `insert`는 컬럼명과 값의 배열을 인수로 받습니다:
 
 ```php
 DB::table('users')->insert([
@@ -1377,7 +1359,7 @@ DB::table('users')->insert([
 ]);
 ```
 
-한 번에 여러 레코드를 삽입하려면 배열의 배열을 전달하면 됩니다:
+여러 레코드를 한 번에 삽입하려면 각각의 레코드를 각기 다른 배열로 묶어 이중 배열로 전달하세요:
 
 ```php
 DB::table('users')->insert([
@@ -1386,7 +1368,7 @@ DB::table('users')->insert([
 ]);
 ```
 
-`insertOrIgnore`는 삽입 오류가 발생해도 무시하고 계속 실행합니다. 이 메서드를 사용할 때는 중복 레코드 관련 에러가 무시된다는 점, 그리고 데이터베이스 엔진에 따라 다른 신종 에러도 무시될 수 있다는 점을 유의하세요. 예를 들면, `insertOrIgnore`는 [MySQL의 strict 모드](https://dev.mysql.com/doc/refman/en/sql-mode.html#ignore-effect-on-execution)를 우회합니다:
+`insertOrIgnore` 메서드를 사용하면 레코드 삽입 중 발생하는 오류를 무시할 수 있습니다. 이 방법을 쓸 때는 중복 레코드 오류 등 일부 오류가 무시된다는 점, 그리고 일부 데이터베이스에서는 다른 종류의 오류도 무시될 수 있다는 점을 유의하세요. 예를 들어, `insertOrIgnore`는 [MySQL의 strict mode를 우회](https://dev.mysql.com/doc/refman/en/sql-mode.html#ignore-effect-on-execution)합니다:
 
 ```php
 DB::table('users')->insertOrIgnore([
@@ -1395,7 +1377,7 @@ DB::table('users')->insertOrIgnore([
 ]);
 ```
 
-`insertUsing`은 서브쿼리 결과를 기반으로 테이블에 새로운 레코드를 삽입합니다:
+`insertUsing` 메서드는 서브쿼리를 활용해 삽입할 데이터를 결정합니다:
 
 ```php
 DB::table('pruned_users')->insertUsing([
@@ -1408,7 +1390,7 @@ DB::table('pruned_users')->insertUsing([
 <a name="auto-incrementing-ids"></a>
 #### 자동 증가 ID
 
-테이블에 자동 증가 ID가 있을 경우, `insertGetId` 메서드로 레코드 삽입 후 ID 값을 바로 반환받을 수 있습니다:
+테이블에 auto-increment id 컬럼이 있을 때, `insertGetId` 메서드로 레코드를 삽입한 뒤 ID 값을 바로 가져올 수 있습니다:
 
 ```php
 $id = DB::table('users')->insertGetId(
@@ -1417,12 +1399,12 @@ $id = DB::table('users')->insertGetId(
 ```
 
 > [!WARNING]
-> PostgreSQL 사용 시, `insertGetId`는 자동 증가 컬럼명이 반드시 `id`여야 합니다. 만약 다른 "시퀀스"에서 ID를 받고 싶다면, 두 번째 파라미터로 컬럼명을 전달하면 됩니다.
+> PostgreSQL에서 `insertGetId`를 사용할 때 auto-increment 컬럼 이름이 반드시 `id`여야 합니다. 다른 이름의 "시퀀스"를 사용할 경우 두 번째 인수로 컬럼명을 지정하세요.
 
 <a name="upserts"></a>
-### Upsert
+### UPSERT
 
-`upsert` 메서드는 존재하지 않는 레코드는 삽입하고, 이미 존재하는 레코드는 지정한 내용으로 업데이트합니다. 첫 번째 인자에는 삽입/업데이트할 값, 두 번째 인자에는 레코드 고유성을 확인할 기준 컬럼배열, 세 번째 인자는 이미 존재하는 경우 업데이트할 컬럼 배열입니다:
+`upsert` 메서드는 존재하지 않는 레코드는 삽입(insert), 이미 존재하는 레코드는 지정한 컬럼값으로 업데이트(update)합니다. 첫 번째 인수는 삽입/업데이트할 값 배열, 두 번째는 테이블 내에서 레코드를 고유하게 식별할 컬럼(들)의 배열, 세 번째는 기존 레코드에서 업데이트할 컬럼 배열입니다:
 
 ```php
 DB::table('flights')->upsert(
@@ -1435,15 +1417,15 @@ DB::table('flights')->upsert(
 );
 ```
 
-위 예시에서, Laravel은 두 개 레코드를 삽입 시도하며, 같은 `departure`, `destination` 값이 이미 있다면 해당 행의 `price`만 업데이트합니다.
+위 예시에서 `departure`와 `destination` 값이 같은 레코드가 이미 존재한다면 `price` 컬럼만 업데이트되고, 없으면 새 레코드가 삽입됩니다.
 
 > [!WARNING]
-> SQL Server를 제외한 모든 데이터베이스 엔진은 `upsert`의 두 번째 인자에 명시한 컬럼이 "primary"나 "unique" 인덱스가 있어야 합니다. MariaDB, MySQL 드라이버는 항상 테이블의 "primary"/"unique" 인덱스를 기준으로 중복을 판단합니다.
+> SQL Server를 제외한 모든 데이터베이스에서 `upsert` 두 번째 인수(고유식별 컬럼)는 "primary" 혹은 "unique" 인덱스가 있어야 하며, MariaDB와 MySQL 드라이버는 두 번째 인수를 무시하고 항상 테이블의 "primary"/"unique" 인덱스로 기존 레코드를 식별합니다.
 
 <a name="update-statements"></a>
-## Update 구문 (Update Statements)
+## UPDATE 구문 (Update Statements)
 
-삽입 뿐만 아니라, `update` 메서드를 통해서도 기존 레코드를 갱신할 수 있습니다. `update`는 컬럼-값 쌍의 배열을 받으며, 영향을 받은 행의 개수를 반환합니다. `where` 등을 함께 사용해 쿼리 범위를 지정할 수 있습니다:
+쿼리 빌더는 레코드 삽입뿐 아니라, `update` 메서드로 기존 데이터를 수정할 수도 있습니다. `update`는 컬럼명-값 쌍 배열을 받으며, 영향을 받은 행의 개수를 반환합니다. `where` 조건과 함께 사용하는 것이 일반적입니다:
 
 ```php
 $affected = DB::table('users')
@@ -1452,11 +1434,11 @@ $affected = DB::table('users')
 ```
 
 <a name="update-or-insert"></a>
-#### Update or Insert
+#### UPDATE 또는 INSERT
 
-기존 레코드를 업데이트하고, 없으면 새로 생성하고 싶을 때는 `updateOrInsert`를 사용하세요. 첫 번째 인자는 조건, 두 번째 인자는 업데이트할 컬럼-값 쌍입니다.
+기존 레코드를 업데이트, 없으면 새로 생성하는 동작이 필요할 때는 `updateOrInsert` 메서드가 유용합니다. 첫 번째 인수는 레코드 탐색용 조건 배열, 두 번째 인수는 업데이트할 컬럼명-값 쌍 배열입니다.
 
-`updateOrInsert`는 첫 번째 인자로 레코드를 찾고, 존재하면 두 번째 인자로 업데이트하고, 없으면 두 인자를 합친 속성 값으로 새 레코드를 삽입합니다:
+`updateOrInsert`는 첫 번째 인수로 레코드를 조회해 존재하면 두 번째 인수 값으로 업데이트, 없으면 합친 값으로 새 레코드를 생성합니다:
 
 ```php
 DB::table('users')
@@ -1466,7 +1448,7 @@ DB::table('users')
     );
 ```
 
-레코드 존재 여부에 따라 다르게 값을 삽입/업데이트해야 한다면, 클로저를 두 번째 인자로 전달할 수도 있습니다:
+현재 레코드 상태에 따라 업데이트 또는 삽입할 값을 동적으로 결정하려면, 두 번째 인수로 클로저를 넘길 수 있습니다:
 
 ```php
 DB::table('users')->updateOrInsert(
@@ -1483,9 +1465,9 @@ DB::table('users')->updateOrInsert(
 ```
 
 <a name="updating-json-columns"></a>
-### JSON 컬럼 업데이트 (Updating JSON Columns)
+### JSON 컬럼 업데이트
 
-JSON 컬럼을 업데이트할 때는 `->` 구문을 사용해 JSON 객체의 키를 직접 지정하여 업데이트할 수 있습니다. 이 기능은 MariaDB 10.3+, MySQL 5.7+, PostgreSQL 9.5+에서 지원됩니다:
+JSON 컬럼을 업데이트할 때는 `->` 구문을 활용해 JSON 객체 내 특정 키에 값을 지정할 수 있습니다. 이 기능은 MariaDB 10.3+, MySQL 5.7+, PostgreSQL 9.5+에서 지원됩니다:
 
 ```php
 $affected = DB::table('users')
@@ -1494,9 +1476,9 @@ $affected = DB::table('users')
 ```
 
 <a name="increment-and-decrement"></a>
-### 증가 및 감소 (Increment and Decrement)
+### INCREMENT 및 DECREMENT
 
-쿼리 빌더는 특정 컬럼 값을 쉽게 증가시키거나 감소시키는 `increment`, `decrement` 메서드도 제공합니다. 첫 번째 인자는 컬럼명, 두 번째 인자는 수치(기본값 1)입니다:
+쿼리 빌더는 컬럼 값을 증가(increment) 또는 감소(decrement)시키는 편리한 메서드도 제공합니다. 필수 인수는 컬럼명, 두 번째 인수(옵션)는 증가/감소할 값입니다:
 
 ```php
 DB::table('users')->increment('votes');
@@ -1508,13 +1490,13 @@ DB::table('users')->decrement('votes');
 DB::table('users')->decrement('votes', 5);
 ```
 
-증가/감소와 함께 다른 컬럼을 업데이트하고 싶다면 추가 컬럼 배열을 세 번째 인자로 전달할 수 있습니다:
+증가/감소와 동시에 추가 컬럼도 업데이트할 수 있습니다:
 
 ```php
 DB::table('users')->increment('votes', 1, ['name' => 'John']);
 ```
 
-`incrementEach`, `decrementEach`로 여러 컬럼을 한 번에 갱신할 수도 있습니다:
+또한, `incrementEach`, `decrementEach`로 여러 컬럼을 동시에 변경할 수도 있습니다:
 
 ```php
 DB::table('users')->incrementEach([
@@ -1524,9 +1506,9 @@ DB::table('users')->incrementEach([
 ```
 
 <a name="delete-statements"></a>
-## Delete 구문 (Delete Statements)
+## DELETE 구문 (Delete Statements)
 
-쿼리 빌더의 `delete` 메서드로 레코드를 삭제할 수 있습니다. `delete`는 영향을 받은 행의 개수를 반환하며, "where" 조건으로 삭제 유효 범위를 제한할 수 있습니다:
+쿼리 빌더의 `delete` 메서드는 테이블에서 레코드를 삭제합니다. 영향을 받은 행의 개수를 반환하며, `where` 절을 추가해 일부만 삭제할 수도 있습니다:
 
 ```php
 $deleted = DB::table('users')->delete();
@@ -1537,7 +1519,7 @@ $deleted = DB::table('users')->where('votes', '>', 100)->delete();
 <a name="pessimistic-locking"></a>
 ## 비관적 잠금 (Pessimistic Locking)
 
-쿼리 빌더는 select 쿼리 실행 시 "비관적 잠금(pessimistic locking)"을 위한 메서드도 제공합니다. "공유 잠금(shared lock)"을 하려면 `sharedLock`을 호출하면 됩니다. 공유 잠금은 트랜잭션이 커밋될 때까지 해당 행이 수정되지 못하도록 막습니다:
+쿼리 빌더는 `select` 문 실행 시 "비관적 잠금(pessimistic locking)"을 지원하는 메서드를 제공합니다. "공유 잠금(shared lock)"을 걸고 싶다면 `sharedLock` 메서드를 사용하세요. 공유 잠금은 트랜잭션이 완료될 때까지 해당 행의 수정이 불가하도록 막습니다:
 
 ```php
 DB::table('users')
@@ -1546,7 +1528,7 @@ DB::table('users')
     ->get();
 ```
 
-또는, `lockForUpdate`로 "for update" 잠금을 걸 수 있습니다. 이 잠금은 해당 레코드가 다른 공유 잠금에서도 읽히지 못하고, 오직 현재 트랜잭션에서만 수정/읽기가 가능합니다:
+`lockForUpdate` 메서드를 사용하면 "for update" 잠금을 거는데, 공유 잠금은 물론, 다른 곳에서 선택하는 것도 차단합니다:
 
 ```php
 DB::table('users')
@@ -1555,7 +1537,7 @@ DB::table('users')
     ->get();
 ```
 
-꼭 필수는 아니지만, 비관적 잠금을 사용할 때는 [트랜잭션](/docs/12.x/database#database-transactions)으로 래핑하는 것이 권장됩니다. 이렇게 하면 작업 도중 데이터가 변경되지 않으며, 실패 시 자동으로 롤백되어 잠금이 해제됩니다:
+필수는 아니지만, 비관적 잠금은 [트랜잭션](/docs/12.x/database#database-transactions) 안에 쓰는 것이 좋습니다. 이렇게 하면 전체 작업이 완료될 때까지 데이터가 고정되어 외부 영향이 없으며, 실패 시 롤백과 동시에 잠금도 해제됩니다:
 
 ```php
 DB::transaction(function () {
@@ -1588,7 +1570,7 @@ DB::transaction(function () {
 <a name="reusable-query-components"></a>
 ## 재사용 가능한 쿼리 컴포넌트 (Reusable Query Components)
 
-애플리케이션 전반에 여러 번 같은 쿼리 로직이 반복된다면, 쿼리 빌더의 `tap`, `pipe` 메서드를 사용해 재사용 가능한 객체로 분리할 수 있습니다. 예를 들어, 다음과 같이 두 쿼리에 공통 로직이 있다면:
+애플리케이션 곳곳에서 반복되는 쿼리 로직이 있다면, 쿼리 빌더의 `tap`과 `pipe` 메서드를 이용해 재사용 가능한 클래스로 추출할 수 있습니다. 예를 들어, 아래와 같이 비슷한 쿼리가 두 번 나오고 있다면:
 
 ```php
 use Illuminate\Database\Query\Builder;
@@ -1616,7 +1598,7 @@ DB::table('flights')
     ->get();
 ```
 
-공통적인 목적지(destination) 필터링을 다음처럼 객체로 분리할 수 있습니다:
+공통 로직(목적지 필터)을 별도의 재사용 가능한 객체로 추출할 수 있습니다:
 
 ```php
 <?php
@@ -1642,7 +1624,7 @@ class DestinationFilter
 }
 ```
 
-이제 쿼리 빌더의 `tap` 메서드로 객체 로직을 쉽게 적용할 수 있습니다:
+이제 쿼리 빌더의 `tap` 메서드를 써서 객체의 로직을 적용할 수 있습니다:
 
 ```php
 use App\Scopes\DestinationFilter;
@@ -1664,11 +1646,11 @@ DB::table('flights')
 ```
 
 <a name="query-pipes"></a>
-#### 쿼리 파이프 (Query Pipes)
+#### Query Pipes
 
-`tap` 메서드는 반드시 쿼리 빌더 인스턴스를 반환합니다. 쿼리를 실행하고 다른 값을 반환하고 싶다면, `pipe` 메서드를 사용할 수 있습니다.
+`tap` 메서드는 항상 쿼리 빌더 객체 자체를 반환합니다. 쿼리를 실행한 뒤 다른 값을 반환하는 객체를 만들고 싶다면 `pipe` 메서드를 쓰면 됩니다.
 
-예를 들어, 애플리케이션 전역에서 [페이지네이션](/docs/12.x/pagination) 로직을 공유하려면 아래처럼 객체화할 수 있습니다. 이 unlike `DestinationFilter`, `Paginate`는 쿼리를 실행해 paginator 인스턴스를 반환합니다:
+아래는 [페이지네이션](/docs/12.x/pagination) 로직을 공유하는 쿼리 객체 예시입니다. `DestinationFilter`와 달리, `Paginate`는 쿼리 조건을 적용하는 대신 쿼리를 실행하여 페이지네이터 인스턴스를 반환합니다:
 
 ```php
 <?php
@@ -1696,7 +1678,7 @@ class Paginate
 }
 ```
 
-쿼리 빌더의 `pipe` 메서드를 이용해 아래와 같이 파이프라인을 만들 수 있습니다:
+이제 쿼리 빌더의 `pipe` 메서드를 사용해 위 객체의 페이징 로직을 적용하면 됩니다:
 
 ```php
 $flights = DB::table('flights')
@@ -1707,7 +1689,7 @@ $flights = DB::table('flights')
 <a name="debugging"></a>
 ## 디버깅 (Debugging)
 
-쿼리를 작성하는 중간에 `dd`, `dump` 메서드를 사용해 쿼리 바인딩과 SQL 구문을 바로 출력해 볼 수 있습니다. `dd`는 디버그 정보를 표시한 후 요청을 즉시 종료하며, `dump`는 정보를 표시한 뒤 요청을 계속 처리합니다:
+쿼리를 작성하면서 디버깅하고 싶다면, `dd`와 `dump` 메서드를 쓸 수 있습니다. `dd`는 현재 쿼리 바인딩과 SQL을 출력한 뒤 실행을 즉시 중단하고, `dump`는 정보만 출력하고 계속 실행합니다:
 
 ```php
 DB::table('users')->where('votes', '>', 100)->dd();
@@ -1715,7 +1697,7 @@ DB::table('users')->where('votes', '>', 100)->dd();
 DB::table('users')->where('votes', '>', 100)->dump();
 ```
 
-`dumpRawSql`, `ddRawSql` 메서드는 매개변수가 올바르게 대입된 쿼리 SQL을 바로 볼 수 있습니다:
+`dumpRawSql`, `ddRawSql` 메서드는 SQL과 모든 파라미터 바인딩이 치환된 쿼리문을 출력합니다:
 
 ```php
 DB::table('users')->where('votes', '>', 100)->dumpRawSql();
